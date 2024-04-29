@@ -1,4 +1,4 @@
-name: Astrolib Continuous Integration
+name: Traverse Continuous Integration
 on:
   push:
 
