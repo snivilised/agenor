@@ -17,9 +17,8 @@ linters-settings:
       - fieldalignment # too strict
 
   nolintlint:
-    require-explanation: true
+    require-explanation: false
     require-specific: true
-
 linters:
   disable-all: true
   enable:
@@ -60,6 +59,13 @@ linters:
     # - varcheck
     - whitespace
     - wsl
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  fix: true
+  exclude:
+    - "cuddle"
 
 run:
   issues-exit-code: 1
