@@ -23,8 +23,8 @@ type (
 		Enough EnoughAlready
 	}
 
-	// EachDirectoryItemPredicate callback to invoke for each child node event
-	EachDirectoryItemPredicate func(event *node.Event) bool
+	// EachDirectoryEntryPredicate callback to invoke for each child node event
+	EachDirectoryEntryPredicate func(event *node.Event) bool
 
 	// WhileDirectoryPredicate determines when to terminate the loop
 	WhileDirectoryPredicate func(fi *FilteredInfo) bool
@@ -34,7 +34,7 @@ type (
 		// the defined filter. A directory's contents is sampled according to this
 		// function. The function receives the TraverseItem being considered and should
 		// return true to include in the sample, false otherwise.
-		Each EachDirectoryItemPredicate
+		Each EachDirectoryEntryPredicate
 
 		// While enables customisation of the sampling functionality, instead of using
 		// the defined filter. The sampling loop will continue to run while this
