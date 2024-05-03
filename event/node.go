@@ -1,4 +1,4 @@
-package node
+package event
 
 import (
 	"io/fs"
@@ -11,37 +11,37 @@ import (
 // of observables is like an event. The observable fluency chain will be
 // based upon the node.
 
-// Envelope is a wrapper around the Event
+// Envelope is a wrapper around the Node
 type Envelope struct {
-	E *Event
+	N *Node
 }
 
-// Seal wraps an Event inside an Envelope
-func Seal(e *Event) *Envelope {
+// Seal wraps a Node inside an Envelope
+func Seal(n *Node) *Envelope {
 	// When using rx, we must instantiate it with a struct, not a pointer
 	// to struct. So we create a distinction between what is the unit of
-	// transfer (Envelope) and it's payload, the Event. This means that the
-	// Envelope can only have non pointer receivers, but the Event can
+	// transfer (Envelope) and it's payload, the Node. This means that the
+	// Envelope can only have non pointer receivers, but the Node can
 	// be defined with pointer receivers.
 	//
 	return &Envelope{
-		E: e,
+		N: n,
 	}
 }
 
-// Event represents a file system node event and represents each file system
+// Node represents a file system node event and represents each file system
 // entity encountered during traversal. The event representing the root node
 // does not have a DirEntry because it is not created as a result of a readDir
 // invoke. Therefore, the client has to know that when its function is called back,
 // they will be no DirEntry for the root node.
-type Event struct {
+type Node struct {
 	Path        string
 	Entry       fs.DirEntry // contains a FileInfo via Info() function
 	Info        fs.FileInfo // optional file info instance
 	Extension   Extension   // extended information about the directory entry
 	Error       error
 	Children    []fs.DirEntry
-	Parent      *Event
+	Parent      *Node
 	filteredOut bool
 	dir         bool
 }
@@ -60,9 +60,9 @@ type Extension struct {
 
 // New create a new node Event
 func New(
-	path string, entry fs.DirEntry, info fs.FileInfo, parent *Event, err error,
-) *Event {
-	event := &Event{
+	path string, entry fs.DirEntry, info fs.FileInfo, parent *Node, err error,
+) *Node {
+	node := &Node{
 		Path:     path,
 		Entry:    entry,
 		Info:     info,
@@ -70,15 +70,15 @@ func New(
 		Children: []fs.DirEntry{},
 		Error:    err,
 	}
-	event.dir = isDir(event)
+	node.dir = isDir(node)
 
-	return event
+	return node
 }
 
 // Root creates a new node Event which represents the root of directory
 // tree to traverse.
-func Root() *Event {
-	event := &Event{
+func Root() *Node {
+	event := &Node{
 		// TODO: complete
 	}
 
@@ -86,28 +86,28 @@ func Root() *Event {
 }
 
 // Clone makes shallow copy of Event (excluding the error).
-func (e *Event) Clone() *Event {
-	c := *e
+func (n *Node) Clone() *Node {
+	c := *n
 	c.Error = nil
 
 	return &c
 }
 
 // IsFolder indicates wether this event is a folder.
-func (e *Event) IsFolder() bool {
-	return e.dir
+func (n *Node) IsFolder() bool {
+	return n.dir
 }
 
-func (e *Event) key() string {
+func (n *Node) key() string {
 	// ti.Extension.SubPath
 	return "ti.Extension.SubPath"
 }
 
-func isDir(e *Event) bool {
-	if !utils.IsNil(e.Entry) {
-		return e.Entry.IsDir()
-	} else if !utils.IsNil(e.Info) {
-		return e.Info.IsDir()
+func isDir(n *Node) bool {
+	if !utils.IsNil(n.Entry) {
+		return n.Entry.IsDir()
+	} else if !utils.IsNil(n.Info) {
+		return n.Info.IsDir()
 	}
 
 	// only get here in error scenario, because neither Entry or Info is set
