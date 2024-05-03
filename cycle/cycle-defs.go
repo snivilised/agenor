@@ -7,3 +7,10 @@ package cycle
 
 // eg beforeOptions
 // afterOptions
+
+type Role uint32
+
+const (
+	RoleUndefined Role = iota
+	RoleDirectoryReader
+)

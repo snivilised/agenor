@@ -12,7 +12,7 @@ const (
 	SubscribeFiles                                 // invoke callback for files only
 )
 
-// Role represents the role of an application entity (like a plugin role) The
+// InternalRole represents the role of an application entity (like a plugin role) The
 // key element of a role is that there should be just a single entity that can take up
 // the role which is bound to a service.
 //
@@ -22,13 +22,13 @@ const (
 // to provide a particular service.
 //
 // The mediator knows about Roles and manage registration requests
-type Role uint
+type InternalRole uint
 
 const (
-	RoleUndefined Role = iota
-	RoleLogger         // WithLogger
-	RoleSampler        // WithSampler (need a specific sampler interface)
-	RoleResume         // this is not an option; so might not be a valid role
+	InternalRoleRoleUndefined InternalRole = iota
+	InternalRoleLogger                     // WithLogger
+	InternalRoleSampler                    // WithSampler (need a specific sampler interface)
+	InternalRoleResume                     // this is not an option; so might not be a valid role
 )
 
 // do we need to distinguish between internal and external entities. It looks
@@ -40,3 +40,10 @@ const (
 //
 // --> internal
 // * resume
+
+type Role uint32
+
+const (
+	RoleUndefined Role = iota
+	RoleDirectoryReader
+)
