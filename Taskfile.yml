@@ -88,6 +88,12 @@ tasks:
     cmds:
       - yamllint *.y*ml
 
+  # === generate =============================================
+
+  enums:
+    cmds:
+      - go generate ./enums
+
   # === coverage =============================================
 
   publish-cover:
