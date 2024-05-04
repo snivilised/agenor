@@ -1,4 +1,4 @@
-package nav
+package kernel
 
 // BootstrapPluginName is the name of a plugin that needs to hook
 // the bootstrap process
