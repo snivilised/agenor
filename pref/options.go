@@ -3,10 +3,11 @@ package pref
 import (
 	"log/slog"
 
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 )
 
-// package: pref contains user option definitions; do not use anything in nav (cyclic)
+// package: pref contains user option definitions; do not use anything in kernel (cyclic)
 
 type (
 	Options struct {
@@ -23,6 +24,10 @@ type (
 		//
 		Sampler SamplerOptions
 
+		// Events provides the ability to tap into life cycle events
+		//
+		Events cycle.Events
+
 		// Monitor contains externally provided logger
 		//
 		Monitor MonitorOptions
@@ -32,25 +37,26 @@ type (
 	OptionFn func(o *Options, reg *Registry) error
 )
 
-func requestOptions(with ...OptionFn) *Options {
-	o := getDetDefaultOptions()
-	reg := &Registry{}
+func RequestOptions(reg *Registry, with ...OptionFn) *Options {
+	o := defaultOptions()
+	o.Events.Bind(&reg.Notification)
 
-	for _, functionalOption := range with {
+	for _, option := range with {
 		// TODO: check error
-		_ = functionalOption(o, reg)
+		_ = option(o, reg)
 	}
+
+	reg.O = o
 
 	return o
 }
 
-func getDetDefaultOptions() *Options {
+func defaultOptions() *Options {
 	nopLogger := &slog.Logger{}
 
-	return &Options{
+	o := &Options{
 		Core: CoreOptions{
 			Subscription: enums.SubscribeUniversal,
-
 			Behaviours: NavigationBehaviours{
 				SubPath: SubPathBehaviour{
 					KeepTrailingSep: true,
@@ -72,4 +78,6 @@ func getDetDefaultOptions() *Options {
 			Log: nopLogger,
 		},
 	}
+
+	return o
 }

@@ -4,6 +4,7 @@
     "--fast"
   ],
   "cSpell.words": [
+    "alloc",
     "astrolib",
     "bodyclose",
     "cmds",

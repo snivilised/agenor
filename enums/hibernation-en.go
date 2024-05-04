@@ -20,7 +20,7 @@ const (
 	//
 	HibernationPending // pending-hibernation
 
-	// HibernationActive conditional listening is active (callback is invoked)
+	// HibernationAwake conditional listening is active (callback is invoked)
 	//
 	HibernationAwake // awake-hibernation
 

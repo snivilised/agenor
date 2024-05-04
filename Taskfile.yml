@@ -20,6 +20,10 @@ tasks:
 
   # === test =================================================
 
+  dry:
+    cmds:
+      - ginkgo -v --dry-run ./...
+
   t:
     cmds:
       - go test ./...
@@ -28,9 +32,9 @@ tasks:
     cmds:
       - go test ./i18n
 
-  dry:
+  tp:
     cmds:
-      - ginkgo -v --dry-run ./...
+      - go test ./pref
 
   # === ginkgo ================================================
 

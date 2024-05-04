@@ -105,7 +105,8 @@ var _ = Describe("Tapable", decorators.Label("use-case"), func() {
 			It("should: ", func() {
 				// This could be exposed to the client as a WithXXX option,
 				// or the client could perform the Tap manually themselves.
-				//
+				// Container is an internal affair, it should be created and
+				// used internally only.
 				container := tapable.NewContainer[enums.Role]()
 
 				// perhaps we make the tapping mechanism internal only and if
