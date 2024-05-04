@@ -1,4 +1,4 @@
-package nav
+package kernel
 
 type Mediator interface {
 	Register() error
