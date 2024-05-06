@@ -34,7 +34,7 @@ type (
 	}
 
 	// OptionFn functional traverse options
-	OptionFn func(o *Options, reg *Registry) error
+	OptionFn func(o *Options) error
 )
 
 func RequestOptions(reg *Registry, with ...OptionFn) *Options {
@@ -43,7 +43,7 @@ func RequestOptions(reg *Registry, with ...OptionFn) *Options {
 
 	for _, option := range with {
 		// TODO: check error
-		_ = option(o, reg)
+		_ = option(o)
 	}
 
 	reg.O = o

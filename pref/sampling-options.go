@@ -28,7 +28,7 @@ type (
 )
 
 func WithSamplingOptions(so *SamplingOptions) OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Sampling = *so
 
 		return nil
@@ -36,7 +36,7 @@ func WithSamplingOptions(so *SamplingOptions) OptionFn {
 }
 
 func WithSamplingInReverse() OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Sampling.SampleInReverse = true
 
 		return nil
@@ -44,7 +44,7 @@ func WithSamplingInReverse() OptionFn {
 }
 
 func WithSamplingType(sample enums.SampleType) OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Sampling.SampleType = sample
 
 		return nil
@@ -52,7 +52,7 @@ func WithSamplingType(sample enums.SampleType) OptionFn {
 }
 
 func WithSamplingNoOf(noOf *EntryQuantities) OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Sampling.NoOf = *noOf
 
 		return nil
@@ -60,7 +60,7 @@ func WithSamplingNoOf(noOf *EntryQuantities) OptionFn {
 }
 
 func WithSampling(files, folders uint) OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Sampling.NoOf.Files = files
 		o.Core.Sampling.NoOf.Folders = folders
 
