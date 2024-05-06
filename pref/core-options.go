@@ -20,7 +20,7 @@ type CoreOptions struct {
 }
 
 func WithSubscription(subscription enums.Subscription) OptionFn {
-	return func(o *Options, _ *Registry) error {
+	return func(o *Options) error {
 		o.Core.Subscription = subscription
 
 		return nil
