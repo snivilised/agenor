@@ -1,7 +1,7 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/event"
+	"github.com/snivilised/traverse/core"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 	}
 
 	// EachDirectoryEntryPredicate callback to invoke for each child node event
-	EachDirectoryEntryPredicate func(node *event.Node) bool
+	EachDirectoryEntryPredicate func(node *core.Node) bool
 
 	// WhileDirectoryPredicate determines when to terminate the loop
 	WhileDirectoryPredicate func(fi *FilteredInfo) bool

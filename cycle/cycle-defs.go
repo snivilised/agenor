@@ -2,7 +2,6 @@ package cycle
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/event"
 )
 
 // cycle represents life cycle events; can't use prefs
@@ -35,5 +34,5 @@ type (
 
 	// NodeHandler is a generic handler that is for any notification that contains
 	// the traversal node, such as directory ascend or descend.
-	NodeHandler func(node *event.Node)
+	NodeHandler func(node *core.Node)
 )
