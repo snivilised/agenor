@@ -2,7 +2,6 @@ package cycle
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/event"
 )
 
 type (
@@ -51,7 +50,7 @@ var (
 
 func init() {
 	AscendDispatcher = Dispatch[NodeHandler]{
-		Invoke:      func(_ *event.Node) {},
+		Invoke:      func(_ *core.Node) {},
 		broadcaster: BroadcastNode,
 	}
 
@@ -61,7 +60,7 @@ func init() {
 	}
 
 	DescendDispatcher = Dispatch[NodeHandler]{
-		Invoke:      func(_ *event.Node) {},
+		Invoke:      func(_ *core.Node) {},
 		broadcaster: BroadcastNode,
 	}
 
@@ -132,7 +131,7 @@ func BroadcastEnd(listeners []EndHandler) EndHandler {
 }
 
 func BroadcastNode(listeners []NodeHandler) NodeHandler {
-	return func(node *event.Node) {
+	return func(node *core.Node) {
 		for _, listener := range listeners {
 			listener(node)
 		}

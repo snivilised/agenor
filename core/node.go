@@ -1,4 +1,4 @@
-package event
+package core
 
 import (
 	"io/fs"
@@ -7,33 +7,11 @@ import (
 	"github.com/snivilised/traverse/enums"
 )
 
-// package: node represents a single file system entity and in the world
-// of observables is like an event. The observable fluency chain will be
-// based upon the node.
-
-// Envelope is a wrapper around the Node
-type Envelope struct {
-	N *Node
-}
-
-// Seal wraps a Node inside an Envelope
-func Seal(n *Node) *Envelope {
-	// When using rx, we must instantiate it with a struct, not a pointer
-	// to struct. So we create a distinction between what is the unit of
-	// transfer (Envelope) and it's payload, the Node. This means that the
-	// Envelope can only have non pointer receivers, but the Node can
-	// be defined with pointer receivers.
-	//
-	return &Envelope{
-		N: n,
-	}
-}
-
 // Node represents a file system node event and represents each file system
 // entity encountered during traversal. The event representing the root node
 // does not have a DirEntry because it is not created as a result of a readDir
 // invoke. Therefore, the client has to know that when its function is called back,
-// they will be no DirEntry for the root node.
+// there will be no DirEntry for the root node.
 type Node struct {
 	Path        string
 	Entry       fs.DirEntry // contains a FileInfo via Info() function
