@@ -1,13 +1,31 @@
 package pref
 
 import (
+	"context"
 	"log/slog"
 
+	"github.com/snivilised/extendio/bus"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 )
 
 // package: pref contains user option definitions; do not use anything in kernel (cyclic)
+
+const (
+	badge = "option-requester"
+)
+
+func init() {
+	h := bus.Handler{
+		Handle: func(_ context.Context, m bus.Message) {
+			_ = m.Data
+		},
+		Matcher: core.TopicOptionsAnnounce,
+	}
+
+	core.Broker.RegisterHandler(badge, h)
+}
 
 type (
 	Options struct {

@@ -29,6 +29,11 @@ type (
 		Stop    Event[HibernateHandler]
 	}
 
+	// since the Controls are only required internally as they are  used
+	// by registry, they should be moved to an internal package. this
+	// would also necessitate moving the handler definitions to core
+	// so that they can be shared.
+
 	Controls struct { // --> registry
 		Ascend  NotificationCtrl[NodeHandler]
 		Begin   NotificationCtrl[BeginHandler]
@@ -101,8 +106,8 @@ func (c *NotificationCtrl[F]) On(handler F) {
 	}
 
 	if c.listeners == nil {
-		const alloc = 2
-		c.listeners = make([]F, 0, alloc)
+		const size = 2
+		c.listeners = make([]F, 0, size)
 		c.listeners = append(c.listeners, c.Dispatch.Invoke)
 	}
 
