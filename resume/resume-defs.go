@@ -1,4 +1,4 @@
-package resume
+package refine
 
-// resume should also contain persistence concerns. Depends on hiber, filtering
+// refine should also contain persistence concerns. Depends on hiber, refine
 // and persist.

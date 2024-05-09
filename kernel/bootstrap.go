@@ -18,6 +18,52 @@ type BootStrapper interface {
 }
 
 // bootstrap is the coordinator of initialisation events
+// ==> handshake phase, allows other features to see how bootstrap has been established
+// ==> use bus (maybe we create a local version of bus) ??
+// (https://dev.to/mustafaturan/decoupled-package-communication-in-go-g39)
+//
+// ==> perhaps we have a new life cycle event "initialised" => indicates things like,
+// * "l10n language used": this will confirm what language is in play (language.Tag,
+// not string), useful when client
+// * session type (standard or resume)
+// * sampling active
+// * requests an unsupported language, and informs the lang defaulted to
+// these are the features that need to be considered:
+//
+// i18n: defined by the client
+// log setup: defined by the client
+// options: primary or resume
+// hibernation
+// filter
+// sampling
+// options
+// resume
+//
+// * remember, hooks are different to events and there is a distinction
+// between life-cycle events, which only the kernel can emit and the events
+// that can also be emitted by the hooks or features(plugins)
+//
+// to make this a bit clearer, perhaps we define a bus and comms to and
+// from it use messages instead of events. That allows us to have a clearer
+// vocabulary within traverse. Messages are dynamic and can be sent to a topic.
+// Whereas events are fixed in nature. We have a clear definition of each message,
+// which is bound to a topic.
+//
+// * chain of responsibility? built into messaging structure; ie a message maybe consumed
+// or ignored (return a bool from the function to determine if other listeners are
+// able to see the message)
+//
+// if you build your own bus, then is no need to use an asynchronous model
+//
+// the term "callback" always refers to the client navigation callback function
+//
+// * we really ought to strive building this as a series of layers. The only
+// problem with the features(plugins) and the core functionality in kernel
+// is that it seems that they depend on each other. It's gonna be a fight
+// to prevent this from happening.
+// 		To achieve this, we must place common definitions in core and ensure
+// that any feature does not depend on the kernel. Each feature must subscribe
+// to topics they're interested in, and emit a message to indicate completion.
 
 type bootstrap struct {
 	// should allow other entities to customise the boot phase, eg
