@@ -3,6 +3,7 @@ package pref
 import (
 	"context"
 	"log/slog"
+	"runtime"
 
 	"github.com/snivilised/extendio/bus"
 	"github.com/snivilised/traverse/core"
@@ -49,13 +50,17 @@ type (
 		// Monitor contains externally provided logger
 		//
 		Monitor MonitorOptions
+
+		// Acceleration contains options relating concurrency
+		//
+		Acceleration AccelerationOptions
 	}
 
-	// OptionFn functional traverse options
-	OptionFn func(o *Options) error
+	// Option functional traverse options
+	Option func(o *Options) error
 )
 
-func RequestOptions(reg *Registry, with ...OptionFn) *Options {
+func RequestOptions(reg *Registry, with ...Option) *Options {
 	o := defaultOptions()
 	o.Events.Bind(&reg.Notification)
 
@@ -94,6 +99,9 @@ func defaultOptions() *Options {
 		},
 		Monitor: MonitorOptions{
 			Log: nopLogger,
+		},
+		Acceleration: AccelerationOptions{
+			now: runtime.NumCPU(),
 		},
 	}
 

@@ -1,4 +1,4 @@
-# 🌀 traverse: ___rx observable parallel directory walker___
+# 🌀 traverse: ___rx observable concurrent directory walker___
 
 [![A B](https://img.shields.io/badge/branching-commonflow-informational?style=flat)](https://commonflow.org)
 [![A B](https://img.shields.io/badge/merge-rebase-informational?style=flat)](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
@@ -53,6 +53,7 @@ This project provides a directory walker in the same vein as the ___Walk___ in s
 - implemented with [🐍 Cobra](https://cobra.dev/) cli framework, assisted by [🐲 Cobrass](https://github.com/snivilised/cobrass)
 - i18n with [go-i18n](https://github.com/nicksnyder/go-i18n)
 - linting configuration and pre-commit hooks, (see: [linting-golang](https://freshman.tech/linting-golang/)).
+- uses [💥 lo](https://github.com/samber/lo)
 
 ### 🌐 l10n Translations
 

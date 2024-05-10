@@ -28,6 +28,10 @@ tasks:
     cmds:
       - go test ./...
 
+  tt:
+    cmds:
+      - go test
+
   ti:
     cmds:
       - go test ./i18n

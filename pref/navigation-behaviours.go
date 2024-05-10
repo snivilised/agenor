@@ -62,7 +62,7 @@ type (
 	}
 )
 
-func WithNavigationBehaviours(nb *NavigationBehaviours) OptionFn {
+func WithNavigationBehaviours(nb *NavigationBehaviours) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours = *nb
 
@@ -70,7 +70,7 @@ func WithNavigationBehaviours(nb *NavigationBehaviours) OptionFn {
 	}
 }
 
-func WithSubPathBehaviour(sb *SubPathBehaviour) OptionFn {
+func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.SubPath = *sb
 
@@ -78,7 +78,7 @@ func WithSubPathBehaviour(sb *SubPathBehaviour) OptionFn {
 	}
 }
 
-func WithSortBehaviour(sb *SortBehaviour) OptionFn {
+func WithSortBehaviour(sb *SortBehaviour) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.Sort = *sb
 
@@ -86,7 +86,7 @@ func WithSortBehaviour(sb *SortBehaviour) OptionFn {
 	}
 }
 
-func WithHibernationBehaviour(hb *HibernationBehaviour) OptionFn {
+func WithHibernationBehaviour(hb *HibernationBehaviour) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.Hibernation = *hb
 
@@ -94,7 +94,7 @@ func WithHibernationBehaviour(hb *HibernationBehaviour) OptionFn {
 	}
 }
 
-func WithDepth(depth uint) OptionFn {
+func WithDepth(depth uint) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.Cascade.Depth = depth
 
@@ -102,7 +102,7 @@ func WithDepth(depth uint) OptionFn {
 	}
 }
 
-func WithNoRecurse() OptionFn {
+func WithNoRecurse() Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.Cascade.NoRecurse = true
 

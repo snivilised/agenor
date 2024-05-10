@@ -5,3 +5,8 @@ package core
 
 type TraverseResult interface {
 }
+
+type DuffResult struct {
+}
+
+type Client func(node *Node) error

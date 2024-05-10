@@ -9,6 +9,7 @@ const (
 	TopicOptionsAnnounce = "options.announce"
 	TopicOptionsBefore   = "options.before"
 	TopicOptionsComplete = "options.complete"
+	TopicContextExpired  = "context.expired"
 )
 
 var (
