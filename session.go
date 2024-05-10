@@ -3,8 +3,6 @@ package traverse
 import (
 	"context"
 	"time"
-
-	"github.com/snivilised/traverse/pref"
 )
 
 type Session interface {
@@ -13,10 +11,9 @@ type Session interface {
 }
 
 type session struct {
-	started             time.Time
-	ctx                 context.Context
-	cancel              context.CancelFunc
-	accelerationOptions []pref.Option
+	started time.Time
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 func (s *session) StartedAt() time.Time {

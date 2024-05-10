@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/extendio/bus"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/kernel"
 	"github.com/snivilised/traverse/pref"
@@ -22,7 +23,7 @@ type duffNavigator struct {
 }
 
 func (n *duffNavigator) Navigate() (core.TraverseResult, error) {
-	return core.DuffResult{}, nil
+	return types.NavigateResult{}, nil
 }
 
 func init() {
@@ -30,10 +31,10 @@ func init() {
 		Handle: func(_ context.Context, m bus.Message) {
 			m.Data.(types.ContextExpiry).Expired()
 		},
-		Matcher: core.TopicContextExpired,
+		Matcher: services.TopicContextExpired,
 	}
 
-	core.Broker.RegisterHandler(badge, h)
+	services.Broker.RegisterHandler(badge, h)
 }
 
 // replaces the runner in extendio, although it not
@@ -54,11 +55,9 @@ func Walk() Driver {
 	}
 }
 
-func Run(options ...pref.Option) Driver {
+func Run() Driver {
 	return &driver{
-		session: &session{
-			accelerationOptions: options,
-		},
+		session: &session{},
 	}
 }
 

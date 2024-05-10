@@ -6,9 +6,9 @@ import (
 	"runtime"
 
 	"github.com/snivilised/extendio/bus"
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/services"
 )
 
 // package: pref contains user option definitions; do not use anything in kernel (cyclic)
@@ -22,10 +22,10 @@ func init() {
 		Handle: func(_ context.Context, m bus.Message) {
 			_ = m.Data
 		},
-		Matcher: core.TopicOptionsAnnounce,
+		Matcher: services.TopicOptionsAnnounce,
 	}
 
-	core.Broker.RegisterHandler(badge, h)
+	services.Broker.RegisterHandler(badge, h)
 }
 
 type (
