@@ -25,9 +25,7 @@ var _ = Describe("Traverse", func() {
 
 					_, err := traverse.Walk().Primary(
 						"/root-path",
-						func(node *core.Node) error {
-							_ = node
-
+						func(_ *core.Node) error {
 							return nil
 						},
 						pref.WithSubscription(enums.SubscribeFiles),
@@ -67,16 +65,13 @@ var _ = Describe("Traverse", func() {
 					// something like "context.expired"
 					//
 					ctx := context.Background()
-					_, err := traverse.Run(
-						pref.WithContext(ctx),
-					).Primary(
+					_, err := traverse.Run().Primary(
 						"/root-path",
-						func(node *core.Node) error {
-							_ = node
-
+						func(_ *core.Node) error {
 							return nil
 						},
 						pref.WithSubscription(enums.SubscribeFiles),
+						pref.WithContext(ctx),
 					).Navigate()
 					Expect(err).To(Succeed())
 				})
@@ -87,17 +82,14 @@ var _ = Describe("Traverse", func() {
 					defer leaktest.Check(GinkgoT())()
 
 					ctx, cancel := context.WithCancel(context.Background())
-					_, err := traverse.Run(
-						pref.WithContext(ctx),
-						pref.WithCancel(cancel),
-					).Primary(
+					_, err := traverse.Run().Primary(
 						"/root-path",
-						func(node *core.Node) error {
-							_ = node
-
+						func(_ *core.Node) error {
 							return nil
 						},
 						pref.WithSubscription(enums.SubscribeFiles),
+						pref.WithContext(ctx),
+						pref.WithCancel(cancel),
 					).Navigate()
 					Expect(err).To(Succeed())
 				})
@@ -107,10 +99,10 @@ var _ = Describe("Traverse", func() {
 				It("should: run primary navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					ctx := context.Background()
-					_, err := traverse.Run(
-						pref.WithContext(ctx),
-					).Resume(
+					// for resume, the context should be set in the
+					// restore function
+					//
+					_, err := traverse.Run().Resume(
 						"/from-restore-path",
 					).Navigate()
 					Expect(err).To(Succeed())

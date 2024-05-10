@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/snivilised/extendio/bus"
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/services"
 )
 
 const (
@@ -29,14 +29,14 @@ func init() {
 			//
 			_ = m.Data
 		},
-		Matcher: core.TopicOptionsAnnounce,
+		Matcher: services.TopicOptionsAnnounce,
 	}
 
-	core.Broker.RegisterHandler(badge, h)
+	services.Broker.RegisterHandler(badge, h)
 }
 
 // subscribe to options.before
 func RestoreOptions() {
-	// called bny resume to load options from json file and
+	// called by resume to load options from json file and
 	// setup registry to reflect this
 }
