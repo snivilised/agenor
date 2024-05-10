@@ -19,7 +19,7 @@ type CoreOptions struct {
 	Sampling SamplingOptions
 }
 
-func WithSubscription(subscription enums.Subscription) OptionFn {
+func WithSubscription(subscription enums.Subscription) Option {
 	return func(o *Options) error {
 		o.Core.Subscription = subscription
 

@@ -4,7 +4,8 @@ type Mediator interface {
 	Register() error
 }
 
-// mediator controls traversal events
+// mediator controls traversal events, sends notifications and emits life-cycle events
+
 type mediator struct {
 	// there should be a registration phase; but doing so mean that
 	// these entities should already exist, which is counter productive.

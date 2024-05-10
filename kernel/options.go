@@ -1,9 +1,5 @@
 package kernel
 
-import (
-	"errors"
-)
-
 // nav defines the core navigators
 
 // mediator to coordinate initialisation?
@@ -48,19 +44,3 @@ type Persistables struct {
 
 // A TraverseOptionFunc sets an option on a TraverseOptions.
 type TraverseOptionFunc func(*TraverseOptions) error
-
-func Cuddles(n int) error {
-	if n < 0 {
-		return errors.New("negative")
-	}
-
-	a := n
-	if a < 0 {
-		return errors.New("negative")
-	}
-	b := n
-	if b < 0 {
-		return errors.New("negative")
-	}
-	return errors.New("positive")
-}

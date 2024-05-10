@@ -56,7 +56,7 @@ type (
 	}
 )
 
-func WithSamplerOptions(so *SamplerOptions) OptionFn {
+func WithSamplerOptions(so *SamplerOptions) Option {
 	return func(o *Options) error {
 		o.Sampler = *so
 

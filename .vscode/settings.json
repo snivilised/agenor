@@ -6,6 +6,7 @@
   "cSpell.words": [
     "alloc",
     "astrolib",
+    "Berthe",
     "bodyclose",
     "cmds",
     "Cobrass",
@@ -40,6 +41,7 @@
     "hiber",
     "ineffassign",
     "jibberjabber",
+    "leaktest",
     "linecomment",
     "linters",
     "mattn",
