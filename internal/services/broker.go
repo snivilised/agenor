@@ -8,6 +8,7 @@ const (
 	TopicOptionsAnnounce = "options.announce"
 	TopicOptionsBefore   = "options.before"
 	TopicOptionsComplete = "options.complete"
+	TopicTraverseResult  = "traverse.result"
 )
 
 var (
@@ -21,6 +22,10 @@ var (
 )
 
 func init() {
+	Reset()
+}
+
+func Reset() {
 	b, err := bus.New(&bus.Sequential{
 		Format: format,
 	})
@@ -31,5 +36,10 @@ func init() {
 
 	b.RegisterTopics(topics...)
 
+	// Access to the broker is currently un-synchronised; that is because interaction
+	// with the broker is only expected to come from a single thread. However, if we
+	// really wanted to grant access to it to other threads, we can define a wrapper
+	// function/object around it that implements synchronisation using locks.
+	//
 	Broker = b
 }

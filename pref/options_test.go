@@ -12,25 +12,25 @@ var _ = Describe("Options", func() {
 		Context("RequestOptions", func() {
 			Context("Notification", func() {
 				When("client listens", func() {
-					It("should: invoke client's handler", func() {
+					It("🧪 should: invoke client's handler", func() {
 						begun := false
-						reg := pref.NewRegistry()
-						o := pref.RequestOptions(reg)
+						binder := pref.NewBinder()
+						o := pref.Request(binder)
 
 						o.Events.Begin.On(func(_ string) {
 							begun = true
 						})
-						reg.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 
 						Expect(begun).To(BeTrue())
 					})
 				})
 
 				When("multiple listeners", func() {
-					It("should: broadcast", func() {
+					It("🧪 should: broadcast", func() {
 						count := 0
-						reg := pref.NewRegistry()
-						o := pref.RequestOptions(reg)
+						binder := pref.NewBinder()
+						o := pref.Request(binder)
 
 						o.Events.Begin.On(func(_ string) {
 							count++
@@ -38,7 +38,7 @@ var _ = Describe("Options", func() {
 						o.Events.Begin.On(func(_ string) {
 							count++
 						})
-						reg.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 						Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 						count = 0
@@ -46,17 +46,17 @@ var _ = Describe("Options", func() {
 							count++
 						})
 
-						reg.Notification.Begin.Dispatch.Invoke("/another-root")
+						binder.Notification.Begin.Dispatch.Invoke("/another-root")
 						Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 					})
 				})
 
 				When("no subscription", func() {
-					It("should: ...", func() {
-						reg := pref.NewRegistry()
-						_ = pref.RequestOptions(reg)
+					It("🧪 should: ...", func() {
+						binder := pref.NewBinder()
+						_ = pref.Request(binder)
 
-						reg.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 					})
 				})
 			})

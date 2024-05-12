@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("controls", func() {
 	When("bind", func() {
-		It("should: dispatch notification to event handler", func() {
+		It("🧪 should: dispatch notification to event handler", func() {
 			const path = "/traversal-root"
 
 			var (
@@ -20,7 +20,7 @@ var _ = Describe("controls", func() {
 				ended    bool
 			)
 
-			// init(registry->options):
+			// init(binder->options):
 			//
 			events.Bind(&controls)
 

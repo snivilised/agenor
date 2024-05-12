@@ -29,12 +29,12 @@ type (
 		Stop    Event[HibernateHandler]
 	}
 
-	// since the Controls are only required internally as they are  used
-	// by registry, they should be moved to an internal package. this
+	// since the Controls are only required internally as they are used
+	// by binder, they should be moved to an internal package. this
 	// would also necessitate moving the handler definitions to core
 	// so that they can be shared.
 
-	Controls struct { // --> registry
+	Controls struct { // --> binder
 		Ascend  NotificationCtrl[NodeHandler]
 		Begin   NotificationCtrl[BeginHandler]
 		Descend NotificationCtrl[NodeHandler]

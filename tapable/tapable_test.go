@@ -49,7 +49,7 @@ func (c *Component) DoWork() {
 
 var _ = Describe("Legacy Tapable", func() {
 	Context("foo", func() {
-		It("should: ", func() {
+		It("🧪 should: ", func() {
 			// !!! this should be using Role
 			//
 			component := &Component{
@@ -102,7 +102,7 @@ type (
 var _ = Describe("Tapable", decorators.Label("use-case"), func() {
 	Context("foo", func() {
 		When("bar", func() {
-			It("should: ", func() {
+			It("🧪 should: ", func() {
 				// This could be exposed to the client as a WithXXX option,
 				// or the client could perform the Tap manually themselves.
 				// Container is an internal affair, it should be created and
@@ -121,14 +121,14 @@ var _ = Describe("Tapable", decorators.Label("use-case"), func() {
 				// non persistable items; probably contains the original options
 				// as a member).
 				//
-				// Actually, we can define a 'registry' which represents the options
+				// Actually, we can define a 'binder' which represents the options
 				// used at runtime. IE, the user selects options. Some of the With commands
 				// may set non persistable items, but these will go straight into
-				// the registry. The registry will contain options as a member. There
-				// will be translation from options to registry. Most of the internal
-				// functionality will be dependent on the registry rather than the
-				// options. Availability of the registry should become a life cycle event
-				// during bootstrapping. NB: this is not the registry pattern.
+				// the binder. The binder will contain options as a member. There
+				// will be translation from options to binder. Most of the internal
+				// functionality will be dependent on the binder rather than the
+				// options. Availability of the binder should become a life cycle event
+				// during bootstrapping.
 				//
 				options := &Options{
 					Hooks: Roles{

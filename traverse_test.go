@@ -8,47 +8,57 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
 )
 
-var _ = Describe("Traverse", func() {
+var _ = Describe("Traverse", Ordered, func() {
+	BeforeEach(func() {
+		services.Reset()
+	})
+
 	Context("speculation", func() {
 		Context("Walk", func() {
 			// We don't need to provide a context. For walk
 			// cancellations, we use an internal context instead.
 			//
-			When("Primary", func() {
-				It("should: walk primary navigation successfully", func() {
+			When("Prime", func() {
+				It("🧪 should: walk primary navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Primary(
-						"/root-path",
-						func(_ *core.Node) error {
-							return nil
-						},
+					_, err := traverse.Walk().Configure().Extent(traverse.Prime(
 						pref.WithSubscription(enums.SubscribeFiles),
-					).Navigate()
+					)).Navigate()
+
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("Resume", func() {
-				It("should: walk resume navigation successfully", func() {
+				It("🧪 should: walk resume navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Resume(
+					restore := func(_ *pref.Options) error {
+						return nil
+					}
+
+					_, err := traverse.Walk().Configure().Extent(traverse.Resume(
 						"/from-restore-path",
-					).Navigate()
+						enums.ResumeStrategyFastward,
+						restore,
+					)).Navigate()
+
 					Expect(err).To(Succeed())
 				})
 			})
 		})
 
 		Context("Run", func() {
-			When("Primary without cancel", func() {
-				It("should: perform run navigation successfully", func() {
+			When("Prime without cancel", func() {
+				It("🧪 should: perform run navigation successfully", func() {
+					defer leaktest.Check(GinkgoT())()
+
 					// need to make sure that when a ctrl-c occurs, who is
 					// responsible for handling the cancellation; ie if a
 					// ctrl-c occurs should the client handle it or do we?
@@ -65,46 +75,45 @@ var _ = Describe("Traverse", func() {
 					// something like "context.expired"
 					//
 					ctx := context.Background()
-					_, err := traverse.Run().Primary(
-						"/root-path",
-						func(_ *core.Node) error {
-							return nil
-						},
+					_, err := traverse.Run().Configure().Extent(traverse.Prime(
 						pref.WithSubscription(enums.SubscribeFiles),
 						pref.WithContext(ctx),
-					).Navigate()
+					)).Navigate()
+
 					Expect(err).To(Succeed())
 				})
 			})
 
-			When("Primary with cancel", func() {
-				It("should: run primary navigation successfully", func() {
+			When("Prime with cancel", func() {
+				It("🧪 should: perform run navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
 					ctx, cancel := context.WithCancel(context.Background())
-					_, err := traverse.Run().Primary(
-						"/root-path",
-						func(_ *core.Node) error {
-							return nil
-						},
+
+					_, err := traverse.Run().Configure().Extent(traverse.Prime(
 						pref.WithSubscription(enums.SubscribeFiles),
 						pref.WithContext(ctx),
 						pref.WithCancel(cancel),
-					).Navigate()
+					)).Navigate()
+
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("Resume", func() {
-				It("should: run primary navigation successfully", func() {
+				It("🧪 should: perform run navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					// for resume, the context should be set in the
-					// restore function
-					//
-					_, err := traverse.Run().Resume(
+					restore := func(_ *pref.Options) error {
+						return nil
+					}
+
+					_, err := traverse.Run().Configure().Extent(traverse.Resume(
 						"/from-restore-path",
-					).Navigate()
+						enums.ResumeStrategySpawn,
+						restore,
+					)).Navigate()
+
 					Expect(err).To(Succeed())
 				})
 			})
