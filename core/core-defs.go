@@ -6,6 +6,7 @@ package core
 type (
 	// TraverseResult
 	TraverseResult interface {
+		Error() error
 	}
 
 	// Client is the callback invoked for each file system node found

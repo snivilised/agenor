@@ -54,27 +54,52 @@ type (
 		// Acceleration contains options relating concurrency
 		//
 		Acceleration AccelerationOptions
+
+		binder *Binder
 	}
 
 	// Option functional traverse options
 	Option func(o *Options) error
 )
 
-func RequestOptions(reg *Registry, with ...Option) *Options {
-	o := defaultOptions()
-	o.Events.Bind(&reg.Notification)
+func Request(binder *Binder, opts ...Option) *Options {
+	o := DefaultOptions()
+	o.Events.Bind(&binder.Notification)
 
-	for _, option := range with {
-		// TODO: check error
-		_ = option(o)
-	}
+	apply(o, opts...)
 
-	reg.O = o
+	o.binder = binder
 
 	return o
 }
 
-func defaultOptions() *Options {
+type LoadInfo struct {
+	O      *Options
+	WakeAt string
+}
+
+func Load(binder *Binder, from string, opts ...Option) (*LoadInfo, error) {
+	o := DefaultOptions()
+	// do load
+	_ = from
+	o.binder = binder
+
+	apply(o, opts...)
+
+	return &LoadInfo{
+		O:      o,
+		WakeAt: "tbd",
+	}, nil
+}
+
+func apply(o *Options, opts ...Option) {
+	for _, option := range opts {
+		// TODO: check error
+		_ = option(o)
+	}
+}
+
+func DefaultOptions() *Options {
 	nopLogger := &slog.Logger{}
 
 	o := &Options{

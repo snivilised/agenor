@@ -38,5 +38,5 @@ func init() {
 // subscribe to options.before
 func RestoreOptions() {
 	// called by resume to load options from json file and
-	// setup registry to reflect this
+	// setup binder to reflect this
 }

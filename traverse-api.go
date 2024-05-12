@@ -6,37 +6,37 @@ package traverse
 
 // sub package description:
 //
-// core:
-// - requires: ["tbd"]
-// - prohibited: [everything, except enums]
+
+// This high level list assumes everything can use core and enums; dependencies
+// can only point downwards.
+// ============================================================================
+// 🔆 user interface layer
+// traverse: [everything]
+// ---
 //
-// cycle:
-// - requires: ["tbd"]
-// - prohibited: ["prefs"]
+// 🔆 feature layer
+// resume: ["pref"]
+// sampling: ["refine"]
+// hiber: ["refine", "services"]
+// refine: []
 //
-// enums:
-// - requires: [nothing]
-// - prohibited: [everything]
+// 🔆 central layer
+// kernel: []
+// ---
 //
-// hiber:
-// - requires: ["refine"]
-// - prohibited: ["tbd"]
+// 🔆 support layer
+// pref: ["cycle", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
+// persist: []
+// services: []
+// ---
 //
-// i18n:
+// 🔆 intermediary layer
+// cycle: [], !("pref")
+// ---
 //
-// kernel:
-//
-// persist:
-//
-// pref:
-//
-// refine:
-//
-// resume:
-// - requires: [""]
-// - prohibited: ["tbd"]
-//
-// sampling:
-// - requires: ["refine"]
-// - prohibited: ["tbd"]
+// 🔆 platform layer
+// core: []
+// enums: [none]
+// ---
+// ============================================================================
 //

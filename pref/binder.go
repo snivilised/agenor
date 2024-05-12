@@ -7,15 +7,14 @@ import (
 // this package should be internal
 
 type (
-	// Registry contains items derived from Options
-	Registry struct {
-		O            *Options
+	// Binder contains items derived from Options
+	Binder struct {
 		Notification cycle.Controls
 	}
 )
 
-func NewRegistry() *Registry {
-	return &Registry{
+func NewBinder() *Binder {
+	return &Binder{
 		Notification: cycle.Controls{
 			Ascend: cycle.NotificationCtrl[cycle.NodeHandler]{
 				Dispatch: cycle.DescendDispatcher,
