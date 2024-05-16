@@ -1,14 +1,7 @@
 package hiber
 
-import (
-	"context"
-
-	"github.com/snivilised/extendio/bus"
-	"github.com/snivilised/traverse/internal/services"
-)
-
 const (
-	badge = "hibernator"
+	badge = "badge: hibernator"
 )
 
 // hiber represents the facility to be able to start navigation in hibernated state,
@@ -19,21 +12,6 @@ const (
 //
 // Hibernation depends on filtering.
 //
-
-func init() {
-	h := bus.Handler{
-		Handle: func(_ context.Context, m bus.Message) {
-			// The data field will contain the appropriate
-			// object (represented behind an interface of some kind) that is related
-			// to the topic.
-			//
-			_ = m.Data
-		},
-		Matcher: services.TopicOptionsAnnounce,
-	}
-
-	services.Broker.RegisterHandler(badge, h)
-}
 
 // subscribe to options.before
 func RestoreOptions() {

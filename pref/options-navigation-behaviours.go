@@ -1,6 +1,7 @@
 package pref
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 )
 
@@ -81,6 +82,14 @@ func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 func WithSortBehaviour(sb *SortBehaviour) Option {
 	return func(o *Options) error {
 		o.Core.Behaviours.Sort = *sb
+
+		return nil
+	}
+}
+
+func WithHibernation(wake *core.FilterDef) Option {
+	return func(o *Options) error {
+		o.Core.Hibernate.Wake = wake
 
 		return nil
 	}
