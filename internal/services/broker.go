@@ -3,29 +3,36 @@ package services
 import "github.com/snivilised/extendio/bus"
 
 const (
-	format               = "%03d"
-	TopicContextExpired  = "context.expired"
-	TopicOptionsAnnounce = "options.announce"
-	TopicOptionsBefore   = "options.before"
-	TopicOptionsComplete = "options.complete"
-	TopicTraverseResult  = "traverse.result"
+	format                  = "%03d"
+	TopicContextExpired     = "topic:context.expired"
+	TopicInitNavigator      = "topic:init.navigator"
+	TopicInterceptNavigator = "topic:intercept.navigator"
+	TopicOptionsAnnounce    = "topic:options.announce"
+	TopicOptionsBefore      = "topic:options.before"
+	TopicOptionsComplete    = "topic:options.complete"
+	TopicTraverseResult     = "topic:traverse.result"
 )
 
 var (
 	Broker *bus.Broker
 	topics = []string{
 		TopicContextExpired,
+		TopicInitNavigator,
+		TopicInterceptNavigator,
 		TopicOptionsAnnounce,
 		TopicOptionsBefore,
 		TopicOptionsComplete,
+		TopicTraverseResult,
 	}
 )
 
-func init() {
-	Reset()
-}
+type (
+	InitBroker interface {
+		Available(b *bus.Broker)
+	}
+)
 
-func Reset() {
+func Reset() *bus.Broker {
 	b, err := bus.New(&bus.Sequential{
 		Format: format,
 	})
@@ -42,4 +49,6 @@ func Reset() {
 	// function/object around it that implements synchronisation using locks.
 	//
 	Broker = b
+
+	return b
 }

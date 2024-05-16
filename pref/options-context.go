@@ -11,6 +11,10 @@ type AccelerationOptions struct {
 	now    int
 }
 
+func (ao *AccelerationOptions) Cancellation() (context.Context, context.CancelFunc) {
+	return ao.ctx, ao.cancel
+}
+
 func WithContext(ctx context.Context) Option {
 	return func(o *Options) error {
 		o.Acceleration.ctx = ctx

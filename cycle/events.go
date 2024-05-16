@@ -5,11 +5,11 @@ import (
 )
 
 type (
-	broadcasterFunc[F any] func(listeners []F) F
+	announce[F any] func(listeners []F) F
 
 	Dispatch[F any] struct {
 		Invoke      F
-		broadcaster broadcasterFunc[F]
+		broadcaster announce[F]
 	}
 
 	// NotificationCtrl contains the handler function to be invoked. The control

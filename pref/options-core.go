@@ -17,6 +17,14 @@ type CoreOptions struct {
 	// Sampling options
 	//
 	Sampling SamplingOptions
+
+	// Filter
+	//
+	Filter FilterOptions
+
+	// Hibernation
+	//
+	Hibernate HibernateOptions
 }
 
 func WithSubscription(subscription enums.Subscription) Option {

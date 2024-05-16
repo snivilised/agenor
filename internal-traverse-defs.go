@@ -2,37 +2,45 @@ package traverse
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-// extentFunc
-type extentFunc func(ob OptionsBuilder) *pref.Options
-
-type OptionsBuilder interface {
-	get() *pref.Options
+type navigatorBuilder interface {
+	build(o *pref.Options) (core.Navigator, error)
 }
 
-type optionals func() *pref.Options
+type factory func(o *pref.Options) (core.Navigator, error)
 
-func (fn optionals) get() *pref.Options {
+func (fn factory) build(o *pref.Options) (core.Navigator, error) {
+	return fn(o)
+}
+
+type optionsBuilder interface {
+	build() (*pref.Options, error)
+}
+
+type optionals func() (*pref.Options, error)
+
+func (fn optionals) build() (*pref.Options, error) {
 	return fn()
 }
 
+type pluginsBuilder interface {
+	build(*pref.Options) ([]types.Plugin, error)
+}
+
+type features func(*pref.Options) ([]types.Plugin, error)
+
+func (fn features) build(o *pref.Options) ([]types.Plugin, error) {
+	return fn(o)
+}
+
 // TODO: do we pass in another func to the directory that represents the sync?
-type direct func(ob OptionsBuilder) core.Navigator
+type director func(bs *Builders) core.Navigator
 
-func (fn direct) Extent(ob OptionsBuilder) core.Navigator {
-	return fn(ob)
-}
-
-type syncBuilder interface {
-	wake(at string) error // we might need to pass in options
-}
-
-type sync func(at string) error
-
-func (fn sync) wake(at string) error {
-	return fn(at)
+func (fn director) Extent(bs *Builders) core.Navigator {
+	return fn(bs)
 }
 
 // ✨ =========================================================================

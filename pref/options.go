@@ -14,10 +14,10 @@ import (
 // package: pref contains user option definitions; do not use anything in kernel (cyclic)
 
 const (
-	badge = "option-requester"
+	badge = "badge: option-requester"
 )
 
-func init() {
+func initTbd() {
 	h := bus.Handler{
 		Handle: func(_ context.Context, m bus.Message) {
 			_ = m.Data
@@ -55,45 +55,60 @@ type (
 		//
 		Acceleration AccelerationOptions
 
-		binder *Binder
+		Binder *Binder
 	}
 
 	// Option functional traverse options
 	Option func(o *Options) error
 )
 
-func Request(binder *Binder, opts ...Option) *Options {
+func Get(settings ...Option) (*Options, error) {
 	o := DefaultOptions()
+	binder := NewBinder()
 	o.Events.Bind(&binder.Notification)
 
-	apply(o, opts...)
+	apply(o, settings...)
 
-	o.binder = binder
+	if o.Acceleration.ctx == nil {
+		o.Acceleration.ctx = context.Background()
+	}
 
-	return o
+	o.Binder = binder
+
+	return o, nil
 }
 
 type LoadInfo struct {
-	O      *Options
+	// O      *Options
 	WakeAt string
 }
 
-func Load(binder *Binder, from string, opts ...Option) (*LoadInfo, error) {
+func Load(from string, settings ...Option) (*Options, error) {
 	o := DefaultOptions()
 	// do load
 	_ = from
-	o.binder = binder
+	binder := NewBinder()
+	o.Events.Bind(&binder.Notification)
+	o.Binder = binder
 
-	apply(o, opts...)
+	// TODO: save any active state on the binder, eg the wake point
 
-	return &LoadInfo{
-		O:      o,
+	apply(o, settings...)
+
+	if o.Acceleration.ctx == nil {
+		o.Acceleration.ctx = context.Background()
+	}
+
+	o.Binder.Loaded = &LoadInfo{
+		// O:      o,
 		WakeAt: "tbd",
-	}, nil
+	}
+
+	return o, nil
 }
 
-func apply(o *Options, opts ...Option) {
-	for _, option := range opts {
+func apply(o *Options, settings ...Option) {
+	for _, option := range settings {
 		// TODO: check error
 		_ = option(o)
 	}

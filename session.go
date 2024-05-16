@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -22,6 +23,7 @@ type session struct {
 	cancel   context.CancelFunc
 	nav      core.Navigator
 	o        *pref.Options
+	plugins  []types.Plugin
 }
 
 func (s *session) start() {

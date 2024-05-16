@@ -10,6 +10,7 @@ type (
 	// Binder contains items derived from Options
 	Binder struct {
 		Notification cycle.Controls
+		Loaded       *LoadInfo
 	}
 )
 

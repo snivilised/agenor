@@ -14,13 +14,13 @@ var _ = Describe("Options", func() {
 				When("client listens", func() {
 					It("🧪 should: invoke client's handler", func() {
 						begun := false
-						binder := pref.NewBinder()
-						o := pref.Request(binder)
+
+						o, _ := pref.Get()
 
 						o.Events.Begin.On(func(_ string) {
 							begun = true
 						})
-						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						o.Binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 
 						Expect(begun).To(BeTrue())
 					})
@@ -29,8 +29,7 @@ var _ = Describe("Options", func() {
 				When("multiple listeners", func() {
 					It("🧪 should: broadcast", func() {
 						count := 0
-						binder := pref.NewBinder()
-						o := pref.Request(binder)
+						o, _ := pref.Get()
 
 						o.Events.Begin.On(func(_ string) {
 							count++
@@ -38,7 +37,7 @@ var _ = Describe("Options", func() {
 						o.Events.Begin.On(func(_ string) {
 							count++
 						})
-						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						o.Binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 						Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 						count = 0
@@ -46,17 +45,16 @@ var _ = Describe("Options", func() {
 							count++
 						})
 
-						binder.Notification.Begin.Dispatch.Invoke("/another-root")
+						o.Binder.Notification.Begin.Dispatch.Invoke("/another-root")
 						Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 					})
 				})
 
 				When("no subscription", func() {
 					It("🧪 should: ...", func() {
-						binder := pref.NewBinder()
-						_ = pref.Request(binder)
+						o, _ := pref.Get()
 
-						binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
+						o.Binder.Notification.Begin.Dispatch.Invoke("/traversal-root")
 					})
 				})
 			})
