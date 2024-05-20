@@ -1,4 +1,4 @@
-package traverse
+package tv
 
 import (
 	"github.com/snivilised/traverse/core"
