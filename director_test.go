@@ -1,4 +1,4 @@
-package traverse_test
+package tv_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse"
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
@@ -24,7 +24,7 @@ var _ = Describe("Traverse", Ordered, func() {
 	var restore pref.Option
 
 	BeforeAll(func() {
-		restore = func(o *traverse.Options) error {
+		restore = func(o *tv.Options) error {
 			o.Events.Begin.On(func(_ string) {})
 
 			return nil
@@ -44,15 +44,15 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: walk primary navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
+						tv.WithSubscription(tv.SubscribeFiles),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -63,17 +63,17 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: walk resume navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Configure().Extent(traverse.Resume(
-						traverse.As{
-							Using: traverse.Using{
+					_, err := tv.Walk().Configure().Extent(tv.Resume(
+						tv.As{
+							Using: tv.Using{
 								Root:         RootPath,
-								Subscription: traverse.SubscribeFiles,
-								Handler: func(_ *traverse.Node) error {
+								Subscription: tv.SubscribeFiles,
+								Handler: func(_ *tv.Node) error {
 									return nil
 								},
 							},
 							From:     RestorePath,
-							Strategy: traverse.ResumeStrategyFastward,
+							Strategy: tv.ResumeStrategyFastward,
 						},
 						restore,
 					)).Navigate()
@@ -104,16 +104,16 @@ var _ = Describe("Traverse", Ordered, func() {
 					// something like "context.expired"
 					//
 					ctx := context.Background()
-					_, err := traverse.Run().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
-						traverse.WithContext(ctx),
+						tv.WithSubscription(tv.SubscribeFiles),
+						tv.WithContext(ctx),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -126,17 +126,17 @@ var _ = Describe("Traverse", Ordered, func() {
 
 					ctx, cancel := context.WithCancel(context.Background())
 
-					_, err := traverse.Run().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
-						traverse.WithContext(ctx),
-						traverse.WithCancel(cancel),
+						tv.WithSubscription(tv.SubscribeFiles),
+						tv.WithContext(ctx),
+						tv.WithCancel(cancel),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -147,17 +147,17 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: perform run navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Run().Configure().Extent(traverse.Resume(
-						traverse.As{
-							Using: traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Resume(
+						tv.As{
+							Using: tv.Using{
 								Root:         RootPath,
-								Subscription: traverse.SubscribeFiles,
-								Handler: func(_ *traverse.Node) error {
+								Subscription: tv.SubscribeFiles,
+								Handler: func(_ *tv.Node) error {
 									return nil
 								},
 							},
 							From:     RestorePath,
-							Strategy: traverse.ResumeStrategySpawn,
+							Strategy: tv.ResumeStrategySpawn,
 						},
 						restore,
 					)).Navigate()
@@ -174,16 +174,16 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
-						traverse.WithHibernation(&core.FilterDef{}),
+						tv.WithSubscription(tv.SubscribeFiles),
+						tv.WithHibernation(&core.FilterDef{}),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -194,16 +194,16 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
-						traverse.WithFilter(&core.FilterDef{}),
+						tv.WithSubscription(tv.SubscribeFiles),
+						tv.WithFilter(&core.FilterDef{}),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -214,16 +214,16 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Walk().Configure().Extent(traverse.Prime(
-						traverse.Using{
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
 							Root:         RootPath,
-							Subscription: traverse.SubscribeFiles,
-							Handler: func(_ *traverse.Node) error {
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
 								return nil
 							},
 						},
-						traverse.WithSubscription(traverse.SubscribeFiles),
-						traverse.WithSampling(files, folders),
+						tv.WithSubscription(tv.SubscribeFiles),
+						tv.WithSampling(files, folders),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -236,19 +236,19 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Run().Configure().Extent(traverse.Resume(
-						traverse.As{
-							Using: traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Resume(
+						tv.As{
+							Using: tv.Using{
 								Root:         RootPath,
-								Subscription: traverse.SubscribeFiles,
-								Handler: func(_ *traverse.Node) error {
+								Subscription: tv.SubscribeFiles,
+								Handler: func(_ *tv.Node) error {
 									return nil
 								},
 							},
 							From:     RestorePath,
-							Strategy: traverse.ResumeStrategySpawn,
+							Strategy: tv.ResumeStrategySpawn,
 						},
-						traverse.WithHibernation(&core.FilterDef{}),
+						tv.WithHibernation(&core.FilterDef{}),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -259,19 +259,19 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Run().Configure().Extent(traverse.Resume(
-						traverse.As{
-							Using: traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Resume(
+						tv.As{
+							Using: tv.Using{
 								Root:         RootPath,
-								Subscription: traverse.SubscribeFiles,
-								Handler: func(_ *traverse.Node) error {
+								Subscription: tv.SubscribeFiles,
+								Handler: func(_ *tv.Node) error {
 									return nil
 								},
 							},
 							From:     RestorePath,
-							Strategy: traverse.ResumeStrategySpawn,
+							Strategy: tv.ResumeStrategySpawn,
 						},
-						traverse.WithFilter(&core.FilterDef{}),
+						tv.WithFilter(&core.FilterDef{}),
 					)).Navigate()
 
 					Expect(err).To(Succeed())
@@ -282,19 +282,19 @@ var _ = Describe("Traverse", Ordered, func() {
 				It("🧪 should: register ok", func() {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := traverse.Run().Configure().Extent(traverse.Resume(
-						traverse.As{
-							Using: traverse.Using{
+					_, err := tv.Run().Configure().Extent(tv.Resume(
+						tv.As{
+							Using: tv.Using{
 								Root:         RootPath,
-								Subscription: traverse.SubscribeFiles,
-								Handler: func(_ *traverse.Node) error {
+								Subscription: tv.SubscribeFiles,
+								Handler: func(_ *tv.Node) error {
 									return nil
 								},
 							},
 							From:     RestorePath,
-							Strategy: traverse.ResumeStrategySpawn,
+							Strategy: tv.ResumeStrategySpawn,
 						},
-						traverse.WithSampling(files, folders),
+						tv.WithSampling(files, folders),
 					)).Navigate()
 
 					Expect(err).To(Succeed())

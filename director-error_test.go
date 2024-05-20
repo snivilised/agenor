@@ -1,4 +1,4 @@
-package traverse_test
+package tv_test
 
 import (
 	"fmt"
@@ -6,21 +6,21 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse"
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/internal/services"
 )
 
 type traverseErrorTE struct {
 	given string
-	using *traverse.Using
-	as    *traverse.As
+	using *tv.Using
+	as    *tv.As
 }
 
 var _ = Describe("director error", Ordered, func() {
-	var handler traverse.Client
+	var handler tv.Client
 
 	BeforeAll(func() {
-		handler = func(_ *traverse.Node) error {
+		handler = func(_ *tv.Node) error {
 			return nil
 		}
 	})
@@ -46,17 +46,18 @@ var _ = Describe("director error", Ordered, func() {
 		func(entry *traverseErrorTE) string {
 			return fmt.Sprintf("given: %v, 🧪 should fail", entry.given)
 		},
+
 		Entry(nil, &traverseErrorTE{
 			given: "using missing root path",
-			using: &traverse.Using{
-				Subscription: traverse.SubscribeFiles,
+			using: &tv.Using{
+				Subscription: tv.SubscribeFiles,
 				Handler:      handler,
 			},
 		}),
 
 		Entry(nil, &traverseErrorTE{
 			given: "using missing subscription",
-			using: &traverse.Using{
+			using: &tv.Using{
 				Root:    "/root-traverse-path",
 				Handler: handler,
 			},
@@ -64,30 +65,30 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "using missing handler",
-			using: &traverse.Using{
+			using: &tv.Using{
 				Root:         "/root-traverse-path",
-				Subscription: traverse.SubscribeFiles,
+				Subscription: tv.SubscribeFiles,
 			},
 		}),
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing restore from path",
-			as: &traverse.As{
-				Using: traverse.Using{
+			as: &tv.As{
+				Using: tv.Using{
 					Root:         "/root-traverse-path",
-					Subscription: traverse.SubscribeFiles,
+					Subscription: tv.SubscribeFiles,
 					Handler:      handler,
 				},
-				Strategy: traverse.ResumeStrategySpawn,
+				Strategy: tv.ResumeStrategySpawn,
 			},
 		}),
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing resume strategy",
-			as: &traverse.As{
-				Using: traverse.Using{
+			as: &tv.As{
+				Using: tv.Using{
 					Root:         "/root-traverse-path",
-					Subscription: traverse.SubscribeFiles,
+					Subscription: tv.SubscribeFiles,
 					Handler:      handler,
 				},
 				From: "/restore-from-path",

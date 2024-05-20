@@ -1,4 +1,4 @@
-package traverse_test
+package tv_test
 
 import (
 	"testing"
