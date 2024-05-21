@@ -28,9 +28,9 @@ tasks:
     cmds:
       - go test ./...
 
-  tt:
+  tk:
     cmds:
-      - go test
+      - go test ./internal/kernel
 
   ti:
     cmds:
@@ -39,6 +39,10 @@ tasks:
   tp:
     cmds:
       - go test ./pref
+
+  tt:
+    cmds:
+      - go test
 
   # === ginkgo ================================================
 

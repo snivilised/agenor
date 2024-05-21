@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -23,17 +24,32 @@ type Builders struct {
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	o, optionsErr := bs.ob.build()
 	if optionsErr != nil {
-		return nil, optionsErr
+		had, _ := kernel.HadesNav(optionsErr)
+
+		return &buildArtefacts{
+			o:   o,
+			nav: had,
+		}, optionsErr
 	}
 
 	nav, navErr := bs.nb.build(o)
 	if navErr != nil {
-		return nil, navErr
+		had, _ := kernel.HadesNav(navErr)
+
+		return &buildArtefacts{
+			o:   o,
+			nav: had,
+		}, navErr
 	}
 
 	plugins, pluginsErr := bs.pb.build(o)
 	if pluginsErr != nil {
-		return nil, pluginsErr
+		had, _ := kernel.HadesNav(pluginsErr)
+
+		return &buildArtefacts{
+			o:   o,
+			nav: had,
+		}, pluginsErr
 	}
 
 	if host, ok := nav.(types.UsePlugin); ok {
@@ -44,7 +60,12 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}
 
 		if pluginErr := errors.Join(es...); pluginErr != nil {
-			return nil, pluginErr
+			had, _ := kernel.HadesNav(pluginErr)
+
+			return &buildArtefacts{
+				o:   o,
+				nav: had,
+			}, pluginErr
 		}
 	}
 

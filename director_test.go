@@ -59,6 +59,45 @@ var _ = Describe("Traverse", Ordered, func() {
 				})
 			})
 
+			When("Prime with subscription error", func() {
+				It("🧪 should: fail", func() {
+					defer leaktest.Check(GinkgoT())()
+
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
+							Root: RootPath,
+							Handler: func(_ *tv.Node) error {
+								return nil
+							},
+						},
+					)).Navigate()
+
+					Expect(err).NotTo(Succeed())
+				})
+			})
+
+			When("Prime with options build error", func() {
+				It("🧪 should: fail", func() {
+					defer leaktest.Check(GinkgoT())()
+
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
+							Root:         RootPath,
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
+								return nil
+							},
+						},
+						tv.WithSubscription(tv.SubscribeFiles),
+						func(_ *pref.Options) error {
+							return errBuildOptions
+						},
+					)).Navigate()
+
+					Expect(err).To(MatchError(errBuildOptions))
+				})
+			})
+
 			When("Resume", func() {
 				It("🧪 should: walk resume navigation successfully", func() {
 					defer leaktest.Check(GinkgoT())()

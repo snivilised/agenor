@@ -62,12 +62,12 @@ type (
 	Option func(o *Options) error
 )
 
-func Get(settings ...Option) (*Options, error) {
-	o := DefaultOptions()
+func Get(settings ...Option) (o *Options, err error) {
+	o = DefaultOptions()
 	binder := NewBinder()
 	o.Events.Bind(&binder.Notification)
 
-	apply(o, settings...)
+	err = apply(o, settings...)
 
 	if o.Acceleration.ctx == nil {
 		o.Acceleration.ctx = context.Background()
@@ -75,7 +75,7 @@ func Get(settings ...Option) (*Options, error) {
 
 	o.Binder = binder
 
-	return o, nil
+	return
 }
 
 type LoadInfo struct {
@@ -83,8 +83,8 @@ type LoadInfo struct {
 	WakeAt string
 }
 
-func Load(from string, settings ...Option) (*Options, error) {
-	o := DefaultOptions()
+func Load(from string, settings ...Option) (o *Options, err error) {
+	o = DefaultOptions()
 	// do load
 	_ = from
 	binder := NewBinder()
@@ -93,7 +93,7 @@ func Load(from string, settings ...Option) (*Options, error) {
 
 	// TODO: save any active state on the binder, eg the wake point
 
-	apply(o, settings...)
+	err = apply(o, settings...)
 
 	if o.Acceleration.ctx == nil {
 		o.Acceleration.ctx = context.Background()
@@ -104,14 +104,19 @@ func Load(from string, settings ...Option) (*Options, error) {
 		WakeAt: "tbd",
 	}
 
-	return o, nil
+	return
 }
 
-func apply(o *Options, settings ...Option) {
+func apply(o *Options, settings ...Option) (err error) {
 	for _, option := range settings {
-		// TODO: check error
-		_ = option(o)
+		err = option(o)
+
+		if err != nil {
+			return err
+		}
 	}
+
+	return
 }
 
 func DefaultOptions() *Options {
