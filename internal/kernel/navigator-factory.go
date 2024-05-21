@@ -1,19 +1,23 @@
 package kernel
 
 import (
-	"errors"
-
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/pref"
 )
 
-func Prime(using core.Using, o *pref.Options) (core.Navigator, error) {
+func PrimeNav(using core.Using, o *pref.Options) (core.Navigator, error) {
 	return newController(&using, o)
 }
 
-func Resume(with core.As, o *pref.Options, resumption Resumption) (core.Navigator, error) {
-	controller, err := newController(&with.Using, o)
+func ResumeNav(with core.As, o *pref.Options,
+	resumption Resumption,
+) (controller core.Navigator, err error) {
+	controller, err = newController(&with.Using, o)
+
+	if err != nil {
+		return HadesNav(err)
+	}
 
 	return resumption.Decorate(controller), err
 }
@@ -28,47 +32,46 @@ func (f DecorateController) Decorate(source core.Navigator) core.Navigator {
 	return f(source)
 }
 
-func newController(using *core.Using, o *pref.Options) (core.Navigator, error) {
-	if err := using.Validate(); err != nil {
-		return nil, err
+func newController(using *core.Using,
+	o *pref.Options,
+) (navigator core.Navigator, err error) {
+	if err = using.Validate(); err != nil {
+		return
 	}
 
-	var (
-		impl core.Navigator
-		err  error
-	)
+	impl := newImpl(using, o)
 
-	impl, err = newImpl(using, o)
-
-	navigator := &navigationController{
+	navigator = &navigationController{
 		impl: impl,
 		o:    o,
 	}
 
-	return navigator, err
+	return
 }
 
-func newImpl(using *core.Using, o *pref.Options) (core.Navigator, error) {
-	var (
-		navigator    core.Navigator
-		err          error
-		subscription = using.Subscription
-	)
-
-	switch subscription {
-	case enums.SubscribeFiles:
-		navigator = &navigationController{
-			o: o,
-		} // just temporary (create the impl's)
-	case enums.SubscribeFolders:
-		navigator = &navigationController{}
-	case enums.SubscribeFoldersWithFiles:
-		navigator = &navigationController{}
-	case enums.SubscribeUniversal:
-		navigator = &navigationController{}
-	case enums.SubscribeUndefined:
-		err = errors.New("invalid subscription")
+func newImpl(using *core.Using,
+	o *pref.Options,
+) (navigator navigatorImpl) {
+	base := navigatorBase{
+		o: o,
 	}
 
-	return navigator, err
+	switch using.Subscription { //nolint:exhaustive // already validated by using
+	case enums.SubscribeFiles:
+		navigator = &navigatorFiles{
+			navigatorBase: base,
+		}
+
+	case enums.SubscribeFolders, enums.SubscribeFoldersWithFiles:
+		navigator = &navigatorFolders{
+			navigatorBase: base,
+		}
+
+	case enums.SubscribeUniversal:
+		navigator = &navigatorUniversal{
+			navigatorBase: base,
+		}
+	}
+
+	return
 }

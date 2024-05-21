@@ -2,7 +2,6 @@ package tv
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/services"
@@ -11,30 +10,6 @@ import (
 	"github.com/snivilised/traverse/refine"
 	"github.com/snivilised/traverse/sampling"
 )
-
-type duffPrimeController struct {
-	err     error
-	root    string
-	client  core.Client
-	from    string
-	options []pref.Option
-}
-
-type duffResult struct{}
-
-func (r *duffResult) Error() error {
-	return nil
-}
-
-func (c *duffPrimeController) Navigate() (core.TraverseResult, error) {
-	return &duffResult{}, nil
-}
-
-type duffResumeController struct {
-	err      error
-	from     string
-	strategy enums.ResumeStrategy
-}
 
 type ifActive func(o *pref.Options) types.Plugin
 
@@ -59,10 +34,6 @@ func activated(o *pref.Options) ([]types.Plugin, error) {
 	return plugins, err
 }
 
-func (c *duffResumeController) Navigate() (core.TraverseResult, error) {
-	return &duffResult{}, nil
-}
-
 // Prime extent
 func Prime(using core.Using, settings ...pref.Option) *Builders {
 	return &Builders{
@@ -77,13 +48,7 @@ func Prime(using core.Using, settings ...pref.Option) *Builders {
 			return pref.Get(settings...)
 		}),
 		nb: factory(func(o *pref.Options) (core.Navigator, error) {
-			controller, err := kernel.Prime(using, o)
-
-			if err != nil {
-				controller = &duffPrimeController{
-					err: err,
-				}
-			}
+			controller, err := kernel.PrimeNav(using, o)
 
 			return controller, err
 		}),
@@ -115,19 +80,13 @@ func Resume(as As, settings ...pref.Option) *Builders {
 			return o, err
 		}),
 		nb: factory(func(o *pref.Options) (core.Navigator, error) {
-			controller, err := kernel.Resume(as, o,
+			controller, err := kernel.ResumeNav(as, o,
 				kernel.DecorateController(func(n core.Navigator) core.Navigator {
 					// TODO: create the resume controller
 					//
 					return n
 				}),
 			)
-
-			if err != nil {
-				controller = &duffResumeController{
-					err: err,
-				}
-			}
 
 			// at this point, the resume controller does not know
 			// the wake point as would be loaded by the options
@@ -171,11 +130,13 @@ func (f *walker) Configure() Director {
 		// the extent is, so we know if we need to make this query?
 		//
 		//
-		artefacts, _ := bs.buildAll() // TODO: check error
+		artefacts, err := bs.buildAll()
 
-		// Announce the availability of the navigator via UsePlugin interface
-		ctx, _ := artefacts.o.Acceleration.Cancellation()
-		_ = services.Broker.Emit(ctx, services.TopicInterceptNavigator, artefacts.nav)
+		if err == nil {
+			// Announce the availability of the navigator via UsePlugin interface
+			ctx, _ := artefacts.o.Acceleration.Cancellation()
+			_ = services.Broker.Emit(ctx, services.TopicInterceptNavigator, artefacts.nav)
+		}
 
 		return &driver{
 			session{
