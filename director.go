@@ -2,13 +2,13 @@ package tv
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/hiber"
+	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/refine"
+	"github.com/snivilised/traverse/internal/sampling"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/refine"
-	"github.com/snivilised/traverse/sampling"
 )
 
 type ifActive func(o *pref.Options) types.Plugin
