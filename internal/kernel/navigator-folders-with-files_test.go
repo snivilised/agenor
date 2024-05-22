@@ -21,7 +21,7 @@ var _ = Describe("NavigatorFoldersWithFiles", func() {
 		When("foo", func() {
 			It("🧪 should: not fail", func() {
 				nav, err := kernel.PrimeNav(
-					core.Using{
+					pref.Using{
 						Root:         RootPath,
 						Subscription: enums.SubscribeFoldersWithFiles,
 						Handler: func(_ *core.Node) error {

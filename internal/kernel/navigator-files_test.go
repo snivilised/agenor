@@ -21,7 +21,7 @@ var _ = Describe("NavigatorFiles", func() {
 		When("foo", func() {
 			It("🧪 should: not fail", func() {
 				nav, err := kernel.PrimeNav(
-					core.Using{
+					pref.Using{
 						Root:         RootPath,
 						Subscription: enums.SubscribeFiles,
 						Handler: func(_ *core.Node) error {

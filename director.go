@@ -35,11 +35,15 @@ func activated(o *pref.Options) ([]types.Plugin, error) {
 }
 
 // Prime extent
-func Prime(using core.Using, settings ...pref.Option) *Builders {
+func Prime(using pref.Using, settings ...pref.Option) *Builders {
 	return &Builders{
 		ob: optionals(func() (*pref.Options, error) {
 			if err := using.Validate(); err != nil {
 				return nil, err
+			}
+
+			if using.O != nil {
+				return using.O, nil
 			}
 
 			// we probably need to mark something somehow to indicate
