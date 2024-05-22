@@ -61,7 +61,7 @@ func Prime(using pref.Using, settings ...pref.Option) *Builders {
 }
 
 // Resume extent
-func Resume(as As, settings ...pref.Option) *Builders {
+func Resume(as Was, settings ...pref.Option) *Builders {
 	return &Builders{
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.

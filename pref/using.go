@@ -53,10 +53,10 @@ func (u Using) Validate() error {
 	return nil
 }
 
-// As is similar to Using except that it is required for Resume
+// Was is similar to Using except that it is required for Resume
 // exclusively and contains properties required to support
 // restoring a session from a previously terminated run.
-type As struct {
+type Was struct {
 	Using
 
 	// From is the path to the resumption file from which a prior
@@ -67,8 +67,8 @@ type As struct {
 	Strategy enums.ResumeStrategy
 }
 
-// Validate checks that the properties on Using and As are all valid.
-func (a As) Validate() error {
+// Validate checks that the properties on Using and Was are all valid.
+func (a Was) Validate() error {
 	if a.From == "" {
 		return UsageError{
 			message: "missing restore from path",

@@ -10,7 +10,7 @@ func PrimeNav(using pref.Using, o *pref.Options) (core.Navigator, error) {
 	return newController(&using, o)
 }
 
-func ResumeNav(with pref.As, o *pref.Options,
+func ResumeNav(with pref.Was, o *pref.Options,
 	resumption Resumption,
 ) (controller core.Navigator, err error) {
 	controller, err = newController(&with.Using, o)
