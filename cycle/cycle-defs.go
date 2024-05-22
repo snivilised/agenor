@@ -18,7 +18,7 @@ type (
 		On(handler F)
 	}
 
-	// SimpleHandler is a function that takes no parameters and can
+	// SimpleHandler is a function that takes no extra custom parameters and can
 	// be used by any notification with this signature.
 	SimpleHandler func()
 

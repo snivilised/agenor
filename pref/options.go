@@ -5,10 +5,8 @@ import (
 	"log/slog"
 	"runtime"
 
-	"github.com/snivilised/extendio/bus"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/services"
 )
 
 // package: pref contains user option definitions; do not use anything in kernel (cyclic)
@@ -16,17 +14,6 @@ import (
 const (
 	badge = "badge: option-requester"
 )
-
-func initTbd() {
-	h := bus.Handler{
-		Handle: func(_ context.Context, m bus.Message) {
-			_ = m.Data
-		},
-		Matcher: services.TopicOptionsAnnounce,
-	}
-
-	services.Broker.RegisterHandler(badge, h)
-}
 
 type (
 	Options struct {
@@ -65,7 +52,7 @@ type (
 func Get(settings ...Option) (o *Options, err error) {
 	o = DefaultOptions()
 	binder := NewBinder()
-	o.Events.Bind(&binder.Notification)
+	o.Events.Bind(&binder.Controls)
 
 	err = apply(o, settings...)
 
@@ -88,7 +75,7 @@ func Load(from string, settings ...Option) (o *Options, err error) {
 	// do load
 	_ = from
 	binder := NewBinder()
-	o.Events.Bind(&binder.Notification)
+	o.Events.Bind(&binder.Controls)
 	o.Binder = binder
 
 	// TODO: save any active state on the binder, eg the wake point

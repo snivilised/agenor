@@ -28,6 +28,10 @@ tasks:
     cmds:
       - go test ./...
 
+  tc:
+    cmds:
+      - go test ./cycle
+
   tk:
     cmds:
       - go test ./internal/kernel

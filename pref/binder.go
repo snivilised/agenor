@@ -9,32 +9,13 @@ import (
 type (
 	// Binder contains items derived from Options
 	Binder struct {
-		Notification cycle.Controls
-		Loaded       *LoadInfo
+		Controls cycle.Controls
+		Loaded   *LoadInfo
 	}
 )
 
 func NewBinder() *Binder {
 	return &Binder{
-		Notification: cycle.Controls{
-			Ascend: cycle.NotificationCtrl[cycle.NodeHandler]{
-				Dispatch: cycle.DescendDispatcher,
-			},
-			Begin: cycle.NotificationCtrl[cycle.BeginHandler]{
-				Dispatch: cycle.BeginDispatcher,
-			},
-			Descend: cycle.NotificationCtrl[cycle.NodeHandler]{
-				Dispatch: cycle.DescendDispatcher,
-			},
-			End: cycle.NotificationCtrl[cycle.EndHandler]{
-				Dispatch: cycle.EndDispatcher,
-			},
-			Start: cycle.NotificationCtrl[cycle.HibernateHandler]{
-				Dispatch: cycle.StartDispatcher,
-			},
-			Stop: cycle.NotificationCtrl[cycle.HibernateHandler]{
-				Dispatch: cycle.StopDispatcher,
-			},
-		},
+		Controls: cycle.NewControls(),
 	}
 }

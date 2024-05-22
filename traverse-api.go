@@ -60,7 +60,9 @@ type Using = pref.Using
 //
 
 // This high level list assumes everything can use core and enums; dependencies
-// can only point downwards.
+// can only point downwards. NB: These restrictions do not apply to the unit tests;
+// eg, "cycle_test" defines tests that are dependent on "pref", but "cycle" is prohibited
+// from using "cycle".
 // ============================================================================
 // 🔆 user interface layer
 // traverse: [everything]
