@@ -10,12 +10,11 @@ import (
 // on the top of the code stack and is allowed to use anything, but nothing
 // else can depend on definitions here, except unit tests.
 
+type As = pref.As
 type Client = core.Client
 type Node = core.Node
-
 type Option = pref.Option
 type Options = pref.Options
-
 type Subscription = enums.Subscription
 
 const (
@@ -30,10 +29,6 @@ type ResumeStrategy = enums.ResumeStrategy
 const (
 	ResumeStrategySpawn    = enums.ResumeStrategySpawn
 	ResumeStrategyFastward = enums.ResumeStrategyFastward
-)
-
-type (
-	As = core.As
 )
 
 var (
@@ -58,7 +53,7 @@ var (
 	WithSubscription         = pref.WithSubscription
 )
 
-type Using = core.Using
+type Using = pref.Using
 
 // sub package description:
 //

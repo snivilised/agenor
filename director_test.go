@@ -59,6 +59,26 @@ var _ = Describe("Traverse", Ordered, func() {
 				})
 			})
 
+			When("Prime with Pushed Options", func() {
+				It("🧪 should: walk primary navigation successfully", func() {
+					defer leaktest.Check(GinkgoT())()
+
+					o, _ := pref.Get()
+					_, err := tv.Walk().Configure().Extent(tv.Prime(
+						tv.Using{
+							Root:         RootPath,
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
+								return nil
+							},
+							O: o,
+						},
+					)).Navigate()
+
+					Expect(err).To(Succeed())
+				})
+			})
+
 			When("Prime with subscription error", func() {
 				It("🧪 should: fail", func() {
 					defer leaktest.Check(GinkgoT())()
@@ -179,6 +199,50 @@ var _ = Describe("Traverse", Ordered, func() {
 					)).Navigate()
 
 					Expect(err).To(Succeed())
+				})
+			})
+
+			When("Prime with Pushed Options", func() {
+				It("🧪 should: run primary navigation successfully", func() {
+					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(context.Background())
+					o, _ := pref.Get(
+						tv.WithContext(ctx),
+						tv.WithCancel(cancel),
+					)
+					_, err := tv.Run().Configure().Extent(tv.Prime(
+						tv.Using{
+							Root:         RootPath,
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ *tv.Node) error {
+								return nil
+							},
+							O: o,
+						},
+					)).Navigate()
+
+					Expect(err).To(Succeed())
+				})
+			})
+
+			When("Prime with subscription error", func() {
+				It("🧪 should: fail", func() {
+					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(context.Background())
+					_, err := tv.Run().Configure().Extent(tv.Prime(
+						tv.Using{
+							Root: RootPath,
+							Handler: func(_ *tv.Node) error {
+								return nil
+							},
+						},
+						tv.WithContext(ctx),
+						tv.WithCancel(cancel),
+					)).Navigate()
+
+					Expect(err).NotTo(Succeed())
 				})
 			})
 

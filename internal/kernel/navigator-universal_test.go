@@ -21,7 +21,7 @@ var _ = Describe("NavigatorUniversal", func() {
 		When("foo", func() {
 			It("🧪 should: not fail", func() {
 				nav, err := kernel.PrimeNav(
-					core.Using{
+					pref.Using{
 						Root:         RootPath,
 						Subscription: enums.SubscribeUniversal,
 						Handler: func(_ *core.Node) error {

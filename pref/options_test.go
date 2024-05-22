@@ -14,7 +14,6 @@ var _ = Describe("Options", func() {
 				When("client listens", func() {
 					It("🧪 should: invoke client's handler", func() {
 						begun := false
-
 						o, _ := pref.Get()
 
 						o.Events.Begin.On(func(_ string) {

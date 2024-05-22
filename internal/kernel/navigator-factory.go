@@ -6,11 +6,11 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func PrimeNav(using core.Using, o *pref.Options) (core.Navigator, error) {
+func PrimeNav(using pref.Using, o *pref.Options) (core.Navigator, error) {
 	return newController(&using, o)
 }
 
-func ResumeNav(with core.As, o *pref.Options,
+func ResumeNav(with pref.As, o *pref.Options,
 	resumption Resumption,
 ) (controller core.Navigator, err error) {
 	controller, err = newController(&with.Using, o)
@@ -32,7 +32,7 @@ func (f DecorateController) Decorate(source core.Navigator) core.Navigator {
 	return f(source)
 }
 
-func newController(using *core.Using,
+func newController(using *pref.Using,
 	o *pref.Options,
 ) (navigator core.Navigator, err error) {
 	if err = using.Validate(); err != nil {
@@ -49,7 +49,7 @@ func newController(using *core.Using,
 	return
 }
 
-func newImpl(using *core.Using,
+func newImpl(using *pref.Using,
 	o *pref.Options,
 ) (navigator navigatorImpl) {
 	base := navigatorBase{
