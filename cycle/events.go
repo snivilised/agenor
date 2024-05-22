@@ -7,17 +7,19 @@ import (
 type (
 	announce[F any] func(listeners []F) F
 
-	Dispatch[F any] struct {
-		Invoke      F
+	dispatcher[F any] struct {
+		invoke      F
 		broadcaster announce[F]
 	}
 
 	// NotificationCtrl contains the handler function to be invoked. The control
 	// is agnostic to the handler's signature and therefore can not invoke it.
 	NotificationCtrl[F any] struct {
-		Dispatch   Dispatch[F]
+		dispatcher dispatcher[F]
+		nop        F
 		subscribed bool
 		listeners  []F
+		muted      bool
 	}
 
 	Events struct { // --> options
@@ -44,44 +46,50 @@ type (
 	}
 )
 
-var (
-	AscendDispatcher  Dispatch[NodeHandler]
-	BeginDispatcher   Dispatch[BeginHandler]
-	DescendDispatcher Dispatch[NodeHandler]
-	EndDispatcher     Dispatch[EndHandler]
-	StartDispatcher   Dispatch[HibernateHandler]
-	StopDispatcher    Dispatch[HibernateHandler]
-)
-
-func init() {
-	AscendDispatcher = Dispatch[NodeHandler]{
-		Invoke:      func(_ *core.Node) {},
-		broadcaster: BroadcastNode,
-	}
-
-	BeginDispatcher = Dispatch[BeginHandler]{
-		Invoke:      func(_ string) {},
-		broadcaster: BroadcastBegin,
-	}
-
-	DescendDispatcher = Dispatch[NodeHandler]{
-		Invoke:      func(_ *core.Node) {},
-		broadcaster: BroadcastNode,
-	}
-
-	EndDispatcher = Dispatch[EndHandler]{
-		Invoke:      func(_ core.TraverseResult) {},
-		broadcaster: BroadcastEnd,
-	}
-
-	StartDispatcher = Dispatch[HibernateHandler]{
-		Invoke:      func(_ string) {},
-		broadcaster: BroadcastHibernate,
-	}
-
-	StopDispatcher = Dispatch[HibernateHandler]{
-		Invoke:      func(_ string) {},
-		broadcaster: BroadcastHibernate,
+func NewControls() Controls {
+	return Controls{
+		Ascend: NotificationCtrl[NodeHandler]{
+			dispatcher: dispatcher[NodeHandler]{
+				invoke:      nopNode,
+				broadcaster: broadcastNode,
+			},
+			nop: nopNode,
+		},
+		Begin: NotificationCtrl[BeginHandler]{
+			dispatcher: dispatcher[BeginHandler]{
+				invoke:      nopBegin,
+				broadcaster: broadcastBegin,
+			},
+			nop: nopBegin,
+		},
+		Descend: NotificationCtrl[NodeHandler]{
+			dispatcher: dispatcher[NodeHandler]{
+				invoke:      nopNode,
+				broadcaster: broadcastNode,
+			},
+			nop: nopNode,
+		},
+		End: NotificationCtrl[EndHandler]{
+			dispatcher: dispatcher[EndHandler]{
+				invoke:      nopEnd,
+				broadcaster: broadcastEnd,
+			},
+			nop: nopEnd,
+		},
+		Start: NotificationCtrl[HibernateHandler]{
+			dispatcher: dispatcher[HibernateHandler]{
+				invoke:      nopHibernate,
+				broadcaster: broadcastHibernate,
+			},
+			nop: nopHibernate,
+		},
+		Stop: NotificationCtrl[HibernateHandler]{
+			dispatcher: dispatcher[HibernateHandler]{
+				invoke:      nopHibernate,
+				broadcaster: broadcastHibernate,
+			},
+			nop: nopHibernate,
+		},
 	}
 }
 
@@ -99,7 +107,7 @@ func (e *Events) Bind(cs *Controls) {
 // On subscribes to a life cycle event
 func (c *NotificationCtrl[F]) On(handler F) {
 	if !c.subscribed {
-		c.Dispatch.Invoke = handler
+		c.dispatcher.invoke = handler
 		c.subscribed = true
 
 		return
@@ -108,18 +116,30 @@ func (c *NotificationCtrl[F]) On(handler F) {
 	if c.listeners == nil {
 		const size = 2
 		c.listeners = make([]F, 0, size)
-		c.listeners = append(c.listeners, c.Dispatch.Invoke)
+		c.listeners = append(c.listeners, c.dispatcher.invoke)
 	}
 
 	c.listeners = append(c.listeners, handler)
-	c.Dispatch.Invoke = c.broadcaster(c.listeners)
+	c.dispatcher.invoke = c.dispatcher.broadcaster(c.listeners)
 }
 
-func (c *NotificationCtrl[F]) broadcaster(listeners []F) F {
-	return c.Dispatch.broadcaster(listeners)
+func (c *NotificationCtrl[F]) Dispatch() F {
+	if c.muted {
+		return c.nop
+	}
+
+	return c.dispatcher.invoke
 }
 
-func BroadcastBegin(listeners []BeginHandler) BeginHandler {
+func (c *NotificationCtrl[F]) Mute() {
+	c.muted = true
+}
+
+func (c *NotificationCtrl[F]) Unmute() {
+	c.muted = false
+}
+
+func broadcastBegin(listeners []BeginHandler) BeginHandler {
 	return func(root string) {
 		for _, listener := range listeners {
 			listener(root)
@@ -127,7 +147,9 @@ func BroadcastBegin(listeners []BeginHandler) BeginHandler {
 	}
 }
 
-func BroadcastEnd(listeners []EndHandler) EndHandler {
+func nopBegin(_ string) {}
+
+func broadcastEnd(listeners []EndHandler) EndHandler {
 	return func(result core.TraverseResult) {
 		for _, listener := range listeners {
 			listener(result)
@@ -135,7 +157,9 @@ func BroadcastEnd(listeners []EndHandler) EndHandler {
 	}
 }
 
-func BroadcastNode(listeners []NodeHandler) NodeHandler {
+func nopEnd(_ core.TraverseResult) {}
+
+func broadcastNode(listeners []NodeHandler) NodeHandler {
 	return func(node *core.Node) {
 		for _, listener := range listeners {
 			listener(node)
@@ -143,7 +167,9 @@ func BroadcastNode(listeners []NodeHandler) NodeHandler {
 	}
 }
 
-func BroadcastHibernate(listeners []HibernateHandler) HibernateHandler {
+func nopNode(_ *core.Node) {}
+
+func broadcastHibernate(listeners []HibernateHandler) HibernateHandler {
 	return func(description string) {
 		for _, listener := range listeners {
 			listener(description)
@@ -151,7 +177,9 @@ func BroadcastHibernate(listeners []HibernateHandler) HibernateHandler {
 	}
 }
 
-func BroadcastSimple(listeners []SimpleHandler) SimpleHandler {
+func nopHibernate(_ string) {}
+
+func broadcastSimple(listeners []SimpleHandler) SimpleHandler {
 	return func() {
 		for _, listener := range listeners {
 			listener()

@@ -37,8 +37,8 @@ var _ = Describe("controls", func() {
 
 			// component side:
 			//
-			controls.Begin.Dispatch.Invoke(path)
-			controls.End.Dispatch.Invoke(nil)
+			controls.Begin.Dispatch()(path)
+			controls.End.Dispatch()(nil)
 
 			Expect(begun).To(BeTrue(), "begin notification handler not invoked")
 			Expect(ended).To(BeTrue(), "end notification handler not invoked")
