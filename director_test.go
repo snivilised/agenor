@@ -123,7 +123,7 @@ var _ = Describe("Traverse", Ordered, func() {
 					defer leaktest.Check(GinkgoT())()
 
 					_, err := tv.Walk().Configure().Extent(tv.Resume(
-						tv.As{
+						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
@@ -251,7 +251,7 @@ var _ = Describe("Traverse", Ordered, func() {
 					defer leaktest.Check(GinkgoT())()
 
 					_, err := tv.Run().Configure().Extent(tv.Resume(
-						tv.As{
+						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
@@ -340,7 +340,7 @@ var _ = Describe("Traverse", Ordered, func() {
 					defer leaktest.Check(GinkgoT())()
 
 					_, err := tv.Run().Configure().Extent(tv.Resume(
-						tv.As{
+						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
@@ -363,7 +363,7 @@ var _ = Describe("Traverse", Ordered, func() {
 					defer leaktest.Check(GinkgoT())()
 
 					_, err := tv.Run().Configure().Extent(tv.Resume(
-						tv.As{
+						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
@@ -386,7 +386,7 @@ var _ = Describe("Traverse", Ordered, func() {
 					defer leaktest.Check(GinkgoT())()
 
 					_, err := tv.Run().Configure().Extent(tv.Resume(
-						tv.As{
+						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,

@@ -13,7 +13,7 @@ import (
 type traverseErrorTE struct {
 	given string
 	using *tv.Using
-	as    *tv.As
+	as    *tv.Was
 }
 
 var _ = Describe("director error", Ordered, func() {
@@ -73,7 +73,7 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing restore from path",
-			as: &tv.As{
+			as: &tv.Was{
 				Using: tv.Using{
 					Root:         "/root-traverse-path",
 					Subscription: tv.SubscribeFiles,
@@ -85,7 +85,7 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing resume strategy",
-			as: &tv.As{
+			as: &tv.Was{
 				Using: tv.Using{
 					Root:         "/root-traverse-path",
 					Subscription: tv.SubscribeFiles,
