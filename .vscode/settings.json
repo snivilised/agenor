@@ -45,6 +45,7 @@
     "leaktest",
     "linecomment",
     "linters",
+    "lorax",
     "mattn",
     "nakedret",
     "nolint",
@@ -77,6 +78,7 @@
     "varcheck",
     "watchv",
     "watchvc",
-    "watchvi"
+    "watchvi",
+    "Wrapf"
   ]
 }

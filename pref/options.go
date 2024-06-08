@@ -1,7 +1,6 @@
 package pref
 
 import (
-	"context"
 	"log/slog"
 	"runtime"
 
@@ -38,9 +37,9 @@ type (
 		//
 		Monitor MonitorOptions
 
-		// Acceleration contains options relating concurrency
+		// Concurrency contains options relating concurrency
 		//
-		Acceleration AccelerationOptions
+		Concurrency ConcurrencyOptions
 
 		Binder *Binder
 	}
@@ -55,11 +54,6 @@ func Get(settings ...Option) (o *Options, err error) {
 	o.Events.Bind(&binder.Controls)
 
 	err = apply(o, settings...)
-
-	if o.Acceleration.ctx == nil {
-		o.Acceleration.ctx = context.Background()
-	}
-
 	o.Binder = binder
 
 	return
@@ -81,11 +75,6 @@ func Load(from string, settings ...Option) (o *Options, err error) {
 	// TODO: save any active state on the binder, eg the wake point
 
 	err = apply(o, settings...)
-
-	if o.Acceleration.ctx == nil {
-		o.Acceleration.ctx = context.Background()
-	}
-
 	o.Binder.Loaded = &LoadInfo{
 		// O:      o,
 		WakeAt: "tbd",
@@ -132,8 +121,8 @@ func DefaultOptions() *Options {
 		Monitor: MonitorOptions{
 			Log: nopLogger,
 		},
-		Acceleration: AccelerationOptions{
-			now: runtime.NumCPU(),
+		Concurrency: ConcurrencyOptions{
+			NoW: uint(runtime.NumCPU()),
 		},
 	}
 

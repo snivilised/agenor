@@ -5,5 +5,6 @@ import (
 )
 
 type navigatorBase struct {
-	o *pref.Options
+	o     *pref.Options
+	using *pref.Using
 }

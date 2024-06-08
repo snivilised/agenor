@@ -53,7 +53,8 @@ func newImpl(using *pref.Using,
 	o *pref.Options,
 ) (navigator navigatorImpl) {
 	base := navigatorBase{
-		o: o,
+		using: using,
+		o:     o,
 	}
 
 	switch using.Subscription { //nolint:exhaustive // already validated by using
