@@ -6,7 +6,6 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/pref"
 )
 
 // Session represents a traversal session and keeps tracks of
@@ -17,12 +16,9 @@ type Session interface {
 }
 
 type session struct {
+	sync     synchroniser
 	started  time.Time
 	duration time.Duration
-	ctx      context.Context
-	cancel   context.CancelFunc
-	nav      core.Navigator
-	o        *pref.Options
 	plugins  []types.Plugin
 }
 
@@ -47,6 +43,6 @@ func (s *session) Elapsed() time.Duration {
 	return time.Since(s.started)
 }
 
-func (s *session) exec() (core.TraverseResult, error) {
-	return s.nav.Navigate()
+func (s *session) exec(ctx context.Context) (core.TraverseResult, error) {
+	return s.sync.Navigate(ctx)
 }

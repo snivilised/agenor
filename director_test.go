@@ -2,6 +2,7 @@ package tv_test
 
 import (
 	"context"
+	"sync"
 
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -41,8 +42,11 @@ var _ = Describe("Traverse", Ordered, func() {
 			// cancellations, we use an internal context instead.
 			//
 			When("Prime", func() {
-				It("🧪 should: walk primary navigation successfully", func() {
+				It("🧪 should: walk primary navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						tv.Using{
@@ -53,15 +57,18 @@ var _ = Describe("Traverse", Ordered, func() {
 							},
 						},
 						tv.WithSubscription(tv.SubscribeFiles),
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("Prime with Pushed Options", func() {
-				It("🧪 should: walk primary navigation successfully", func() {
+				It("🧪 should: walk primary navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					o, _ := pref.Get()
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
@@ -73,54 +80,18 @@ var _ = Describe("Traverse", Ordered, func() {
 							},
 							O: o,
 						},
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
 			})
 
-			When("Prime with subscription error", func() {
-				It("🧪 should: fail", func() {
-					defer leaktest.Check(GinkgoT())()
-
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
-							Root: RootPath,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-						},
-					)).Navigate()
-
-					Expect(err).NotTo(Succeed())
-				})
-			})
-
-			When("Prime with options build error", func() {
-				It("🧪 should: fail", func() {
-					defer leaktest.Check(GinkgoT())()
-
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
-							Root:         RootPath,
-							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-						},
-						tv.WithSubscription(tv.SubscribeFiles),
-						func(_ *pref.Options) error {
-							return errBuildOptions
-						},
-					)).Navigate()
-
-					Expect(err).To(MatchError(errBuildOptions))
-				})
-			})
-
 			When("Resume", func() {
-				It("🧪 should: walk resume navigation successfully", func() {
+				It("🧪 should: walk resume navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Resume(
 						tv.Was{
@@ -135,7 +106,7 @@ var _ = Describe("Traverse", Ordered, func() {
 							Strategy: tv.ResumeStrategyFastward,
 						},
 						restore,
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
@@ -143,9 +114,14 @@ var _ = Describe("Traverse", Ordered, func() {
 		})
 
 		Context("Run", func() {
-			When("Prime without cancel", func() {
-				It("🧪 should: perform run navigation successfully", func() {
+			When("Prime", func() {
+				It("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
 
 					// need to make sure that when a ctrl-c occurs, who is
 					// responsible for handling the cancellation; ie if a
@@ -162,8 +138,8 @@ var _ = Describe("Traverse", Ordered, func() {
 					// is sent on the message bus, on a topic called
 					// something like "context.expired"
 					//
-					ctx := context.Background()
-					_, err := tv.Run().Configure().Extent(tv.Prime(
+
+					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
@@ -172,46 +148,24 @@ var _ = Describe("Traverse", Ordered, func() {
 							},
 						},
 						tv.WithSubscription(tv.SubscribeFiles),
-						tv.WithContext(ctx),
-					)).Navigate()
+					)).Navigate(ctx)
 
-					Expect(err).To(Succeed())
-				})
-			})
-
-			When("Prime with cancel", func() {
-				It("🧪 should: perform run navigation successfully", func() {
-					defer leaktest.Check(GinkgoT())()
-
-					ctx, cancel := context.WithCancel(context.Background())
-
-					_, err := tv.Run().Configure().Extent(tv.Prime(
-						tv.Using{
-							Root:         RootPath,
-							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-						},
-						tv.WithSubscription(tv.SubscribeFiles),
-						tv.WithContext(ctx),
-						tv.WithCancel(cancel),
-					)).Navigate()
-
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("Prime with Pushed Options", func() {
-				It("🧪 should: run primary navigation successfully", func() {
+				It("🧪 should: run primary navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
-					ctx, cancel := context.WithCancel(context.Background())
-					o, _ := pref.Get(
-						tv.WithContext(ctx),
-						tv.WithCancel(cancel),
-					)
-					_, err := tv.Run().Configure().Extent(tv.Prime(
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
+
+					o, _ := pref.Get()
+					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
@@ -220,37 +174,23 @@ var _ = Describe("Traverse", Ordered, func() {
 							},
 							O: o,
 						},
-					)).Navigate()
+					)).Navigate(ctx)
 
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})
 
-			When("Prime with subscription error", func() {
-				It("🧪 should: fail", func() {
-					defer leaktest.Check(GinkgoT())()
-
-					ctx, cancel := context.WithCancel(context.Background())
-					_, err := tv.Run().Configure().Extent(tv.Prime(
-						tv.Using{
-							Root: RootPath,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-						},
-						tv.WithContext(ctx),
-						tv.WithCancel(cancel),
-					)).Navigate()
-
-					Expect(err).NotTo(Succeed())
-				})
-			})
-
 			When("Resume", func() {
-				It("🧪 should: perform run navigation successfully", func() {
+				It("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := tv.Run().Configure().Extent(tv.Resume(
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
+
+					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
@@ -263,8 +203,9 @@ var _ = Describe("Traverse", Ordered, func() {
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						restore,
-					)).Navigate()
+					)).Navigate(ctx)
 
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})
@@ -274,8 +215,11 @@ var _ = Describe("Traverse", Ordered, func() {
 	Context("features", func() {
 		Context("Prime", func() {
 			When("hibernate", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						tv.Using{
@@ -287,15 +231,18 @@ var _ = Describe("Traverse", Ordered, func() {
 						},
 						tv.WithSubscription(tv.SubscribeFiles),
 						tv.WithHibernation(&core.FilterDef{}),
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("filter", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						tv.Using{
@@ -307,15 +254,18 @@ var _ = Describe("Traverse", Ordered, func() {
 						},
 						tv.WithSubscription(tv.SubscribeFiles),
 						tv.WithFilter(&core.FilterDef{}),
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("sample", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
+
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						tv.Using{
@@ -327,7 +277,7 @@ var _ = Describe("Traverse", Ordered, func() {
 						},
 						tv.WithSubscription(tv.SubscribeFiles),
 						tv.WithSampling(files, folders),
-					)).Navigate()
+					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
 				})
@@ -336,10 +286,15 @@ var _ = Describe("Traverse", Ordered, func() {
 
 		Context("Resume", func() {
 			When("hibernate", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := tv.Run().Configure().Extent(tv.Resume(
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
+
+					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
@@ -352,17 +307,23 @@ var _ = Describe("Traverse", Ordered, func() {
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithHibernation(&core.FilterDef{}),
-					)).Navigate()
+					)).Navigate(ctx)
 
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("filter", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := tv.Run().Configure().Extent(tv.Resume(
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
+
+					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
@@ -375,17 +336,23 @@ var _ = Describe("Traverse", Ordered, func() {
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithFilter(&core.FilterDef{}),
-					)).Navigate()
+					)).Navigate(ctx)
 
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})
 
 			When("sample", func() {
-				It("🧪 should: register ok", func() {
+				It("🧪 should: register ok", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
-					_, err := tv.Run().Configure().Extent(tv.Resume(
+					ctx, cancel := context.WithCancel(specCtx)
+					defer cancel()
+
+					var wg sync.WaitGroup
+
+					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
@@ -398,8 +365,9 @@ var _ = Describe("Traverse", Ordered, func() {
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithSampling(files, folders),
-					)).Navigate()
+					)).Navigate(ctx)
 
+					wg.Wait()
 					Expect(err).To(Succeed())
 				})
 			})

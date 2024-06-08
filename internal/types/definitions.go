@@ -9,6 +9,7 @@ type (
 
 	// NavigateResult
 	NavigateResult struct {
+		Err error
 	}
 )
 
@@ -33,4 +34,8 @@ type Facilities interface {
 
 type Interception interface {
 	Intercept()
+}
+
+func (r NavigateResult) Error() error {
+	return r.Err
 }

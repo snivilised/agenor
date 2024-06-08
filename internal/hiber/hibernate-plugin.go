@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/snivilised/extendio/bus"
-	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -12,16 +11,12 @@ import (
 
 func IfActive(o *pref.Options) types.Plugin {
 	active := o.Core.Hibernate.Wake != nil
-	plugin := lo.TernaryF(active,
-		func() types.Plugin {
-			return &Plugin{}
-		},
-		func() types.Plugin {
-			return nil
-		},
-	)
 
-	return plugin
+	if active {
+		return &Plugin{}
+	}
+
+	return nil
 }
 
 type Plugin struct {

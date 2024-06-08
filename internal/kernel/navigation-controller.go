@@ -1,6 +1,8 @@
 package kernel
 
 import (
+	"context"
+
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -11,7 +13,7 @@ type navigationController struct {
 	o    *pref.Options
 }
 
-func (nc *navigationController) Navigate() (core.TraverseResult, error) {
+func (nc *navigationController) Navigate(context.Context) (core.TraverseResult, error) {
 	return &navigationResult{}, nil
 }
 

@@ -16,13 +16,14 @@ type buildArtefacts struct {
 }
 
 type Builders struct {
-	ob optionsBuilder
-	nb navigatorBuilder
-	pb pluginsBuilder
+	options   optionsBuilder
+	navigator navigatorBuilder
+	plugins   pluginsBuilder
+	extent    extent
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	o, optionsErr := bs.ob.build()
+	o, optionsErr := bs.options.build()
 	if optionsErr != nil {
 		had, _ := kernel.HadesNav(optionsErr)
 
@@ -32,7 +33,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}, optionsErr
 	}
 
-	nav, navErr := bs.nb.build(o)
+	nav, navErr := bs.navigator.build(o)
 	if navErr != nil {
 		had, _ := kernel.HadesNav(navErr)
 
@@ -42,7 +43,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}, navErr
 	}
 
-	plugins, pluginsErr := bs.pb.build(o)
+	plugins, pluginsErr := bs.plugins.build(o)
 	if pluginsErr != nil {
 		had, _ := kernel.HadesNav(pluginsErr)
 

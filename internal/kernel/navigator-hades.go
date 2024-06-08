@@ -1,6 +1,8 @@
 package kernel
 
 import (
+	"context"
+
 	"github.com/snivilised/traverse/core"
 )
 
@@ -22,7 +24,7 @@ type navigatorHades struct {
 	err error
 }
 
-func (n *navigatorHades) Navigate() (core.TraverseResult, error) {
+func (n *navigatorHades) Navigate(_ context.Context) (core.TraverseResult, error) {
 	return &hadesResult{
 		err: n.err,
 	}, n.err

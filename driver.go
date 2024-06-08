@@ -34,10 +34,10 @@ func (d *driver) init() {
 	})
 }
 
-func (d *driver) Navigate() (core.TraverseResult, error) {
+func (d *driver) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	d.init()
 	d.s.start()
-	result, err := d.s.exec()
+	result, err := d.s.exec(ctx)
 
 	d.s.finish(result)
 

@@ -1,38 +1,41 @@
 package kernel_test
 
 import (
+	"context"
+
+	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/pref"
+	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/internal/services"
 )
 
 var _ = Describe("NavigatorUniversal", func() {
-	var o *pref.Options
-
 	BeforeEach(func() {
-		o, _ = pref.Get()
+		services.Reset()
 	})
 
 	Context("nav", func() {
 		When("foo", func() {
-			It("🧪 should: not fail", func() {
-				nav, err := kernel.PrimeNav(
-					pref.Using{
+			It("🧪 should: not fail", func(specCtx SpecContext) {
+				defer leaktest.Check(GinkgoT())()
+
+				ctx, cancel := context.WithCancel(specCtx)
+				defer cancel()
+
+				_, err := tv.Walk().Configure().Extent(tv.Prime(
+					tv.Using{
 						Root:         RootPath,
-						Subscription: enums.SubscribeUniversal,
-						Handler: func(_ *core.Node) error {
+						Subscription: tv.SubscribeUniversal,
+						Handler: func(_ *tv.Node) error {
 							return nil
 						},
 					},
-					o,
-				)
+					tv.WithSubscription(tv.SubscribeUniversal),
+				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())
-				Expect(nav).NotTo(BeNil())
 			})
 		})
 	})

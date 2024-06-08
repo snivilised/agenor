@@ -10,9 +10,9 @@ type navigatorBuilder interface {
 	build(o *pref.Options) (core.Navigator, error)
 }
 
-type factory func(o *pref.Options) (core.Navigator, error)
+type builder func(o *pref.Options) (core.Navigator, error)
 
-func (fn factory) build(o *pref.Options) (core.Navigator, error) {
+func (fn builder) build(o *pref.Options) (core.Navigator, error) {
 	return fn(o)
 }
 

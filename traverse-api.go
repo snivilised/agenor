@@ -1,9 +1,37 @@
 package tv
 
 import (
+	"time"
+
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/pref"
+)
+
+// Director
+type Director interface {
+	// Extent represents the magnitude of the traversal; ie we can
+	// perform a full Prime run, or Resume from a previously
+	// cancelled run.
+	//
+	Extent(bs *Builders) core.Navigator
+}
+
+// NavigatorFactory
+type NavigatorFactory interface {
+	// Configure is a factory function that creates a navigator.
+	// We don't return an error here as that would make using the factory
+	// awkward. Instead, if there is an error during the build process,
+	// we return a fake navigator that when invoked immediately returns
+	// a traverse error indicating the build issue.
+	//
+	Configure() Director
+}
+
+const (
+	OutputChSize       = 10
+	CheckCloseInterval = time.Second / 10
+	TimeoutOnSend      = time.Second * 2
 )
 
 // traverse is the front line user facing interface to this module. It sits
@@ -33,9 +61,7 @@ const (
 type Was = pref.Was
 
 var (
-	WithCancel               = pref.WithCancel
 	WithCPU                  = pref.WithCPU
-	WithContext              = pref.WithContext
 	WithDepth                = pref.WithDepth
 	WithFilter               = pref.WithFilter
 	WithHibernation          = pref.WithHibernation
