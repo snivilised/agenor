@@ -87,9 +87,17 @@ func WithSortBehaviour(sb *SortBehaviour) Option {
 	}
 }
 
-func WithHibernation(wake *core.FilterDef) Option {
+func WithHibernationWake(wake *core.FilterDef) Option {
 	return func(o *Options) error {
 		o.Core.Hibernate.Wake = wake
+
+		return nil
+	}
+}
+
+func WithHibernationSleep(sleep *core.FilterDef) Option {
+	return func(o *Options) error {
+		o.Core.Hibernate.Sleep = sleep
 
 		return nil
 	}

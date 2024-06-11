@@ -32,7 +32,6 @@ var _ = Describe("NavigatorFoldersWithFiles", func() {
 							return nil
 						},
 					},
-					tv.WithSubscription(tv.SubscribeFoldersWithFiles),
 				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())

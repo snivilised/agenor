@@ -135,7 +135,6 @@ var _ = Describe("director error", Ordered, func() {
 						return nil
 					},
 				},
-				tv.WithSubscription(tv.SubscribeFiles),
 				func(_ *pref.Options) error {
 					return errBuildOptions
 				},

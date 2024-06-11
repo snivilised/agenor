@@ -64,12 +64,19 @@ var (
 	WithCPU                  = pref.WithCPU
 	WithDepth                = pref.WithDepth
 	WithFilter               = pref.WithFilter
-	WithHibernation          = pref.WithHibernation
+	WithHibernationWake      = pref.WithHibernationWake
+	WithHibernationSleep     = pref.WithHibernationSleep
 	WithHibernationBehaviour = pref.WithHibernationBehaviour
 	WithNavigationBehaviours = pref.WithNavigationBehaviours
+	WithOnAscend             = pref.WithOnAscend
+	WithOnBegin              = pref.WithOnBegin
+	WithOnDescend            = pref.WithOnDescend
+	WithOnEnd                = pref.WithOnEnd
+	WithOnStart              = pref.WithOnStart
+	WithOnStop               = pref.WithOnStop
 	WithNoRecurse            = pref.WithNoRecurse
 	WithNoW                  = pref.WithNoW
-	WithSamplerOptions       = pref.WithSamplerOptions
+	WithSampler              = pref.WithSampler
 	WithSampling             = pref.WithSampling
 	WithSamplingInReverse    = pref.WithSamplingInReverse
 	WithSamplingNoOf         = pref.WithSamplingNoOf
@@ -77,7 +84,6 @@ var (
 	WithSamplingType         = pref.WithSamplingType
 	WithSortBehaviour        = pref.WithSortBehaviour
 	WithSubPathBehaviour     = pref.WithSubPathBehaviour
-	WithSubscription         = pref.WithSubscription
 )
 
 type Using = pref.Using
