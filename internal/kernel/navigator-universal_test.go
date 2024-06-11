@@ -32,7 +32,6 @@ var _ = Describe("NavigatorUniversal", func() {
 							return nil
 						},
 					},
-					tv.WithSubscription(tv.SubscribeUniversal),
 				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())

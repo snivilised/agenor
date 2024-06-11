@@ -5,5 +5,6 @@ import (
 )
 
 type HibernateOptions struct {
-	Wake *core.FilterDef
+	Wake  *core.FilterDef
+	Sleep *core.FilterDef
 }

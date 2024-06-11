@@ -100,7 +100,6 @@ func DefaultOptions() *Options {
 
 	o := &Options{
 		Core: CoreOptions{
-			Subscription: enums.SubscribeUniversal,
 			Behaviours: NavigationBehaviours{
 				SubPath: SubPathBehaviour{
 					KeepTrailingSep: true,
