@@ -8,5 +8,9 @@ func (r *navigationResult) Error() error {
 	return r.err
 }
 
-type navigatorImpl interface {
+type NavigatorImpl interface {
+}
+
+type NavigatorDriver interface {
+	Impl() NavigatorImpl
 }

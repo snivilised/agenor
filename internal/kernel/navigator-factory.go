@@ -6,11 +6,11 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func PrimeNav(using pref.Using, o *pref.Options) (core.Navigator, error) {
-	return newController(&using, o)
+func PrimeNav(using *pref.Using, o *pref.Options) (core.Navigator, error) {
+	return newController(using, o)
 }
 
-func ResumeNav(with pref.Was, o *pref.Options,
+func ResumeNav(with *pref.Was, o *pref.Options,
 	resumption Resumption,
 ) (controller core.Navigator, err error) {
 	controller, err = newController(&with.Using, o)
@@ -19,17 +19,17 @@ func ResumeNav(with pref.Was, o *pref.Options,
 		return HadesNav(err)
 	}
 
-	return resumption.Decorate(controller), err
+	return resumption.Decorate(controller)
 }
 
 type Resumption interface {
-	Decorate(core.Navigator) core.Navigator
+	Decorate(core.Navigator) (core.Navigator, error)
 }
 
-type DecorateController func(core.Navigator) core.Navigator
+type DecorateControllerFunc func(core.Navigator) (core.Navigator, error)
 
-func (f DecorateController) Decorate(source core.Navigator) core.Navigator {
-	return f(source)
+func (f DecorateControllerFunc) Decorate(nav core.Navigator) (core.Navigator, error) {
+	return f(nav)
 }
 
 func newController(using *pref.Using,
@@ -41,17 +41,17 @@ func newController(using *pref.Using,
 
 	impl := newImpl(using, o)
 
-	navigator = &navigationController{
+	navigator = &NavigationController{
 		impl: impl,
 		o:    o,
 	}
 
-	return
+	return navigator, err
 }
 
 func newImpl(using *pref.Using,
 	o *pref.Options,
-) (navigator navigatorImpl) {
+) (navigator NavigatorImpl) {
 	base := navigatorBase{
 		using: using,
 		o:     o,

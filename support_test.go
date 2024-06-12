@@ -2,6 +2,8 @@ package tv_test
 
 import (
 	"errors"
+
+	tv "github.com/snivilised/traverse"
 )
 
 var (
@@ -14,3 +16,7 @@ const (
 	files       = 3
 	folders     = 2
 )
+
+var noOpHandler = func(_ *tv.Node) error {
+	return nil
+}

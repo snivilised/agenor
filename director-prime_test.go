@@ -28,12 +28,10 @@ var _ = Describe("Director(Prime)", func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						tv.WithOnAscend(func(_ *core.Node) {}),
 					)).Navigate(ctx)
@@ -51,13 +49,11 @@ var _ = Describe("Director(Prime)", func() {
 
 					o, _ := pref.Get()
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-							O: o,
+							Handler:      noOpHandler,
+							O:            o,
 						},
 						tv.WithOnDescend(func(_ *core.Node) {}),
 					)).Navigate(ctx)
@@ -89,12 +85,10 @@ var _ = Describe("Director(Prime)", func() {
 					//
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						tv.WithOnBegin(func(_ string) {}),
 					)).Navigate(ctx)
@@ -115,13 +109,11 @@ var _ = Describe("Director(Prime)", func() {
 
 					o, _ := pref.Get()
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
-							O: o,
+							Handler:      noOpHandler,
+							O:            o,
 						},
 						tv.WithOnEnd(func(_ core.TraverseResult) {}),
 					)).Navigate(ctx)
@@ -143,12 +135,10 @@ var _ = Describe("Director(Prime)", func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						tv.WithFilter(&core.FilterDef{}),
 						tv.WithOnStart(func(_ string) {}),
@@ -166,12 +156,10 @@ var _ = Describe("Director(Prime)", func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						tv.WithHibernationWake(&core.FilterDef{}),
 						tv.WithOnStop(func(_ string) {}),
@@ -189,12 +177,10 @@ var _ = Describe("Director(Prime)", func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						tv.Using{
+						&tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						tv.WithHibernationSleep(&core.FilterDef{}),
 						tv.WithOnStop(func(_ string) {}),

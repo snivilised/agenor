@@ -108,7 +108,7 @@ var _ = Describe("director error", Ordered, func() {
 			defer cancel()
 
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
-				tv.Using{
+				&tv.Using{
 					Root: RootPath,
 					Handler: func(_ *tv.Node) error {
 						return nil
@@ -128,7 +128,7 @@ var _ = Describe("director error", Ordered, func() {
 			defer cancel()
 
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
-				tv.Using{
+				&tv.Using{
 					Root:         RootPath,
 					Subscription: tv.SubscribeFiles,
 					Handler: func(_ *tv.Node) error {
@@ -154,7 +154,7 @@ var _ = Describe("director error", Ordered, func() {
 			var wg sync.WaitGroup
 
 			_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
-				tv.Using{
+				&tv.Using{
 					Root: RootPath,
 					Handler: func(_ *tv.Node) error {
 						return nil
