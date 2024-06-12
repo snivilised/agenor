@@ -25,7 +25,7 @@ var _ = Describe("NavigatorFolders", func() {
 				defer cancel()
 
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
-					tv.Using{
+					&tv.Using{
 						Root:         RootPath,
 						Subscription: tv.SubscribeFolders,
 						Handler: func(_ *tv.Node) error {

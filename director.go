@@ -5,6 +5,7 @@ import (
 	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/refine"
+	"github.com/snivilised/traverse/internal/resume"
 	"github.com/snivilised/traverse/internal/sampling"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -35,10 +36,10 @@ func activated(o *pref.Options) ([]types.Plugin, error) {
 
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
-func Prime(using pref.Using, settings ...pref.Option) *Builders {
+func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	return &Builders{
 		extent: &primeExtent{
-			u: &using,
+			u: using,
 		},
 		options: optionals(func() (*pref.Options, error) {
 			if err := using.Validate(); err != nil {
@@ -65,10 +66,10 @@ func Prime(using pref.Using, settings ...pref.Option) *Builders {
 // traversal, loading state from a previously saved session
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
-func Resume(was Was, settings ...pref.Option) *Builders {
+func Resume(was *Was, settings ...pref.Option) *Builders {
 	return &Builders{
 		extent: &resumeExtent{
-			w: &was,
+			w: was,
 		},
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
@@ -98,10 +99,8 @@ func Resume(was Was, settings ...pref.Option) *Builders {
 			// builder.
 			//
 			return kernel.ResumeNav(was, o,
-				kernel.DecorateController(func(n core.Navigator) core.Navigator {
-					// TODO: create the resume controller
-					//
-					return n
+				kernel.DecorateControllerFunc(func(nav core.Navigator) (core.Navigator, error) {
+					return resume.NewController(was, nav)
 				}),
 			)
 		}),

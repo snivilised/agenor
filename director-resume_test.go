@@ -40,13 +40,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				const depth = 2
 
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
-					tv.Was{
+					&tv.Was{
 						Using: tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						From:     RestorePath,
 						Strategy: tv.ResumeStrategyFastward,
@@ -70,13 +68,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				var wg sync.WaitGroup
 
 				_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-					tv.Was{
+					&tv.Was{
 						Using: tv.Using{
 							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
-							Handler: func(_ *tv.Node) error {
-								return nil
-							},
+							Handler:      noOpHandler,
 						},
 						From:     RestorePath,
 						Strategy: tv.ResumeStrategySpawn,
@@ -103,13 +99,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						tv.Was{
+						&tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
-								Handler: func(_ *tv.Node) error {
-									return nil
-								},
+								Handler:      noOpHandler,
 							},
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
@@ -133,13 +127,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						tv.Was{
+						&tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
-								Handler: func(_ *tv.Node) error {
-									return nil
-								},
+								Handler:      noOpHandler,
 							},
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
@@ -163,13 +155,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						tv.Was{
+						&tv.Was{
 							Using: tv.Using{
 								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
-								Handler: func(_ *tv.Node) error {
-									return nil
-								},
+								Handler:      noOpHandler,
 							},
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
