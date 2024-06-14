@@ -1,52 +1,46 @@
 package kernel
 
 import (
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/level"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-func PrimeNav(using *pref.Using, o *pref.Options) (core.Navigator, error) {
-	return newController(using, o)
+type facilities struct {
 }
 
-func ResumeNav(with *pref.Was, o *pref.Options,
-	resumption Resumption,
-) (controller core.Navigator, err error) {
-	controller, err = newController(&with.Using, o)
+func (f *facilities) Inject(pref.ActiveState) {}
 
-	if err != nil {
-		return HadesNav(err)
+func New(using *pref.Using, o *pref.Options,
+	sealer types.GuardianSealer,
+) *Artefacts {
+	impl := newImpl(using, o)
+	controller := newController(using, o, impl, sealer)
+
+	return &Artefacts{
+		Navigator: controller,
+		Mediator:  controller.mediator,
 	}
-
-	return resumption.Decorate(controller)
-}
-
-type Resumption interface {
-	Decorate(core.Navigator) (core.Navigator, error)
-}
-
-type DecorateControllerFunc func(core.Navigator) (core.Navigator, error)
-
-func (f DecorateControllerFunc) Decorate(nav core.Navigator) (core.Navigator, error) {
-	return f(nav)
 }
 
 func newController(using *pref.Using,
 	o *pref.Options,
-) (navigator core.Navigator, err error) {
-	if err = using.Validate(); err != nil {
-		return
+	impl NavigatorImpl,
+	sealer types.GuardianSealer,
+) *NavigationController {
+	return &NavigationController{
+		mediator: &mediator{
+			root:   using.Root,
+			impl:   impl,
+			client: newGuardian(using.Handler, sealer),
+			frame: &navigationFrame{
+				periscope: level.New(),
+			},
+			pad: newScratch(o),
+			o:   o,
+		},
 	}
-
-	impl := newImpl(using, o)
-
-	navigator = &NavigationController{
-		impl: impl,
-		o:    o,
-	}
-
-	return navigator, err
 }
 
 func newImpl(using *pref.Using,
@@ -57,7 +51,7 @@ func newImpl(using *pref.Using,
 		o:     o,
 	}
 
-	switch using.Subscription { //nolint:exhaustive // already validated by using
+	switch using.Subscription {
 	case enums.SubscribeFiles:
 		navigator = &navigatorFiles{
 			navigatorBase: base,
@@ -72,6 +66,8 @@ func newImpl(using *pref.Using,
 		navigator = &navigatorUniversal{
 			navigatorBase: base,
 		}
+
+	case enums.SubscribeUndefined:
 	}
 
 	return

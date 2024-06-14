@@ -13,25 +13,35 @@ import (
 )
 
 type Controller struct {
-	was      *pref.Was
-	nav      core.Navigator
-	strategy resumeStrategy
+	controller core.Navigator
+	was        *pref.Was
+	strategy   resumeStrategy
+	facilities types.Facilities
 }
 
-func NewController(was *pref.Was, nav core.Navigator) (ctrl *Controller, err error) {
+func NewController(was *pref.Was, artefacts *kernel.Artefacts) *kernel.Artefacts {
+	// The Navigator on the incoming artefacts is the core navigator. It is
+	// decorated here for resume. The strategy only needs access to the core navigator.
+	// The resume navigator delegates to the strategy.
+	//
 	var (
 		strategy resumeStrategy
+		err      error
 	)
 
-	if strategy, err = newStrategy(was, nav); err != nil {
-		return nil, err
+	if strategy, err = newStrategy(was, artefacts.Navigator); err != nil {
+		return artefacts
 	}
 
-	return &Controller{
-		was:      was,
-		nav:      nav,
-		strategy: strategy,
-	}, nil
+	return &kernel.Artefacts{
+		Navigator: &Controller{
+			controller: artefacts.Navigator,
+			was:        was,
+			strategy:   strategy,
+			facilities: artefacts.Facilities,
+		},
+		Mediator: artefacts.Mediator,
+	}
 }
 
 func newStrategy(was *pref.Was, nav core.Navigator) (strategy resumeStrategy, err error) {

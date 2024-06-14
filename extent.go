@@ -1,15 +1,28 @@
 package tv
 
 import (
+	"io/fs"
+
+	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/resume"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 type extent interface {
 	using() *pref.Using
 	was() *pref.Was
+	plugin(types.Mediator) types.Plugin
+	options(...pref.Option) (*pref.Options, error)
+}
+
+type fileSystems struct {
+	nas fs.FS
+	res fs.FS
 }
 
 type baseExtent struct {
+	fsys fileSystems
 }
 
 type primeExtent struct {
@@ -17,23 +30,51 @@ type primeExtent struct {
 	u *pref.Using
 }
 
-func (pe *primeExtent) using() *pref.Using {
-	return pe.u
+func (ex *primeExtent) using() *pref.Using {
+	return ex.u
 }
 
-func (pe *primeExtent) was() *pref.Was {
+func (ex *primeExtent) was() *pref.Was {
 	return nil
+}
+
+func (ex *primeExtent) plugin(types.Mediator) types.Plugin {
+	return nil
+}
+
+func (ex *primeExtent) options(settings ...pref.Option) (*pref.Options, error) {
+	return pref.Get(settings...)
 }
 
 type resumeExtent struct {
 	baseExtent
-	w *pref.Was
+	w      *pref.Was
+	loaded *pref.LoadInfo
 }
 
-func (re *resumeExtent) using() *pref.Using {
-	return &re.w.Using
+func (ex *resumeExtent) using() *pref.Using {
+	return &ex.w.Using
 }
 
-func (re *resumeExtent) was() *pref.Was {
-	return re.w
+func (ex *resumeExtent) was() *pref.Was {
+	return ex.w
+}
+
+func (ex *resumeExtent) plugin(mediator types.Mediator) types.Plugin {
+	return &resume.Plugin{
+		BasePlugin: kernel.BasePlugin{
+			Mediator: mediator,
+		},
+	}
+}
+
+func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, error) {
+	loaded, err := resume.Load(ex.fsys.res, ex.w.From, settings...)
+	ex.loaded = loaded
+
+	// get the resume point from the resume persistence file
+	// then set up hibernation with this defined as a hibernation
+	// filter.
+	//
+	return loaded.O, err
 }

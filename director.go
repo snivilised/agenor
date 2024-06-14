@@ -1,7 +1,8 @@
 package tv
 
 import (
-	"github.com/snivilised/traverse/core"
+	"os"
+
 	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/refine"
@@ -11,37 +12,65 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-type ifActive func(o *pref.Options) types.Plugin
+type ifActive func(o *pref.Options, mediator types.Mediator) types.Plugin
 
 // activated interrogates options and invokes requests on behalf of the user
-// to activate features according to option selections
-func activated(o *pref.Options) ([]types.Plugin, error) {
+// to activate features according to option selections. other plugins will
+// be initialised after primary plugins
+func activated(o *pref.Options, mediator types.Mediator,
+	others ...types.Plugin,
+) (plugins []types.Plugin, err error) {
 	var (
 		all = []ifActive{
 			hiber.IfActive, refine.IfActive, sampling.IfActive,
 		}
-		plugins = []types.Plugin{}
-		err     error
 	)
 
+	plugins = []types.Plugin{}
+
 	for _, active := range all {
-		if plugin := active(o); plugin != nil {
+		if plugin := active(o, mediator); plugin != nil {
 			plugins = append(plugins, plugin)
-			err = plugin.Init()
 		}
 	}
 
-	return plugins, err
+	for _, plugin := range others {
+		if plugin != nil {
+			plugins = append(plugins, plugin)
+		}
+	}
+
+	for _, plugin := range plugins {
+		err = plugin.Register()
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return plugins, nil
 }
 
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
+	navFS := os.DirFS(using.Root)
+
+	// TODO: we need to create an aux file system, which is bound
+	// to a pre-defined location, that will be called upon if
+	// the navigation session is terminated either by a ctrl-c or
+	// by a panic.
+
 	return &Builders{
-		extent: &primeExtent{
+		ext: &primeExtent{
+			baseExtent: baseExtent{
+				fsys: fileSystems{
+					nas: navFS,
+				},
+			},
 			u: using,
 		},
-		options: optionals(func() (*pref.Options, error) {
+		options: optionals(func(ext extent) (*pref.Options, error) {
 			if err := using.Validate(); err != nil {
 				return nil, err
 			}
@@ -50,13 +79,10 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				return using.O, nil
 			}
 
-			// we probably need to mark something somehow to indicate
-			// Prime
-			//
-			return pref.Get(settings...)
+			return ext.options(settings...)
 		}),
-		navigator: builder(func(o *pref.Options) (core.Navigator, error) {
-			return kernel.PrimeNav(using, o)
+		navigator: kernel.Builder(func(o *pref.Options) (*kernel.Artefacts, error) {
+			return kernel.New(using, o, &kernel.Benign{}), nil
 		}),
 		plugins: features(activated),
 	}
@@ -67,42 +93,36 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
 func Resume(was *Was, settings ...pref.Option) *Builders {
+	res := os.DirFS(was.From)
+
+	// TODO: the navigation file system, baseExtent.sys, will be set for
+	// resume, only once the resume file has been loaded, as
+	// its only at this point, we know where the original root
+	// path was.
+
 	return &Builders{
-		extent: &resumeExtent{
+		ext: &resumeExtent{
+			baseExtent: baseExtent{
+				fsys: fileSystems{
+					res: res,
+				},
+			},
 			w: was,
 		},
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
-		options: optionals(func() (*pref.Options, error) {
+		options: optionals(func(ext extent) (*pref.Options, error) {
 			if err := was.Validate(); err != nil {
 				return nil, err
 			}
 
-			// TODO: we probably need to mark something somehow to indicate
-			// Resume so we can query the hibernation condition and
-			// apply; this has been done by extent, so that querying
-			// for hibernation condition just needs to be added to
-			// the extent interface.
-			//
-			o, err := pref.Load(was.From, settings...)
-
-			// get the resume point from the resume persistence file
-			// then set up hibernation with this defined as a hibernation
-			// filter.
-			//
-			return o, err
+			return ext.options(settings...)
 		}),
-		navigator: builder(func(o *pref.Options) (core.Navigator, error) {
-			// at this point, the resume controller does not know
-			// the wake point as would be loaded by the options
-			// builder.
-			//
-			return kernel.ResumeNav(was, o,
-				kernel.DecorateControllerFunc(func(nav core.Navigator) (core.Navigator, error) {
-					return resume.NewController(was, nav)
-				}),
-			)
+		navigator: kernel.Builder(func(o *pref.Options) (*kernel.Artefacts, error) {
+			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was))
+
+			return resume.NewController(was, artefacts), nil
 		}),
 		plugins: features(activated),
 	}

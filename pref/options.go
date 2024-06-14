@@ -1,11 +1,15 @@
 package pref
 
 import (
+	"io/fs"
 	"log/slog"
+	"os"
 	"runtime"
 
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/tapable"
 )
 
 // package: pref contains user option definitions; do not use anything in kernel (cyclic)
@@ -18,10 +22,6 @@ type (
 	Options struct {
 		Core CoreOptions
 
-		// Persist contains options for persisting traverse options
-		//
-		Persist PersistOptions
-
 		// Sampler defines options for sampling directory entries. There are
 		// multiple ways of performing sampling. The client can either:
 		// A) Use one of the four predefined functions see (SamplerOptions.Fn)
@@ -33,13 +33,13 @@ type (
 		//
 		Events cycle.Events
 
+		// Hooks contains client hook-able functions
+		//
+		Hooks tapable.Hooks
+
 		// Monitor contains externally provided logger
 		//
 		Monitor MonitorOptions
-
-		// Concurrency contains options relating concurrency
-		//
-		Concurrency ConcurrencyOptions
 
 		Binder *Binder
 	}
@@ -59,13 +59,17 @@ func Get(settings ...Option) (o *Options, err error) {
 	return
 }
 
+type ActiveState struct {
+}
+
 type LoadInfo struct {
-	// O      *Options
+	O      *Options
+	State  *ActiveState
 	WakeAt string
 }
 
-func Load(from string, settings ...Option) (o *Options, err error) {
-	o = DefaultOptions()
+func Load(_ fs.FS, from string, settings ...Option) (*LoadInfo, error) {
+	o := DefaultOptions()
 	// do load
 	_ = from
 	binder := NewBinder()
@@ -74,13 +78,16 @@ func Load(from string, settings ...Option) (o *Options, err error) {
 
 	// TODO: save any active state on the binder, eg the wake point
 
-	err = apply(o, settings...)
+	err := apply(o, settings...)
 	o.Binder.Loaded = &LoadInfo{
 		// O:      o,
 		WakeAt: "tbd",
 	}
 
-	return
+	return &LoadInfo{
+		O:      o,
+		WakeAt: "tbd",
+	}, err
 }
 
 func apply(o *Options, settings ...Option) (err error) {
@@ -113,15 +120,24 @@ func DefaultOptions() *Options {
 					InclusiveStop:  false,
 				},
 			},
+			Concurrency: ConcurrencyOptions{
+				NoW: uint(runtime.NumCPU()),
+			},
+			Persist: PersistOptions{
+				Format: enums.PersistJSON,
+			},
 		},
-		Persist: PersistOptions{
-			Format: enums.PersistJSON,
+
+		Hooks: tapable.Hooks{
+			FileSubPath:   tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
+			FolderSubPath: tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
+			ReadDirectory: tapable.NewHookCtrl[core.ReadDirectoryHook](DefaultReadEntriesHook),
+			QueryStatus:   tapable.NewHookCtrl[core.QueryStatusHook](os.Lstat),
+			Sort:          tapable.NewHookCtrl[core.SortHook](CaseInSensitiveSortHook),
 		},
+
 		Monitor: MonitorOptions{
 			Log: nopLogger,
-		},
-		Concurrency: ConcurrencyOptions{
-			NoW: uint(runtime.NumCPU()),
 		},
 	}
 

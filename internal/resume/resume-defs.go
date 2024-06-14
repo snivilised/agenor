@@ -7,6 +7,10 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
+const (
+	badge = "badge: resume"
+)
+
 // refine should also contain persistence concerns (actually
 // these may be internal modules, eg internal/serial/JSON). Depends on hiber, refine
 // and persist.

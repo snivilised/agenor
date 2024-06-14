@@ -6,7 +6,6 @@ import (
 	"github.com/snivilised/extendio/bus"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 const (
@@ -18,13 +17,6 @@ type driver struct {
 }
 
 func (d *driver) init() {
-	services.Broker.RegisterHandler(badge, bus.Handler{
-		Handle: func(_ context.Context, m bus.Message) {
-			m.Data.(types.ContextExpiry).Expired()
-		},
-		Matcher: services.TopicContextExpired,
-	})
-
 	services.Broker.RegisterHandler(badge, bus.Handler{
 		Handle: func(_ context.Context, m bus.Message) {
 			_ = m.Data

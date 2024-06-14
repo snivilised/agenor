@@ -5,6 +5,11 @@ package enums
 type Role uint32
 
 const (
-	RoleUndefined       Role = iota // undefined-role
-	RoleDirectoryReader             // directory-reader-role
+	RoleUndefined        Role = iota // undefined-role
+	RoleTerminus                     // terminus-role
+	RoleClientFilter                 // client-filter-role
+	RoleClientHiberWake              // client-hiber-wake-role
+	RoleClientHiberSleep             // client-hiber-sleep-role
+	RoleFastward                     // fastward-role
+	RoleSampler                      // sampler-role
 )

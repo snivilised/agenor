@@ -17,4 +17,12 @@ type CoreOptions struct {
 	// Hibernation
 	//
 	Hibernate HibernateOptions
+
+	// Concurrency contains options relating concurrency
+	//
+	Concurrency ConcurrencyOptions
+
+	// Persist contains options for persisting traverse options
+	//
+	Persist PersistOptions
 }

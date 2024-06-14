@@ -8,20 +8,20 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
+	_ = x[SubscribeUndefined-0]
 	_ = x[SubscribeFiles-1]
 	_ = x[SubscribeFolders-2]
 	_ = x[SubscribeFoldersWithFiles-3]
 	_ = x[SubscribeUniversal-4]
 }
 
-const _Subscription_name = "subscribe-filessubscribe-folderssubscribe-folders-with-filessubscribe-to-everything"
+const _Subscription_name = "Undefinedsubscribe-filessubscribe-folderssubscribe-folders-with-filessubscribe-to-everything"
 
-var _Subscription_index = [...]uint8{0, 15, 32, 60, 83}
+var _Subscription_index = [...]uint8{0, 9, 24, 41, 69, 92}
 
 func (i Subscription) String() string {
-	i -= 1
 	if i >= Subscription(len(_Subscription_index)-1) {
-		return "Subscription(" + strconv.FormatInt(int64(i+1), 10) + ")"
+		return "Subscription(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 	return _Subscription_name[_Subscription_index[i]:_Subscription_index[i+1]]
 }

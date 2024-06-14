@@ -70,7 +70,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 				Error: err,
 			}, err
 		}, c.wg,
-		boost.WithSize(c.o.Concurrency.NoW), // TODO: conditional option; IfO
+		boost.WithSize(c.o.Core.Concurrency.NoW),
 		boost.WithOutput(OutputChSize, CheckCloseInterval, TimeoutOnSend),
 	)
 

@@ -1,12 +1,23 @@
 package kernel
 
-type Mediator interface {
-	Register() error
-}
+import (
+	"context"
+
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/pref"
+)
 
 // mediator controls traversal events, sends notifications and emits life-cycle events
 
 type mediator struct {
+	root   string
+	impl   NavigatorImpl
+	client Invokable
+	frame  *navigationFrame
+	pad    *scratchPad // gets created just before nav begins
+	o      *pref.Options
 	// there should be a registration phase; but doing so mean that
 	// these entities should already exist, which is counter productive.
 	// possibly use dependency inject where entities declare their
@@ -21,6 +32,30 @@ type mediator struct {
 	// )
 	//
 	// Hooks mark specific points in navigation that can be customised
+}
+
+func (m *mediator) Decorate(link types.Link) error {
+	return m.client.Decorate(link)
+}
+
+func (m *mediator) Unwind(role enums.Role) error {
+	return m.client.Unwind(role)
+}
+
+func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
+	// could we pass in the invokable client to Top so the navigators can invoke
+	// as required.
+	return m.impl.Top(ctx, m.root)
+}
+
+func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult, error) {
+	// TODO: send a message indicating spawn
+	//
+	return m.impl.Top(ctx, root)
+}
+
+func (m *mediator) Invoke(node *core.Node) error {
+	return m.client.Invoke(node)
 }
 
 // application phases (should we define a state machine?)

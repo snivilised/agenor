@@ -14,6 +14,8 @@ type Director interface {
 	// perform a full Prime run, or Resume from a previously
 	// cancelled run.
 	//
+	// I wonder if this could be replaced by Prime/Resume, to simplify
+	//
 	Extent(bs *Builders) core.Navigator
 }
 
@@ -67,6 +69,11 @@ var (
 	WithHibernationWake      = pref.WithHibernationWake
 	WithHibernationSleep     = pref.WithHibernationSleep
 	WithHibernationBehaviour = pref.WithHibernationBehaviour
+	WithHookQueryStatus      = pref.WithHookQueryStatus
+	WithHookReadDirectory    = pref.WithHookReadDirectory
+	WithHookSort             = pref.WithHookSort
+	WithHookFileSubPath      = pref.WithHookFileSubPath
+	WithHookFolderSubPath    = pref.WithHookFolderSubPath
 	WithNavigationBehaviours = pref.WithNavigationBehaviours
 	WithOnAscend             = pref.WithOnAscend
 	WithOnBegin              = pref.WithOnBegin
@@ -111,6 +118,7 @@ type Using = pref.Using
 // ---
 //
 // 🔆 support layer
+// tapable: [core, pref]
 // pref: ["cycle", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
 // persist: []
 // services: []

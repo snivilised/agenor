@@ -2,153 +2,103 @@ package tapable_test
 
 import (
 	"io/fs"
+	"os"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	"github.com/onsi/ginkgo/v2/dsl/decorators"
-	. "github.com/onsi/gomega" //nolint:revive // ok
+	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/tapable"
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/pref"
 )
 
-type (
-	ReadDirectoryHookFunc func(dirname string) ([]fs.DirEntry, error)
-	ReadDirectoryHook     tapable.ActivityL[ReadDirectoryHookFunc]
-
-	ReaderHost struct {
-		Name string                // init with "default"
-		Hook ReadDirectoryHookFunc // init with default func
-	}
-
-	Component struct {
-		Reader ReaderHost
-	}
-
-	ExternalReaderClient struct{}
+const (
+	root = "/traversal-root-path"
 )
 
-func (c *ExternalReaderClient) Init(from *Component) {
-	def, err := from.Reader.Tap("external reader client", func(_ string) ([]fs.DirEntry, error) {
-		return []fs.DirEntry{}, nil
-	})
-
-	_, _ = def, err
+var fakeSubPath = &core.SubPathInfo{
+	Root: root,
+	Node: &core.Node{
+		Extension: core.Root().Extension,
+	},
 }
 
-func (r *ReaderHost) Tap(name string, fn ReadDirectoryHookFunc) (ReadDirectoryHookFunc, error) {
-	previous := r.Hook
-	r.Hook = fn
-	r.Name = name
+var _ = Describe("Tapable", Ordered, func() {
+	var (
+		invoked bool
+		o       *pref.Options
+		err     error
+	)
 
-	return previous, nil
-}
-
-func (c *Component) DoWork() {
-
-}
-
-var _ = Describe("Legacy Tapable", func() {
-	Context("foo", func() {
-		It("🧪 should: ", func() {
-			// !!! this should be using Role
-			//
-			component := &Component{
-				Reader: ReaderHost{
-					Name: "default",
-					Hook: func(_ string) ([]fs.DirEntry, error) {
-						return []fs.DirEntry{}, nil
-					},
-				},
-			}
-
-			external := ExternalReaderClient{}
-			external.Init(component)
-
-			Expect(1).To(Equal(1))
-		})
+	BeforeEach(func() {
+		invoked = false
+		o, err = pref.Get()
+		Expect(err).To(Succeed())
 	})
 
-	Context("scenarios", func() {
-		When("client taps component's core action with hook", func() {
+	Context("hooks", func() {
+		When("FileSubPath hooked", func() {
+			It("🧪 should: invoke hook", func() {
+				o.Hooks.FileSubPath.Tap(func(_ *core.SubPathInfo) string {
+					invoked = true
+					return ""
+				})
+				o.Hooks.FileSubPath.Default()(fakeSubPath)
+				o.Hooks.FileSubPath.Invoke()(fakeSubPath)
 
+				Expect(invoked).To(BeTrue(), "FileSubPath hook not invoked")
+			})
 		})
 
-		When("client augments component's core action with hook", func() {
-			// client need to call default functionality
+		When("FolderSubPath hooked", func() {
+			It("🧪 should: invoke hook", func() {
+				o.Hooks.FolderSubPath.Tap(func(_ *core.SubPathInfo) string {
+					invoked = true
+					return ""
+				})
+				o.Hooks.FolderSubPath.Default()(fakeSubPath)
+				o.Hooks.FolderSubPath.Invoke()(fakeSubPath)
 
+				Expect(invoked).To(BeTrue(), "FolderSubPath hook not invoked")
+			})
 		})
 
-		When("client subscribes to component's life-cycle event", func() {
+		When("ReadDirectory hooked", func() {
+			It("🧪 should: invoke hook", func() {
+				sys := os.DirFS(root)
+				o.Hooks.ReadDirectory.Tap(func(_ fs.FS, _ string) ([]fs.DirEntry, error) {
+					invoked = true
+					return []fs.DirEntry{}, nil
+				})
+				_, _ = o.Hooks.ReadDirectory.Default()(sys, root)
+				_, _ = o.Hooks.ReadDirectory.Invoke()(sys, root)
 
+				Expect(invoked).To(BeTrue(), "ReadDirectory hook not invoked")
+			})
 		})
 
-		Context("Component exposes multiple hooks", func() {
+		When("QueryStatus hooked", func() {
+			It("🧪 should: invoke hook", func() {
+				o.Hooks.QueryStatus.Tap(func(_ string) (fs.FileInfo, error) {
+					invoked = true
+					return nil, nil
+				})
+				_, _ = o.Hooks.QueryStatus.Default()(root)
+				_, _ = o.Hooks.QueryStatus.Invoke()(root)
 
+				Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
+			})
 		})
-	})
-})
 
-type (
-	Roles struct {
-		ReadDirectory tapable.WithDefault[ReadDirectoryHookFunc, enums.Role]
-		Container     *tapable.Container[enums.Role]
-	}
+		When("Sort hooked", func() {
+			It("🧪 should: invoke hook", func() {
+				o.Hooks.Sort.Tap(func(_ []fs.DirEntry, _ ...any) error {
+					invoked = true
+					return nil
+				})
+				_ = o.Hooks.Sort.Default()([]fs.DirEntry{})
+				_ = o.Hooks.Sort.Invoke()([]fs.DirEntry{})
 
-	Options struct {
-		Hooks Roles
-	}
-)
-
-var _ = Describe("Tapable", decorators.Label("use-case"), func() {
-	Context("foo", func() {
-		When("bar", func() {
-			It("🧪 should: ", func() {
-				// This could be exposed to the client as a WithXXX option,
-				// or the client could perform the Tap manually themselves.
-				// Container is an internal affair, it should be created and
-				// used internally only.
-				container := tapable.NewContainer[enums.Role]()
-
-				// perhaps we make the tapping mechanism internal only and if
-				// we do it this way, it doesn't matter if the container is passed
-				// into the hook. We rely on WithXXX options to setup the hook,
-				// and we do the tap internally on the client's behalf.
-				//
-				// WithReadDirectoryHook ==> options.Hooks.ReadDirectory.Tap(...)
-				// This is with the caveat that there should be a separation of
-				// the options which can be set directly be the user via With commands
-				// and another abstraction which contains functional settings (ie
-				// non persistable items; probably contains the original options
-				// as a member).
-				//
-				// Actually, we can define a 'binder' which represents the options
-				// used at runtime. IE, the user selects options. Some of the With commands
-				// may set non persistable items, but these will go straight into
-				// the binder. The binder will contain options as a member. There
-				// will be translation from options to binder. Most of the internal
-				// functionality will be dependent on the binder rather than the
-				// options. Availability of the binder should become a life cycle event
-				// during bootstrapping.
-				//
-				options := &Options{
-					Hooks: Roles{
-						ReadDirectory: tapable.WithDefault[ReadDirectoryHookFunc, enums.Role]{
-							Default: func(_ string) ([]fs.DirEntry, error) {
-								return []fs.DirEntry{}, nil
-							},
-							Container: container,
-						},
-						Container: container,
-					},
-				}
-
-				_, _ = options.Hooks.ReadDirectory.Tap(
-					"client",
-					enums.RoleDirectoryReader,
-					func(_ string) ([]fs.DirEntry, error) {
-						return []fs.DirEntry{}, nil
-					},
-				)
+				Expect(invoked).To(BeTrue(), "Sort hook not invoked")
 			})
 		})
 	})
