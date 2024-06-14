@@ -1,41 +1,74 @@
 package types
 
+import (
+	"context"
+
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/pref"
+)
+
 // package types internal types
 
 type (
-	ContextExpiry interface {
-		Expired() // ??? ctx context.Context, cancel context.CancelFunc
+	// Link represents a single decorator in the chain
+	Link interface {
+		// Next invokes this decorator which returns true if
+		// next link in the chain can be run or false to stop
+		// execution of subsequent links.
+		Next(node *core.Node) (bool, error)
+
+		// Role indicates the identity of the link
+		Role() enums.Role
 	}
 
-	// NavigateResult
-	NavigateResult struct {
-		Err error
+	// GuardianSealer protects again invalid decorations. There can only
+	// be 1 sealer (the master) and currently that only comes into play
+	// for fastward resume. An ordinary filter is decorate-able, so it
+	// can't be the sealer. It is not mandatory for a master to be registered.
+	// When no master is registered, minnow will be used.
+	GuardianSealer interface {
+		Seal(link Link) error
+		IsSealed(top Link) bool
+	}
+
+	// Guardian is the gateway to accessing the invocation chain.
+	Guardian interface {
+		Decorate(link Link) error
+		Unwind(role enums.Role) error
+	}
+
+	Mediator interface {
+		Guardian
+		Navigate(ctx context.Context) (core.TraverseResult, error)
+		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
 	}
 )
 
 type Plugin interface {
 	Name() string
+	Register() error
 	Init() error
 }
 
-// UsePlugin invoked by the plugin to the navigator
-type UsePlugin interface {
-	// this interface needs to be exposed internally but not externally
-	Register(plugin Plugin) error
-	Interceptor() Interception
-	Facilitate() Facilities
+type Restoration interface {
+	Inject(state pref.ActiveState)
 }
 
 // Facilities is the interface provided to plugins to enable them
 // to initialise successfully.
 type Facilities interface {
-	Foo()
+	Restoration
 }
 
-type Interception interface {
-	Intercept()
+type NavigateResult struct {
+	Err error
 }
 
 func (r NavigateResult) Error() error {
 	return r.Err
+}
+
+type TraverseController interface {
+	core.Navigator
 }

@@ -6,10 +6,10 @@ import (
 	"github.com/snivilised/traverse/core"
 )
 
-func HadesNav(err error) (core.Navigator, error) {
+func HadesNav(err error) core.Navigator {
 	return &navigatorHades{
 		err: err,
-	}, err
+	}
 }
 
 type hadesResult struct {

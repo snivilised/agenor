@@ -6,34 +6,24 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-type navigatorBuilder interface {
-	build(o *pref.Options) (core.Navigator, error)
-}
-
-type builder func(o *pref.Options) (core.Navigator, error)
-
-func (fn builder) build(o *pref.Options) (core.Navigator, error) {
-	return fn(o)
-}
-
 type optionsBuilder interface {
-	build() (*pref.Options, error)
+	build(ext extent) (*pref.Options, error)
 }
 
-type optionals func() (*pref.Options, error)
+type optionals func(ext extent) (*pref.Options, error)
 
-func (fn optionals) build() (*pref.Options, error) {
-	return fn()
+func (fn optionals) build(ext extent) (*pref.Options, error) {
+	return fn(ext)
 }
 
 type pluginsBuilder interface {
-	build(*pref.Options) ([]types.Plugin, error)
+	build(*pref.Options, types.Mediator, ...types.Plugin) ([]types.Plugin, error)
 }
 
-type features func(*pref.Options) ([]types.Plugin, error)
+type features func(*pref.Options, types.Mediator, ...types.Plugin) ([]types.Plugin, error)
 
-func (fn features) build(o *pref.Options) ([]types.Plugin, error) {
-	return fn(o)
+func (fn features) build(o *pref.Options, mediator types.Mediator, others ...types.Plugin) ([]types.Plugin, error) {
+	return fn(o, mediator, others...)
 }
 
 // TODO: do we pass in another func to the directory that represents the sync?
@@ -42,6 +32,29 @@ type director func(bs *Builders) core.Navigator
 func (fn director) Extent(bs *Builders) core.Navigator {
 	return fn(bs)
 }
+
+// We need an entity that manages the decoration of the client handler. The
+// following scenarios need to be catered for:
+//
+// [prime]
+// - raw: handler not decorated
+// - filtered: decorated by filter
+// - sample: decorated by filter
+// - hiber: decorated by hiber wake/sleep filter
+// [resume-fastward]
+// - raw: handler decorated by hiber wake/filter >>> fast forwarding
+// [resume-spawn]
+// - raw: handler not decorated
+//
+// We need something that manages the client callback, let's call this
+// the guardian; it kind of replaces the agent, but has a more limited scope.
+// The guardian simply manages decorations for all the scenarios we have listed
+// above. And to ensure that it can't be abused, we hide it behind an interface
+// and let's call that the sentinel; so the guardian is an implementation of
+// the sentinel.
+//
+// So we have to make sure that we have a persistence object that records
+// everything about the internal state
 
 // ✨ =========================================================================
 //																					extent

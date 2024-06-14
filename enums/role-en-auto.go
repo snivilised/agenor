@@ -9,12 +9,17 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[RoleUndefined-0]
-	_ = x[RoleDirectoryReader-1]
+	_ = x[RoleTerminus-1]
+	_ = x[RoleClientFilter-2]
+	_ = x[RoleClientHiberWake-3]
+	_ = x[RoleClientHiberSleep-4]
+	_ = x[RoleFastward-5]
+	_ = x[RoleSampler-6]
 }
 
-const _Role_name = "undefined-roledirectory-reader-role"
+const _Role_name = "undefined-roleterminus-roleclient-filter-roleclient-hiber-wake-roleclient-hiber-sleep-rolefastward-rolesampler-role"
 
-var _Role_index = [...]uint8{0, 14, 35}
+var _Role_index = [...]uint8{0, 14, 27, 45, 67, 90, 103, 115}
 
 func (i Role) String() string {
 	if i >= Role(len(_Role_index)-1) {

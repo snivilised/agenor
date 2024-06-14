@@ -42,7 +42,6 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
 					&tv.Was{
 						Using: tv.Using{
-							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
@@ -70,7 +69,6 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 					&tv.Was{
 						Using: tv.Using{
-							Root:         RootPath,
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
@@ -101,7 +99,6 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&tv.Was{
 							Using: tv.Using{
-								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
@@ -129,7 +126,6 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&tv.Was{
 							Using: tv.Using{
-								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
@@ -157,7 +153,6 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&tv.Was{
 							Using: tv.Using{
-								Root:         RootPath,
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},

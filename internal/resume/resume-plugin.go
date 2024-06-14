@@ -1,6 +1,8 @@
-package sampling
+package resume
 
 import (
+	"io/fs"
+
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -8,26 +10,12 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	active := (o.Core.Sampling.NoOf.Files > 0) || (o.Core.Sampling.NoOf.Folders > 0)
-
-	if active {
-		return &Plugin{
-			BasePlugin: kernel.BasePlugin{
-				Mediator: mediator,
-			},
-		}
-	}
-
-	return nil
-}
-
 type Plugin struct {
 	kernel.BasePlugin
 }
 
 func (p *Plugin) Name() string {
-	return "sampling"
+	return "resume"
 }
 
 func (p *Plugin) Register() error {
@@ -36,15 +24,27 @@ func (p *Plugin) Register() error {
 
 func (p *Plugin) Next(node *core.Node) (bool, error) {
 	_ = node
+	// apply the wake filter
 
-	// apply the filter to the node
 	return true, nil
 }
 
 func (p *Plugin) Role() enums.Role {
-	return enums.RoleSampler
+	return enums.RoleFastward
 }
 
 func (p *Plugin) Init() error {
 	return p.Mediator.Decorate(p)
+}
+
+func GetSealer(was *pref.Was) types.GuardianSealer {
+	if was.Strategy == enums.ResumeStrategyFastward {
+		return &fastwardGuardianSealer{}
+	}
+
+	return &kernel.Benign{}
+}
+
+func Load(res fs.FS, from string, settings ...pref.Option) (*pref.LoadInfo, error) {
+	return pref.Load(res, from, settings...)
 }

@@ -4,8 +4,7 @@ import "github.com/snivilised/extendio/bus"
 
 const (
 	format                  = "%03d"
-	TopicContextExpired     = "topic:context.expired"
-	TopicInitNavigator      = "topic:init.navigator"
+	TopicInitPlugins        = "topic:init.plugins"
 	TopicInterceptNavigator = "topic:intercept.navigator"
 	TopicOptionsAnnounce    = "topic:options.announce"
 	TopicOptionsBefore      = "topic:options.before"
@@ -16,8 +15,7 @@ const (
 var (
 	Broker *bus.Broker
 	topics = []string{
-		TopicContextExpired,
-		TopicInitNavigator,
+		TopicInitPlugins,
 		TopicInterceptNavigator,
 		TopicOptionsAnnounce,
 		TopicOptionsBefore,
@@ -25,6 +23,10 @@ var (
 		TopicTraverseResult,
 	}
 )
+
+func init() {
+	Reset()
+}
 
 type (
 	InitBroker interface {

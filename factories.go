@@ -44,7 +44,7 @@ func (f *walkerFac) Configure() Director {
 					trunk: trunk{
 						nav:    artefacts.nav,
 						o:      artefacts.o,
-						extent: bs.extent,
+						extent: bs.ext,
 						err:    err,
 					},
 				},
@@ -72,7 +72,7 @@ func (f *runnerFac) Configure() Director {
 					trunk: trunk{
 						nav:    artefacts.nav,
 						o:      artefacts.o,
-						extent: bs.extent,
+						extent: bs.ext,
 						err:    err,
 					},
 					wg: f.wg,

@@ -28,6 +28,10 @@ tasks:
     cmds:
       - go test ./...
 
+  ta:
+    cmds:
+      - go test ./tapable
+
   tc:
     cmds:
       - go test ./cycle

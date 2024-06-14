@@ -1,8 +1,6 @@
 package tv
 
 import (
-	"errors"
-
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
@@ -17,15 +15,15 @@ type buildArtefacts struct {
 
 type Builders struct {
 	options   optionsBuilder
-	navigator navigatorBuilder
+	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
-	extent    extent
+	ext       extent
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	o, optionsErr := bs.options.build()
+	o, optionsErr := bs.options.build(bs.ext)
 	if optionsErr != nil {
-		had, _ := kernel.HadesNav(optionsErr)
+		had := kernel.HadesNav(optionsErr)
 
 		return &buildArtefacts{
 			o:   o,
@@ -33,9 +31,9 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}, optionsErr
 	}
 
-	nav, navErr := bs.navigator.build(o)
+	artefacts, navErr := bs.navigator.Build(o)
 	if navErr != nil {
-		had, _ := kernel.HadesNav(navErr)
+		had := kernel.HadesNav(navErr)
 
 		return &buildArtefacts{
 			o:   o,
@@ -43,9 +41,13 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}, navErr
 	}
 
-	plugins, pluginsErr := bs.plugins.build(o)
+	plugins, pluginsErr := bs.plugins.build(o,
+		artefacts.Mediator,
+		bs.ext.plugin(artefacts.Mediator),
+	)
+
 	if pluginsErr != nil {
-		had, _ := kernel.HadesNav(pluginsErr)
+		had := kernel.HadesNav(pluginsErr)
 
 		return &buildArtefacts{
 			o:   o,
@@ -53,26 +55,19 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		}, pluginsErr
 	}
 
-	if host, ok := nav.(types.UsePlugin); ok {
-		es := []error{}
-		for _, p := range plugins {
-			registrationErr := host.Register(p)
-			es = append(es, registrationErr)
-		}
-
-		if pluginErr := errors.Join(es...); pluginErr != nil {
-			had, _ := kernel.HadesNav(pluginErr)
-
+	for _, p := range plugins {
+		if bindErr := p.Init(); bindErr != nil {
 			return &buildArtefacts{
-				o:   o,
-				nav: had,
-			}, pluginErr
+				o:       o,
+				nav:     artefacts.Navigator,
+				plugins: plugins,
+			}, bindErr
 		}
 	}
 
 	return &buildArtefacts{
 		o:       o,
-		nav:     nav,
+		nav:     artefacts.Navigator,
 		plugins: plugins,
 	}, nil
 }

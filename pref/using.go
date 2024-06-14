@@ -38,19 +38,7 @@ func (u Using) Validate() error {
 		}
 	}
 
-	if u.Subscription == enums.SubscribeUndefined {
-		return UsageError{
-			message: "missing subscription",
-		}
-	}
-
-	if u.Handler == nil {
-		return UsageError{
-			message: "missing handler",
-		}
-	}
-
-	return nil
+	return validate(&u)
 }
 
 // Was is similar to Using except that it is required for Resume
@@ -81,5 +69,21 @@ func (a Was) Validate() error {
 		}
 	}
 
-	return a.Using.Validate()
+	return validate(&a.Using)
+}
+
+func validate(using *Using) error {
+	if using.Subscription == enums.SubscribeUndefined {
+		return UsageError{
+			message: "missing subscription",
+		}
+	}
+
+	if using.Handler == nil {
+		return UsageError{
+			message: "missing handler",
+		}
+	}
+
+	return nil
 }
