@@ -1,11 +1,13 @@
 package tv
 
 import (
-	"github.com/snivilised/traverse/core"
+	"io/fs"
+
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
+// optionsBuilder
 type optionsBuilder interface {
 	build(ext extent) (*pref.Options, error)
 }
@@ -16,6 +18,7 @@ func (fn optionals) build(ext extent) (*pref.Options, error) {
 	return fn(ext)
 }
 
+// pluginsBuilder
 type pluginsBuilder interface {
 	build(*pref.Options, types.Mediator, ...types.Plugin) ([]types.Plugin, error)
 }
@@ -26,11 +29,24 @@ func (fn features) build(o *pref.Options, mediator types.Mediator, others ...typ
 	return fn(o, mediator, others...)
 }
 
-// TODO: do we pass in another func to the directory that represents the sync?
-type director func(bs *Builders) core.Navigator
+type fsBuilder interface {
+	build(path string) fs.FS
+}
 
-func (fn director) Extent(bs *Builders) core.Navigator {
-	return fn(bs)
+type filesystem func(path string) fs.FS
+
+func (fn filesystem) build(path string) fs.FS {
+	return fn(path)
+}
+
+type extentBuilder interface {
+	build(fsys fs.FS) extent
+}
+
+type extension func(fs.FS) extent
+
+func (fn extension) build(fsys fs.FS) extent {
+	return fn(fsys)
 }
 
 // We need an entity that manages the decoration of the client handler. The

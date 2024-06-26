@@ -2,6 +2,7 @@ package kernel
 
 import (
 	"context"
+	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -11,31 +12,25 @@ import (
 type (
 	// NavigatorImpl
 	NavigatorImpl interface {
-		Top(ctx context.Context, root string) (*types.NavigateResult, error)
+		// Top
+		Top(ctx context.Context,
+			static *navigationStatic,
+		) (*types.NavigateResult, error)
+
+		// Traverse
+		Traverse(ctx context.Context,
+			static *navigationStatic,
+			current *core.Node,
+		) (*core.Node, error)
 	}
 
 	// NavigatorDriver
 	NavigatorDriver interface {
 		Impl() NavigatorImpl
 	}
-)
 
-// navigationStatic contains static info, ie info that is established during
-// bootstrap and doesn't change after navigation begins. Used to help
-// minimise allocations.
-type navigationStatic struct {
-	impl  NavigatorImpl
-	frame *navigationFrame
-}
-
-// navigationVapour represents short-lived navigation data whose state relates
-// only to the current Node.
-type navigationVapour struct {
-}
-
-// Gateway provides a barrier around the guardian to prevent accidental
-// misuse.
-type (
+	// Gateway provides a barrier around the guardian to prevent accidental
+	// misuse.
 	Gateway interface {
 		// Decorate is used to wrap the existing client. The decoration will
 		// result in the decorator being called first before the existing the
@@ -86,4 +81,58 @@ type (
 		Gateway
 		Invoke(node *core.Node) error
 	}
+
+	// navigationStatic contains static info, ie info that is established during
+	// bootstrap and doesn't change after navigation begins. Used to help
+	// minimise allocations.
+	navigationStatic struct {
+		mediator *mediator
+		root     string
+	}
+
+	// navigationVapour represents short-lived navigation data whose state relates
+	// only to the current Node. (equivalent to inspection in extendio)
+	navigationVapour struct {
+		currentNode       *core.Node
+		parentNode        *core.Node
+		directoryContents *DirectoryContents
+	}
+
+	assets interface {
+		static() *navigationStatic
+		current() *core.Node
+		parent() *core.Node
+		contents() *DirectoryContents
+	}
+
+	navigationAssets struct {
+		ns     navigationStatic
+		vapour *navigationVapour
+	}
+
+	navigationFault struct {
+		err  error
+		path string
+		info fs.FileInfo
+		ns   *navigationStatic
+	}
 )
+
+func (v *navigationVapour) reset(current, parent *core.Node) {
+	v.currentNode = current
+	v.parentNode = parent
+}
+
+/*
+type fileSystemErrorParams struct {
+	err   error
+	path  string
+	info  fs.FileInfo
+	agent *navigationAgent
+	frame *navigationFrame
+}
+
+type fileSystemErrorHandler interface {
+	accept(params *fileSystemErrorParams) error
+}
+*/

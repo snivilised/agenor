@@ -11,7 +11,7 @@ type navigatorUniversal struct {
 }
 
 func (n *navigatorUniversal) Top(ctx context.Context,
-	root string,
+	static *navigationStatic,
 ) (*types.NavigateResult, error) {
-	return n.navigatorBase.Top(ctx, root)
+	return top(ctx, static)
 }

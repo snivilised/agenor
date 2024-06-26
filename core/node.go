@@ -55,12 +55,15 @@ func New(
 
 // Root creates a new node Event which represents the root of directory
 // tree to traverse.
-func Root() *Node {
-	event := &Node{
-		// TODO: complete
+func Root(root string, info fs.FileInfo) *Node {
+	node := &Node{
+		Path:     root,
+		Info:     info,
+		Children: []fs.DirEntry{},
 	}
+	node.dir = isDir(node)
 
-	return event
+	return node
 }
 
 // Clone makes shallow copy of Event (excluding the error).

@@ -2,6 +2,9 @@ package kernel_test
 
 import (
 	"context"
+	"io/fs"
+	"path/filepath"
+	"testing/fstest"
 
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -12,8 +15,14 @@ import (
 )
 
 var _ = Describe("NavigatorUniversal", func() {
+	var memFS fstest.MapFS
+
 	BeforeEach(func() {
 		services.Reset()
+		memFS = fstest.MapFS{
+			filepath.Join(RootPath, "foo.txt"): {},
+			RootPath:                           {},
+		}
 	})
 
 	Context("nav", func() {
@@ -31,8 +40,14 @@ var _ = Describe("NavigatorUniversal", func() {
 						Handler: func(_ *tv.Node) error {
 							return nil
 						},
+						GetFS: func() fs.FS {
+							return memFS
+						},
 					},
-				)).Navigate(ctx)
+
+					tv.WithHookQueryStatus(memFS.Stat),
+				),
+				).Navigate(ctx)
 
 				Expect(err).To(Succeed())
 			})
