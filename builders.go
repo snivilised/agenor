@@ -11,23 +11,28 @@ type buildArtefacts struct {
 	o       *pref.Options
 	nav     core.Navigator
 	plugins []types.Plugin
+	ext     extent
 }
 
 type Builders struct {
+	fs        pref.FsBuilder
 	options   optionsBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
-	ext       extent
+	extent    extentBuilder
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	o, optionsErr := bs.options.build(bs.ext)
+	ext := bs.extent.build(bs.fs.Build())
+
+	o, optionsErr := bs.options.build(ext)
 	if optionsErr != nil {
 		had := kernel.HadesNav(optionsErr)
 
 		return &buildArtefacts{
 			o:   o,
 			nav: had,
+			ext: ext,
 		}, optionsErr
 	}
 
@@ -38,12 +43,13 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		return &buildArtefacts{
 			o:   o,
 			nav: had,
+			ext: ext,
 		}, navErr
 	}
 
 	plugins, pluginsErr := bs.plugins.build(o,
 		artefacts.Mediator,
-		bs.ext.plugin(artefacts.Mediator),
+		ext.plugin(artefacts.Mediator),
 	)
 
 	if pluginsErr != nil {
@@ -52,6 +58,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		return &buildArtefacts{
 			o:   o,
 			nav: had,
+			ext: ext,
 		}, pluginsErr
 	}
 
@@ -61,6 +68,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 				o:       o,
 				nav:     artefacts.Navigator,
 				plugins: plugins,
+				ext:     ext,
 			}, bindErr
 		}
 	}
@@ -69,5 +77,6 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		o:       o,
 		nav:     artefacts.Navigator,
 		plugins: plugins,
+		ext:     ext,
 	}, nil
 }

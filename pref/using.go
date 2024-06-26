@@ -1,6 +1,8 @@
 package pref
 
 import (
+	"io/fs"
+
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 )
@@ -28,6 +30,10 @@ type Using struct {
 	// same options that was used in the preview, by setting this
 	// property.
 	O *Options
+
+	// GetFS is optional and enables the client to specify how the
+	// file system for a path is created
+	GetFS FileSystem
 }
 
 // Validate checks that the properties on Using are all valid.
@@ -86,4 +92,14 @@ func validate(using *Using) error {
 	}
 
 	return nil
+}
+
+type FsBuilder interface {
+	Build() fs.FS
+}
+
+type FileSystem func() fs.FS
+
+func (fn FileSystem) Build() fs.FS {
+	return fn()
 }

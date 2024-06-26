@@ -11,7 +11,7 @@ var (
 )
 
 const (
-	RootPath    = "/traversal-root-path"
+	RootPath    = "traversal-root-path"
 	RestorePath = "/from-restore-path"
 	files       = 3
 	folders     = 2

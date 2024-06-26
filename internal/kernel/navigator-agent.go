@@ -1,6 +1,9 @@
 package kernel
 
 import (
+	"context"
+
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
 )
 
@@ -14,8 +17,22 @@ func newAgent() *navigatorAgent {
 	return &navigatorAgent{}
 }
 
-func top(_ navigationStatic) (result types.NavigateResult, err error) {
-	return types.NavigateResult{}, nil
+func top(ctx context.Context,
+	static *navigationStatic,
+) (*types.NavigateResult, error) {
+	info, err := static.mediator.o.Hooks.QueryStatus.Invoke()(static.root)
+
+	if err != nil {
+		return &types.NavigateResult{
+			Err: err,
+		}, err
+	}
+
+	node := core.Root(static.root, info)
+
+	_, _ = static.mediator.impl.Traverse(ctx, static, node)
+
+	return &types.NavigateResult{}, nil
 }
 
 func traverse(_ navigationStatic) {

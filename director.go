@@ -1,6 +1,7 @@
 package tv
 
 import (
+	"io/fs"
 	"os"
 
 	"github.com/snivilised/traverse/internal/hiber"
@@ -54,22 +55,28 @@ func activated(o *pref.Options, mediator types.Mediator,
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
-	navFS := os.DirFS(using.Root)
-
 	// TODO: we need to create an aux file system, which is bound
 	// to a pre-defined location, that will be called upon if
 	// the navigation session is terminated either by a ctrl-c or
 	// by a panic.
-
+	//
 	return &Builders{
-		ext: &primeExtent{
-			baseExtent: baseExtent{
-				fsys: fileSystems{
-					nas: navFS,
+		fs: pref.FileSystem(func() fs.FS {
+			if using.GetFS != nil {
+				return using.GetFS()
+			}
+			return os.DirFS(using.Root)
+		}),
+		extent: extension(func(fsys fs.FS) extent {
+			return &primeExtent{
+				baseExtent: baseExtent{
+					fsys: fileSystems{
+						nas: fsys,
+					},
 				},
-			},
-			u: using,
-		},
+				u: using,
+			}
+		}),
 		options: optionals(func(ext extent) (*pref.Options, error) {
 			if err := using.Validate(); err != nil {
 				return nil, err
@@ -84,7 +91,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 		navigator: kernel.Builder(func(o *pref.Options) (*kernel.Artefacts, error) {
 			return kernel.New(using, o, &kernel.Benign{}), nil
 		}),
-		plugins: features(activated),
+		plugins: features(activated), // swap over features & activated
 	}
 }
 
@@ -93,22 +100,28 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
 func Resume(was *Was, settings ...pref.Option) *Builders {
-	res := os.DirFS(was.From)
-
 	// TODO: the navigation file system, baseExtent.sys, will be set for
 	// resume, only once the resume file has been loaded, as
 	// its only at this point, we know where the original root
 	// path was.
-
+	//
 	return &Builders{
-		ext: &resumeExtent{
-			baseExtent: baseExtent{
-				fsys: fileSystems{
-					res: res,
+		fs: pref.FileSystem(func() fs.FS {
+			if was.Using.GetFS != nil {
+				return was.Using.GetFS()
+			}
+			return os.DirFS(was.Using.Root)
+		}),
+		extent: extension(func(fsys fs.FS) extent {
+			return &resumeExtent{
+				baseExtent: baseExtent{
+					fsys: fileSystems{
+						nas: fsys,
+					},
 				},
-			},
-			w: was,
-		},
+				w: was,
+			}
+		}),
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//

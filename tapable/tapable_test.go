@@ -18,7 +18,7 @@ const (
 var fakeSubPath = &core.SubPathInfo{
 	Root: root,
 	Node: &core.Node{
-		Extension: core.Root().Extension,
+		Extension: core.Root("/root", nil).Extension,
 	},
 }
 

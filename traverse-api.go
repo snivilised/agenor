@@ -19,6 +19,14 @@ type Director interface {
 	Extent(bs *Builders) core.Navigator
 }
 
+// director
+// TODO: do we pass in another func to the director that represents the sync?
+type director func(bs *Builders) core.Navigator
+
+func (fn director) Extent(bs *Builders) core.Navigator {
+	return fn(bs)
+}
+
 // NavigatorFactory
 type NavigatorFactory interface {
 	// Configure is a factory function that creates a navigator.

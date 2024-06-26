@@ -45,13 +45,20 @@ func (m *mediator) Unwind(role enums.Role) error {
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	// could we pass in the invokable client to Top so the navigators can invoke
 	// as required.
-	return m.impl.Top(ctx, m.root)
+	//
+	return m.impl.Top(ctx, &navigationStatic{
+		mediator: m,
+		root:     m.root,
+	})
 }
 
 func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult, error) {
 	// TODO: send a message indicating spawn
 	//
-	return m.impl.Top(ctx, root)
+	return m.impl.Top(ctx, &navigationStatic{
+		mediator: m,
+		root:     root,
+	})
 }
 
 func (m *mediator) Invoke(node *core.Node) error {
