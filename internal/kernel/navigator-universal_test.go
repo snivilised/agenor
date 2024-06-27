@@ -11,18 +11,27 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/services"
 )
 
-var _ = Describe("NavigatorUniversal", func() {
-	var memFS fstest.MapFS
+var _ = Describe("NavigatorUniversal", Ordered, func() {
+	var (
+		memFS fstest.MapFS
+		root  string
+	)
+
+	BeforeAll(func() {
+		const (
+			verbose = true
+		)
+		var portion = filepath.Join("MUSICO", "bass")
+		memFS, root = helpers.Musico(portion, verbose)
+		Expect(root).NotTo(BeEmpty())
+	})
 
 	BeforeEach(func() {
 		services.Reset()
-		memFS = fstest.MapFS{
-			filepath.Join(RootPath, "foo.txt"): {},
-			RootPath:                           {},
-		}
 	})
 
 	Context("nav", func() {
@@ -35,7 +44,7 @@ var _ = Describe("NavigatorUniversal", func() {
 
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
-						Root:         RootPath,
+						Root:         root,
 						Subscription: tv.SubscribeUniversal,
 						Handler: func(_ *tv.Node) error {
 							return nil
@@ -45,7 +54,12 @@ var _ = Describe("NavigatorUniversal", func() {
 						},
 					},
 
-					tv.WithHookQueryStatus(memFS.Stat),
+					tv.WithHookQueryStatus(func(path string) (fs.FileInfo, error) {
+						return memFS.Stat(helpers.TrimRoot(path))
+					}),
+					tv.WithHookReadDirectory(func(_ fs.FS, dirname string) ([]fs.DirEntry, error) {
+						return memFS.ReadDir(helpers.TrimRoot(dirname))
+					}),
 				),
 				).Navigate(ctx)
 
