@@ -12,12 +12,13 @@ import (
 // mediator controls traversal events, sends notifications and emits life-cycle events
 
 type mediator struct {
-	root   string
-	impl   NavigatorImpl
-	client Invokable
-	frame  *navigationFrame
-	pad    *scratchPad // gets created just before nav begins
-	o      *pref.Options
+	root      string
+	impl      NavigatorImpl
+	client    Invokable
+	frame     *navigationFrame
+	pad       *scratchPad // gets created just before nav begins
+	o         *pref.Options
+	resources *types.Resources
 	// there should be a registration phase; but doing so mean that
 	// these entities should already exist, which is counter productive.
 	// possibly use dependency inject where entities declare their

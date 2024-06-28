@@ -2,6 +2,7 @@ package kernel_test
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"testing/fstest"
@@ -17,8 +18,8 @@ import (
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
 	var (
-		memFS fstest.MapFS
-		root  string
+		vfs  fstest.MapFS
+		root string
 	)
 
 	BeforeAll(func() {
@@ -26,7 +27,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			verbose = true
 		)
 		var portion = filepath.Join("MUSICO", "bass")
-		memFS, root = helpers.Musico(portion, verbose)
+		vfs, root = helpers.Musico(portion, verbose)
 		Expect(root).NotTo(BeEmpty())
 	})
 
@@ -46,19 +47,21 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					&tv.Using{
 						Root:         root,
 						Subscription: tv.SubscribeUniversal,
-						Handler: func(_ *tv.Node) error {
+						Handler: func(node *tv.Node) error {
+							fmt.Printf("🌀 node: '%v'\n", node.Path)
+
 							return nil
 						},
 						GetFS: func() fs.FS {
-							return memFS
+							return vfs
 						},
 					},
 
 					tv.WithHookQueryStatus(func(path string) (fs.FileInfo, error) {
-						return memFS.Stat(helpers.TrimRoot(path))
+						return vfs.Stat(helpers.TrimRoot(path))
 					}),
 					tv.WithHookReadDirectory(func(_ fs.FS, dirname string) ([]fs.DirEntry, error) {
-						return memFS.ReadDir(helpers.TrimRoot(dirname))
+						return vfs.ReadDir(helpers.TrimRoot(dirname))
 					}),
 				),
 				).Navigate(ctx)

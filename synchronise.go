@@ -16,12 +16,17 @@ type synchroniser interface {
 }
 
 type trunk struct {
-	nav    core.Navigator
-	o      *pref.Options
-	extent extent
-	err    error
-	u      *pref.Using
-	w      *pref.Was
+	nav core.Navigator
+	o   *pref.Options
+	ext extent
+	err error
+	u   *pref.Using
+	// TODO: w => !!! code-smell: argh, this does not look right (only required for resume)
+	w *pref.Was
+}
+
+func (t trunk) extent() extent {
+	return t.ext
 }
 
 type concurrent struct {
@@ -36,7 +41,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	defer c.close()
 
 	if c.err != nil {
-		return types.NavigateResult{
+		return types.KernelResult{
 			Err: c.err,
 		}, c.err
 	}
@@ -53,7 +58,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 		//
 		input := &TraverseInput{
 			Node:    node,
-			Handler: c.extent.using().Handler,
+			Handler: c.ext.using().Handler,
 		}
 
 		c.inputCh <- input // support for timeout (TimeoutOnSendInput) ???
@@ -77,7 +82,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	if c.err != nil {
 		err := errors.Wrapf(c.err, i18n.ErrWorkerPoolCreationFailed.Error())
 
-		return types.NavigateResult{
+		return types.KernelResult{
 			Err: err,
 		}, err
 	}
@@ -102,7 +107,7 @@ type sequential struct {
 
 func (s *sequential) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	if s.err != nil {
-		return types.NavigateResult{
+		return types.KernelResult{
 			Err: s.err,
 		}, s.err
 	}

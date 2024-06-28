@@ -41,6 +41,10 @@ type (
 		//
 		Monitor MonitorOptions
 
+		// Defects contains error handling options
+		//
+		Defects DefectOptions
+
 		Binder *Binder
 	}
 
@@ -138,6 +142,12 @@ func DefaultOptions() *Options {
 
 		Monitor: MonitorOptions{
 			Log: nopLogger,
+		},
+
+		Defects: DefectOptions{
+			Fault: Accepter(DefaultFaultHandler),
+			Panic: Rescuer(DefaultPanicHandler),
+			Skip:  Asker(DefaultSkipHandler),
 		},
 	}
 

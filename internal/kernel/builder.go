@@ -11,15 +11,16 @@ type (
 		Navigator  core.Navigator
 		Mediator   types.Mediator
 		Facilities types.Facilities
+		Resources  *types.Resources
 	}
 
 	NavigatorBuilder interface {
-		Build(o *pref.Options) (*Artefacts, error)
+		Build(o *pref.Options, res *types.Resources) (*Artefacts, error)
 	}
 
-	Builder func(o *pref.Options) (*Artefacts, error)
+	Builder func(o *pref.Options, res *types.Resources) (*Artefacts, error)
 )
 
-func (fn Builder) Build(o *pref.Options) (*Artefacts, error) {
-	return fn(o)
+func (fn Builder) Build(o *pref.Options, res *types.Resources) (*Artefacts, error) {
+	return fn(o, res)
 }

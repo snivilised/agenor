@@ -91,12 +91,11 @@ var _ = Describe("Tapable", Ordered, func() {
 
 		When("Sort hooked", func() {
 			It("🧪 should: invoke hook", func() {
-				o.Hooks.Sort.Tap(func(_ []fs.DirEntry, _ ...any) error {
+				o.Hooks.Sort.Tap(func(_ []fs.DirEntry, _ ...any) {
 					invoked = true
-					return nil
 				})
-				_ = o.Hooks.Sort.Default()([]fs.DirEntry{})
-				_ = o.Hooks.Sort.Invoke()([]fs.DirEntry{})
+				o.Hooks.Sort.Default()([]fs.DirEntry{})
+				o.Hooks.Sort.Invoke()([]fs.DirEntry{})
 
 				Expect(invoked).To(BeTrue(), "Sort hook not invoked")
 			})

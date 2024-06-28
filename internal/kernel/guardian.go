@@ -41,9 +41,9 @@ type iterationContainer struct {
 
 // guardian controls access to the client callback
 type guardian struct {
-	client core.Client
-	chain  iterationContainer
-	master types.GuardianSealer
+	callback core.Client
+	chain    iterationContainer
+	master   types.GuardianSealer
 }
 
 func newGuardian(callback core.Client, master types.GuardianSealer) *guardian {
@@ -57,7 +57,7 @@ func newGuardian(callback core.Client, master types.GuardianSealer) *guardian {
 	})
 
 	return &guardian{
-		client: callback,
+		callback: callback,
 		chain: iterationContainer{
 			invocationChain: *stack,
 			it:              collections.ReverseIt(stack.Content(), nil),
@@ -104,6 +104,9 @@ func (g *guardian) Unwind(enums.Role) error {
 // the invocation of the client's callback, depending on the contents
 // of the chain.
 func (g *guardian) Invoke(node *core.Node) error {
+	// TODO: Actually, using an iterator is not the best way forward as it
+	// adds unnecessary overhead. Each link should have access to the next,
+	// without depending on an iterator.
 	for link := g.chain.it.Start(); g.chain.it.Valid(); g.chain.it.Next() {
 		if next, err := link.Next(node); !next || err != nil {
 			return err

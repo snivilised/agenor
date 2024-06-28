@@ -14,6 +14,8 @@ type extent interface {
 	was() *pref.Was
 	plugin(types.Mediator) types.Plugin
 	options(...pref.Option) (*pref.Options, error)
+	navFS() fs.FS
+	resFS() fs.FS
 }
 
 type fileSystems struct {
@@ -23,6 +25,14 @@ type fileSystems struct {
 
 type baseExtent struct {
 	fsys fileSystems
+}
+
+func (ex *baseExtent) navFS() fs.FS {
+	return ex.fsys.nas
+}
+
+func (ex *baseExtent) resFS() fs.FS {
+	return ex.fsys.nas
 }
 
 type primeExtent struct {

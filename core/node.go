@@ -36,7 +36,7 @@ type Extension struct {
 	Custom  any               // to be set and used by the client
 }
 
-// New create a new node Event
+// New create a new Node
 func New(
 	path string, entry fs.DirEntry, info fs.FileInfo, parent *Node, err error,
 ) *Node {
@@ -53,8 +53,8 @@ func New(
 	return node
 }
 
-// Root creates a new node Event which represents the root of directory
-// tree to traverse.
+// Root creates a new Node which represents the root of the
+// directory tree to traverse.
 func Root(root string, info fs.FileInfo) *Node {
 	node := &Node{
 		Path:     root,
@@ -66,7 +66,7 @@ func Root(root string, info fs.FileInfo) *Node {
 	return node
 }
 
-// Clone makes shallow copy of Event (excluding the error).
+// Clone makes shallow copy of Node (excluding the error).
 func (n *Node) Clone() *Node {
 	c := *n
 	c.Error = nil
@@ -74,14 +74,13 @@ func (n *Node) Clone() *Node {
 	return &c
 }
 
-// IsFolder indicates wether this event is a folder.
+// IsFolder indicates wether this node is a folder.
 func (n *Node) IsFolder() bool {
 	return n.dir
 }
 
 func (n *Node) key() string {
-	// ti.Extension.SubPath
-	return "ti.Extension.SubPath"
+	return n.Extension.SubPath
 }
 
 func isDir(n *Node) bool {

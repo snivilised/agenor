@@ -9,9 +9,7 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	active := o.Core.Filter.Node != nil
-
-	if active {
+	if o.Core.Filter.Node != nil {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				Mediator: mediator,

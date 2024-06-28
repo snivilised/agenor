@@ -28,22 +28,18 @@ func DefaultReadEntriesHook(sys fs.FS, dirname string) ([]fs.DirEntry, error) {
 
 // CaseSensitiveSortHook hook function for case sensitive directory traversal. A
 // directory of "a" will be visited after a sibling directory "B".
-func CaseSensitiveSortHook(entries []fs.DirEntry, _ ...any) error {
+func CaseSensitiveSortHook(entries []fs.DirEntry, _ ...any) {
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].Name() < entries[j].Name()
 	})
-
-	return nil
 }
 
 // CaseInSensitiveSortHook hook function for case insensitive directory traversal. A
 // directory of "a" will be visited before a sibling directory "B".
-func CaseInSensitiveSortHook(entries []fs.DirEntry, _ ...any) error {
+func CaseInSensitiveSortHook(entries []fs.DirEntry, _ ...any) {
 	sort.Slice(entries, func(i, j int) bool {
 		return strings.ToLower(entries[i].Name()) < strings.ToLower(entries[j].Name())
 	})
-
-	return nil
 }
 
 // tail extracts the end part of a string, starting from the offset
@@ -78,4 +74,16 @@ func RootParentSubPathHook(info *core.SubPathInfo) string {
 	}
 
 	return difference(info.Root, info.Node.Extension.Parent)
+}
+
+func DefaultFaultHandler(*NavigationFault) error {
+	return nil
+}
+
+func DefaultPanicHandler() {
+	// may this should invoke save
+}
+
+func DefaultSkipHandler(*core.Node, core.DirectoryContents, error) (enums.SkipTraversal, error) {
+	return enums.SkipNoneTraversal, nil
 }

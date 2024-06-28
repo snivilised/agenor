@@ -42,10 +42,10 @@ func (f *walkerFac) Configure() Director {
 			session{
 				sync: &sequential{
 					trunk: trunk{
-						nav:    artefacts.nav,
-						o:      artefacts.o,
-						extent: artefacts.ext,
-						err:    err,
+						nav: artefacts.nav,
+						o:   artefacts.o,
+						ext: artefacts.ext,
+						err: err,
 					},
 				},
 				plugins: artefacts.plugins,
@@ -70,10 +70,10 @@ func (f *runnerFac) Configure() Director {
 			session{
 				sync: &concurrent{
 					trunk: trunk{
-						nav:    artefacts.nav,
-						o:      artefacts.o,
-						extent: artefacts.ext,
-						err:    err,
+						nav: artefacts.nav,
+						o:   artefacts.o,
+						ext: artefacts.ext,
+						err: err,
 					},
 					wg: f.wg,
 				},

@@ -94,7 +94,7 @@ func validate(using *Using) error {
 	return nil
 }
 
-type FsBuilder interface {
+type FileSystemBuilder interface {
 	Build() fs.FS
 }
 
