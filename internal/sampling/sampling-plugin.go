@@ -9,9 +9,7 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	active := (o.Core.Sampling.NoOf.Files > 0) || (o.Core.Sampling.NoOf.Folders > 0)
-
-	if active {
+	if (o.Core.Sampling.NoOf.Files > 0) || (o.Core.Sampling.NoOf.Folders > 0) {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				Mediator: mediator,

@@ -14,14 +14,16 @@ type (
 	NavigatorImpl interface {
 		// Top
 		Top(ctx context.Context,
-			static *navigationStatic,
-		) (*types.NavigateResult, error)
+			ns *navigationStatic,
+		) (*types.KernelResult, error)
 
-		// Traverse
-		Traverse(ctx context.Context,
-			static *navigationStatic,
+		// Travel is the internal version of Traverse. It is useful to distinguish
+		// between the external Traverse and the internal Travel, because they
+		// have different return types and semantics.
+		Travel(ctx context.Context,
+			ns *navigationStatic,
 			current *core.Node,
-		) (*core.Node, error)
+		) (bool, error)
 	}
 
 	// NavigatorDriver
@@ -92,47 +94,50 @@ type (
 
 	// navigationVapour represents short-lived navigation data whose state relates
 	// only to the current Node. (equivalent to inspection in extendio)
-	navigationVapour struct {
+	navigationVapour struct { // after content has been read
+		ns                *navigationStatic
 		currentNode       *core.Node
-		parentNode        *core.Node
 		directoryContents *DirectoryContents
+		ents              []fs.DirEntry
 	}
 
-	assets interface {
+	navigationInfo struct { // pre content read
+	}
+
+	inspection interface { // after content has been read
 		static() *navigationStatic
 		current() *core.Node
-		parent() *core.Node
-		contents() *DirectoryContents
+		contents() core.DirectoryContents
+		entries() []fs.DirEntry
+		clear()
 	}
 
 	navigationAssets struct {
 		ns     navigationStatic
 		vapour *navigationVapour
 	}
-
-	navigationFault struct {
-		err  error
-		path string
-		info fs.FileInfo
-		ns   *navigationStatic
-	}
 )
 
-func (v *navigationVapour) reset(current, parent *core.Node) {
-	v.currentNode = current
-	v.parentNode = parent
+func (v *navigationVapour) static() *navigationStatic {
+	return v.ns
 }
 
-/*
-type fileSystemErrorParams struct {
-	err   error
-	path  string
-	info  fs.FileInfo
-	agent *navigationAgent
-	frame *navigationFrame
+func (v *navigationVapour) current() *core.Node {
+	return v.currentNode
 }
 
-type fileSystemErrorHandler interface {
-	accept(params *fileSystemErrorParams) error
+func (v *navigationVapour) contents() core.DirectoryContents {
+	return v.directoryContents
 }
-*/
+
+func (v *navigationVapour) entries() []fs.DirEntry {
+	return v.ents
+}
+
+func (v *navigationVapour) clear() {
+	if v.directoryContents != nil {
+		v.directoryContents.Clear()
+	} else {
+		newEmptyDirectoryEntries(v.ns.mediator.o)
+	}
+}

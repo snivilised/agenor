@@ -14,13 +14,15 @@ func (f *facilities) Inject(pref.ActiveState) {}
 
 func New(using *pref.Using, o *pref.Options,
 	sealer types.GuardianSealer,
+	res *types.Resources,
 ) *Artefacts {
-	impl := newImpl(using, o)
-	controller := newController(using, o, impl, sealer)
+	impl := newImpl(using, o, res)
+	controller := newController(using, o, impl, sealer, res)
 
 	return &Artefacts{
 		Navigator: controller,
 		Mediator:  controller.mediator,
+		Resources: res,
 	}
 }
 
@@ -28,6 +30,7 @@ func newController(using *pref.Using,
 	o *pref.Options,
 	impl NavigatorImpl,
 	sealer types.GuardianSealer,
+	res *types.Resources,
 ) *NavigationController {
 	return &NavigationController{
 		mediator: &mediator{
@@ -37,18 +40,21 @@ func newController(using *pref.Using,
 			frame: &navigationFrame{
 				periscope: level.New(),
 			},
-			pad: newScratch(o),
-			o:   o,
+			pad:       newScratch(o),
+			o:         o,
+			resources: res,
 		},
 	}
 }
 
 func newImpl(using *pref.Using,
 	o *pref.Options,
+	res *types.Resources,
 ) (navigator NavigatorImpl) {
 	base := navigatorBase{
 		using: using,
 		o:     o,
+		res:   res,
 	}
 
 	switch using.Subscription {

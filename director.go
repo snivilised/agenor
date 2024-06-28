@@ -61,7 +61,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	// by a panic.
 	//
 	return &Builders{
-		fs: pref.FileSystem(func() fs.FS {
+		filesystem: pref.FileSystem(func() fs.FS {
 			if using.GetFS != nil {
 				return using.GetFS()
 			}
@@ -88,8 +88,8 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 
 			return ext.options(settings...)
 		}),
-		navigator: kernel.Builder(func(o *pref.Options) (*kernel.Artefacts, error) {
-			return kernel.New(using, o, &kernel.Benign{}), nil
+		navigator: kernel.Builder(func(o *pref.Options, res *types.Resources) (*kernel.Artefacts, error) {
+			return kernel.New(using, o, &kernel.Benign{}, res), nil
 		}),
 		plugins: features(activated), // swap over features & activated
 	}
@@ -106,7 +106,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 	// path was.
 	//
 	return &Builders{
-		fs: pref.FileSystem(func() fs.FS {
+		filesystem: pref.FileSystem(func() fs.FS {
 			if was.Using.GetFS != nil {
 				return was.Using.GetFS()
 			}
@@ -132,8 +132,8 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 
 			return ext.options(settings...)
 		}),
-		navigator: kernel.Builder(func(o *pref.Options) (*kernel.Artefacts, error) {
-			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was))
+		navigator: kernel.Builder(func(o *pref.Options, res *types.Resources) (*kernel.Artefacts, error) {
+			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was), res)
 
 			return resume.NewController(was, artefacts), nil
 		}),

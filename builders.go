@@ -15,53 +15,62 @@ type buildArtefacts struct {
 }
 
 type Builders struct {
-	fs        pref.FsBuilder
-	options   optionsBuilder
-	navigator kernel.NavigatorBuilder
-	plugins   pluginsBuilder
-	extent    extentBuilder
+	filesystem pref.FileSystemBuilder
+	options    optionsBuilder
+	navigator  kernel.NavigatorBuilder
+	plugins    pluginsBuilder
+	extent     extentBuilder
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	ext := bs.extent.build(bs.fs.Build())
+	// BUILD FILE SYSTEM & EXTENT
+	//
+	ext := bs.extent.build(bs.filesystem.Build())
 
+	// BUILD OPTIONS
+	//
 	o, optionsErr := bs.options.build(ext)
 	if optionsErr != nil {
-		had := kernel.HadesNav(optionsErr)
-
 		return &buildArtefacts{
 			o:   o,
-			nav: had,
+			nav: kernel.HadesNav(optionsErr),
 			ext: ext,
 		}, optionsErr
 	}
 
-	artefacts, navErr := bs.navigator.Build(o)
+	// BUILD NAVIGATOR
+	//
+	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
+		FS: types.FileSystems{
+			N: ext.navFS(),
+			R: ext.resFS(),
+		},
+	})
 	if navErr != nil {
-		had := kernel.HadesNav(navErr)
-
 		return &buildArtefacts{
 			o:   o,
-			nav: had,
+			nav: kernel.HadesNav(navErr),
 			ext: ext,
 		}, navErr
 	}
 
+	// BUILD PLUGINS
+	//
 	plugins, pluginsErr := bs.plugins.build(o,
 		artefacts.Mediator,
 		ext.plugin(artefacts.Mediator),
 	)
 
 	if pluginsErr != nil {
-		had := kernel.HadesNav(pluginsErr)
-
 		return &buildArtefacts{
 			o:   o,
-			nav: had,
+			nav: kernel.HadesNav(pluginsErr),
 			ext: ext,
 		}, pluginsErr
 	}
 
+	// INIT PLUGINS
+	//
 	for _, p := range plugins {
 		if bindErr := p.Init(); bindErr != nil {
 			return &buildArtefacts{

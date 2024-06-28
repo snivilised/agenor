@@ -17,7 +17,7 @@ type (
 	// SortHook hook function to define how directory entries are sorted. Does not
 	// have to be set explicitly. This will be set according to the IsCaseSensitive on
 	// the TraverseOptions, but can be overridden if needed.
-	SortHook func(entries []fs.DirEntry, custom ...any) error
+	SortHook func(entries []fs.DirEntry, custom ...any)
 
 	SubPathInfo struct {
 		Root            string

@@ -20,8 +20,8 @@ func (s *spawnStrategy) detach() {
 
 }
 
-func (s *spawnStrategy) resume() (*types.NavigateResult, error) {
-	return &types.NavigateResult{}, nil
+func (s *spawnStrategy) resume() (*types.KernelResult, error) {
+	return &types.KernelResult{}, nil
 }
 
 func (s *spawnStrategy) finish() error {

@@ -19,7 +19,7 @@ type resumeStrategy interface {
 	init()
 	attach()
 	detach()
-	resume() (*types.NavigateResult, error)
+	resume() (*types.KernelResult, error)
 	finish() error
 }
 

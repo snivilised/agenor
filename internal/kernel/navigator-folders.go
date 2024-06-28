@@ -11,7 +11,7 @@ type navigatorFolders struct {
 }
 
 func (n *navigatorFolders) Top(ctx context.Context,
-	static *navigationStatic,
-) (*types.NavigateResult, error) {
-	return n.navigatorBase.Top(ctx, static)
+	ns *navigationStatic,
+) (*types.KernelResult, error) {
+	return n.navigatorBase.Top(ctx, ns)
 }

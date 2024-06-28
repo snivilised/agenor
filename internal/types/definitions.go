@@ -2,13 +2,14 @@ package types
 
 import (
 	"context"
+	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/pref"
 )
 
-// package types internal types
+// package types defines internal types
 
 type (
 	// Link represents a single decorator in the chain
@@ -22,11 +23,11 @@ type (
 		Role() enums.Role
 	}
 
-	// GuardianSealer protects again invalid decorations. There can only
+	// GuardianSealer protects against invalid decorations. There can only
 	// be 1 sealer (the master) and currently that only comes into play
 	// for fastward resume. An ordinary filter is decorate-able, so it
 	// can't be the sealer. It is not mandatory for a master to be registered.
-	// When no master is registered, minnow will be used.
+	// When no master is registered, Benign will be used.
 	GuardianSealer interface {
 		Seal(link Link) error
 		IsSealed(top Link) bool
@@ -43,32 +44,44 @@ type (
 		Navigate(ctx context.Context) (core.TraverseResult, error)
 		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
 	}
+
+	FileSystems struct {
+		N fs.FS
+		R fs.FS
+	}
+	// Resources are dependencies required for navigation
+	Resources struct {
+		FS FileSystems
+	}
+
+	// Plugin used to define interaction with supplementary features
+	Plugin interface {
+		Name() string
+		Register() error
+		Init() error
+	}
+
+	// Restoration; tbd...
+	Restoration interface {
+		Inject(state pref.ActiveState)
+	}
+
+	// Facilities is the interface provided to plugins to enable them
+	// to initialise successfully.
+	Facilities interface {
+		Restoration
+	}
+
+	// TraverseController
+	TraverseController interface {
+		core.Navigator
+	}
 )
 
-type Plugin interface {
-	Name() string
-	Register() error
-	Init() error
-}
-
-type Restoration interface {
-	Inject(state pref.ActiveState)
-}
-
-// Facilities is the interface provided to plugins to enable them
-// to initialise successfully.
-type Facilities interface {
-	Restoration
-}
-
-type NavigateResult struct {
+type KernelResult struct {
 	Err error
 }
 
-func (r NavigateResult) Error() error {
+func (r KernelResult) Error() error {
 	return r.Err
-}
-
-type TraverseController interface {
-	core.Navigator
 }

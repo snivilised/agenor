@@ -73,7 +73,7 @@ func newStrategy(was *pref.Was, nav core.Navigator) (strategy resumeStrategy, er
 }
 
 func (c *Controller) Navigate(_ context.Context) (core.TraverseResult, error) {
-	return &types.NavigateResult{
+	return &types.KernelResult{
 		Err: errors.Wrap(core.ErrNotImpl, "resume.Controller.Navigate"),
 	}, nil
 }

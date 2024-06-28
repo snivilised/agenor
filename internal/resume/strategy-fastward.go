@@ -38,8 +38,8 @@ func (s *fastwardStrategy) detach() {
 
 }
 
-func (s *fastwardStrategy) resume() (*types.NavigateResult, error) {
-	return &types.NavigateResult{}, nil
+func (s *fastwardStrategy) resume() (*types.KernelResult, error) {
+	return &types.KernelResult{}, nil
 }
 
 func (s *fastwardStrategy) finish() error {

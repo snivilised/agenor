@@ -73,6 +73,7 @@ type Was = pref.Was
 var (
 	WithCPU                  = pref.WithCPU
 	WithDepth                = pref.WithDepth
+	WithFaultHandler         = pref.WithFaultHandler
 	WithFilter               = pref.WithFilter
 	WithHibernationWake      = pref.WithHibernationWake
 	WithHibernationSleep     = pref.WithHibernationSleep
@@ -89,6 +90,7 @@ var (
 	WithOnEnd                = pref.WithOnEnd
 	WithOnStart              = pref.WithOnStart
 	WithOnStop               = pref.WithOnStop
+	WithPanicHandler         = pref.WithPanicHandler
 	WithNoRecurse            = pref.WithNoRecurse
 	WithNoW                  = pref.WithNoW
 	WithSampler              = pref.WithSampler
@@ -97,6 +99,7 @@ var (
 	WithSamplingNoOf         = pref.WithSamplingNoOf
 	WithSamplingOptions      = pref.WithSamplingOptions
 	WithSamplingType         = pref.WithSamplingType
+	WithSkipHandler          = pref.WithSkipHandler
 	WithSortBehaviour        = pref.WithSortBehaviour
 	WithSubPathBehaviour     = pref.WithSubPathBehaviour
 )

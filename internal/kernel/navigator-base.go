@@ -11,22 +11,50 @@ import (
 type navigatorBase struct {
 	o     *pref.Options
 	using *pref.Using
+	res   *types.Resources
+}
+
+/*
+func (n *navigator) descend(navi *NavigationInfo) bool {
+	if !navi.frame.periscope.descend(n.o.Store.Behaviours.Cascade.Depth) {
+		return false
+	}
+
+	navi.frame.notifiers.descend.invoke(navi.Item)
+
+	return true
+}
+
+func (n *navigator) ascend(navi *NavigationInfo, permit bool) {
+	if permit {
+		navi.frame.periscope.ascend()
+		navi.frame.notifiers.ascend.invoke(navi.Item)
+	}
+}
+
+*/
+
+func (n *navigatorBase) descend(navi *navigationInfo) bool {
+	_ = navi
+
+	return true
+}
+
+func (n *navigatorBase) ascend(navi *navigationInfo, permit bool) {
+	_, _ = navi, permit
 }
 
 func (n *navigatorBase) Top(ctx context.Context,
-	static *navigationStatic,
-) (*types.NavigateResult, error) {
-	_, _ = ctx, static
+	ns *navigationStatic,
+) (*types.KernelResult, error) {
+	_, _ = ctx, ns
 
-	return &types.NavigateResult{}, nil
+	return &types.KernelResult{}, nil
 }
 
-func (n *navigatorBase) Traverse(ctx context.Context,
-	static *navigationStatic,
-	current *core.Node,
-) (*core.Node, error) {
-	_, _ = ctx, static
-	_ = current
-
-	return nil, nil
+func (n *navigatorBase) Travel(context.Context,
+	*navigationStatic,
+	*core.Node,
+) (bool, error) {
+	return continueTraversal, nil
 }
