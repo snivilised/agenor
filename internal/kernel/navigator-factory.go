@@ -2,7 +2,6 @@ package kernel
 
 import (
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/level"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -33,25 +32,15 @@ func newController(using *pref.Using,
 	res *types.Resources,
 ) *NavigationController {
 	return &NavigationController{
-		mediator: &mediator{
-			root:   using.Root,
-			impl:   impl,
-			client: newGuardian(using.Handler, sealer),
-			frame: &navigationFrame{
-				periscope: level.New(),
-			},
-			pad:       newScratch(o),
-			o:         o,
-			resources: res,
-		},
+		mediator: newMediator(using, o, impl, sealer, res),
 	}
 }
 
 func newImpl(using *pref.Using,
 	o *pref.Options,
 	res *types.Resources,
-) (navigator NavigatorImpl) {
-	base := navigatorBase{
+) (impl NavigatorImpl) {
+	base := navigator{
 		using: using,
 		o:     o,
 		res:   res,
@@ -59,18 +48,18 @@ func newImpl(using *pref.Using,
 
 	switch using.Subscription {
 	case enums.SubscribeFiles:
-		navigator = &navigatorFiles{
-			navigatorBase: base,
+		impl = &navigatorFiles{
+			navigator: base,
 		}
 
 	case enums.SubscribeFolders, enums.SubscribeFoldersWithFiles:
-		navigator = &navigatorFolders{
-			navigatorBase: base,
+		impl = &navigatorFolders{
+			navigator: base,
 		}
 
 	case enums.SubscribeUniversal:
-		navigator = &navigatorUniversal{
-			navigatorBase: base,
+		impl = &navigatorUniversal{
+			navigator: base,
 		}
 
 	case enums.SubscribeUndefined:

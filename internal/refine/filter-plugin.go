@@ -48,5 +48,10 @@ func (p *Plugin) Role() enums.Role {
 }
 
 func (p *Plugin) Init() error {
+	p.Mediator.Supervisor().Many(
+		enums.MetricNoFoldersFilteredOut,
+		enums.MetricNoFilesFilteredOut,
+	)
+
 	return p.Mediator.Decorate(p)
 }

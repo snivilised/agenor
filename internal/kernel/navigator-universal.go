@@ -9,7 +9,7 @@ import (
 )
 
 type navigatorUniversal struct {
-	navigatorBase
+	navigator
 }
 
 func (n *navigatorUniversal) Top(ctx context.Context,

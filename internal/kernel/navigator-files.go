@@ -7,11 +7,11 @@ import (
 )
 
 type navigatorFiles struct {
-	navigatorBase
+	navigator
 }
 
 func (n *navigatorFiles) Top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	return n.navigatorBase.Top(ctx, ns)
+	return n.navigator.Top(ctx, ns)
 }
