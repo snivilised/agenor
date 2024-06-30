@@ -1,11 +1,16 @@
 package core
 
+import (
+	"github.com/snivilised/traverse/measure"
+)
+
 // core contains universal definitions and handles user facing cross
 // cutting concerns try to keep to a minimum to reduce rippling changes.
 
 type (
 	// TraverseResult
 	TraverseResult interface {
+		Metrics() measure.Reporter
 		Error() error
 	}
 

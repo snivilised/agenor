@@ -4,6 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -45,6 +46,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 			N: ext.navFS(),
 			R: ext.resFS(),
 		},
+		Supervisor: measure.New(),
 	})
 	if navErr != nil {
 		return &buildArtefacts{

@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/services"
 )
@@ -43,7 +44,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				ctx, cancel := context.WithCancel(specCtx)
 				defer cancel()
 
-				_, err := tv.Walk().Configure().Extent(tv.Prime(
+				result, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
 						Root:         root,
 						Subscription: tv.SubscribeUniversal,
@@ -67,6 +68,8 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				).Navigate(ctx)
 
 				Expect(err).To(Succeed())
+				Expect(result.Metrics().Count(enums.MetricNoFilesInvoked)).To(BeEquivalentTo(37))
+				Expect(result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(BeEquivalentTo(13))
 			})
 		})
 	})

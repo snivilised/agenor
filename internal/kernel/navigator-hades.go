@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/measure"
 )
 
 func HadesNav(err error) core.Navigator {
@@ -14,6 +15,10 @@ func HadesNav(err error) core.Navigator {
 
 type hadesResult struct {
 	err error
+}
+
+func (r *hadesResult) Metrics() measure.Reporter {
+	return nil
 }
 
 func (r *hadesResult) Error() error {

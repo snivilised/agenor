@@ -1,5 +1,7 @@
 package enums
 
+//go:generate stringer -type=EntryType -linecomment -trimprefix=EntryType -output entry-type-en-auto.go
+
 // EntryType used to enable selecting directory entry type.
 type EntryType uint
 

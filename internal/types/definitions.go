@@ -6,6 +6,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -43,6 +44,7 @@ type (
 		Guardian
 		Navigate(ctx context.Context) (core.TraverseResult, error)
 		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
+		Supervisor() *measure.Supervisor
 	}
 
 	FileSystems struct {
@@ -51,7 +53,8 @@ type (
 	}
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS FileSystems
+		FS         FileSystems
+		Supervisor *measure.Supervisor
 	}
 
 	// Plugin used to define interaction with supplementary features
@@ -70,6 +73,7 @@ type (
 	// to initialise successfully.
 	Facilities interface {
 		Restoration
+		Metrics() *measure.Supervisor
 	}
 
 	// TraverseController
@@ -79,7 +83,12 @@ type (
 )
 
 type KernelResult struct {
-	Err error
+	Reporter measure.Reporter
+	Err      error
+}
+
+func (r KernelResult) Metrics() measure.Reporter {
+	return r.Reporter
 }
 
 func (r KernelResult) Error() error {

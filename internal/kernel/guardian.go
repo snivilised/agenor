@@ -6,7 +6,9 @@ import (
 	"github.com/snivilised/extendio/collections"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/measure"
 )
 
 type (
@@ -18,9 +20,17 @@ type (
 // last in the chain and contains the original client's handler.
 type anchor struct {
 	target core.Client
+	mums   measure.Mutables
 }
 
 func (t *anchor) Next(node *core.Node) (bool, error) {
+	if metric := lo.Ternary(node.IsFolder(),
+		t.mums[enums.MetricNoFoldersInvoked],
+		t.mums[enums.MetricNoFilesInvoked],
+	); metric != nil {
+		metric.Tick()
+	}
+
 	return false, t.target(node)
 }
 
@@ -46,7 +56,10 @@ type guardian struct {
 	master   types.GuardianSealer
 }
 
-func newGuardian(callback core.Client, master types.GuardianSealer) *guardian {
+func newGuardian(callback core.Client,
+	master types.GuardianSealer,
+	mums measure.Mutables,
+) *guardian {
 	// TODO: need to pass in a sequence manifest that describes the
 	// valid chain of decorators, defined by role eg
 	// { enums.RoleTerminus, enums.RoleClientFilter, }
@@ -54,6 +67,7 @@ func newGuardian(callback core.Client, master types.GuardianSealer) *guardian {
 	stack := collections.NewStack[types.Link]()
 	stack.Push(&anchor{
 		target: callback,
+		mums:   mums,
 	})
 
 	return &guardian{
