@@ -5,11 +5,13 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("event", func() {
-	var result testResult
+	var result types.KernelResult
+
 	Context("end", func() {
 		Context("single", func() {
 			When("listener", func() {

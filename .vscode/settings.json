@@ -49,6 +49,7 @@
     "icase",
     "ineffassign",
     "jibberjabber",
+    "Kontroller",
     "leaktest",
     "linecomment",
     "linters",

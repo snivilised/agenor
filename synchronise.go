@@ -13,10 +13,12 @@ import (
 
 type synchroniser interface {
 	core.Navigator
+	Starting(core.Session)
+	IsComplete() bool
 }
 
 type trunk struct {
-	nav core.Navigator
+	kc  types.KernelController
 	o   *pref.Options
 	ext extent
 	err error
@@ -27,6 +29,14 @@ type trunk struct {
 
 func (t trunk) extent() extent {
 	return t.ext
+}
+
+func (t trunk) IsComplete() bool {
+	return t.ext.complete()
+}
+
+func (t trunk) Starting(session core.Session) {
+	t.kc.Starting(session)
 }
 
 type concurrent struct {
@@ -41,9 +51,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	defer c.close()
 
 	if c.err != nil {
-		return types.KernelResult{
-			Err: c.err,
-		}, c.err
+		return c.kc.Result(ctx, c.err), c.err
 	}
 
 	c.decorator = func(node *core.Node) error {
@@ -82,13 +90,11 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	if c.err != nil {
 		err := errors.Wrapf(c.err, i18n.ErrWorkerPoolCreationFailed.Error())
 
-		return types.KernelResult{
-			Err: err,
-		}, err
+		return c.kc.Result(ctx, err), err
 	}
 	c.open(ctx)
 
-	return c.nav.Navigate(ctx)
+	return c.kc.Navigate(ctx)
 }
 
 func (c *concurrent) open(ctx context.Context) {
@@ -107,10 +113,8 @@ type sequential struct {
 
 func (s *sequential) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	if s.err != nil {
-		return types.KernelResult{
-			Err: s.err,
-		}, s.err
+		return s.kc.Result(ctx, s.err), s.err
 	}
 
-	return s.nav.Navigate(ctx)
+	return s.kc.Navigate(ctx)
 }

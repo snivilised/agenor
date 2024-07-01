@@ -28,7 +28,9 @@ func (p *Plugin) Name() string {
 	return "filtering"
 }
 
-func (p *Plugin) Register() error {
+func (p *Plugin) Register(kc types.KernelController) error {
+	p.Kontroller = kc
+
 	return nil
 }
 

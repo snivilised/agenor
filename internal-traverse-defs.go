@@ -20,13 +20,25 @@ func (fn optionals) build(ext extent) (*pref.Options, error) {
 
 // pluginsBuilder
 type pluginsBuilder interface {
-	build(*pref.Options, types.Mediator, ...types.Plugin) ([]types.Plugin, error)
+	build(o *pref.Options,
+		mediator types.Mediator,
+		kc types.KernelController,
+		others ...types.Plugin,
+	) ([]types.Plugin, error)
 }
 
-type features func(*pref.Options, types.Mediator, ...types.Plugin) ([]types.Plugin, error)
+type features func(*pref.Options,
+	types.Mediator,
+	types.KernelController,
+	...types.Plugin,
+) ([]types.Plugin, error)
 
-func (fn features) build(o *pref.Options, mediator types.Mediator, others ...types.Plugin) ([]types.Plugin, error) {
-	return fn(o, mediator, others...)
+func (fn features) build(o *pref.Options,
+	mediator types.Mediator,
+	kc types.KernelController,
+	others ...types.Plugin,
+) ([]types.Plugin, error) {
+	return fn(o, mediator, kc, others...)
 }
 
 type fsBuilder interface {

@@ -5,5 +5,6 @@ import (
 )
 
 type BasePlugin struct {
-	Mediator types.Mediator
+	Mediator   types.Mediator
+	Kontroller types.KernelController
 }
