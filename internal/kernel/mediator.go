@@ -13,10 +13,6 @@ import (
 
 // mediator controls traversal events, sends notifications and emits life-cycle events
 
-type owned struct {
-	mums measure.Mutables
-}
-
 type mediator struct {
 	root      string
 	impl      NavigatorImpl
@@ -25,7 +21,6 @@ type mediator struct {
 	pad       *scratchPad // gets created just before nav begins
 	o         *pref.Options
 	resources *types.Resources
-	owned     owned
 	// there should be a registration phase; but doing so mean that
 	// these entities should already exist, which is counter productive.
 	// possibly use dependency inject where entities declare their
@@ -46,26 +41,21 @@ func newMediator(using *pref.Using,
 	o *pref.Options,
 	impl NavigatorImpl,
 	sealer types.GuardianSealer,
-	res *types.Resources,
+	resources *types.Resources,
 ) *mediator {
-	mums := res.Supervisor.Many(
-		enums.MetricNoFilesInvoked,
-		enums.MetricNoFoldersInvoked,
-	)
-
 	return &mediator{
-		root:   using.Root,
-		impl:   impl,
-		client: newGuardian(using.Handler, sealer, mums),
+		root: using.Root,
+		impl: impl,
+		client: newGuardian(using.Handler, sealer, resources.Supervisor.Many(
+			enums.MetricNoFilesInvoked,
+			enums.MetricNoFoldersInvoked,
+		)),
 		frame: &navigationFrame{
 			periscope: level.New(),
 		},
 		pad:       newScratch(o),
 		o:         o,
-		resources: res,
-		owned: owned{
-			mums: mums,
-		},
+		resources: resources,
 	}
 }
 
@@ -77,6 +67,10 @@ func (m *mediator) Unwind(role enums.Role) error {
 	return m.client.Unwind(role)
 }
 
+func (m *mediator) Starting(session core.Session) {
+	m.impl.Starting(session)
+}
+
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	// could we pass in the invokable client to Top so the navigators can invoke
 	// as required.
@@ -85,8 +79,6 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 		mediator: m,
 		root:     m.root,
 	})
-
-	result.Reporter = m.resources.Supervisor
 
 	return result, err
 }

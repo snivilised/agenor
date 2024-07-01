@@ -12,13 +12,16 @@ import (
 
 type Plugin struct {
 	kernel.BasePlugin
+	IfResult core.ResultCompletion
 }
 
 func (p *Plugin) Name() string {
 	return "resume"
 }
 
-func (p *Plugin) Register() error {
+func (p *Plugin) Register(kc types.KernelController) error {
+	p.Kontroller = kc
+
 	return nil
 }
 
@@ -35,6 +38,10 @@ func (p *Plugin) Role() enums.Role {
 
 func (p *Plugin) Init() error {
 	return p.Mediator.Decorate(p)
+}
+
+func (p *Plugin) IsComplete() bool {
+	return p.IfResult.IsComplete()
 }
 
 func GetSealer(was *pref.Was) types.GuardianSealer {

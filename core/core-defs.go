@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/snivilised/traverse/measure"
 )
 
@@ -8,18 +10,33 @@ import (
 // cutting concerns try to keep to a minimum to reduce rippling changes.
 
 type (
+	// ResultCompletion used to determine if the result really represents
+	// final navigation completion.
+	ResultCompletion interface {
+		IsComplete() bool
+	}
+
+	Completion func() bool
+
+	// Session represents a traversal session and keeps tracks of
+	// timing.
+	Session interface {
+		ResultCompletion
+		StartedAt() time.Time
+		Elapsed() time.Duration
+	}
+
 	// TraverseResult
 	TraverseResult interface {
 		Metrics() measure.Reporter
+		Session() Session
 		Error() error
 	}
 
 	// Client is the callback invoked for each file system node found
 	// during traversal.
 	Client func(node *Node) error
-)
 
-type (
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
 	SimpleHandler func()
@@ -38,3 +55,7 @@ type (
 	// the traversal node, such as directory ascend or descend.
 	NodeHandler func(node *Node)
 )
+
+func (fn Completion) IsComplete() bool {
+	return fn()
+}

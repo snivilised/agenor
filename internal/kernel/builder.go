@@ -8,19 +8,26 @@ import (
 
 type (
 	Artefacts struct {
-		Navigator  core.Navigator
+		Kontroller types.KernelController
 		Mediator   types.Mediator
 		Facilities types.Facilities
 		Resources  *types.Resources
+		IfResult   core.Completion
 	}
 
 	NavigatorBuilder interface {
-		Build(o *pref.Options, res *types.Resources) (*Artefacts, error)
+		Build(o *pref.Options,
+			resources *types.Resources,
+		) (*Artefacts, error)
 	}
 
-	Builder func(o *pref.Options, res *types.Resources) (*Artefacts, error)
+	Builder func(o *pref.Options,
+		resources *types.Resources,
+	) (*Artefacts, error)
 )
 
-func (fn Builder) Build(o *pref.Options, res *types.Resources) (*Artefacts, error) {
-	return fn(o, res)
+func (fn Builder) Build(o *pref.Options,
+	resources *types.Resources,
+) (*Artefacts, error) {
+	return fn(o, resources)
 }

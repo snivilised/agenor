@@ -60,7 +60,7 @@ type (
 	// Plugin used to define interaction with supplementary features
 	Plugin interface {
 		Name() string
-		Register() error
+		Register(kc KernelController) error
 		Init() error
 	}
 
@@ -76,21 +76,52 @@ type (
 		Metrics() *measure.Supervisor
 	}
 
-	// TraverseController
-	TraverseController interface {
+	// KernelController
+	KernelController interface {
 		core.Navigator
+		Starting(session core.Session)
+		Result(ctx context.Context, err error) *KernelResult
 	}
 )
 
 type KernelResult struct {
-	Reporter measure.Reporter
-	Err      error
+	session  core.Session
+	reporter measure.Reporter
+	complete bool
+	err      error
 }
 
-func (r KernelResult) Metrics() measure.Reporter {
-	return r.Reporter
+func NewResult(session core.Session,
+	supervisor *measure.Supervisor,
+	err error,
+	complete bool,
+) *KernelResult {
+	return &KernelResult{
+		session:  session,
+		reporter: supervisor,
+		err:      err,
+		complete: complete,
+	}
 }
 
-func (r KernelResult) Error() error {
-	return r.Err
+func NewFailed(err error) *KernelResult {
+	return &KernelResult{
+		err: err,
+	}
+}
+
+func (r *KernelResult) IsComplete() bool {
+	return r.complete
+}
+
+func (r *KernelResult) Session() core.Session {
+	return r.session
+}
+
+func (r *KernelResult) Metrics() measure.Reporter {
+	return r.reporter
+}
+
+func (r *KernelResult) Error() error {
+	return r.err
 }

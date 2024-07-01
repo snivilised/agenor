@@ -70,6 +70,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				Expect(err).To(Succeed())
 				Expect(result.Metrics().Count(enums.MetricNoFilesInvoked)).To(BeEquivalentTo(37))
 				Expect(result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(BeEquivalentTo(13))
+				Expect(result.Session()).NotTo(BeNil())
 			})
 		})
 	})

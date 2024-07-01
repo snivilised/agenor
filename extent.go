@@ -12,10 +12,11 @@ import (
 type extent interface {
 	using() *pref.Using
 	was() *pref.Was
-	plugin(types.Mediator) types.Plugin
+	plugin(*kernel.Artefacts) types.Plugin
 	options(...pref.Option) (*pref.Options, error)
 	navFS() fs.FS
 	resFS() fs.FS
+	complete() bool
 }
 
 type fileSystems struct {
@@ -48,7 +49,7 @@ func (ex *primeExtent) was() *pref.Was {
 	return nil
 }
 
-func (ex *primeExtent) plugin(types.Mediator) types.Plugin {
+func (ex *primeExtent) plugin(*kernel.Artefacts) types.Plugin {
 	return nil
 }
 
@@ -56,10 +57,15 @@ func (ex *primeExtent) options(settings ...pref.Option) (*pref.Options, error) {
 	return pref.Get(settings...)
 }
 
+func (ex *primeExtent) complete() bool {
+	return true
+}
+
 type resumeExtent struct {
 	baseExtent
 	w      *pref.Was
 	loaded *pref.LoadInfo
+	rp     *resume.Plugin
 }
 
 func (ex *resumeExtent) using() *pref.Using {
@@ -70,12 +76,15 @@ func (ex *resumeExtent) was() *pref.Was {
 	return ex.w
 }
 
-func (ex *resumeExtent) plugin(mediator types.Mediator) types.Plugin {
-	return &resume.Plugin{
+func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
+	ex.rp = &resume.Plugin{
 		BasePlugin: kernel.BasePlugin{
-			Mediator: mediator,
+			Mediator: artefacts.Mediator,
 		},
+		IfResult: artefacts.IfResult,
 	}
+
+	return ex.rp
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, error) {
@@ -87,4 +96,8 @@ func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, error) 
 	// filter.
 	//
 	return loaded.O, err
+}
+
+func (ex *resumeExtent) complete() bool {
+	return ex.rp.IfResult.IsComplete()
 }

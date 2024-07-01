@@ -1,30 +1,32 @@
 package resume
 
 import (
-	"github.com/snivilised/traverse/core"
+	"context"
+
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
+// Depends on hiber, refine and persist.
+// refine should also contain persistence concerns (actually
+// these may be internal modules, eg internal/serial/JSON).
+
 const (
 	badge = "badge: resume"
 )
-
-// refine should also contain persistence concerns (actually
-// these may be internal modules, eg internal/serial/JSON). Depends on hiber, refine
-// and persist.
 
 type resumeStrategy interface {
 	init()
 	attach()
 	detach()
-	resume() (*types.KernelResult, error)
+	resume(context.Context) (*types.KernelResult, error)
+	ifResult() bool
 	finish() error
 }
 
 type baseStrategy struct {
 	o    *pref.Options
-	nav  core.Navigator
+	kc   types.KernelController
 	impl kernel.NavigatorImpl
 }

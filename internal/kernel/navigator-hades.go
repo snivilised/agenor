@@ -4,33 +4,26 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/measure"
+	"github.com/snivilised/traverse/internal/types"
 )
 
-func HadesNav(err error) core.Navigator {
+func HadesNav(err error) types.KernelController {
 	return &navigatorHades{
 		err: err,
 	}
-}
-
-type hadesResult struct {
-	err error
-}
-
-func (r *hadesResult) Metrics() measure.Reporter {
-	return nil
-}
-
-func (r *hadesResult) Error() error {
-	return r.err
 }
 
 type navigatorHades struct {
 	err error
 }
 
-func (n *navigatorHades) Navigate(_ context.Context) (core.TraverseResult, error) {
-	return &hadesResult{
-		err: n.err,
-	}, n.err
+func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
+	return types.NewFailed(err)
+}
+
+func (n *navigatorHades) Starting(_ core.Session) {
+}
+
+func (n *navigatorHades) Navigate(ctx context.Context) (core.TraverseResult, error) {
+	return n.Result(ctx, n.err), n.err
 }

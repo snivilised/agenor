@@ -19,6 +19,7 @@ type ifActive func(o *pref.Options, mediator types.Mediator) types.Plugin
 // to activate features according to option selections. other plugins will
 // be initialised after primary plugins
 func activated(o *pref.Options, mediator types.Mediator,
+	kc types.KernelController,
 	others ...types.Plugin,
 ) (plugins []types.Plugin, err error) {
 	var (
@@ -42,7 +43,7 @@ func activated(o *pref.Options, mediator types.Mediator,
 	}
 
 	for _, plugin := range plugins {
-		err = plugin.Register()
+		err = plugin.Register(kc)
 
 		if err != nil {
 			return nil, err
@@ -88,8 +89,10 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 
 			return ext.options(settings...)
 		}),
-		navigator: kernel.Builder(func(o *pref.Options, res *types.Resources) (*kernel.Artefacts, error) {
-			return kernel.New(using, o, &kernel.Benign{}, res), nil
+		navigator: kernel.Builder(func(o *pref.Options,
+			resources *types.Resources,
+		) (*kernel.Artefacts, error) {
+			return kernel.New(using, o, &kernel.Benign{}, resources), nil
 		}),
 		plugins: features(activated), // swap over features & activated
 	}
@@ -132,8 +135,10 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 
 			return ext.options(settings...)
 		}),
-		navigator: kernel.Builder(func(o *pref.Options, res *types.Resources) (*kernel.Artefacts, error) {
-			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was), res)
+		navigator: kernel.Builder(func(o *pref.Options,
+			resources *types.Resources,
+		) (*kernel.Artefacts, error) {
+			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was), resources)
 
 			return resume.NewController(was, artefacts), nil
 		}),

@@ -1,7 +1,6 @@
 package tv
 
 import (
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/measure"
@@ -10,7 +9,7 @@ import (
 
 type buildArtefacts struct {
 	o       *pref.Options
-	nav     core.Navigator
+	kc      types.KernelController
 	plugins []types.Plugin
 	ext     extent
 }
@@ -34,7 +33,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	if optionsErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			nav: kernel.HadesNav(optionsErr),
+			kc:  kernel.HadesNav(optionsErr),
 			ext: ext,
 		}, optionsErr
 	}
@@ -51,7 +50,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	if navErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			nav: kernel.HadesNav(navErr),
+			kc:  kernel.HadesNav(navErr),
 			ext: ext,
 		}, navErr
 	}
@@ -60,13 +59,14 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	//
 	plugins, pluginsErr := bs.plugins.build(o,
 		artefacts.Mediator,
-		ext.plugin(artefacts.Mediator),
+		artefacts.Kontroller,
+		ext.plugin(artefacts),
 	)
 
 	if pluginsErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			nav: kernel.HadesNav(pluginsErr),
+			kc:  kernel.HadesNav(pluginsErr),
 			ext: ext,
 		}, pluginsErr
 	}
@@ -77,7 +77,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		if bindErr := p.Init(); bindErr != nil {
 			return &buildArtefacts{
 				o:       o,
-				nav:     artefacts.Navigator,
+				kc:      artefacts.Kontroller,
 				plugins: plugins,
 				ext:     ext,
 			}, bindErr
@@ -86,7 +86,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	return &buildArtefacts{
 		o:       o,
-		nav:     artefacts.Navigator,
+		kc:      artefacts.Kontroller,
 		plugins: plugins,
 		ext:     ext,
 	}, nil
