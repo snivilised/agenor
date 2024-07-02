@@ -61,7 +61,6 @@ func universalCallback(name string) core.Client {
 
 func subscribes(subscription enums.Subscription, de fs.DirEntry) bool {
 	isAnySubscription := (subscription == enums.SubscribeUniversal)
-
 	files := (subscription == enums.SubscribeFiles) && (!de.IsDir())
 	folders := ((subscription == enums.SubscribeFolders) ||
 		subscription == enums.SubscribeFoldersWithFiles) && (de.IsDir())
