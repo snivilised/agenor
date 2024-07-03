@@ -199,5 +199,41 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				folders: 41,
 			},
 		}),
+
+		// === files =========================================================
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "files: Path is leaf",
+			relative:     "RETRO-WAVE/Chromatics/Night Drive",
+			subscription: enums.SubscribeFiles,
+			callback:     filesCallback("LEAF-PATH"),
+			expectedNoOf: quantities{
+				files:   4,
+				folders: 0,
+			},
+		}),
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "files: Path contains folders",
+			relative:     "RETRO-WAVE",
+			subscription: enums.SubscribeFiles,
+			callback:     filesCallback("CONTAINS-FOLDERS"),
+			expectedNoOf: quantities{
+				files:   14,
+				folders: 0,
+			},
+		}),
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "files: Path contains folders",
+			relative:     "RETRO-WAVE",
+			visit:        true,
+			subscription: enums.SubscribeFiles,
+			callback:     filesCallback("VISIT-CONTAINS-FOLDERS"),
+			expectedNoOf: quantities{
+				files:   14,
+				folders: 0,
+			},
+		}),
 	)
 })
