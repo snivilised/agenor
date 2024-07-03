@@ -13,4 +13,8 @@ const (
 	// EntryTypeFile
 	//
 	EntryTypeFile // file-entry
+
+	// EntryTypeAll
+	//
+	EntryTypeAll // all-entries
 )

@@ -12,6 +12,7 @@ import (
 type (
 	// NavigatorImpl
 	NavigatorImpl interface {
+		// Starting
 		Starting(session core.Session)
 
 		// Top
@@ -27,6 +28,7 @@ type (
 			current *core.Node,
 		) (bool, error)
 
+		// Result
 		Result(ctx context.Context, err error) *types.KernelResult
 	}
 
@@ -99,10 +101,10 @@ type (
 	// navigationVapour represents short-lived navigation data whose state relates
 	// only to the current Node. (equivalent to inspection in extendio)
 	navigationVapour struct { // after content has been read
-		ns                *navigationStatic
-		currentNode       *core.Node
-		directoryContents *DirectoryContents
-		ents              []fs.DirEntry
+		ns      *navigationStatic
+		present *core.Node
+		cargo   *Contents
+		ents    []fs.DirEntry
 	}
 
 	navigationInfo struct { // pre content read
@@ -127,11 +129,11 @@ func (v *navigationVapour) static() *navigationStatic {
 }
 
 func (v *navigationVapour) current() *core.Node {
-	return v.currentNode
+	return v.present
 }
 
 func (v *navigationVapour) contents() core.DirectoryContents {
-	return v.directoryContents
+	return v.cargo
 }
 
 func (v *navigationVapour) entries() []fs.DirEntry {
@@ -139,9 +141,20 @@ func (v *navigationVapour) entries() []fs.DirEntry {
 }
 
 func (v *navigationVapour) clear() {
-	if v.directoryContents != nil {
-		v.directoryContents.Clear()
+	if v.cargo != nil {
+		v.cargo.Clear()
 	} else {
-		newEmptyDirectoryEntries(v.ns.mediator.o)
+		newEmptyContents(v.ns.mediator.o)
+	}
+}
+
+func (v *navigationVapour) pick(et enums.EntryType) {
+	switch et {
+	case enums.EntryTypeAll:
+		v.ents = v.cargo.All()
+	case enums.EntryTypeFolder:
+		v.ents = v.cargo.folders
+	case enums.EntryTypeFile:
+		v.ents = v.cargo.files
 	}
 }

@@ -2,7 +2,6 @@ package pref
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/lo"
 )
 
 func WithHookQueryStatus(hook core.QueryStatusHook) Option {
@@ -21,13 +20,9 @@ func WithHookReadDirectory(hook core.ReadDirectoryHook) Option {
 	}
 }
 
-func WithHookSortCase(icase bool) Option {
+func WithHookCaseSensitiveSort() Option {
 	return func(o *Options) error {
-		hook := lo.Ternary(icase,
-			CaseInSensitiveSortHook,
-			CaseSensitiveSortHook,
-		)
-		o.Hooks.Sort.Tap(hook)
+		o.Hooks.Sort.Tap(CaseSensitiveSortHook)
 
 		return nil
 	}

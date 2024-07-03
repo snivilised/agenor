@@ -19,6 +19,14 @@ tasks:
       - go build ./...
 
   # === test =================================================
+  # to see how to select tests by label, refer to:
+  # https://onsi.github.io/ginkgo/#spec-labels
+  #
+  # equal: --label-filter="foo"
+  #   not: --label-filter="!foo"
+  #   and: --label-filter="!foo && bar"
+  #    or: --label-filter="!foo || bar"
+  # regex: --label-filter="/pattern/"
 
   dry:
     cmds:

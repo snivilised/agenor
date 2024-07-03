@@ -35,9 +35,7 @@ func (n *navigator) ascend(navi *NavigationInfo, permit bool) {
 }
 */
 
-func (n *navigator) descend(navi *navigationInfo) bool {
-	_ = navi
-
+func (n *navigator) descend(*navigationInfo) bool {
 	return true
 }
 

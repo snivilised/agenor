@@ -15,6 +15,7 @@ import (
 
 type mediator struct {
 	root      string
+	using     *pref.Using
 	impl      NavigatorImpl
 	client    Invokable
 	frame     *navigationFrame
@@ -44,8 +45,9 @@ func newMediator(using *pref.Using,
 	resources *types.Resources,
 ) *mediator {
 	return &mediator{
-		root: using.Root,
-		impl: impl,
+		root:  using.Root,
+		using: using,
+		impl:  impl,
 		client: newGuardian(using.Handler, sealer, resources.Supervisor.Many(
 			enums.MetricNoFilesInvoked,
 			enums.MetricNoFoldersInvoked,
