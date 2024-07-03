@@ -9,13 +9,13 @@ import (
 )
 
 type navigatorFiles struct {
-	navigator
+	navigatorAgent
 }
 
 func (n *navigatorFiles) Top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	return top(ctx, ns)
+	return n.top(ctx, ns)
 }
 
 func (n *navigatorFiles) Travel(ctx context.Context,
@@ -44,7 +44,7 @@ func (n *navigatorFiles) Travel(ctx context.Context,
 		return true, e
 	}
 
-	return travel(ctx, ns, vapour)
+	return n.travel(ctx, ns, vapour)
 }
 
 func (n *navigatorFiles) inspect(ns *navigationStatic, current *core.Node) (inspection, error) {

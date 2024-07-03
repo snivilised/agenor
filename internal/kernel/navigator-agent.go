@@ -8,6 +8,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -19,13 +20,48 @@ import (
 // represented by state, just functions that take state,
 // typically navigationStatic.
 type navigatorAgent struct {
+	o         *pref.Options
+	using     *pref.Using
+	resources *types.Resources
+	session   core.Session
 }
 
 func newAgent() *navigatorAgent {
 	return &navigatorAgent{}
 }
 
-func top(ctx context.Context,
+/*
+func (n *navigator) descend(navi *NavigationInfo) bool {
+	if !navi.frame.periscope.descend(n.o.Store.Behaviours.Cascade.Depth) {
+		return false
+	}
+
+	navi.frame.notifiers.descend.invoke(navi.Item)
+
+	return true
+}
+
+func (n *navigator) ascend(navi *NavigationInfo, permit bool) {
+	if permit {
+		navi.frame.periscope.ascend()
+		navi.frame.notifiers.ascend.invoke(navi.Item)
+	}
+}
+*/
+
+func (n *navigatorAgent) descend(*navigationInfo) bool {
+	return true
+}
+
+func (n *navigatorAgent) ascend(navi *navigationInfo, permit bool) {
+	_, _ = navi, permit
+}
+
+func (n *navigatorAgent) Starting(session core.Session) {
+	n.session = session
+}
+
+func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
 	info, ie := ns.mediator.o.Hooks.QueryStatus.Invoke()(ns.root)
@@ -49,6 +85,28 @@ func top(ctx context.Context,
 	return ns.mediator.impl.Result(ctx, err), err
 }
 
+func (n *navigatorAgent) Travel(context.Context,
+	*navigationStatic,
+	*core.Node,
+) (bool, error) {
+	return continueTraversal, nil
+}
+
+func (n *navigatorAgent) Result(ctx context.Context, err error) *types.KernelResult {
+	complete := n.session.IsComplete()
+	result := types.NewResult(n.session,
+		n.resources.Supervisor,
+		err,
+		complete,
+	)
+
+	if complete {
+		_ = services.Broker.Emit(ctx, services.TopicNavigationComplete, result)
+	}
+
+	return result
+}
+
 const (
 	continueTraversal = true
 	skipTraversal     = false
@@ -63,7 +121,7 @@ const (
 // When an error occurs for this node, we return false (skipTraversal) indicating
 // a skip. A skip can mean skip the entire navigation process (fs.SkipAll),
 // or just skip all remaining sibling nodes in this directory (fs.SkipDir).
-func travel(ctx context.Context,
+func (n *navigatorAgent) travel(ctx context.Context,
 	ns *navigationStatic,
 	vapour inspection,
 ) (bool, error) {

@@ -9,13 +9,13 @@ import (
 )
 
 type navigatorUniversal struct {
-	navigator
+	navigatorAgent
 }
 
 func (n *navigatorUniversal) Top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	return top(ctx, ns)
+	return n.top(ctx, ns)
 }
 
 func (n *navigatorUniversal) Travel(ctx context.Context,
@@ -36,7 +36,7 @@ func (n *navigatorUniversal) Travel(ctx context.Context,
 		return skipTraversal, e
 	}
 
-	return travel(ctx, ns, vapour)
+	return n.travel(ctx, ns, vapour)
 }
 
 func (n *navigatorUniversal) inspect(ns *navigationStatic, current *core.Node) (inspection, error) {
