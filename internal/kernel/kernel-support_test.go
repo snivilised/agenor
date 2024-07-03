@@ -78,6 +78,16 @@ func foldersCallback(name string) core.Client {
 	}
 }
 
+func filesCallback(name string) core.Client {
+	return func(node *core.Node) error {
+		GinkgoWriter.Printf("---> 🌙 FILES//%v-CALLBACK: '%v'\n", name, node.Path)
+		Expect(node.IsFolder()).To(BeFalse())
+		Expect(node.Extension).NotTo(BeNil(), helpers.Reason(node.Path))
+
+		return nil
+	}
+}
+
 func foldersCaseSensitiveCallback(first, second string) core.Client {
 	recording := make(recordingMap)
 

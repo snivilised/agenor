@@ -18,7 +18,6 @@ func (n *navigatorFolders) Top(ctx context.Context,
 	return top(ctx, ns)
 }
 
-// looks like Travel can be implemented in agent/base
 func (n *navigatorFolders) Travel(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
@@ -29,7 +28,6 @@ func (n *navigatorFolders) Travel(ctx context.Context,
 		return continueTraversal, e
 	}
 
-	// this part is now different from universal (the different ways to return):
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
 		current, vapour.contents(), err,
 	); skip == enums.SkipAllTraversal {

@@ -9,6 +9,7 @@ import (
 // operating systems. This abstraction removes the differences in sorting
 // behaviour on different platforms.
 type DirectoryContents interface {
+	All() []fs.DirEntry
 	Folders() []fs.DirEntry
 	Files() []fs.DirEntry
 }
