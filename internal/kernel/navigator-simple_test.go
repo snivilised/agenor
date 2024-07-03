@@ -15,7 +15,6 @@ import (
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
@@ -28,8 +27,11 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		const (
 			verbose = true
 		)
-		var portion = filepath.Join("MUSICO", "RETRO-WAVE")
-		vfs, root = helpers.Musico(portion, verbose)
+
+		vfs, root = helpers.Musico(verbose,
+			filepath.Join("MUSICO", "RETRO-WAVE"),
+			filepath.Join("MUSICO", "rock", "metal"),
+		)
 		Expect(root).NotTo(BeEmpty())
 	})
 
@@ -37,7 +39,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		services.Reset()
 	})
 
-	DescribeTable("Ensure Callback Invoked Once", Label("simple", "RETRO-WAVE"),
+	DescribeTable("Ensure Callback Invoked Once", Label("simple"),
 		func(ctx SpecContext, entry *naviTE) {
 			recording := make(recordingMap)
 			visited := []string{}
@@ -69,9 +71,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					},
 				},
 				tv.WithOnBegin(begin("🛡️")),
-				tv.WithSortBehaviour(&pref.SortBehaviour{
-					IsCaseSensitive: entry.caseSensitive,
-				}),
+				tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(func(path string) (fs.FileInfo, error) {
 					return vfs.Stat(helpers.TrimRoot(path))
 				}),
@@ -85,7 +85,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			_ = result.Session().Elapsed()
 
 			if entry.visit {
-				_ = filepath.WalkDir(path, func(path string, de fs.DirEntry, _ error) error {
+				_ = fs.WalkDir(vfs, path, func(path string, de fs.DirEntry, _ error) error {
 					if strings.HasSuffix(path, ".DS_Store") {
 						return nil
 					}
@@ -119,36 +119,84 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, &naviTE{
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
 			message:      "universal: Path is leaf",
 			relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			subscription: enums.SubscribeUniversal,
 			callback:     universalCallback("LEAF-PATH"),
-			expectedNoOf: directoryQuantities{
+			expectedNoOf: quantities{
 				files:   4,
 				folders: 1,
 			},
 		}),
 
-		Entry(nil, &naviTE{
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
 			message:      "universal: Path contains folders",
 			relative:     "RETRO-WAVE",
 			subscription: enums.SubscribeUniversal,
 			callback:     universalCallback("CONTAINS-FOLDERS"),
-			expectedNoOf: directoryQuantities{
+			expectedNoOf: quantities{
 				files:   14,
 				folders: 8,
 			},
 		}),
-		Entry(nil, &naviTE{
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
 			message:      "universal: Path contains folders (visit)",
 			relative:     "RETRO-WAVE",
 			visit:        true,
 			subscription: enums.SubscribeUniversal,
 			callback:     universalCallback("VISIT-CONTAINS-FOLDERS"),
-			expectedNoOf: directoryQuantities{
+			expectedNoOf: quantities{
 				files:   14,
 				folders: 8,
+			},
+		}),
+
+		// === folders =======================================================
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "folders: Path is leaf",
+			relative:     "RETRO-WAVE/Chromatics/Night Drive",
+			subscription: enums.SubscribeFolders,
+			callback:     foldersCallback("LEAF-PATH"),
+			expectedNoOf: quantities{
+				folders: 1,
+			},
+		}),
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "folders: Path contains folders",
+			relative:     "RETRO-WAVE",
+			subscription: enums.SubscribeFolders,
+			callback:     foldersCallback("CONTAINS-FOLDERS"),
+			expectedNoOf: quantities{
+				folders: 8,
+			},
+		}),
+
+		Entry(nil, Label("RETRO-WAVE"), &naviTE{
+			message:      "folders: Path contains folders (check all invoked)",
+			relative:     "RETRO-WAVE",
+			visit:        true,
+			subscription: enums.SubscribeFolders,
+			callback:     foldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+			expectedNoOf: quantities{
+				folders: 8,
+			},
+		}),
+
+		Entry(nil, Label("metal"), &naviTE{
+			message:       "folders: case sensitive sort",
+			relative:      "rock/metal",
+			subscription:  enums.SubscribeFolders,
+			caseSensitive: true,
+			callback: foldersCaseSensitiveCallback(
+				"rock/metal/HARD-METAL", "rock/metal/dark",
+			),
+			expectedNoOf: quantities{
+				files:   0,
+				folders: 41,
 			},
 		}),
 	)

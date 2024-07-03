@@ -48,11 +48,13 @@ const (
 // on the top of the code stack and is allowed to use anything, but nothing
 // else can depend on definitions here, except unit tests.
 
-type Client = core.Client
-type Node = core.Node
-type Option = pref.Option
-type Options = pref.Options
-type Subscription = enums.Subscription
+type (
+	Node         = core.Node
+	Client       = core.Client
+	Option       = pref.Option
+	Options      = pref.Options
+	Subscription = enums.Subscription
+)
 
 const (
 	SubscribeFiles            = enums.SubscribeFiles
@@ -71,37 +73,39 @@ const (
 type Was = pref.Was
 
 var (
-	WithCPU                  = pref.WithCPU
-	WithDepth                = pref.WithDepth
-	WithFaultHandler         = pref.WithFaultHandler
-	WithFilter               = pref.WithFilter
-	WithHibernationWake      = pref.WithHibernationWake
-	WithHibernationSleep     = pref.WithHibernationSleep
-	WithHibernationBehaviour = pref.WithHibernationBehaviour
-	WithHookQueryStatus      = pref.WithHookQueryStatus
-	WithHookReadDirectory    = pref.WithHookReadDirectory
-	WithHookSort             = pref.WithHookSort
-	WithHookFileSubPath      = pref.WithHookFileSubPath
-	WithHookFolderSubPath    = pref.WithHookFolderSubPath
-	WithNavigationBehaviours = pref.WithNavigationBehaviours
-	WithOnAscend             = pref.WithOnAscend
-	WithOnBegin              = pref.WithOnBegin
-	WithOnDescend            = pref.WithOnDescend
-	WithOnEnd                = pref.WithOnEnd
-	WithOnStart              = pref.WithOnStart
-	WithOnStop               = pref.WithOnStop
-	WithPanicHandler         = pref.WithPanicHandler
-	WithNoRecurse            = pref.WithNoRecurse
-	WithNoW                  = pref.WithNoW
-	WithSampler              = pref.WithSampler
-	WithSampling             = pref.WithSampling
-	WithSamplingInReverse    = pref.WithSamplingInReverse
-	WithSamplingNoOf         = pref.WithSamplingNoOf
-	WithSamplingOptions      = pref.WithSamplingOptions
-	WithSamplingType         = pref.WithSamplingType
-	WithSkipHandler          = pref.WithSkipHandler
-	WithSortBehaviour        = pref.WithSortBehaviour
-	WithSubPathBehaviour     = pref.WithSubPathBehaviour
+	If                        = pref.If
+	WithCPU                   = pref.WithCPU
+	WithDepth                 = pref.WithDepth
+	WithFaultHandler          = pref.WithFaultHandler
+	WithFilter                = pref.WithFilter
+	WithHibernationWake       = pref.WithHibernationWake
+	WithHibernationSleep      = pref.WithHibernationSleep
+	WithHibernationBehaviour  = pref.WithHibernationBehaviour
+	WithHookQueryStatus       = pref.WithHookQueryStatus
+	WithHookReadDirectory     = pref.WithHookReadDirectory
+	WithHookSort              = pref.WithHookSort
+	WithHookCaseSensitiveSort = pref.WithHookCaseSensitiveSort
+	WithHookFileSubPath       = pref.WithHookFileSubPath
+	WithHookFolderSubPath     = pref.WithHookFolderSubPath
+	WithNavigationBehaviours  = pref.WithNavigationBehaviours
+	WithOnAscend              = pref.WithOnAscend
+	WithOnBegin               = pref.WithOnBegin
+	WithOnDescend             = pref.WithOnDescend
+	WithOnEnd                 = pref.WithOnEnd
+	WithOnStart               = pref.WithOnStart
+	WithOnStop                = pref.WithOnStop
+	WithPanicHandler          = pref.WithPanicHandler
+	WithNoRecurse             = pref.WithNoRecurse
+	WithNoW                   = pref.WithNoW
+	WithSampler               = pref.WithSampler
+	WithSampling              = pref.WithSampling
+	WithSamplingInReverse     = pref.WithSamplingInReverse
+	WithSamplingNoOf          = pref.WithSamplingNoOf
+	WithSamplingOptions       = pref.WithSamplingOptions
+	WithSamplingType          = pref.WithSamplingType
+	WithSkipHandler           = pref.WithSkipHandler
+	WithSortBehaviour         = pref.WithSortBehaviour
+	WithSubPathBehaviour      = pref.WithSubPathBehaviour
 )
 
 type Using = pref.Using

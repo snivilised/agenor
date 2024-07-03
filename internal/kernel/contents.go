@@ -8,39 +8,39 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func newDirectoryContents(o *pref.Options,
+func newContents(o *pref.Options,
 	entries []fs.DirEntry,
-) *DirectoryContents {
-	contents := DirectoryContents{
+) *Contents {
+	contents := Contents{
 		o: o,
 	}
 
-	contents.Arrange(entries)
+	contents.arrange(entries)
 
 	return &contents
 }
 
-// DirectoryContents represents the contents of a directory's contents and
+// Contents represents the contents of a directory's contents and
 // handles sorting order which by default is different between various
 // operating systems. This abstraction removes the differences in sorting
 // behaviour on different platforms.
-type DirectoryContents struct {
+type Contents struct {
 	folders []fs.DirEntry
 	files   []fs.DirEntry
 	o       *pref.Options
 }
 
-func (c *DirectoryContents) Folders() []fs.DirEntry {
+func (c *Contents) Folders() []fs.DirEntry {
 	return c.folders
 }
 
-func (c *DirectoryContents) Files() []fs.DirEntry {
+func (c *Contents) Files() []fs.DirEntry {
 	return c.files
 }
 
 // All returns the contents of a directory respecting the directory sorting
 // order defined in the traversal options.
-func (c *DirectoryContents) All() []fs.DirEntry {
+func (c *Contents) All() []fs.DirEntry {
 	result := make([]fs.DirEntry, 0, len(c.files)+len(c.folders))
 
 	switch c.o.Core.Behaviours.Sort.DirectoryEntryOrder {
@@ -56,40 +56,35 @@ func (c *DirectoryContents) All() []fs.DirEntry {
 	return result
 }
 
-// Sort will sort either the folders or files or if no
-// entry type is specified, sort both.
-func (c *DirectoryContents) Sort(ents ...enums.EntryType) {
-	// This looks complicated, but it really isn't. The reason is
-	// we only want to sort only what's really required and the sorting
-	// of entries must be separated by type, ie we dont want all the
-	// files and folders sorted into a single collection and the
-	// requested entry types need to be mapped into the corresponding
-	// internal directory entries.
-	//
-	for _, entries := range lo.TernaryF(len(ents) == 0,
-		func() [][]fs.DirEntry {
+// Sort will sort either the folders or files or both.
+func (c *Contents) Sort(et enums.EntryType) {
+	type selectors map[enums.EntryType]func() [][]fs.DirEntry
+
+	sortables := selectors{
+		enums.EntryTypeAll: func() [][]fs.DirEntry {
 			return [][]fs.DirEntry{
 				c.folders, c.files,
 			}
 		},
-		func() [][]fs.DirEntry {
-			if ents[0] == enums.EntryTypeFolder {
-				return [][]fs.DirEntry{c.folders}
-			}
-
+		enums.EntryTypeFolder: func() [][]fs.DirEntry {
+			return [][]fs.DirEntry{c.folders}
+		},
+		enums.EntryTypeFile: func() [][]fs.DirEntry {
 			return [][]fs.DirEntry{c.files}
 		},
-	) {
+	}
+
+	for _, entries := range sortables[et]() {
 		c.o.Hooks.Sort.Invoke()(entries)
 	}
 }
 
-func (c *DirectoryContents) Clear() {
+func (c *Contents) Clear() {
 	c.files = []fs.DirEntry{}
 	c.folders = []fs.DirEntry{}
 }
 
-func (c *DirectoryContents) Arrange(entries []fs.DirEntry) {
+func (c *Contents) arrange(entries []fs.DirEntry) {
 	grouped := lo.GroupBy(entries, func(entry fs.DirEntry) bool {
 		return entry.IsDir()
 	})
@@ -106,19 +101,19 @@ func (c *DirectoryContents) Arrange(entries []fs.DirEntry) {
 	}
 }
 
-func newEmptyDirectoryEntries(o *pref.Options,
+func newEmptyContents(o *pref.Options,
 	prealloc ...*pref.EntryQuantities,
-) *DirectoryContents {
+) *Contents {
 	return lo.TernaryF(len(prealloc) == 0,
-		func() *DirectoryContents {
-			return &DirectoryContents{
+		func() *Contents {
+			return &Contents{
 				o:       o,
 				files:   []fs.DirEntry{},
 				folders: []fs.DirEntry{},
 			}
 		},
-		func() *DirectoryContents {
-			return &DirectoryContents{
+		func() *Contents {
+			return &Contents{
 				o:       o,
 				files:   make([]fs.DirEntry, 0, prealloc[0].Files),
 				folders: make([]fs.DirEntry, 0, prealloc[0].Folders),

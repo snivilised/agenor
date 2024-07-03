@@ -22,7 +22,7 @@ const (
 	doWrite = true
 )
 
-func Musico(portion string, verbose bool) (fsys fstest.MapFS, root string) {
+func Musico(verbose bool, portions ...string) (fsys fstest.MapFS, root string) {
 	fsys = fstest.MapFS{
 		".": &fstest.MapFile{
 			Mode: os.ModeDir,
@@ -30,18 +30,20 @@ func Musico(portion string, verbose bool) (fsys fstest.MapFS, root string) {
 	}
 
 	return fsys, Provision(
-		NewMemWriteProvider(fsys, os.ReadFile, portion),
-		portion,
+		NewMemWriteProvider(fsys, os.ReadFile, portions...),
 		verbose,
+		portions...,
 	)
 }
 
-func Provision(provider *IOProvider, portion string, verbose bool) (root string) {
+func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {
 	repo := Repo(filepath.Join("..", "..", "test", "data", "MUSICO"))
 	utils.Must(ensure(repo, provider, verbose))
 
 	if verbose {
-		fmt.Printf("\n🤖 re-generated tree at '%v' (filter: '%v')\n\n", repo, portion)
+		fmt.Printf("\n🤖 re-generated tree at '%v' (filters: '%v')\n\n",
+			repo, strings.Join(portions, ", "),
+		)
 	}
 
 	return repo
@@ -89,11 +91,17 @@ func TrimRoot(root string) string {
 // NewMemWriteProvider
 func NewMemWriteProvider(store fstest.MapFS,
 	indexReader readFile,
-	portion string,
+	portions ...string,
 ) *IOProvider {
-	filter := lo.Ternary(portion != "",
+	filter := lo.Ternary(len(portions) > 0,
 		matcher(func(path string) bool {
-			return strings.Contains(path, portion)
+			for _, portion := range portions {
+				if strings.Contains(path, portion) {
+					return true
+				}
+			}
+
+			return false
 		}),
 		matcher(func(string) bool {
 			return true

@@ -96,14 +96,26 @@ func Load(_ fs.FS, from string, settings ...Option) (*LoadInfo, error) {
 
 func apply(o *Options, settings ...Option) (err error) {
 	for _, option := range settings {
-		err = option(o)
+		if option != nil {
+			err = option(o)
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return
+}
+
+// If enables options to be conditional. If condition evaluates to true
+// then the option is returned, otherwise nil.
+func If(condition bool, option Option) Option {
+	if condition {
+		return option
+	}
+
+	return nil
 }
 
 func DefaultOptions() *Options {

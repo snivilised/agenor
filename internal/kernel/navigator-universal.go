@@ -22,11 +22,11 @@ func (n *navigatorUniversal) Travel(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {
-	if err := ns.mediator.Invoke(current); err != nil {
-		return continueTraversal, err
-	}
-
 	vapour, err := n.inspect(ns, current)
+
+	if e := ns.mediator.Invoke(current); e != nil {
+		return continueTraversal, e
+	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
 		current, vapour.contents(), err,
@@ -42,21 +42,20 @@ func (n *navigatorUniversal) Travel(ctx context.Context,
 func (n *navigatorUniversal) inspect(ns *navigationStatic, current *core.Node) (inspection, error) {
 	var (
 		vapour = &navigationVapour{
-			ns:          ns,
-			currentNode: current,
+			ns:      ns,
+			present: current,
 		}
 		err error
 	)
 
 	if current.IsFolder() {
-		vapour.directoryContents, err = read(ns.mediator.resources.FS.N,
+		vapour.cargo, err = read(ns.mediator.resources.FS.N,
 			ns.mediator.o,
 			current.Path,
 		)
 
-		vapour.directoryContents.Sort(enums.EntryTypeFolder, enums.EntryTypeFile)
-
-		vapour.ents = vapour.directoryContents.All()
+		vapour.cargo.Sort(enums.EntryTypeAll)
+		vapour.pick(enums.EntryTypeAll)
 	} else {
 		vapour.clear()
 	}
