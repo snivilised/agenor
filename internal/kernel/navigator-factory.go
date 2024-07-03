@@ -40,7 +40,7 @@ func newImpl(using *pref.Using,
 	o *pref.Options,
 	resources *types.Resources,
 ) (impl NavigatorImpl) {
-	base := navigator{
+	agent := navigatorAgent{
 		using:     using,
 		o:         o,
 		resources: resources,
@@ -49,17 +49,17 @@ func newImpl(using *pref.Using,
 	switch using.Subscription {
 	case enums.SubscribeFiles:
 		impl = &navigatorFiles{
-			navigator: base,
+			navigatorAgent: agent,
 		}
 
 	case enums.SubscribeFolders, enums.SubscribeFoldersWithFiles:
 		impl = &navigatorFolders{
-			navigator: base,
+			navigatorAgent: agent,
 		}
 
 	case enums.SubscribeUniversal:
 		impl = &navigatorUniversal{
-			navigator: base,
+			navigatorAgent: agent,
 		}
 
 	case enums.SubscribeUndefined:

@@ -79,7 +79,7 @@ func (c *Contents) Sort(et enums.EntryType) {
 	}
 }
 
-func (c *Contents) Clear() {
+func (c *Contents) clear() {
 	c.files = []fs.DirEntry{}
 	c.folders = []fs.DirEntry{}
 }

@@ -9,13 +9,13 @@ import (
 )
 
 type navigatorFolders struct {
-	navigator
+	navigatorAgent
 }
 
 func (n *navigatorFolders) Top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	return top(ctx, ns)
+	return n.top(ctx, ns)
 }
 
 func (n *navigatorFolders) Travel(ctx context.Context,
@@ -34,10 +34,12 @@ func (n *navigatorFolders) Travel(ctx context.Context,
 		return continueTraversal, e
 	}
 
-	return travel(ctx, ns, vapour)
+	return n.travel(ctx, ns, vapour)
 }
 
-func (n *navigatorFolders) inspect(ns *navigationStatic, current *core.Node) (inspection, error) {
+func (n *navigatorFolders) inspect(ns *navigationStatic,
+	current *core.Node,
+) (inspection, error) {
 	var (
 		vapour = &navigationVapour{
 			ns:      ns,

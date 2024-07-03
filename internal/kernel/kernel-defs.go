@@ -142,7 +142,7 @@ func (v *navigationVapour) entries() []fs.DirEntry {
 
 func (v *navigationVapour) clear() {
 	if v.cargo != nil {
-		v.cargo.Clear()
+		v.cargo.clear()
 	} else {
 		newEmptyContents(v.ns.mediator.o)
 	}
