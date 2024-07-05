@@ -6,7 +6,7 @@ type Role uint32
 
 const (
 	RoleUndefined        Role = iota // undefined-role
-	RoleTerminus                     // terminus-role
+	RoleAnchor                       // anchor-role
 	RoleClientFilter                 // client-filter-role
 	RoleClientHiberWake              // client-hiber-wake-role
 	RoleClientHiberSleep             // client-hiber-sleep-role

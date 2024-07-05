@@ -12,7 +12,8 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 	if o.Core.Filter.Node != nil {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
-				Mediator: mediator,
+				Mediator:      mediator,
+				ActivatedRole: enums.RoleClientFilter,
 			},
 		}
 	}
@@ -43,10 +44,6 @@ func (p *Plugin) Next(node *core.Node) (bool, error) {
 	// counts
 
 	return true, nil
-}
-
-func (p *Plugin) Role() enums.Role {
-	return enums.RoleClientFilter
 }
 
 func (p *Plugin) Init() error {

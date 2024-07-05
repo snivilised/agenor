@@ -92,6 +92,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
+			// !!!
 			return kernel.New(using, o, &kernel.Benign{}, resources), nil
 		}),
 		plugins: features(activated), // swap over features & activated
@@ -138,9 +139,10 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
-			artefacts := kernel.New(&was.Using, o, resume.GetSealer(was), resources)
-
-			return resume.NewController(was, artefacts), nil
+			// !!!
+			return resume.NewController(was,
+				kernel.New(&was.Using, o, resume.GetSealer(was), resources),
+			), nil
 		}),
 		plugins: features(activated),
 	}

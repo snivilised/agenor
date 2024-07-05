@@ -18,8 +18,8 @@ type Controller struct {
 	facilities types.Facilities
 }
 
-func (c *Controller) Starting(session core.Session) {
-	c.kc.Starting(session)
+func (c *Controller) Ignite(ignition *types.Ignition) {
+	c.kc.Ignite(ignition)
 }
 
 func (c *Controller) Result(ctx context.Context, err error) *types.KernelResult {

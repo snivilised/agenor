@@ -2,8 +2,9 @@ package kernel
 
 import (
 	"errors"
+	"slices"
 
-	"github.com/snivilised/extendio/collections"
+	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/lo"
@@ -12,8 +13,8 @@ import (
 )
 
 type (
-	invocationChain = collections.Stack[types.Link]
-	invocationIt    = collections.Iterator[types.Link]
+	invocationChain   = map[enums.Role]types.Link
+	positionalRoleSet = collections.PositionalSet[enums.Role]
 )
 
 type owned struct {
@@ -23,7 +24,7 @@ type owned struct {
 // anchor is a specialised link that should always be the
 // last in the chain and contains the original client's handler.
 type anchor struct {
-	target core.Client
+	client core.Client
 	owned  owned
 }
 
@@ -35,55 +36,71 @@ func (t *anchor) Next(node *core.Node) (bool, error) {
 		metric.Tick()
 	}
 
-	return false, t.target(node)
+	return false, t.client(node)
 }
 
 func (t *anchor) Role() enums.Role {
-	return enums.RoleTerminus
+	return enums.RoleAnchor
 }
 
 type iterationContainer struct {
-	invocationChain
-	// it iterates the contents of the chain in reverse; we
-	// need a reverse iterator, because the first element of the chain
-	// (index 0), will always represent the client's actual callback,
-	// that should only ever be called last, if the prior links permits it
-	// to be so.
-	//
-	it invocationIt
+	invoker   Invokable
+	positions *positionalRoleSet
+	chain     invocationChain
 }
 
 // guardian controls access to the client callback
 type guardian struct {
-	callback core.Client
-	chain    iterationContainer
-	master   types.GuardianSealer
+	container iterationContainer
+	master    types.GuardianSealer
+	anchor    *anchor
 }
 
-func newGuardian(callback core.Client,
+func newGuardian(client core.Client,
 	master types.GuardianSealer,
 	mums measure.Mutables,
 ) *guardian {
-	// TODO: need to pass in a sequence manifest that describes the
-	// valid chain of decorators, defined by role eg
-	// { enums.RoleTerminus, enums.RoleClientFilter, }
-	//
-	stack := collections.NewStack[types.Link]()
-	stack.Push(&anchor{
-		target: callback,
+	anchor := &anchor{
+		client: client,
 		owned: owned{
 			mums: mums,
 		},
-	})
+	}
 
 	return &guardian{
-		callback: callback,
-		chain: iterationContainer{
-			invocationChain: *stack,
-			it:              collections.ReverseIt(stack.Content(), nil),
+		container: iterationContainer{
+			chain: make(invocationChain),
 		},
 		master: master,
+		anchor: anchor,
 	}
+}
+
+func (g *guardian) arrange(activeRoles []enums.Role) {
+	g.container.chain[enums.RoleAnchor] = g.anchor
+
+	if len(activeRoles) == 0 {
+		g.container.invoker = NodeInvoker(func(node *core.Node) error {
+			_, err := g.anchor.Next(node)
+			return err
+		})
+
+		return
+	}
+
+	order := make([]enums.Role, 0, len(activeRoles)+1)
+	for _, role := range manifest {
+		if slices.Contains(activeRoles, role) {
+			order = append(order, role)
+		}
+	}
+
+	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
+	g.container.invoker = NodeInvoker(func(node *core.Node) error {
+		return g.iterate(node)
+	})
+
+	g.container.positions.Items()
 }
 
 // role indicates the guise under which the decorator is being applied.
@@ -91,32 +108,29 @@ func newGuardian(callback core.Client,
 // sealed. If an attempt is made to Decorate a sealed decorator,
 // an error is returned.
 func (g *guardian) Decorate(link types.Link) error {
-	// role enums.Role, decorator core.Client
-	//
-	// if every feature is active
-	// [prime]:
-	// hiber => sampling => filtering => callback
-	// [fastward-resume]:
-	// fastward-filter => [prime]
-	//
-	// sequence: fastward-filter => hiber => sampling => filtering => callback
-	//
-	top, err := g.chain.Current()
-	if err != nil {
-		return err
-	}
+	top := g.container.chain[g.container.positions.Items()[0]]
 
 	if g.master.IsSealed(top) {
 		return errors.New("can't decorate, last item is sealed")
 	}
 
-	g.chain.Push(link)
-	g.create()
+	role := link.Role()
+	g.container.chain[role] = link
+	g.container.positions.Insert(role)
 
 	return nil
 }
 
-func (g *guardian) Unwind(enums.Role) error {
+func (g *guardian) Unwind(role enums.Role) error {
+	if role == enums.RoleAnchor {
+		return nil
+	}
+
+	delete(g.container.chain, role)
+	g.container.positions.Delete(role)
+
+	// TODO: required only for fastward resume or hibernation
+	//
 	return nil
 }
 
@@ -124,22 +138,19 @@ func (g *guardian) Unwind(enums.Role) error {
 // the invocation of the client's callback, depending on the contents
 // of the chain.
 func (g *guardian) Invoke(node *core.Node) error {
-	// TODO: Actually, using an iterator is not the best way forward as it
-	// adds unnecessary overhead. Each link should have access to the next,
-	// without depending on an iterator.
-	for link := g.chain.it.Start(); g.chain.it.Valid(); g.chain.it.Next() {
+	return g.container.invoker.Invoke(node)
+}
+
+func (g *guardian) iterate(node *core.Node) error {
+	for _, role := range g.container.positions.Items() {
+		link := g.container.chain[role]
+
 		if next, err := link.Next(node); !next || err != nil {
 			return err
 		}
 	}
 
 	return nil
-}
-
-// create rebuilds the iterator, should be called after the chain has been
-// modified.
-func (g *guardian) create() {
-	g.chain.it = collections.ReverseIt(g.chain.Content(), nil)
 }
 
 // Benign is used when a master sealer has not been registered. It is
