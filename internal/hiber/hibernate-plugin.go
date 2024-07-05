@@ -12,7 +12,8 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 	if o.Core.Hibernate.Wake != nil {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
-				Mediator: mediator,
+				Mediator:      mediator,
+				ActivatedRole: enums.RoleClientHiberSleep, // TODO: or wake; to be resolved
 			},
 		}
 	}
@@ -38,10 +39,6 @@ func (p *Plugin) Next(node *core.Node) (bool, error) {
 	_ = node
 
 	return true, nil
-}
-
-func (p *Plugin) Role() enums.Role {
-	return enums.RoleClientHiberWake // !!!
 }
 
 func (p *Plugin) Init() error {

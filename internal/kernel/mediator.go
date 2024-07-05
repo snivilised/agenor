@@ -17,7 +17,7 @@ type mediator struct {
 	root      string
 	using     *pref.Using
 	impl      NavigatorImpl
-	client    Invokable
+	guardian  *guardian
 	frame     *navigationFrame
 	pad       *scratchPad // gets created just before nav begins
 	o         *pref.Options
@@ -48,7 +48,7 @@ func newMediator(using *pref.Using,
 		root:  using.Root,
 		using: using,
 		impl:  impl,
-		client: newGuardian(using.Handler, sealer, resources.Supervisor.Many(
+		guardian: newGuardian(using.Handler, sealer, resources.Supervisor.Many(
 			enums.MetricNoFilesInvoked,
 			enums.MetricNoFoldersInvoked,
 		)),
@@ -62,15 +62,19 @@ func newMediator(using *pref.Using,
 }
 
 func (m *mediator) Decorate(link types.Link) error {
-	return m.client.Decorate(link)
+	return m.guardian.Decorate(link)
 }
 
 func (m *mediator) Unwind(role enums.Role) error {
-	return m.client.Unwind(role)
+	return m.guardian.Unwind(role)
 }
 
-func (m *mediator) Starting(session core.Session) {
-	m.impl.Starting(session)
+func (m *mediator) Arrange(activeRoles []enums.Role) {
+	m.guardian.arrange(activeRoles)
+}
+
+func (m *mediator) Ignite(ignition *types.Ignition) {
+	m.impl.Ignite(ignition)
 }
 
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
@@ -95,7 +99,7 @@ func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult,
 }
 
 func (m *mediator) Invoke(node *core.Node) error {
-	return m.client.Invoke(node)
+	return m.guardian.Invoke(node)
 }
 
 func (m *mediator) Supervisor() *measure.Supervisor {

@@ -52,6 +52,10 @@ tasks:
     cmds:
       - go test ./i18n
 
+  toc:
+    cmds:
+      - go test ./collections
+
   tp:
     cmds:
       - go test ./pref

@@ -9,11 +9,24 @@ import (
 	"github.com/snivilised/traverse/internal/types"
 )
 
+var (
+	// the manifest dictates the order in which decorators
+	// are applied over the top of the client callback
+	// function.
+	manifest = []enums.Role{
+		enums.RoleFastward,
+		enums.RoleClientHiberWake,
+		enums.RoleClientHiberSleep,
+		enums.RoleClientFilter,
+		enums.RoleSampler,
+	}
+)
+
 type (
 	// NavigatorImpl
 	NavigatorImpl interface {
-		// Starting
-		Starting(session core.Session)
+		// Ignite
+		Ignite(ignition *types.Ignition)
 
 		// Top
 		Top(ctx context.Context,
@@ -85,9 +98,15 @@ type (
 		Unwind(role enums.Role) error
 	}
 
+	// Invokable
 	Invokable interface {
-		Gateway
 		Invoke(node *core.Node) error
+	}
+
+	// Mutant represents the mutable interface to the Guardian
+	Mutant interface {
+		Gateway
+		Invokable
 	}
 
 	// navigationStatic contains static info, ie info that is established during
@@ -157,4 +176,10 @@ func (v *navigationVapour) pick(et enums.EntryType) {
 	case enums.EntryTypeFile:
 		v.ents = v.cargo.files
 	}
+}
+
+type NodeInvoker func(node *core.Node) error
+
+func (fn NodeInvoker) Invoke(node *core.Node) error {
+	return fn(node)
 }

@@ -40,8 +40,15 @@ type (
 		Unwind(role enums.Role) error
 	}
 
+	Arrangeable interface {
+		Arrange(roles []enums.Role)
+	}
+
+	// Mediator controls interactions between different entities of
+	// of the navigator
 	Mediator interface {
 		Guardian
+		Arrangeable
 		Navigate(ctx context.Context) (core.TraverseResult, error)
 		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
 		Supervisor() *measure.Supervisor
@@ -61,6 +68,7 @@ type (
 	Plugin interface {
 		Name() string
 		Register(kc KernelController) error
+		Role() enums.Role
 		Init() error
 	}
 
@@ -76,10 +84,14 @@ type (
 		Metrics() *measure.Supervisor
 	}
 
+	Ignition struct {
+		Session core.Session
+	}
+
 	// KernelController
 	KernelController interface {
 		core.Navigator
-		Starting(session core.Session)
+		Ignite(ignition *Ignition)
 		Result(ctx context.Context, err error) *KernelResult
 	}
 )

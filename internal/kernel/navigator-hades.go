@@ -17,13 +17,16 @@ type navigatorHades struct {
 	err error
 }
 
-func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
-	return types.NewFailed(err)
+func (n *navigatorHades) Rank() {
 }
 
-func (n *navigatorHades) Starting(_ core.Session) {
+func (n *navigatorHades) Ignite(*types.Ignition) {
 }
 
 func (n *navigatorHades) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	return n.Result(ctx, n.err), n.err
+}
+
+func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
+	return types.NewFailed(err)
 }

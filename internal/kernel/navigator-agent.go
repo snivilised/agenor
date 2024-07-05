@@ -57,8 +57,8 @@ func (n *navigatorAgent) ascend(navi *navigationInfo, permit bool) {
 	_, _ = navi, permit
 }
 
-func (n *navigatorAgent) Starting(session core.Session) {
-	n.session = session
+func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
+	n.session = ignition.Session
 }
 
 func (n *navigatorAgent) top(ctx context.Context,

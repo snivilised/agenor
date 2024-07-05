@@ -13,7 +13,7 @@ import (
 
 type synchroniser interface {
 	core.Navigator
-	Starting(core.Session)
+	Ignite(*types.Ignition)
 	IsComplete() bool
 }
 
@@ -35,8 +35,8 @@ func (t trunk) IsComplete() bool {
 	return t.ext.complete()
 }
 
-func (t trunk) Starting(session core.Session) {
-	t.kc.Starting(session)
+func (t trunk) Ignite(ignition *types.Ignition) {
+	t.kc.Ignite(ignition)
 }
 
 type concurrent struct {

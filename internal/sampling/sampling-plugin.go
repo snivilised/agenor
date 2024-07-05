@@ -12,7 +12,8 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 	if (o.Core.Sampling.NoOf.Files > 0) || (o.Core.Sampling.NoOf.Folders > 0) {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
-				Mediator: mediator,
+				Mediator:      mediator,
+				ActivatedRole: enums.RoleSampler,
 			},
 		}
 	}
@@ -39,10 +40,6 @@ func (p *Plugin) Next(node *core.Node) (bool, error) {
 
 	// apply the filter to the node
 	return true, nil
-}
-
-func (p *Plugin) Role() enums.Role {
-	return enums.RoleSampler
 }
 
 func (p *Plugin) Init() error {
