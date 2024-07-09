@@ -2,13 +2,13 @@ package kernel
 
 import (
 	"io/fs"
-
-	"github.com/snivilised/traverse/pref"
 )
 
-func read(sys fs.FS, o *pref.Options, path string) (*Contents, error) {
-	entries, err := o.Hooks.ReadDirectory.Invoke()(sys, path)
+func read(sys fs.FS, o *readOptions, path string) (*Contents, error) {
+	entries, err := o.hooks.read.Invoke()(sys, path)
 
-	contents := newContents(o, entries)
+	contents := newContents(
+		o.behaviour, o.hooks.sort, entries,
+	)
 	return contents, err
 }

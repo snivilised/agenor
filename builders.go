@@ -10,11 +10,10 @@ import (
 )
 
 type buildArtefacts struct {
-	o           *pref.Options
-	kc          types.KernelController
-	plugins     []types.Plugin
-	activeRoles []enums.Role
-	ext         extent
+	o       *pref.Options
+	kc      types.KernelController
+	plugins []types.Plugin
+	ext     extent
 }
 
 type Builders struct {
@@ -94,10 +93,9 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	}
 
 	return &buildArtefacts{
-		o:           o,
-		kc:          artefacts.Kontroller,
-		plugins:     plugins,
-		activeRoles: roles,
-		ext:         ext,
+		o:       o,
+		kc:      artefacts.Kontroller,
+		plugins: plugins,
+		ext:     ext,
 	}, nil
 }

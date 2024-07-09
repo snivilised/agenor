@@ -5,16 +5,14 @@ import (
 	"time"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/types"
 )
 
 type session struct {
-	sync        synchroniser
-	started     time.Time
-	duration    time.Duration
-	plugins     []types.Plugin
-	activeRoles []enums.Role
+	sync     synchroniser
+	started  time.Time
+	duration time.Duration
+	plugins  []types.Plugin
 }
 
 func (s *session) start() {

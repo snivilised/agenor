@@ -15,10 +15,10 @@ import (
 
 type ifActive func(o *pref.Options, mediator types.Mediator) types.Plugin
 
-// activated interrogates options and invokes requests on behalf of the user
+// features interrogates options and invokes requests on behalf of the user
 // to activate features according to option selections. other plugins will
 // be initialised after primary plugins
-func activated(o *pref.Options, mediator types.Mediator,
+func features(o *pref.Options, mediator types.Mediator,
 	kc types.KernelController,
 	others ...types.Plugin,
 ) (plugins []types.Plugin, err error) {
@@ -92,10 +92,9 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
-			// !!!
 			return kernel.New(using, o, &kernel.Benign{}, resources), nil
 		}),
-		plugins: features(activated), // swap over features & activated
+		plugins: activated(features),
 	}
 }
 
@@ -139,11 +138,10 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
-			// !!!
 			return resume.NewController(was,
 				kernel.New(&was.Using, o, resume.GetSealer(was), resources),
 			), nil
 		}),
-		plugins: features(activated),
+		plugins: activated(features),
 	}
 }

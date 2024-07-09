@@ -163,7 +163,7 @@ func (v *navigationVapour) clear() {
 	if v.cargo != nil {
 		v.cargo.clear()
 	} else {
-		newEmptyContents(v.ns.mediator.o)
+		newEmptyContents()
 	}
 }
 
