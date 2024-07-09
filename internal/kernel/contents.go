@@ -3,16 +3,20 @@ package kernel
 import (
 	"io/fs"
 
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tapable"
 )
 
-func newContents(o *pref.Options,
+func newContents(behaviour *pref.SortBehaviour,
+	hook tapable.Hook[core.SortHook],
 	entries []fs.DirEntry,
 ) *Contents {
 	contents := Contents{
-		o: o,
+		behaviour: behaviour,
+		hook:      hook,
 	}
 
 	contents.arrange(entries)
@@ -20,14 +24,15 @@ func newContents(o *pref.Options,
 	return &contents
 }
 
-// Contents represents the contents of a directory's contents and
-// handles sorting order which by default is different between various
-// operating systems. This abstraction removes the differences in sorting
-// behaviour on different platforms.
+// Contents represents the contents of a directory and handles sorting
+// order which by default is different between various operating systems.
+// This abstraction removes the differences in sorting behaviour on
+// different platforms.
 type Contents struct {
-	folders []fs.DirEntry
-	files   []fs.DirEntry
-	o       *pref.Options
+	folders   []fs.DirEntry
+	files     []fs.DirEntry
+	behaviour *pref.SortBehaviour
+	hook      tapable.Hook[core.SortHook]
 }
 
 func (c *Contents) Folders() []fs.DirEntry {
@@ -43,7 +48,7 @@ func (c *Contents) Files() []fs.DirEntry {
 func (c *Contents) All() []fs.DirEntry {
 	result := make([]fs.DirEntry, 0, len(c.files)+len(c.folders))
 
-	switch c.o.Core.Behaviours.Sort.DirectoryEntryOrder {
+	switch c.behaviour.DirectoryEntryOrder {
 	case enums.DirectoryContentsOrderFoldersFirst:
 		result = c.folders
 		result = append(result, c.files...)
@@ -75,7 +80,7 @@ func (c *Contents) Sort(et enums.EntryType) {
 	}
 
 	for _, entries := range sortables[et]() {
-		c.o.Hooks.Sort.Invoke()(entries)
+		c.hook.Invoke()(entries)
 	}
 }
 
@@ -101,20 +106,16 @@ func (c *Contents) arrange(entries []fs.DirEntry) {
 	}
 }
 
-func newEmptyContents(o *pref.Options,
-	prealloc ...*pref.EntryQuantities,
-) *Contents {
+func newEmptyContents(prealloc ...*pref.EntryQuantities) *Contents {
 	return lo.TernaryF(len(prealloc) == 0,
 		func() *Contents {
 			return &Contents{
-				o:       o,
 				files:   []fs.DirEntry{},
 				folders: []fs.DirEntry{},
 			}
 		},
 		func() *Contents {
 			return &Contents{
-				o:       o,
 				files:   make([]fs.DirEntry, 0, prealloc[0].Files),
 				folders: make([]fs.DirEntry, 0, prealloc[0].Folders),
 			}

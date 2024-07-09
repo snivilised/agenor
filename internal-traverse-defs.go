@@ -27,13 +27,13 @@ type pluginsBuilder interface {
 	) ([]types.Plugin, error)
 }
 
-type features func(*pref.Options,
+type activated func(*pref.Options,
 	types.Mediator,
 	types.KernelController,
 	...types.Plugin,
 ) ([]types.Plugin, error)
 
-func (fn features) build(o *pref.Options,
+func (fn activated) build(o *pref.Options,
 	mediator types.Mediator,
 	kc types.KernelController,
 	others ...types.Plugin,

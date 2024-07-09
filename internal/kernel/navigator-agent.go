@@ -11,7 +11,23 @@ import (
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tapable"
 )
+
+type readHooks struct {
+	read tapable.Hook[core.ReadDirectoryHook]
+	sort tapable.Hook[core.SortHook]
+}
+
+type readOptions struct {
+	hooks     readHooks
+	behaviour *pref.SortBehaviour
+}
+
+type agentOptions struct {
+	hooks   *tapable.Hooks
+	defects *pref.DefectOptions
+}
 
 // navigatorAgent does work on behalf of the navigator. It is distinct
 // from navigatorBase and should only be used when the limited polymorphism
@@ -20,14 +36,11 @@ import (
 // represented by state, just functions that take state,
 // typically navigationStatic.
 type navigatorAgent struct {
-	o         *pref.Options
+	o         *agentOptions
+	ro        *readOptions
 	using     *pref.Using
 	resources *types.Resources
 	session   core.Session
-}
-
-func newAgent() *navigatorAgent {
-	return &navigatorAgent{}
 }
 
 /*
@@ -64,10 +77,10 @@ func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
 func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	info, ie := ns.mediator.o.Hooks.QueryStatus.Invoke()(ns.root)
+	info, ie := n.o.hooks.QueryStatus.Invoke()(ns.root)
 	err := lo.TernaryF(ie != nil,
 		func() error {
-			return ns.mediator.o.Defects.Fault.Accept(&pref.NavigationFault{
+			return n.o.defects.Fault.Accept(&pref.NavigationFault{
 				Err:  ie,
 				Path: ns.root,
 				Info: info,
@@ -92,7 +105,9 @@ func (n *navigatorAgent) Travel(context.Context,
 	return continueTraversal, nil
 }
 
-func (n *navigatorAgent) Result(ctx context.Context, err error) *types.KernelResult {
+func (n *navigatorAgent) Result(ctx context.Context,
+	err error,
+) *types.KernelResult {
 	complete := n.session.IsComplete()
 	result := types.NewResult(n.session,
 		n.resources.Supervisor,

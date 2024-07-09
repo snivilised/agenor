@@ -48,8 +48,7 @@ func (f *walkerFac) Configure() Director {
 						err: err,
 					},
 				},
-				plugins:     artefacts.plugins,
-				activeRoles: artefacts.activeRoles,
+				plugins: artefacts.plugins,
 			},
 		}
 	})
@@ -78,8 +77,7 @@ func (f *runnerFac) Configure() Director {
 					},
 					wg: f.wg,
 				},
-				plugins:     artefacts.plugins,
-				activeRoles: artefacts.activeRoles,
+				plugins: artefacts.plugins,
 			},
 		}
 	})

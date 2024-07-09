@@ -41,8 +41,18 @@ func newImpl(using *pref.Using,
 	resources *types.Resources,
 ) (impl NavigatorImpl) {
 	agent := navigatorAgent{
-		using:     using,
-		o:         o,
+		using: using,
+		o: &agentOptions{
+			hooks:   &o.Hooks,
+			defects: &o.Defects,
+		},
+		ro: &readOptions{
+			hooks: readHooks{
+				read: o.Hooks.ReadDirectory,
+				sort: o.Hooks.Sort,
+			},
+			behaviour: &o.Core.Behaviours.Sort,
+		},
 		resources: resources,
 	}
 
@@ -65,5 +75,5 @@ func newImpl(using *pref.Using,
 	case enums.SubscribeUndefined:
 	}
 
-	return
+	return impl
 }
