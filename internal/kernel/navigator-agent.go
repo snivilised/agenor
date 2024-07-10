@@ -29,45 +29,14 @@ type agentOptions struct {
 	defects *pref.DefectOptions
 }
 
-// navigatorAgent does work on behalf of the navigator. It is distinct
-// from navigatorBase and should only be used when the limited polymorphism
-// on base is inadequate. The agent functions performs generic tasks that
-// apply to all navigators. agent is really an abstract concept that isn't
-// represented by state, just functions that take state,
-// typically navigationStatic.
+// navigatorAgent does work on behalf of the navigator. The agent performs
+// generic tasks that apply to all navigators.
 type navigatorAgent struct {
-	o         *agentOptions
+	ao        *agentOptions
 	ro        *readOptions
 	using     *pref.Using
 	resources *types.Resources
 	session   core.Session
-}
-
-/*
-func (n *navigator) descend(navi *NavigationInfo) bool {
-	if !navi.frame.periscope.descend(n.o.Store.Behaviours.Cascade.Depth) {
-		return false
-	}
-
-	navi.frame.notifiers.descend.invoke(navi.Item)
-
-	return true
-}
-
-func (n *navigator) ascend(navi *NavigationInfo, permit bool) {
-	if permit {
-		navi.frame.periscope.ascend()
-		navi.frame.notifiers.ascend.invoke(navi.Item)
-	}
-}
-*/
-
-func (n *navigatorAgent) descend(*navigationInfo) bool {
-	return true
-}
-
-func (n *navigatorAgent) ascend(navi *navigationInfo, permit bool) {
-	_, _ = navi, permit
 }
 
 func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
@@ -77,10 +46,10 @@ func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
 func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	info, ie := n.o.hooks.QueryStatus.Invoke()(ns.root)
+	info, ie := n.ao.hooks.QueryStatus.Invoke()(ns.root)
 	err := lo.TernaryF(ie != nil,
 		func() error {
-			return n.o.defects.Fault.Accept(&pref.NavigationFault{
+			return n.ao.defects.Fault.Accept(&pref.NavigationFault{
 				Err:  ie,
 				Path: ns.root,
 				Info: info,
@@ -105,6 +74,12 @@ func (n *navigatorAgent) Travel(context.Context,
 	return continueTraversal, nil
 }
 
+// Result is the single point at which a Result is constructed. Due to
+// the spawn resume strategy, a Result may occur more than once during
+// a navigation session. The session knows when completion occurs. Any
+// Result that occurs prior to completion are as a result of child
+// navigation whose result should be combined in the final Result. This
+// is all handled by the strategy.
 func (n *navigatorAgent) Result(ctx context.Context,
 	err error,
 ) *types.KernelResult {

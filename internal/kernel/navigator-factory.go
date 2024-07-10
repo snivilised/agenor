@@ -42,7 +42,7 @@ func newImpl(using *pref.Using,
 ) (impl NavigatorImpl) {
 	agent := navigatorAgent{
 		using: using,
-		o: &agentOptions{
+		ao: &agentOptions{
 			hooks:   &o.Hooks,
 			defects: &o.Defects,
 		},

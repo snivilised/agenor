@@ -68,8 +68,8 @@ func (p *Periscope) Delta(root, current string) (err error) {
 	return nil
 }
 
-func (p *Periscope) Descend(max uint) bool {
-	if max > 0 && p.depth > int(max) {
+func (p *Periscope) Descend(maximum uint) bool {
+	if maximum > 0 && p.depth > int(maximum) {
 		return false
 	}
 
