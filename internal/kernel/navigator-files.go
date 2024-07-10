@@ -22,6 +22,16 @@ func (n *navigatorFiles) Travel(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {
+	descended := ns.mediator.descend(current)
+
+	defer func(permit bool) {
+		ns.mediator.ascend(current, permit)
+	}(descended)
+
+	if !descended {
+		return continueTraversal, nil
+	}
+
 	// TODO: check this comment
 	// For files, the registered callback will only be invoked for file entries. This means
 	// that the client will have no way to skip the descending of a particular directory. In
@@ -62,8 +72,7 @@ func (n *navigatorFiles) inspect(ns *navigationStatic, current *core.Node) (insp
 			current.Path,
 		)
 
-		vapour.cargo.Sort(enums.EntryTypeAll)
-		vapour.pick(enums.EntryTypeAll)
+		vapour.sort(enums.EntryTypeAll)
 	} else {
 		vapour.clear()
 	}

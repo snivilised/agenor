@@ -47,6 +47,23 @@ func newMediator(using *pref.Using,
 	}
 }
 
+func (m *mediator) descend(node *core.Node) bool {
+	if !m.frame.periscope.Descend(m.o.Core.Behaviours.Cascade.Depth) {
+		return false
+	}
+
+	m.o.Binder.Controls.Descend.Dispatch()(node)
+
+	return true
+}
+
+func (m *mediator) ascend(node *core.Node, permit bool) {
+	if permit {
+		m.frame.periscope.Ascend()
+		m.o.Binder.Controls.Ascend.Dispatch()(node)
+	}
+}
+
 func (m *mediator) Decorate(link types.Link) error {
 	return m.guardian.Decorate(link)
 }

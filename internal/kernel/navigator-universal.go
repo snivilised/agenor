@@ -22,6 +22,16 @@ func (n *navigatorUniversal) Travel(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {
+	descended := ns.mediator.descend(current)
+
+	defer func(permit bool) {
+		ns.mediator.ascend(current, permit)
+	}(descended)
+
+	if !descended {
+		return continueTraversal, nil
+	}
+
 	vapour, err := n.inspect(ns, current)
 
 	if e := ns.mediator.Invoke(current); e != nil {
@@ -54,8 +64,7 @@ func (n *navigatorUniversal) inspect(ns *navigationStatic, current *core.Node) (
 			current.Path,
 		)
 
-		vapour.cargo.Sort(enums.EntryTypeAll)
-		vapour.pick(enums.EntryTypeAll)
+		vapour.sort(enums.EntryTypeAll)
 	} else {
 		vapour.clear()
 	}

@@ -167,7 +167,9 @@ func (v *navigationVapour) clear() {
 	}
 }
 
-func (v *navigationVapour) pick(et enums.EntryType) {
+func (v *navigationVapour) sort(et enums.EntryType) {
+	v.cargo.Sort(et)
+
 	switch et {
 	case enums.EntryTypeAll:
 		v.ents = v.cargo.All()
