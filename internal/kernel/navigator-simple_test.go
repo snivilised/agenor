@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	"strings"
 	"testing/fstest"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -42,10 +41,8 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 	DescribeTable("Ensure Callback Invoked Once", Label("simple"),
 		func(ctx SpecContext, entry *naviTE) {
 			recording := make(recordingMap)
-			visited := []string{}
-
 			once := func(node *tv.Node) error {
-				_, found := recording[node.Path]
+				_, found := recording[node.Path] // should this be name not path?
 				Expect(found).To(BeFalse())
 				recording[node.Path] = len(node.Children)
 
@@ -81,46 +78,26 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			),
 			).Navigate(ctx)
 
-			_ = result.Session().StartedAt()
-			_ = result.Session().Elapsed()
-
-			if entry.visit {
-				_ = fs.WalkDir(vfs, path, func(path string, de fs.DirEntry, _ error) error {
-					if strings.HasSuffix(path, ".DS_Store") {
-						return nil
-					}
-
-					if subscribes(entry.subscription, de) {
-						visited = append(visited, path)
-					}
-					return nil
-				})
-			}
-
-			if entry.visit {
-				every := lo.EveryBy(visited, func(p string) bool {
+			assertNavigation(entry, testOptions{
+				vfs:       vfs,
+				recording: recording,
+				path:      path,
+				result:    result,
+				err:       err,
+				every: func(p string) bool {
 					_, found := recording[p]
 					return found
-				})
-				Expect(every).To(BeTrue())
-			}
-
-			Expect(err).To(Succeed())
-			Expect(result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
-				Equal(entry.expectedNoOf.files), "Incorrect no of files",
-			)
-			Expect(result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
-				Equal(entry.expectedNoOf.folders), "Incorrect no of folders",
-			)
+				},
+			})
 		},
 		func(entry *naviTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.message)
+			return fmt.Sprintf("🧪 ===> given: '%v'", entry.given)
 		},
 
 		// === universal =====================================================
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "universal: Path is leaf",
+			given:        "universal: Path is leaf",
 			relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			subscription: enums.SubscribeUniversal,
 			callback:     universalCallback("LEAF-PATH"),
@@ -131,7 +108,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "universal: Path contains folders",
+			given:        "universal: Path contains folders",
 			relative:     "RETRO-WAVE",
 			subscription: enums.SubscribeUniversal,
 			callback:     universalCallback("CONTAINS-FOLDERS"),
@@ -142,7 +119,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "universal: Path contains folders (visit)",
+			given:        "universal: Path contains folders (visit)",
 			relative:     "RETRO-WAVE",
 			visit:        true,
 			subscription: enums.SubscribeUniversal,
@@ -156,7 +133,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		// === folders =======================================================
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "folders: Path is leaf",
+			given:        "folders: Path is leaf",
 			relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			subscription: enums.SubscribeFolders,
 			callback:     foldersCallback("LEAF-PATH"),
@@ -166,7 +143,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "folders: Path contains folders",
+			given:        "folders: Path contains folders",
 			relative:     "RETRO-WAVE",
 			subscription: enums.SubscribeFolders,
 			callback:     foldersCallback("CONTAINS-FOLDERS"),
@@ -176,7 +153,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "folders: Path contains folders (check all invoked)",
+			given:        "folders: Path contains folders (check all invoked)",
 			relative:     "RETRO-WAVE",
 			visit:        true,
 			subscription: enums.SubscribeFolders,
@@ -187,7 +164,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("metal"), &naviTE{
-			message:       "folders: case sensitive sort",
+			given:         "folders: case sensitive sort",
 			relative:      "rock/metal",
 			subscription:  enums.SubscribeFolders,
 			caseSensitive: true,
@@ -203,7 +180,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		// === files =========================================================
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "files: Path is leaf",
+			given:        "files: Path is leaf",
 			relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			subscription: enums.SubscribeFiles,
 			callback:     filesCallback("LEAF-PATH"),
@@ -214,7 +191,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "files: Path contains folders",
+			given:        "files: Path contains folders",
 			relative:     "RETRO-WAVE",
 			subscription: enums.SubscribeFiles,
 			callback:     filesCallback("CONTAINS-FOLDERS"),
@@ -225,7 +202,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		}),
 
 		Entry(nil, Label("RETRO-WAVE"), &naviTE{
-			message:      "files: Path contains folders",
+			given:        "files: Path contains folders",
 			relative:     "RETRO-WAVE",
 			visit:        true,
 			subscription: enums.SubscribeFiles,

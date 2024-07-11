@@ -130,10 +130,8 @@ type (
 	}
 
 	inspection interface { // after content has been read
+		core.Inspection
 		static() *navigationStatic
-		current() *core.Node
-		contents() core.DirectoryContents
-		entries() []fs.DirEntry
 		clear()
 	}
 
@@ -147,15 +145,15 @@ func (v *navigationVapour) static() *navigationStatic {
 	return v.ns
 }
 
-func (v *navigationVapour) current() *core.Node {
+func (v *navigationVapour) Current() *core.Node {
 	return v.present
 }
 
-func (v *navigationVapour) contents() core.DirectoryContents {
+func (v *navigationVapour) Contents() core.DirectoryContents {
 	return v.cargo
 }
 
-func (v *navigationVapour) entries() []fs.DirEntry {
+func (v *navigationVapour) Entries() []fs.DirEntry {
 	return v.ents
 }
 
@@ -167,9 +165,23 @@ func (v *navigationVapour) clear() {
 	}
 }
 
-func (v *navigationVapour) sort(et enums.EntryType) {
+func (v *navigationVapour) Sort(et enums.EntryType) []fs.DirEntry {
 	v.cargo.Sort(et)
 
+	// change SortHook to return entries so we don't have to do this switch?
+	switch et {
+	case enums.EntryTypeAll:
+		return v.cargo.All()
+	case enums.EntryTypeFolder:
+		return v.cargo.folders
+	case enums.EntryTypeFile:
+		return v.cargo.files
+	}
+
+	return nil
+}
+
+func (v *navigationVapour) Pick(et enums.EntryType) {
 	switch et {
 	case enums.EntryTypeAll:
 		v.ents = v.cargo.All()
@@ -178,6 +190,10 @@ func (v *navigationVapour) sort(et enums.EntryType) {
 	case enums.EntryTypeFile:
 		v.ents = v.cargo.files
 	}
+}
+
+func (v *navigationVapour) AssignChildren(children []fs.DirEntry) {
+	v.present.Children = children
 }
 
 type NodeInvoker func(node *core.Node) error

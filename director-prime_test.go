@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
 )
@@ -90,7 +91,7 @@ var _ = Describe("Director(Prime)", func() {
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
-						tv.WithOnBegin(func(_ string) {}),
+						tv.WithOnBegin(func(_ *cycle.BeginState) {}),
 					)).Navigate(ctx)
 
 					wg.Wait()
@@ -140,7 +141,7 @@ var _ = Describe("Director(Prime)", func() {
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
-						tv.WithFilter(&core.FilterDef{}),
+						tv.WithFilter(&pref.FilterOptions{}),
 						tv.WithOnStart(func(_ string) {}),
 					)).Navigate(ctx)
 

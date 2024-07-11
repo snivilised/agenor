@@ -42,6 +42,6 @@ func (p *Plugin) Next(node *core.Node) (bool, error) {
 	return true, nil
 }
 
-func (p *Plugin) Init() error {
+func (p *Plugin) Init(_ *types.PluginInit) error {
 	return p.Mediator.Decorate(p)
 }

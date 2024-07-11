@@ -18,10 +18,11 @@ type (
 		Value() MetricValue
 	}
 
-	// Mutable represents write access to the metric
-	Mutable interface {
+	// MutableMetric represents write access to the metric
+	MutableMetric interface {
 		Metric
 		Tick() MetricValue
+		Times(increment uint) MetricValue
 	}
 
 	// Reporter represents query access to the metrics Supervisor
@@ -45,6 +46,12 @@ func (m *BaseMetric) Value() MetricValue {
 
 func (m *BaseMetric) Tick() MetricValue {
 	m.counter++
+
+	return m.counter
+}
+
+func (m *BaseMetric) Times(increment uint) MetricValue {
+	m.counter += increment
 
 	return m.counter
 }

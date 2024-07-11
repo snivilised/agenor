@@ -36,7 +36,7 @@ func (p *Plugin) Role() enums.Role {
 	return enums.RoleFastward
 }
 
-func (p *Plugin) Init() error {
+func (p *Plugin) Init(_ *types.PluginInit) error {
 	return p.Mediator.Decorate(p)
 }
 

@@ -116,10 +116,10 @@ func (n *navigatorAgent) travel(ctx context.Context,
 	vapour inspection,
 ) (bool, error) {
 	var (
-		parent = vapour.current()
+		parent = vapour.Current()
 	)
 
-	for _, entry := range vapour.entries() {
+	for _, entry := range vapour.Entries() {
 		path := filepath.Join(parent.Path, entry.Name())
 		info, e := entry.Info()
 

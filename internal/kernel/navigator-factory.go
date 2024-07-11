@@ -16,23 +16,14 @@ func New(using *pref.Using, o *pref.Options,
 	resources *types.Resources,
 ) *Artefacts {
 	impl := newImpl(using, o, resources)
-	controller := newController(using, o, impl, sealer, resources)
+	controller := &NavigationController{
+		Med: newMediator(using, o, impl, sealer, resources),
+	}
 
 	return &Artefacts{
 		Kontroller: controller,
-		Mediator:   controller.Mediator,
+		Mediator:   controller.Med,
 		Resources:  resources,
-	}
-}
-
-func newController(using *pref.Using,
-	o *pref.Options,
-	impl NavigatorImpl,
-	sealer types.GuardianSealer,
-	resources *types.Resources,
-) *NavigationController {
-	return &NavigationController{
-		Mediator: newMediator(using, o, impl, sealer, resources),
 	}
 }
 

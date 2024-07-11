@@ -17,8 +17,18 @@ func Normalise(p string) string {
 	return strings.ReplaceAll(p, "/", string(filepath.Separator))
 }
 
+func Because(name, because string) string {
+	return fmt.Sprintf("❌ for item named: '%v', because: '%v'", name, because)
+}
+
 func Reason(name string) string {
 	return fmt.Sprintf("❌ for item named: '%v'", name)
+}
+
+func BecauseQuantity(name string, expected, actual int) string {
+	return fmt.Sprintf("❌ incorrect no of items for: '%v', expected: '%v', actual: '%v'",
+		name, expected, actual,
+	)
 }
 
 func JoinCwd(segments ...string) string {

@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -15,10 +16,12 @@ var _ = Describe("event", func() {
 					invoked := false
 					o, _ := pref.Get()
 
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						invoked = true
 					})
-					o.Binder.Controls.Begin.Dispatch()(traversalRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: traversalRoot,
+					})
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -29,16 +32,20 @@ var _ = Describe("event", func() {
 					invoked := false
 					o, _ := pref.Get()
 
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						invoked = true
 					})
 					o.Binder.Controls.Begin.Mute()
-					o.Binder.Controls.Begin.Dispatch()(traversalRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: traversalRoot,
+					})
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
 					o.Binder.Controls.Begin.Unmute()
-					o.Binder.Controls.Begin.Dispatch()(traversalRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: traversalRoot,
+					})
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -50,21 +57,25 @@ var _ = Describe("event", func() {
 					count := 0
 					o, _ := pref.Get()
 
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						count++
 					})
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						count++
 					})
-					o.Binder.Controls.Begin.Dispatch()(traversalRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: traversalRoot,
+					})
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						count++
 					})
 
-					o.Binder.Controls.Begin.Dispatch()(anotherRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: anotherRoot,
+					})
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -74,15 +85,17 @@ var _ = Describe("event", func() {
 					count := 0
 					o, _ := pref.Get()
 
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						count++
 					})
-					o.Events.Begin.On(func(_ string) {
+					o.Events.Begin.On(func(_ *cycle.BeginState) {
 						count++
 					})
 
 					o.Binder.Controls.Begin.Mute()
-					o.Binder.Controls.Begin.Dispatch()(anotherRoot)
+					o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+						Root: anotherRoot,
+					})
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -93,7 +106,9 @@ var _ = Describe("event", func() {
 			It("🧪 should: invoke no-op", func() {
 				o, _ := pref.Get()
 
-				o.Binder.Controls.Begin.Dispatch()(traversalRoot)
+				o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+					Root: traversalRoot,
+				})
 			})
 		})
 	})

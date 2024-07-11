@@ -6,6 +6,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
 )
@@ -44,6 +45,10 @@ type (
 		Arrange(roles []enums.Role)
 	}
 
+	PluginInit struct {
+		Actions *override.Actions
+	}
+
 	// Mediator controls interactions between different entities of
 	// of the navigator
 	Mediator interface {
@@ -62,6 +67,7 @@ type (
 	Resources struct {
 		FS         FileSystems
 		Supervisor *measure.Supervisor
+		Actions    *override.Actions
 	}
 
 	// Plugin used to define interaction with supplementary features
@@ -69,7 +75,7 @@ type (
 		Name() string
 		Register(kc KernelController) error
 		Role() enums.Role
-		Init() error
+		Init(pi *PluginInit) error
 	}
 
 	// Restoration; tbd...
@@ -93,6 +99,7 @@ type (
 		core.Navigator
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context, err error) *KernelResult
+		Mediator() Mediator
 	}
 )
 
@@ -136,4 +143,16 @@ func (r *KernelResult) Metrics() measure.Reporter {
 
 func (r *KernelResult) Error() error {
 	return r.err
+}
+
+type (
+	FilterChildren interface { // TODO: is this still needed?
+		Matching(files []fs.DirEntry) []fs.DirEntry
+	}
+
+	FilterChildrenFunc func(files []fs.DirEntry) []fs.DirEntry
+)
+
+func (fn FilterChildrenFunc) Matching(files []fs.DirEntry) []fs.DirEntry {
+	return fn(files)
 }

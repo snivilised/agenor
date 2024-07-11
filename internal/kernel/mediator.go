@@ -14,14 +14,15 @@ import (
 // mediator controls traversal events, sends notifications and emits
 // life-cycle events
 type mediator struct {
-	root      string
-	using     *pref.Using
-	impl      NavigatorImpl
-	guardian  *guardian
-	frame     *navigationFrame
-	pad       *scratchPad // gets created just before nav begins
-	o         *pref.Options
-	resources *types.Resources
+	root         string
+	subscription enums.Subscription
+	using        *pref.Using
+	impl         NavigatorImpl
+	guardian     *guardian
+	frame        *navigationFrame
+	o            *pref.Options
+	resources    *types.Resources
+	mums         measure.MutableMetrics
 }
 
 func newMediator(using *pref.Using,
@@ -30,20 +31,24 @@ func newMediator(using *pref.Using,
 	sealer types.GuardianSealer,
 	resources *types.Resources,
 ) *mediator {
+	mums := resources.Supervisor.Many(
+		enums.MetricNoFilesInvoked,
+		enums.MetricNoFoldersInvoked,
+		enums.MetricNoChildFilesFound,
+	)
+
 	return &mediator{
-		root:  using.Root,
-		using: using,
-		impl:  impl,
-		guardian: newGuardian(using.Handler, sealer, resources.Supervisor.Many(
-			enums.MetricNoFilesInvoked,
-			enums.MetricNoFoldersInvoked,
-		)),
+		root:         using.Root,
+		subscription: using.Subscription,
+		using:        using,
+		impl:         impl,
+		guardian:     newGuardian(using.Handler, sealer, mums),
 		frame: &navigationFrame{
 			periscope: level.New(),
 		},
-		pad:       newScratch(o),
 		o:         o,
 		resources: resources,
+		mums:      mums,
 	}
 }
 

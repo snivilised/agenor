@@ -10,6 +10,7 @@ import (
 
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
 )
@@ -19,7 +20,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 	BeforeAll(func() {
 		restore = func(o *tv.Options) error {
-			o.Events.Begin.On(func(_ string) {})
+			o.Events.Begin.On(func(_ *cycle.BeginState) {})
 
 			return nil
 		}
@@ -105,7 +106,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
-						tv.WithFilter(&core.FilterDef{}),
+						tv.WithFilter(&pref.FilterOptions{}),
 						restore,
 					)).Navigate(ctx)
 

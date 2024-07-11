@@ -39,7 +39,7 @@ func (n *navigatorFolders) Travel(ctx context.Context,
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
-		current, vapour.contents(), err,
+		current, vapour.Contents(), err,
 	); skip == enums.SkipAllTraversal {
 		return continueTraversal, e
 	}
@@ -59,17 +59,23 @@ func (n *navigatorFolders) inspect(ns *navigationStatic,
 	)
 
 	// for the folders navigator, we ignore the user defined setting in
-	// n.o.Store.Behaviours.Sort.DirectoryEntryOrder, as we're only interested in
-	// folders and therefore force to use DirectoryEntryOrderFoldersFirstEn instead
+	// (Options).Core.Behaviours.Sort.DirectoryEntryOrder, as we're only
+	// interested in folders and therefore forced to use
+	// enums.DirectoryEntryOrderFoldersFirst instead.
 	//
 	vapour.cargo, err = read(ns.mediator.resources.FS.N,
 		n.ro,
 		current.Path,
 	)
 
-	vapour.sort(enums.EntryTypeFolder)
+	vapour.Sort(enums.EntryTypeFolder)
+	vapour.Pick(enums.EntryTypeFolder)
 
-	// TODO: implement directory with files
+	if n.using.Subscription == enums.SubscribeFoldersWithFiles {
+		ns.mediator.resources.Actions.HandleChildren.Invoke()(
+			vapour, ns.mediator.mums,
+		)
+	}
 
 	extend(ns, vapour)
 

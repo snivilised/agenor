@@ -39,7 +39,7 @@ func (n *navigatorUniversal) Travel(ctx context.Context,
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
-		current, vapour.contents(), err,
+		current, vapour.Contents(), err,
 	); skip == enums.SkipAllTraversal {
 		return continueTraversal, e
 	} else if skip == enums.SkipDirTraversal {
@@ -64,7 +64,8 @@ func (n *navigatorUniversal) inspect(ns *navigationStatic, current *core.Node) (
 			current.Path,
 		)
 
-		vapour.sort(enums.EntryTypeAll)
+		vapour.Sort(enums.EntryTypeAll)
+		vapour.Pick(enums.EntryTypeAll)
 	} else {
 		vapour.clear()
 	}

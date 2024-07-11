@@ -26,9 +26,9 @@ var _ = Describe("controls", func() {
 
 			// client:
 			//
-			events.Begin.On(func(root string) {
+			events.Begin.On(func(state *cycle.BeginState) {
 				begun = true
-				Expect(root).To(Equal(path))
+				Expect(state.Root).To(Equal(path))
 			})
 
 			events.End.On(func(_ core.TraverseResult) {
@@ -37,7 +37,9 @@ var _ = Describe("controls", func() {
 
 			// component side:
 			//
-			controls.Begin.Dispatch()(path)
+			controls.Begin.Dispatch()(&cycle.BeginState{
+				Root: path,
+			})
 			controls.End.Dispatch()(nil)
 
 			Expect(begun).To(BeTrue(), "begin notification handler not invoked")
