@@ -26,6 +26,10 @@ func (c *Controller) Result(ctx context.Context, err error) *types.KernelResult 
 	return c.kc.Result(ctx, err)
 }
 
+func (c *Controller) Mediator() types.Mediator {
+	return c.kc.Mediator()
+}
+
 func NewController(was *pref.Was, artefacts *kernel.Artefacts) *kernel.Artefacts {
 	// The Controller on the incoming artefacts is the core navigator. It is
 	// decorated here for resume. The strategy only needs access to the core navigator.

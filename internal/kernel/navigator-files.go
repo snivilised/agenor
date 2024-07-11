@@ -47,7 +47,7 @@ func (n *navigatorFiles) Travel(ctx context.Context,
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
-		current, vapour.contents(), err,
+		current, vapour.Contents(), err,
 	); skip == enums.SkipAllTraversal || err != nil {
 		return continueTraversal, e
 	} else if skip == enums.SkipDirTraversal {
@@ -57,7 +57,9 @@ func (n *navigatorFiles) Travel(ctx context.Context,
 	return n.travel(ctx, ns, vapour)
 }
 
-func (n *navigatorFiles) inspect(ns *navigationStatic, current *core.Node) (inspection, error) {
+func (n *navigatorFiles) inspect(ns *navigationStatic,
+	current *core.Node,
+) (inspection, error) {
 	var (
 		vapour = &navigationVapour{
 			ns:      ns,
@@ -72,7 +74,8 @@ func (n *navigatorFiles) inspect(ns *navigationStatic, current *core.Node) (insp
 			current.Path,
 		)
 
-		vapour.sort(enums.EntryTypeAll)
+		vapour.Sort(enums.EntryTypeAll)
+		vapour.Pick(enums.EntryTypeAll)
 	} else {
 		vapour.clear()
 	}

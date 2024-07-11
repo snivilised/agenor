@@ -56,7 +56,7 @@ func (ps *PositionalSet[T]) Insert(item T) bool {
 	return false
 }
 
-// Add insert multiple items into the set under the same conditions as
+// All inserts multiple items into the set under the same conditions as
 // Insert
 func (ps *PositionalSet[T]) All(items ...T) bool {
 	result := true
@@ -72,7 +72,7 @@ func (ps *PositionalSet[T]) All(items ...T) bool {
 	return result
 }
 
-// Delete removes an item from the set
+// Delete removes an item from the set. Removing the anchor is prohibited.
 func (ps *PositionalSet[T]) Delete(item T) {
 	if item == ps.anchor {
 		return

@@ -140,14 +140,14 @@ func (c *NotificationCtrl[F]) Unmute() {
 }
 
 func broadcastBegin(listeners []BeginHandler) BeginHandler {
-	return func(root string) {
+	return func(state *BeginState) {
 		for _, listener := range listeners {
-			listener(root)
+			listener(state)
 		}
 	}
 }
 
-func nopBegin(_ string) {}
+func nopBegin(*BeginState) {}
 
 func broadcastEnd(listeners []EndHandler) EndHandler {
 	return func(result core.TraverseResult) {

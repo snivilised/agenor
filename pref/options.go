@@ -45,6 +45,10 @@ type (
 		//
 		Defects DefectOptions
 
+		// FilterDefined allows the client to receive the filter instance.
+		//
+		Filtering FilteringOptions
+
 		Binder *Binder
 	}
 

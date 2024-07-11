@@ -1,9 +1,11 @@
 package tv
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
@@ -42,13 +44,26 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
+	actions := &override.Actions{
+		HandleChildren: override.NewActionCtrl[override.HandleChildrenInterceptor](
+			func(inspection core.Inspection, mums measure.MutableMetrics) {
+				// [KEEP-FILTER-IN-SYNC] keep this in sync with filter plugin.Init
+				files := inspection.Sort(enums.EntryTypeFile)
+				inspection.AssignChildren(files)
+				mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))
+			},
+		),
+	}
+
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
 		FS: types.FileSystems{
 			N: ext.navFS(),
 			R: ext.resFS(),
 		},
 		Supervisor: measure.New(),
+		Actions:    actions,
 	})
+
 	if navErr != nil {
 		return &buildArtefacts{
 			o:   o,
@@ -75,14 +90,16 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// INIT PLUGINS
 	//
-	roles := lo.Map(plugins, func(plugin types.Plugin, _ int) enums.Role {
-		return plugin.Role()
-	})
-
-	artefacts.Mediator.Arrange(roles)
+	artefacts.Mediator.Arrange(lo.Map(plugins,
+		func(plugin types.Plugin, _ int) enums.Role {
+			return plugin.Role()
+		},
+	))
 
 	for _, p := range plugins {
-		if bindErr := p.Init(); bindErr != nil {
+		if bindErr := p.Init(&types.PluginInit{
+			Actions: actions,
+		}); bindErr != nil {
 			return &buildArtefacts{
 				o:       o,
 				kc:      artefacts.Kontroller,

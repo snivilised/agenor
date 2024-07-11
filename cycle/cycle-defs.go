@@ -22,8 +22,12 @@ type (
 	// be used by any notification with this signature.
 	SimpleHandler func()
 
+	BeginState struct {
+		Root string
+	}
+
 	// BeginHandler invoked before traversal begins
-	BeginHandler func(root string)
+	BeginHandler func(state *BeginState)
 
 	// EndHandler invoked at the end of traversal
 	EndHandler func(result core.TraverseResult)

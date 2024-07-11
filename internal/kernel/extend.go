@@ -13,8 +13,8 @@ func extend(ns *navigationStatic, vapour inspection) {
 	var (
 		scope    enums.FilterScope
 		isLeaf   bool
-		current  = vapour.current()
-		contents = vapour.contents()
+		current  = vapour.Current()
+		contents = vapour.Contents()
 	)
 
 	if current.IsFolder() {

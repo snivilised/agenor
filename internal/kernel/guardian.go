@@ -17,21 +17,17 @@ type (
 	positionalRoleSet = collections.PositionalSet[enums.Role]
 )
 
-type owned struct {
-	mums measure.Mutables
-}
-
 // anchor is a specialised link that should always be the
 // last in the chain and contains the original client's handler.
 type anchor struct {
 	client core.Client
-	owned  owned
+	owner  measure.Owned
 }
 
 func (t *anchor) Next(node *core.Node) (bool, error) {
 	if metric := lo.Ternary(node.IsFolder(),
-		t.owned.mums[enums.MetricNoFoldersInvoked],
-		t.owned.mums[enums.MetricNoFilesInvoked],
+		t.owner.Mums[enums.MetricNoFoldersInvoked],
+		t.owner.Mums[enums.MetricNoFilesInvoked],
 	); metric != nil {
 		metric.Tick()
 	}
@@ -58,12 +54,12 @@ type guardian struct {
 
 func newGuardian(client core.Client,
 	master types.GuardianSealer,
-	mums measure.Mutables,
+	mums measure.MutableMetrics,
 ) *guardian {
 	anchor := &anchor{
 		client: client,
-		owned: owned{
-			mums: mums,
+		owner: measure.Owned{
+			Mums: mums,
 		},
 	}
 

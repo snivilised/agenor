@@ -5,11 +5,15 @@ import (
 )
 
 type (
-	Metrics  map[enums.Metric]Metric
-	Mutables map[enums.Metric]Mutable
+	Metrics        map[enums.Metric]Metric
+	MutableMetrics map[enums.Metric]MutableMetric
 
 	Supervisor struct {
 		metrics Metrics
+	}
+
+	Owned struct {
+		Mums MutableMetrics
 	}
 )
 
@@ -19,7 +23,7 @@ func New() *Supervisor {
 	}
 }
 
-func (s *Supervisor) Single(mt enums.Metric) Mutable {
+func (s *Supervisor) Single(mt enums.Metric) MutableMetric {
 	if _, exists := s.metrics[mt]; !exists {
 		metric := &BaseMetric{
 			t: mt,
@@ -29,11 +33,11 @@ func (s *Supervisor) Single(mt enums.Metric) Mutable {
 		return metric
 	}
 
-	return s.metrics[mt].(Mutable)
+	return s.metrics[mt].(MutableMetric)
 }
 
-func (s *Supervisor) Many(metrics ...enums.Metric) Mutables {
-	result := make(Mutables)
+func (s *Supervisor) Many(metrics ...enums.Metric) MutableMetrics {
+	result := make(MutableMetrics)
 
 	for _, mt := range metrics {
 		metric := &BaseMetric{

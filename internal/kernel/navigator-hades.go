@@ -30,3 +30,7 @@ func (n *navigatorHades) Navigate(ctx context.Context) (core.TraverseResult, err
 func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
 	return types.NewFailed(err)
 }
+
+func (n *navigatorHades) Mediator() types.Mediator {
+	return nil
+}

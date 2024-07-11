@@ -20,7 +20,6 @@ type Director interface {
 }
 
 // director
-// TODO: do we pass in another func to the director that represents the sync?
 type director func(bs *Builders) core.Navigator
 
 func (fn director) Extent(bs *Builders) core.Navigator {
@@ -78,6 +77,8 @@ var (
 	WithDepth                 = pref.WithDepth
 	WithFaultHandler          = pref.WithFaultHandler
 	WithFilter                = pref.WithFilter
+	WithFilterCustom          = pref.WithFilterCustom
+	WithFilterSink            = pref.WithFilterSink
 	WithHibernationWake       = pref.WithHibernationWake
 	WithHibernationSleep      = pref.WithHibernationSleep
 	WithHibernationBehaviour  = pref.WithHibernationBehaviour
@@ -116,7 +117,7 @@ type Using = pref.Using
 // This high level list assumes everything can use core and enums; dependencies
 // can only point downwards. NB: These restrictions do not apply to the unit tests;
 // eg, "cycle_test" defines tests that are dependent on "pref", but "cycle" is prohibited
-// from using "cycle".
+// from using "pref".
 // ============================================================================
 // 🔆 user interface layer
 // traverse: [everything]
@@ -130,6 +131,8 @@ type Using = pref.Using
 //
 // 🔆 central layer
 // kernel: []
+// types: [measure, pref, override]
+// override: [tapable], !("types")
 // ---
 //
 // 🔆 support layer
@@ -146,6 +149,7 @@ type Using = pref.Using
 // 🔆 platform layer
 // core: []
 // enums: [none]
+// measure: []
 // ---
 // ============================================================================
 //
