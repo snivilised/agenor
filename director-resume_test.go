@@ -2,7 +2,10 @@ package tv_test
 
 import (
 	"context"
+	"io/fs"
+	"os"
 	"sync"
+	"testing/fstest"
 
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -16,13 +19,21 @@ import (
 )
 
 var _ = Describe("Director(Resume)", Ordered, func() {
-	var restore pref.Option
+	var (
+		emptyFS fstest.MapFS
+		restore pref.Option
+	)
 
 	BeforeAll(func() {
 		restore = func(o *tv.Options) error {
 			o.Events.Begin.On(func(_ *cycle.BeginState) {})
 
 			return nil
+		}
+		emptyFS = fstest.MapFS{
+			".": &fstest.MapFile{
+				Mode: os.ModeDir,
+			},
 		}
 	})
 
@@ -45,6 +56,12 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						Using: tv.Using{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
+							GetReadDirFS: func() fs.ReadDirFS {
+								return emptyFS
+							},
+							GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+								return emptyFS
+							},
 						},
 						From:     RestorePath,
 						Strategy: tv.ResumeStrategyFastward,

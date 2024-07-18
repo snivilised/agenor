@@ -19,17 +19,22 @@ type buildArtefacts struct {
 }
 
 type Builders struct {
-	filesystem pref.FileSystemBuilder
-	options    optionsBuilder
-	navigator  kernel.NavigatorBuilder
-	plugins    pluginsBuilder
-	extent     extentBuilder
+	readerFS  pref.ReadDirFileSystemBuilder
+	queryFS   pref.QueryStatusFileSystemBuilder
+	options   optionsBuilder
+	navigator kernel.NavigatorBuilder
+	plugins   pluginsBuilder
+	extent    extentBuilder
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD FILE SYSTEM & EXTENT
 	//
-	ext := bs.extent.build(bs.filesystem.Build())
+	reader := bs.readerFS.Build()
+	ext := bs.extent.build(
+		reader,
+		bs.queryFS.Build(reader),
+	)
 
 	// BUILD OPTIONS
 	//
@@ -56,8 +61,9 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	}
 
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
-		FS: types.FileSystems{
+		FS: FileSystems{
 			N: ext.navFS(),
+			Q: ext.queryFS(),
 			R: ext.resFS(),
 		},
 		Supervisor: measure.New(),

@@ -31,9 +31,15 @@ type Using struct {
 	// property.
 	O *Options
 
-	// GetFS is optional and enables the client to specify how the
+	// GetReadDirFS is optional and enables the client to specify how the
 	// file system for a path is created
-	GetFS FileSystem
+	GetReadDirFS CreateReadDirFS
+
+	// GetQueryStatusFS is optional and enables the client to specify how the
+	// file system for a path is created. When specified can probably use
+	// the same instance used to create the ReadDi fs, that is because
+	// fstest.MapFS implements the required method Stat.
+	GetQueryStatusFS CreateQueryStatusFS
 }
 
 // Validate checks that the properties on Using are all valid.
@@ -62,7 +68,7 @@ type Was struct {
 }
 
 // Validate checks that the properties on Using and Was are all valid.
-func (a Was) Validate() error {
+func (a Was) Validate() error { //nolint:gocritic // heavy, so what, low frequency
 	if a.From == "" {
 		return UsageError{
 			message: "missing restore from path",
@@ -94,12 +100,26 @@ func validate(using *Using) error {
 	return nil
 }
 
-type FileSystemBuilder interface {
-	Build() fs.FS
+type (
+	ReadDirFileSystemBuilder interface {
+		Build() fs.ReadDirFS
+	}
+
+	CreateReadDirFS func() fs.ReadDirFS
+)
+
+func (fn CreateReadDirFS) Build() fs.ReadDirFS {
+	return fn()
 }
 
-type FileSystem func() fs.FS
+type (
+	QueryStatusFileSystemBuilder interface {
+		Build(fsys fs.FS) fs.StatFS
+	}
 
-func (fn FileSystem) Build() fs.FS {
-	return fn()
+	CreateQueryStatusFS func(fsys fs.FS) fs.StatFS
+)
+
+func (fn CreateQueryStatusFS) Build(fsys fs.FS) fs.StatFS {
+	return fn(fsys)
 }

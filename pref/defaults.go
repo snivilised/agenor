@@ -13,7 +13,9 @@ import (
 
 // DefaultReadEntriesHook reads the contents of a directory. The resulting
 // slice is left un-sorted
-func DefaultReadEntriesHook(sys fs.FS, dirname string) ([]fs.DirEntry, error) {
+func DefaultReadEntriesHook(sys fs.ReadDirFS,
+	dirname string,
+) ([]fs.DirEntry, error) {
 	const all = -1
 
 	contents, err := fs.ReadDir(sys, dirname)
@@ -24,6 +26,12 @@ func DefaultReadEntriesHook(sys fs.FS, dirname string) ([]fs.DirEntry, error) {
 	return lo.Filter(contents, func(item fs.DirEntry, _ int) bool {
 		return item.Name() != ".DS_Store"
 	}), nil
+}
+
+// DefaultQueryStatusHook query the status of the path on the file system
+// provided.
+func DefaultQueryStatusHook(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+	return qsys.Stat(path)
 }
 
 // CaseSensitiveSortHook hook function for case sensitive directory traversal. A
@@ -84,6 +92,8 @@ func DefaultPanicHandler() {
 	// may this should invoke save
 }
 
-func DefaultSkipHandler(*core.Node, core.DirectoryContents, error) (enums.SkipTraversal, error) {
+func DefaultSkipHandler(*core.Node,
+	core.DirectoryContents, error,
+) (enums.SkipTraversal, error) {
 	return enums.SkipNoneTraversal, nil
 }

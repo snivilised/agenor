@@ -3,7 +3,6 @@ package pref
 import (
 	"io/fs"
 	"log/slog"
-	"os"
 	"runtime"
 
 	"github.com/snivilised/traverse/core"
@@ -152,7 +151,7 @@ func DefaultOptions() *Options {
 			FileSubPath:   tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
 			FolderSubPath: tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
 			ReadDirectory: tapable.NewHookCtrl[core.ReadDirectoryHook](DefaultReadEntriesHook),
-			QueryStatus:   tapable.NewHookCtrl[core.QueryStatusHook](os.Lstat),
+			QueryStatus:   tapable.NewHookCtrl[core.QueryStatusHook](DefaultQueryStatusHook),
 			Sort:          tapable.NewHookCtrl[core.SortHook](CaseInSensitiveSortHook),
 		},
 

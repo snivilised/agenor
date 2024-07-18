@@ -3,10 +3,12 @@ package tapable_test
 import (
 	"io/fs"
 	"os"
+	"testing/fstest"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/pref"
 )
@@ -27,7 +29,16 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
+		emptyFS fstest.MapFS
 	)
+
+	BeforeAll(func() {
+		emptyFS = fstest.MapFS{
+			".": &fstest.MapFile{
+				Mode: os.ModeDir,
+			},
+		}
+	})
 
 	BeforeEach(func() {
 		invoked = false
@@ -64,11 +75,12 @@ var _ = Describe("Tapable", Ordered, func() {
 
 		When("ReadDirectory hooked", func() {
 			It("🧪 should: invoke hook", func() {
-				sys := os.DirFS(root)
-				o.Hooks.ReadDirectory.Tap(func(_ fs.FS, _ string) ([]fs.DirEntry, error) {
+				o.Hooks.ReadDirectory.Tap(func(_ fs.ReadDirFS, _ string) ([]fs.DirEntry, error) {
 					invoked = true
 					return []fs.DirEntry{}, nil
 				})
+
+				sys := tv.NewNativeFS(root)
 				_, _ = o.Hooks.ReadDirectory.Default()(sys, root)
 				_, _ = o.Hooks.ReadDirectory.Invoke()(sys, root)
 
@@ -78,12 +90,12 @@ var _ = Describe("Tapable", Ordered, func() {
 
 		When("QueryStatus hooked", func() {
 			It("🧪 should: invoke hook", func() {
-				o.Hooks.QueryStatus.Tap(func(_ string) (fs.FileInfo, error) {
+				o.Hooks.QueryStatus.Tap(func(_ fs.StatFS, _ string) (fs.FileInfo, error) {
 					invoked = true
 					return nil, nil
 				})
-				_, _ = o.Hooks.QueryStatus.Default()(root)
-				_, _ = o.Hooks.QueryStatus.Invoke()(root)
+				_, _ = o.Hooks.QueryStatus.Default()(emptyFS, root)
+				_, _ = o.Hooks.QueryStatus.Invoke()(emptyFS, root)
 
 				Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
 			})

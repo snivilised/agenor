@@ -42,7 +42,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		func(ctx SpecContext, entry *naviTE) {
 			recording := make(recordingMap)
 			once := func(node *tv.Node) error {
-				_, found := recording[node.Path] // should this be name not path?
+				_, found := recording[node.Path] // TODO: should this be name not path?
 				Expect(found).To(BeFalse())
 				recording[node.Path] = len(node.Children)
 
@@ -63,18 +63,25 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					Root:         path,
 					Subscription: entry.subscription,
 					Handler:      callback,
-					GetFS: func() fs.FS {
+					GetReadDirFS: func() fs.ReadDirFS {
+						return vfs
+					},
+					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
 						return vfs
 					},
 				},
 				tv.WithOnBegin(begin("🛡️")),
 				tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
-				tv.WithHookQueryStatus(func(path string) (fs.FileInfo, error) {
-					return vfs.Stat(helpers.TrimRoot(path))
-				}),
-				tv.WithHookReadDirectory(func(_ fs.FS, dirname string) ([]fs.DirEntry, error) {
-					return vfs.ReadDir(helpers.TrimRoot(dirname))
-				}),
+				tv.WithHookQueryStatus(
+					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+						return qsys.Stat(helpers.TrimRoot(path))
+					},
+				),
+				tv.WithHookReadDirectory(
+					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+						return rfs.ReadDir(helpers.TrimRoot(dirname))
+					},
+				),
 			),
 			).Navigate(ctx)
 

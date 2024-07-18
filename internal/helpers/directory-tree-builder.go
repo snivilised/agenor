@@ -22,15 +22,15 @@ const (
 	doWrite = true
 )
 
-func Musico(verbose bool, portions ...string) (fsys fstest.MapFS, root string) {
-	fsys = fstest.MapFS{
+func Musico(verbose bool, portions ...string) (msys fstest.MapFS, root string) {
+	msys = fstest.MapFS{
 		".": &fstest.MapFile{
 			Mode: os.ModeDir,
 		},
 	}
 
-	return fsys, Provision(
-		NewMemWriteProvider(fsys, os.ReadFile, portions...),
+	return msys, Provision(
+		NewMemWriteProvider(msys, os.ReadFile, portions...),
 		verbose,
 		portions...,
 	)

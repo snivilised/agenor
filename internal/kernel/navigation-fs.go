@@ -4,7 +4,7 @@ import (
 	"io/fs"
 )
 
-func read(sys fs.FS, o *readOptions, path string) (*Contents, error) {
+func read(sys fs.ReadDirFS, o *readOptions, path string) (*Contents, error) {
 	entries, err := o.hooks.read.Invoke()(sys, path)
 
 	contents := newContents(
