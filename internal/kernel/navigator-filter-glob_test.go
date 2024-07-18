@@ -104,7 +104,7 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertFilteredNavigation(entry, testOptions{
+			assertNavigation(&entry.naviTE, testOptions{
 				vfs:       vfs,
 				recording: recording,
 				path:      path,

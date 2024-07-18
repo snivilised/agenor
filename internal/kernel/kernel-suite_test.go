@@ -251,12 +251,6 @@ func assertNavigation(entry *naviTE, to testOptions) {
 		)
 	}
 
-	assertMetrics(entry, to)
-}
-
-func assertFilteredNavigation(entry *filterTE, to testOptions) {
-	Expect(to.err).Error().To(BeNil())
-
 	if entry.mandatory != nil {
 		for _, name := range entry.mandatory {
 			_, found := to.recording[name]
@@ -271,7 +265,7 @@ func assertFilteredNavigation(entry *filterTE, to testOptions) {
 		}
 	}
 
-	assertMetrics(&entry.naviTE, to)
+	assertMetrics(entry, to)
 }
 
 func assertMetrics(entry *naviTE, to testOptions) {
