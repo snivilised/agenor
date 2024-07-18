@@ -53,17 +53,24 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 						Root:         path,
 						Subscription: entry.subscription,
 						Handler:      once,
-						GetFS: func() fs.FS {
+						GetReadDirFS: func() fs.ReadDirFS {
+							return vfs
+						},
+						GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
 							return vfs
 						},
 					},
 					tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
-					tv.WithHookQueryStatus(func(path string) (fs.FileInfo, error) {
-						return vfs.Stat(helpers.TrimRoot(path))
-					}),
-					tv.WithHookReadDirectory(func(_ fs.FS, dirname string) ([]fs.DirEntry, error) {
-						return vfs.ReadDir(helpers.TrimRoot(dirname))
-					}),
+					tv.WithHookQueryStatus(
+						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+							return qsys.Stat(helpers.TrimRoot(path))
+						},
+					),
+					tv.WithHookReadDirectory(
+						func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+							return rfs.ReadDir(helpers.TrimRoot(dirname))
+						},
+					),
 				)).Navigate(ctx)
 
 				assertNavigation(entry, testOptions{

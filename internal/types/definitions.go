@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/measure"
+	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -59,13 +60,9 @@ type (
 		Supervisor() *measure.Supervisor
 	}
 
-	FileSystems struct {
-		N fs.FS
-		R fs.FS
-	}
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS         FileSystems
+		FS         nfs.FileSystems
 		Supervisor *measure.Supervisor
 		Actions    *override.Actions
 	}

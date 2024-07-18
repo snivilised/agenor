@@ -2,7 +2,6 @@ package tv
 
 import (
 	"io/fs"
-	"os"
 
 	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -62,17 +61,26 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	// by a panic.
 	//
 	return &Builders{
-		filesystem: pref.FileSystem(func() fs.FS {
-			if using.GetFS != nil {
-				return using.GetFS()
+		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
+			if using.GetReadDirFS != nil {
+				return using.GetReadDirFS()
 			}
-			return os.DirFS(using.Root)
+
+			return NewNativeFS(using.Root)
 		}),
-		extent: extension(func(fsys fs.FS) extent {
+		queryFS: pref.CreateQueryStatusFS(func(qsys fs.FS) fs.StatFS {
+			if using.GetQueryStatusFS != nil {
+				return using.GetQueryStatusFS(qsys)
+			}
+
+			return NewQueryStatusFS(qsys)
+		}),
+		extent: extension(func(rsys fs.ReadDirFS, qsys fs.StatFS) extent {
 			return &primeExtent{
 				baseExtent: baseExtent{
-					fsys: fileSystems{
-						nas: fsys,
+					fileSys: fileSystems{
+						nas: rsys,
+						qus: qsys,
 					},
 				},
 				u: using,
@@ -109,17 +117,25 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 	// path was.
 	//
 	return &Builders{
-		filesystem: pref.FileSystem(func() fs.FS {
-			if was.Using.GetFS != nil {
-				return was.Using.GetFS()
+		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
+			if was.Using.GetReadDirFS != nil {
+				return was.Using.GetReadDirFS()
 			}
-			return os.DirFS(was.Using.Root)
+			return NewNativeFS(was.Root)
 		}),
-		extent: extension(func(fsys fs.FS) extent {
+		queryFS: pref.CreateQueryStatusFS(func(fsys fs.FS) fs.StatFS {
+			if was.Using.GetQueryStatusFS != nil {
+				return was.Using.GetQueryStatusFS(fsys)
+			}
+
+			return NewQueryStatusFS(fsys)
+		}),
+		extent: extension(func(rsys fs.ReadDirFS, qsys fs.StatFS) extent {
 			return &resumeExtent{
 				baseExtent: baseExtent{
-					fsys: fileSystems{
-						nas: fsys,
+					fileSys: fileSystems{
+						nas: rsys,
+						qus: qsys,
 					},
 				},
 				w: was,

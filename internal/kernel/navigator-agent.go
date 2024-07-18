@@ -46,7 +46,10 @@ func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
 func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
-	info, ie := n.ao.hooks.QueryStatus.Invoke()(ns.root)
+	info, ie := n.ao.hooks.QueryStatus.Invoke()(
+		ns.mediator.resources.FS.Q, ns.root,
+	)
+
 	err := lo.TernaryF(ie != nil,
 		func() error {
 			return n.ao.defects.Fault.Accept(&pref.NavigationFault{

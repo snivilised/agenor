@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -69,9 +70,14 @@ const (
 	ResumeStrategyFastward = enums.ResumeStrategyFastward
 )
 
+type (
+	FileSystems = nfs.FileSystems
+)
+
 type Was = pref.Was
 
 var (
+	// pref
 	If                        = pref.If
 	WithCPU                   = pref.WithCPU
 	WithDepth                 = pref.WithDepth
@@ -107,6 +113,9 @@ var (
 	WithSkipHandler           = pref.WithSkipHandler
 	WithSortBehaviour         = pref.WithSortBehaviour
 	WithSubPathBehaviour      = pref.WithSubPathBehaviour
+	// nfs
+	NewNativeFS      = nfs.NewNativeFS
+	NewQueryStatusFS = nfs.NewQueryStatusFS
 )
 
 type Using = pref.Using
@@ -150,6 +159,7 @@ type Using = pref.Using
 // core: []
 // enums: [none]
 // measure: []
+// nfs:
 // ---
 // ============================================================================
 //
