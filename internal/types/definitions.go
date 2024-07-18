@@ -97,6 +97,7 @@ type (
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context, err error) *KernelResult
 		Mediator() Mediator
+		Conclude(result core.TraverseResult)
 	}
 )
 

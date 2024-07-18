@@ -121,6 +121,14 @@ func begin(em string) cycle.BeginHandler {
 	}
 }
 
+func end(em string) cycle.EndHandler {
+	return func(result core.TraverseResult) {
+		GinkgoWriter.Printf(
+			"---> %v [traverse-navigator-test:END], err: '%v'\n", em, result.Error(),
+		)
+	}
+}
+
 func universalCallback(name string) core.Client {
 	return func(node *core.Node) error {
 		depth := node.Extension.Depth

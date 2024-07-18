@@ -19,6 +19,10 @@ func (nc *NavigationController) Ignite(ignition *types.Ignition) {
 	nc.Med.Ignite(ignition)
 }
 
+func (nc *NavigationController) Conclude(result core.TraverseResult) {
+	nc.Med.Conclude(result)
+}
+
 func (nc *NavigationController) Impl() NavigatorImpl {
 	return nc.Med.impl
 }
