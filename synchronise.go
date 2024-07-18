@@ -15,6 +15,7 @@ type synchroniser interface {
 	core.Navigator
 	Ignite(*types.Ignition)
 	IsComplete() bool
+	Conclude(result core.TraverseResult)
 }
 
 type trunk struct {
@@ -37,6 +38,10 @@ func (t trunk) IsComplete() bool {
 
 func (t trunk) Ignite(ignition *types.Ignition) {
 	t.kc.Ignite(ignition)
+}
+
+func (t trunk) Conclude(result core.TraverseResult) {
+	t.kc.Conclude(result)
 }
 
 type concurrent struct {

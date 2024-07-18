@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/level"
 	"github.com/snivilised/traverse/internal/types"
@@ -83,6 +84,13 @@ func (m *mediator) Arrange(activeRoles []enums.Role) {
 
 func (m *mediator) Ignite(ignition *types.Ignition) {
 	m.impl.Ignite(ignition)
+	m.o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+		Root: m.root,
+	})
+}
+
+func (m *mediator) Conclude(result core.TraverseResult) {
+	m.o.Binder.Controls.End.Dispatch()(result)
 }
 
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {

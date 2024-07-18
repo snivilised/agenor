@@ -22,8 +22,9 @@ func (s *session) start() {
 	})
 }
 
-func (s *session) finish(_ core.TraverseResult) {
+func (s *session) finish(result core.TraverseResult) {
 	s.duration = time.Since(s.started)
+	s.sync.Conclude(result)
 }
 
 func (s *session) IsComplete() bool {

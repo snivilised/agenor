@@ -34,3 +34,6 @@ func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResul
 func (n *navigatorHades) Mediator() types.Mediator {
 	return nil
 }
+
+func (n *navigatorHades) Conclude(_ core.TraverseResult) {
+}

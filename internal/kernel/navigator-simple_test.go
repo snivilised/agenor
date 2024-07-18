@@ -71,6 +71,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					},
 				},
 				tv.WithOnBegin(begin("🛡️")),
+				tv.WithOnEnd(end("🏁")),
 				tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
