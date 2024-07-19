@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 )
 
-// cycle represents life cycle events; can't use prefs
+// 📚 package: cycle represents life cycle events; can't use prefs
 
 // beforeX
 // afterX

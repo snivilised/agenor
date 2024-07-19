@@ -1,6 +1,12 @@
 package services
 
-import "github.com/snivilised/extendio/bus"
+import (
+	"github.com/snivilised/extendio/bus"
+)
+
+// 📚 package: services can contain anything which is a cross cutting concern
+// so much so that explicitly passing them around just results in
+// tighter coupling.
 
 const (
 	format                  = "%03d"

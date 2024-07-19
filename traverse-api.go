@@ -9,19 +9,24 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// Director
-type Director interface {
-	// Extent represents the magnitude of the traversal; ie we can
-	// perform a full Prime run, or Resume from a previously
-	// cancelled run.
-	//
-	// I wonder if this could be replaced by Prime/Resume, to simplify
-	//
-	Extent(bs *Builders) core.Navigator
-}
+// 📚 package: traverse is the front line user facing interface to this module. It sits
+// on the top of the code stack and is allowed to use anything, but nothing
+// else can depend on definitions here, except unit tests.
 
-// director
-type director func(bs *Builders) core.Navigator
+// Director
+type (
+	Director interface {
+		// Extent represents the magnitude of the traversal; ie we can
+		// perform a full Prime run, or Resume from a previously
+		// cancelled run.
+		//
+		// I wonder if this could be replaced by Prime/Resume, to simplify
+		//
+		Extent(bs *Builders) core.Navigator
+	}
+
+	director func(bs *Builders) core.Navigator
+)
 
 func (fn director) Extent(bs *Builders) core.Navigator {
 	return fn(bs)
@@ -38,46 +43,47 @@ type NavigatorFactory interface {
 	Configure() Director
 }
 
+type (
+	// 🌀 core
+	Node   = core.Node
+	Client = core.Client
+
+	// 🌀 enums
+	Subscription   = enums.Subscription
+	ResumeStrategy = enums.ResumeStrategy
+
+	// 🌀 nfs
+	FileSystems = nfs.FileSystems
+
+	// 🌀 pref
+	Option  = pref.Option
+	Options = pref.Options
+	Using   = pref.Using
+	Was     = pref.Was
+)
+
 const (
 	OutputChSize       = 10
 	CheckCloseInterval = time.Second / 10
 	TimeoutOnSend      = time.Second * 2
-)
 
-// traverse is the front line user facing interface to this module. It sits
-// on the top of the code stack and is allowed to use anything, but nothing
-// else can depend on definitions here, except unit tests.
+	// 🌀 enum: ResumeStrategy
+	ResumeStrategySpawn    = enums.ResumeStrategySpawn
+	ResumeStrategyFastward = enums.ResumeStrategyFastward
 
-type (
-	Node         = core.Node
-	Client       = core.Client
-	Option       = pref.Option
-	Options      = pref.Options
-	Subscription = enums.Subscription
-)
-
-const (
+	// 🌀 enum:Subscribe
 	SubscribeFiles            = enums.SubscribeFiles
 	SubscribeFolders          = enums.SubscribeFolders
 	SubscribeFoldersWithFiles = enums.SubscribeFoldersWithFiles
 	SubscribeUniversal        = enums.SubscribeUniversal
 )
 
-type ResumeStrategy = enums.ResumeStrategy
-
-const (
-	ResumeStrategySpawn    = enums.ResumeStrategySpawn
-	ResumeStrategyFastward = enums.ResumeStrategyFastward
-)
-
-type (
-	FileSystems = nfs.FileSystems
-)
-
-type Was = pref.Was
-
 var (
-	// pref
+	// 🌀 nfs
+	NewNativeFS      = nfs.NewNativeFS
+	NewQueryStatusFS = nfs.NewQueryStatusFS
+
+	// 🌀 pref
 	If                        = pref.If
 	WithCPU                   = pref.WithCPU
 	WithDepth                 = pref.WithDepth
@@ -113,12 +119,7 @@ var (
 	WithSkipHandler           = pref.WithSkipHandler
 	WithSortBehaviour         = pref.WithSortBehaviour
 	WithSubPathBehaviour      = pref.WithSubPathBehaviour
-	// nfs
-	NewNativeFS      = nfs.NewNativeFS
-	NewQueryStatusFS = nfs.NewQueryStatusFS
 )
-
-type Using = pref.Using
 
 // sub package description:
 //

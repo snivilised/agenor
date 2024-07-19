@@ -8,24 +8,28 @@ import (
 )
 
 type (
-	NavigationFault struct { // the contents of this is probably not right
+	// NavigationFault
+	NavigationFault struct {
 		Err  error
 		Path string
 		Info fs.FileInfo
 	}
 
+	// PanicHandler
 	PanicHandler interface {
 		Rescue()
 	}
 
 	Rescuer func()
 
+	// FaultHandler
 	FaultHandler interface {
 		Accept(fault *NavigationFault) error
 	}
 
 	Accepter func(fault *NavigationFault) error
 
+	// SkipHandler
 	SkipHandler interface {
 		Ask(current *core.Node,
 			contents core.DirectoryContents,

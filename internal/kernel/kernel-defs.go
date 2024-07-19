@@ -9,6 +9,10 @@ import (
 	"github.com/snivilised/traverse/internal/types"
 )
 
+// 📚 package: kernel contains the core traversal functionality. Kernel
+// is concerned only with the core task of navigation. Supplementary
+// functionality is implemented externally in plugins.
+
 var (
 	// the manifest dictates the order in which decorators
 	// are applied over the top of the client callback
@@ -33,10 +37,8 @@ type (
 			ns *navigationStatic,
 		) (*types.KernelResult, error)
 
-		// Travel is the internal version of Traverse. It is useful to distinguish
-		// between the external Traverse and the internal Travel, because they
-		// have different return types and semantics.
-		Travel(ctx context.Context,
+		// Traverse
+		Traverse(ctx context.Context,
 			ns *navigationStatic,
 			current *core.Node,
 		) (bool, error)

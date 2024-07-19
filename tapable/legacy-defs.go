@@ -6,8 +6,6 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// tapable: enables entities to expose hooks
-
 type (
 	// ActivityL represents an entity that performs an action that is tapable. The type
 	// F should be a function signature, defined by the tapable, so F is not really

@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 )
 
-// the measure package defines facilities for counting things
+// 📚 package: measure package defines facilities for counting things
 // represented by metrics.
 
 type (

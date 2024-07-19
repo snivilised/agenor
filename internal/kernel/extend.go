@@ -19,7 +19,7 @@ func extend(ns *navigationStatic, vapour inspection) {
 
 	if current.IsFolder() {
 		isLeaf = len(contents.Folders()) == 0
-		scope = ns.mediator.frame.periscope.Scope(isLeaf)
+		scope = ns.mediator.periscope.Scope(isLeaf)
 		scope |= enums.ScopeFolder
 	} else {
 		scope = enums.ScopeLeaf
@@ -28,7 +28,7 @@ func extend(ns *navigationStatic, vapour inspection) {
 
 	parent, name := filepath.Split(current.Path)
 	current.Extension = core.Extension{
-		Depth:  ns.mediator.frame.periscope.Depth(),
+		Depth:  ns.mediator.periscope.Depth(),
 		IsLeaf: isLeaf,
 		Name:   name,
 		Parent: parent,

@@ -4,8 +4,6 @@ import (
 	"github.com/snivilised/traverse/cycle"
 )
 
-// this package should be internal
-
 type (
 	// Binder contains items derived from Options
 	Binder struct {

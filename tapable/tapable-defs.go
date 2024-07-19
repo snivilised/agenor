@@ -1,5 +1,7 @@
 package tapable
 
+// 📚 package: tapable enables entities to expose hooks
+
 type (
 	Invokable[F any] interface {
 		// Invoke returns the hook function for execution.

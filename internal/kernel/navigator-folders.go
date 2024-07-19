@@ -18,7 +18,7 @@ func (n *navigatorFolders) Top(ctx context.Context,
 	return n.top(ctx, ns)
 }
 
-func (n *navigatorFolders) Travel(ctx context.Context,
+func (n *navigatorFolders) Traverse(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {
