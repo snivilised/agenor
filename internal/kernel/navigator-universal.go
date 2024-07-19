@@ -18,7 +18,7 @@ func (n *navigatorUniversal) Top(ctx context.Context,
 	return n.top(ctx, ns)
 }
 
-func (n *navigatorUniversal) Travel(ctx context.Context,
+func (n *navigatorUniversal) Traverse(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {

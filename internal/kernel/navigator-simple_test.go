@@ -83,8 +83,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 						return rfs.ReadDir(helpers.TrimRoot(dirname))
 					},
 				),
-			),
-			).Navigate(ctx)
+			)).Navigate(ctx)
 
 			assertNavigation(entry, testOptions{
 				vfs:       vfs,

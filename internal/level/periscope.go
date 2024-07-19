@@ -8,6 +8,9 @@ import (
 	"github.com/snivilised/traverse/enums"
 )
 
+// 📚 package: level contains functionality concerned only with depth
+// management.
+
 // Periscope: depth and scope manager
 type Periscope struct {
 	offset int

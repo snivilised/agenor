@@ -20,7 +20,7 @@ type mediator struct {
 	using        *pref.Using
 	impl         NavigatorImpl
 	guardian     *guardian
-	frame        *navigationFrame
+	periscope    *level.Periscope
 	o            *pref.Options
 	resources    *types.Resources
 	mums         measure.MutableMetrics
@@ -44,17 +44,15 @@ func newMediator(using *pref.Using,
 		using:        using,
 		impl:         impl,
 		guardian:     newGuardian(using.Handler, sealer, mums),
-		frame: &navigationFrame{
-			periscope: level.New(),
-		},
-		o:         o,
-		resources: resources,
-		mums:      mums,
+		periscope:    level.New(),
+		o:            o,
+		resources:    resources,
+		mums:         mums,
 	}
 }
 
 func (m *mediator) descend(node *core.Node) bool {
-	if !m.frame.periscope.Descend(m.o.Core.Behaviours.Cascade.Depth) {
+	if !m.periscope.Descend(m.o.Core.Behaviours.Cascade.Depth) {
 		return false
 	}
 
@@ -65,7 +63,7 @@ func (m *mediator) descend(node *core.Node) bool {
 
 func (m *mediator) ascend(node *core.Node, permit bool) {
 	if permit {
-		m.frame.periscope.Ascend()
+		m.periscope.Ascend()
 		m.o.Binder.Controls.Ascend.Dispatch()(node)
 	}
 }

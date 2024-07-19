@@ -18,7 +18,7 @@ func (n *navigatorFiles) Top(ctx context.Context,
 	return n.top(ctx, ns)
 }
 
-func (n *navigatorFiles) Travel(ctx context.Context,
+func (n *navigatorFiles) Traverse(ctx context.Context,
 	ns *navigationStatic,
 	current *core.Node,
 ) (bool, error) {

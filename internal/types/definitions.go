@@ -12,7 +12,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// package types defines internal types
+// 📚 package: types package defines internal types
 
 type (
 	// Link represents a single decorator in the chain
@@ -42,10 +42,12 @@ type (
 		Unwind(role enums.Role) error
 	}
 
+	// Arrangeable
 	Arrangeable interface {
 		Arrange(roles []enums.Role)
 	}
 
+	// PluginInit
 	PluginInit struct {
 		Actions *override.Actions
 	}
@@ -87,6 +89,7 @@ type (
 		Metrics() *measure.Supervisor
 	}
 
+	// Ignition
 	Ignition struct {
 		Session core.Session
 	}
@@ -101,6 +104,7 @@ type (
 	}
 )
 
+// KernelResult is the internal representation of core.TraverseResult
 type KernelResult struct {
 	session  core.Session
 	reporter measure.Reporter

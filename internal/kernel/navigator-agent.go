@@ -59,7 +59,7 @@ func (n *navigatorAgent) top(ctx context.Context,
 			})
 		},
 		func() error {
-			_, te := ns.mediator.impl.Travel(ctx, ns,
+			_, te := ns.mediator.impl.Traverse(ctx, ns,
 				core.Root(ns.root, info),
 			)
 
@@ -70,7 +70,7 @@ func (n *navigatorAgent) top(ctx context.Context,
 	return ns.mediator.impl.Result(ctx, err), err
 }
 
-func (n *navigatorAgent) Travel(context.Context,
+func (n *navigatorAgent) Traverse(context.Context,
 	*navigationStatic,
 	*core.Node,
 ) (bool, error) {
@@ -138,7 +138,7 @@ func (n *navigatorAgent) travel(ctx context.Context,
 
 		// TODO: ok for Travel to by-pass mediator?
 		//
-		if progress, err := ns.mediator.impl.Travel(
+		if progress, err := ns.mediator.impl.Traverse(
 			ctx, ns, current,
 		); !progress {
 			if err != nil {

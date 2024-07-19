@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 )
 
-// refine defines filters and should be used by rx to alter observables
+// 📚 package: refine defines filters and should be used by rx to alter observables
 
 type NavigationFilters struct {
 	// Node denotes the filter object that represents the Node file system item

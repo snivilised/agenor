@@ -1,4 +1,4 @@
 package sampling
 
-// sampling refers to the ability to just take a sample from each directory
+// 📚 package: sampling refers to the ability to just take a sample from each directory
 // encountered during traversal.

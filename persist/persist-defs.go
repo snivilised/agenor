@@ -1,5 +1,5 @@
 package persist
 
-// persist contains marshalling implementations
+// 📚 package: persist contains marshalling implementations
 
 func Load() {}
