@@ -1,6 +1,8 @@
 package refine
 
 import (
+	"io/fs"
+
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -103,7 +105,14 @@ func (p *Plugin) Init(pi *types.PluginInit) error {
 	pi.Actions.HandleChildren.Intercept(
 		func(inspection core.Inspection, mums measure.MutableMetrics) {
 			files := inspection.Sort(enums.EntryTypeFile)
-			matching := p.filters.Children.Matching(files)
+			matching := lo.TernaryF(p.filters.Children != nil,
+				func() []fs.DirEntry {
+					return p.filters.Children.Matching(files)
+				},
+				func() []fs.DirEntry {
+					return files
+				},
+			)
 
 			inspection.AssignChildren(matching)
 			mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))

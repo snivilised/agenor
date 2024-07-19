@@ -85,6 +85,7 @@ var (
 
 	// 🌀 pref
 	If                        = pref.If
+	IfOption                  = pref.IfOption
 	WithCPU                   = pref.WithCPU
 	WithDepth                 = pref.WithDepth
 	WithFaultHandler          = pref.WithFaultHandler
@@ -146,7 +147,6 @@ var (
 // ---
 //
 // 🔆 support layer
-// tapable: [core, pref]
 // pref: ["cycle", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
 // persist: []
 // services: []
@@ -157,6 +157,7 @@ var (
 // ---
 //
 // 🔆 platform layer
+// tapable: [core]
 // core: []
 // enums: [none]
 // measure: []

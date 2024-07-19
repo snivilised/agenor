@@ -13,19 +13,6 @@ import (
 // is concerned only with the core task of navigation. Supplementary
 // functionality is implemented externally in plugins.
 
-var (
-	// the manifest dictates the order in which decorators
-	// are applied over the top of the client callback
-	// function.
-	manifest = []enums.Role{
-		enums.RoleFastward,
-		enums.RoleClientHiberWake,
-		enums.RoleClientHiberSleep,
-		enums.RoleClientFilter,
-		enums.RoleSampler,
-	}
-)
-
 type (
 	// NavigatorImpl
 	NavigatorImpl interface {

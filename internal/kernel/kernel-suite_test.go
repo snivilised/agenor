@@ -15,6 +15,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/pref"
 )
 
 func TestKernel(t *testing.T) {
@@ -67,6 +68,16 @@ type polyTE struct {
 	naviTE
 	file   core.FilterDef
 	folder core.FilterDef
+}
+
+type sampleTE struct {
+	naviTE
+	sampleType enums.SampleType
+	reverse    bool
+	filter     *filterTE
+	noOf       pref.EntryQuantities
+	each       pref.EachDirectoryEntryPredicate
+	while      pref.WhileDirectoryPredicate
 }
 
 type customFilter struct {

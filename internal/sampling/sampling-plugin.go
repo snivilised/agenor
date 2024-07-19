@@ -10,10 +10,25 @@ import (
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 	if (o.Core.Sampling.NoOf.Files > 0) || (o.Core.Sampling.NoOf.Folders > 0) {
+		// TODO: setup iterators (extendio: sampling-adapters):
+		// - slice -> forward/reverse
+		// - pre-defined filter iterator -> forward/reverse
+		// - custom iterator
+		//
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				Mediator:      mediator,
 				ActivatedRole: enums.RoleSampler,
+			},
+			ctrl: controller{
+				o: &samplingOptions{
+					sampling: &o.Core.Sampling,
+					sampler:  &o.Sampler,
+				},
+				on: handlers{
+					descend: func(_ *core.Node) {},
+					ascend:  func(_ *core.Node) {},
+				},
 			},
 		}
 	}
@@ -21,8 +36,14 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 	return nil
 }
 
+type samplingOptions struct {
+	sampling *pref.SamplingOptions
+	sampler  *pref.SamplerOptions
+}
+
 type Plugin struct {
 	kernel.BasePlugin
+	ctrl controller
 }
 
 func (p *Plugin) Name() string {
@@ -35,13 +56,9 @@ func (p *Plugin) Register(kc types.KernelController) error {
 	return nil
 }
 
-func (p *Plugin) Next(node *core.Node) (bool, error) {
-	_ = node
+func (p *Plugin) Init(pi *types.PluginInit) error {
+	pi.O.Events.Descend.On(p.ctrl.on.descend)
+	pi.O.Events.Ascend.On(p.ctrl.on.ascend)
 
-	// apply the filter to the node
-	return true, nil
-}
-
-func (p *Plugin) Init(_ *types.PluginInit) error {
-	return p.Mediator.Decorate(p)
+	return p.Mediator.Decorate(&p.ctrl)
 }
