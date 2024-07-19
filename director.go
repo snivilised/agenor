@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/refine"
 	"github.com/snivilised/traverse/internal/resume"
 	"github.com/snivilised/traverse/internal/sampling"
@@ -23,23 +24,31 @@ func features(o *pref.Options, mediator types.Mediator,
 ) (plugins []types.Plugin, err error) {
 	var (
 		all = []ifActive{
-			hiber.IfActive, refine.IfActive, sampling.IfActive,
+			// sampling must be considered before filtering
+			// so that manifest works ok.
+			hiber.IfActive, sampling.IfActive, refine.IfActive,
 		}
 	)
 
-	plugins = []types.Plugin{}
-
-	for _, active := range all {
-		if plugin := active(o, mediator); plugin != nil {
-			plugins = append(plugins, plugin)
-		}
-	}
-
-	for _, plugin := range others {
-		if plugin != nil {
-			plugins = append(plugins, plugin)
-		}
-	}
+	// double reduce, the first reduce 'all' creates list of active plugins
+	// and the second, adds others to the activated list.
+	plugins = lo.Reduce(others,
+		func(acc []types.Plugin, plugin types.Plugin, _ int) []types.Plugin {
+			if plugin != nil {
+				acc = append(acc, plugin)
+			}
+			return acc
+		},
+		lo.Reduce(all,
+			func(acc []types.Plugin, query ifActive, _ int) []types.Plugin {
+				if plugin := query(o, mediator); plugin != nil {
+					acc = append(acc, plugin)
+				}
+				return acc
+			},
+			[]types.Plugin{},
+		),
+	)
 
 	for _, plugin := range plugins {
 		err = plugin.Register(kc)

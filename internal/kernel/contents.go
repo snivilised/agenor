@@ -11,7 +11,7 @@ import (
 )
 
 func newContents(behaviour *pref.SortBehaviour,
-	hook tapable.Hook[core.SortHook],
+	hook tapable.Hook[core.SortHook, core.ChainSortHook, tapable.SortBroadcaster],
 	entries []fs.DirEntry,
 ) *Contents {
 	contents := Contents{
@@ -32,7 +32,7 @@ type Contents struct {
 	folders   []fs.DirEntry
 	files     []fs.DirEntry
 	behaviour *pref.SortBehaviour
-	hook      tapable.Hook[core.SortHook]
+	hook      tapable.Hook[core.SortHook, core.ChainSortHook, tapable.SortBroadcaster]
 }
 
 func (c *Contents) Folders() []fs.DirEntry {

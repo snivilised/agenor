@@ -2,20 +2,14 @@ package cycle
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/tapable"
 )
 
 type (
-	announce[F any] func(listeners []F) F
-
-	dispatcher[F any] struct {
-		invoke      F
-		broadcaster announce[F]
-	}
-
 	// NotificationCtrl contains the handler function to be invoked. The control
 	// is agnostic to the handler's signature and therefore can not invoke it.
 	NotificationCtrl[F any] struct {
-		dispatcher dispatcher[F]
+		dispatcher tapable.Dispatcher[F]
 		nop        F
 		subscribed bool
 		listeners  []F
@@ -46,50 +40,26 @@ type (
 	}
 )
 
+func NewNotificationCtrl[F any](nop F,
+	broadcaster tapable.Announce[F],
+) *NotificationCtrl[F] {
+	return &NotificationCtrl[F]{
+		dispatcher: tapable.Dispatcher[F]{
+			Invoke:      nop,
+			Broadcaster: broadcaster,
+		},
+		nop: nop,
+	}
+}
+
 func NewControls() Controls {
 	return Controls{
-		Ascend: NotificationCtrl[NodeHandler]{
-			dispatcher: dispatcher[NodeHandler]{
-				invoke:      nopNode,
-				broadcaster: broadcastNode,
-			},
-			nop: nopNode,
-		},
-		Begin: NotificationCtrl[BeginHandler]{
-			dispatcher: dispatcher[BeginHandler]{
-				invoke:      nopBegin,
-				broadcaster: broadcastBegin,
-			},
-			nop: nopBegin,
-		},
-		Descend: NotificationCtrl[NodeHandler]{
-			dispatcher: dispatcher[NodeHandler]{
-				invoke:      nopNode,
-				broadcaster: broadcastNode,
-			},
-			nop: nopNode,
-		},
-		End: NotificationCtrl[EndHandler]{
-			dispatcher: dispatcher[EndHandler]{
-				invoke:      nopEnd,
-				broadcaster: broadcastEnd,
-			},
-			nop: nopEnd,
-		},
-		Start: NotificationCtrl[HibernateHandler]{
-			dispatcher: dispatcher[HibernateHandler]{
-				invoke:      nopHibernate,
-				broadcaster: broadcastHibernate,
-			},
-			nop: nopHibernate,
-		},
-		Stop: NotificationCtrl[HibernateHandler]{
-			dispatcher: dispatcher[HibernateHandler]{
-				invoke:      nopHibernate,
-				broadcaster: broadcastHibernate,
-			},
-			nop: nopHibernate,
-		},
+		Ascend:  *NewNotificationCtrl[NodeHandler](nopNode, broadcastNode),
+		Begin:   *NewNotificationCtrl[BeginHandler](nopBegin, broadcastBegin),
+		Descend: *NewNotificationCtrl[NodeHandler](nopNode, broadcastNode),
+		End:     *NewNotificationCtrl[EndHandler](nopEnd, broadcastEnd),
+		Start:   *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
+		Stop:    *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
 	}
 }
 
@@ -107,7 +77,7 @@ func (e *Events) Bind(cs *Controls) {
 // On subscribes to a life cycle event
 func (c *NotificationCtrl[F]) On(handler F) {
 	if !c.subscribed {
-		c.dispatcher.invoke = handler
+		c.dispatcher.Invoke = handler
 		c.subscribed = true
 
 		return
@@ -116,11 +86,11 @@ func (c *NotificationCtrl[F]) On(handler F) {
 	if c.listeners == nil {
 		const size = 2
 		c.listeners = make([]F, 0, size)
-		c.listeners = append(c.listeners, c.dispatcher.invoke)
+		c.listeners = append(c.listeners, c.dispatcher.Invoke)
 	}
 
 	c.listeners = append(c.listeners, handler)
-	c.dispatcher.invoke = c.dispatcher.broadcaster(c.listeners)
+	c.dispatcher.Invoke = c.dispatcher.Broadcaster(c.listeners)
 }
 
 func (c *NotificationCtrl[F]) Dispatch() F {
@@ -128,7 +98,7 @@ func (c *NotificationCtrl[F]) Dispatch() F {
 		return c.nop
 	}
 
-	return c.dispatcher.invoke
+	return c.dispatcher.Invoke
 }
 
 func (c *NotificationCtrl[F]) Mute() {

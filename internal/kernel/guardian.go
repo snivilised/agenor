@@ -2,7 +2,6 @@ package kernel
 
 import (
 	"errors"
-	"slices"
 
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/core"
@@ -72,10 +71,10 @@ func newGuardian(client core.Client,
 	}
 }
 
-func (g *guardian) arrange(activeRoles []enums.Role) {
+func (g *guardian) arrange(active []enums.Role) {
 	g.container.chain[enums.RoleAnchor] = g.anchor
 
-	if len(activeRoles) == 0 {
+	if len(active) == 0 {
 		g.container.invoker = NodeInvoker(func(node *core.Node) error {
 			_, err := g.anchor.Next(node)
 			return err
@@ -84,12 +83,7 @@ func (g *guardian) arrange(activeRoles []enums.Role) {
 		return
 	}
 
-	order := make([]enums.Role, 0, len(activeRoles)+1)
-	for _, role := range manifest {
-		if slices.Contains(activeRoles, role) {
-			order = append(order, role)
-		}
-	}
+	order := manifest(active)
 
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
 	g.container.invoker = NodeInvoker(func(node *core.Node) error {

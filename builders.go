@@ -105,6 +105,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	for _, p := range plugins {
 		if bindErr := p.Init(&types.PluginInit{
 			Actions: actions,
+			O:       o,
 		}); bindErr != nil {
 			return &buildArtefacts{
 				o:       o,

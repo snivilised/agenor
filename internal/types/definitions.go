@@ -50,6 +50,7 @@ type (
 	// PluginInit
 	PluginInit struct {
 		Actions *override.Actions
+		O       *pref.Options
 	}
 
 	// Mediator controls interactions between different entities of

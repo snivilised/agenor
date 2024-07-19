@@ -121,6 +121,21 @@ func If(condition bool, option Option) Option {
 	return nil
 }
 
+// ConditionalOption allows the delaying of creation of the option until
+// the condition is known to be true. This is in contrast to If where the
+// Option is pre-created, regardless of the condition.
+type ConditionalOption func() Option
+
+// IfOption
+func IfOption(condition bool, option ConditionalOption) Option {
+	if condition {
+		return option()
+	}
+
+	return nil
+}
+
+// DefaultOptions
 func DefaultOptions() *Options {
 	nopLogger := &slog.Logger{}
 
@@ -147,12 +162,47 @@ func DefaultOptions() *Options {
 			},
 		},
 
+		// convert this into a call to a newly defined function NewHooks
 		Hooks: tapable.Hooks{
-			FileSubPath:   tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
-			FolderSubPath: tapable.NewHookCtrl[core.SubPathHook](RootParentSubPathHook),
-			ReadDirectory: tapable.NewHookCtrl[core.ReadDirectoryHook](DefaultReadEntriesHook),
-			QueryStatus:   tapable.NewHookCtrl[core.QueryStatusHook](DefaultQueryStatusHook),
-			Sort:          tapable.NewHookCtrl[core.SortHook](CaseInSensitiveSortHook),
+			FileSubPath: tapable.NewHookCtrl[
+				core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
+			](
+				RootParentSubPathHook,
+				tapable.GetSubPathBroadcaster,
+				tapable.SubPathAttacher,
+			),
+
+			FolderSubPath: tapable.NewHookCtrl[
+				core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
+			](
+				RootParentSubPathHook,
+				tapable.GetSubPathBroadcaster,
+				tapable.SubPathAttacher,
+			),
+
+			ReadDirectory: tapable.NewHookCtrl[
+				core.ReadDirectoryHook, core.ChainReadDirectoryHook, tapable.ReadDirectoryBroadcaster,
+			](
+				DefaultReadEntriesHook,
+				tapable.GetReadDirectoryBroadcaster,
+				tapable.ReadDirectoryAttacher,
+			),
+
+			QueryStatus: tapable.NewHookCtrl[
+				core.QueryStatusHook, core.ChainQueryStatusHook, tapable.QueryStatusBroadcaster,
+			](
+				DefaultQueryStatusHook,
+				tapable.GetQueryStatusBroadcaster,
+				tapable.QueryStatusAttacher,
+			),
+
+			Sort: tapable.NewHookCtrl[
+				core.SortHook, core.ChainSortHook, tapable.SortBroadcaster,
+			](
+				CaseInSensitiveSortHook,
+				tapable.GetSortBroadcaster,
+				tapable.SortAttacher,
+			),
 		},
 
 		Monitor: MonitorOptions{
