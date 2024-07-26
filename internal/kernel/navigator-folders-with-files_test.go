@@ -60,7 +60,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 							return vfs
 						},
 					},
-					tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
+					tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
 					tv.WithHookQueryStatus(
 						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 							return qsys.Stat(helpers.TrimRoot(path))
@@ -73,7 +73,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					),
 				)).Navigate(ctx)
 
-				assertNavigation(entry, testOptions{
+				assertNavigation(entry, &testOptions{
 					recording: recording,
 					path:      path,
 					result:    result,

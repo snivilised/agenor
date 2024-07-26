@@ -35,8 +35,8 @@ func (p *Plugin) Register(kc types.KernelController) error {
 	return nil
 }
 
-func (p *Plugin) Next(node *core.Node) (bool, error) {
-	_ = node
+func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error) {
+	_, _ = node, inspection
 
 	return true, nil
 }

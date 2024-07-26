@@ -1,4 +1,4 @@
-package kernel
+package tv
 
 import (
 	"slices"
@@ -12,18 +12,21 @@ type (
 	manifestRules map[string]rule
 )
 
-// manifest defines the order of roles and which roles can be
-// activated at a time over the top of the client callback
-// function.
-func manifest(active []enums.Role) []enums.Role {
-	all := []enums.Role{
+var (
+	manifestOrder = []enums.Role{
 		enums.RoleFastward,
 		enums.RoleClientHiberWake,
 		enums.RoleClientHiberSleep,
 		enums.RoleClientFilter,
 		enums.RoleSampler,
 	}
+)
 
+// manifest defines the order of roles and which roles can be
+// activated at a time over the top of the client callback
+// function.
+func manifest(active []enums.Role) []enums.Role {
+	all := manifestOrder
 	rules := manifestRules{
 		"contained-in-all": func(current enums.Role, _, all []enums.Role) bool {
 			return slices.Contains(all, current)

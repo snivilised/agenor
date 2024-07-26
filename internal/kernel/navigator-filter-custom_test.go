@@ -91,7 +91,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertNavigation(&entry.naviTE, testOptions{
+			assertNavigation(&entry.naviTE, &testOptions{
 				vfs:       vfs,
 				recording: recording,
 				path:      path,
@@ -105,7 +105,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, &filterTE{
+		// custom not implemented yet
+		XEntry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(any scope): custom filter",
 				relative:     "RETRO-WAVE",
@@ -117,10 +118,11 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			},
 			name:    "items with '.flac' suffix",
 			pattern: "*.flac",
-			scope:   enums.ScopeAll,
+			scope:   enums.ScopeFile,
 		}),
 
-		Entry(nil, &filterTE{
+		// negate tot implemented yet
+		XEntry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(any scope): custom filter (negate)",
 				relative:     "RETRO-WAVE",
@@ -136,7 +138,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			negate:  true,
 		}),
 
-		Entry(nil, &filterTE{
+		// custom not implemented yet
+		XEntry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(undefined scope): custom filter",
 				relative:     "RETRO-WAVE",

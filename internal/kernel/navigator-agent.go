@@ -15,8 +15,8 @@ import (
 )
 
 type readHooks struct {
-	read tapable.Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook, tapable.SubPathBroadcaster]
-	sort tapable.Hook[core.SortHook, core.ChainSortHook, tapable.SortBroadcaster]
+	read tapable.Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
+	sort tapable.Hook[core.SortHook, core.ChainSortHook]
 }
 
 type readOptions struct {

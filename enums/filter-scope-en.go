@@ -61,3 +61,35 @@ func (f *FilterScope) Set(mask FilterScope) {
 func (f *FilterScope) Clear(mask FilterScope) {
 	*f &^= mask
 }
+
+// IsFolder check is the root bit is set
+func (f *FilterScope) IsRoot() bool {
+	return (*f & ScopeRoot) > 0
+}
+
+// IsFolder check is the folder bit is set
+func (f *FilterScope) IsFolder() bool {
+	return (*f & ScopeFolder) > 0
+}
+
+// IsFile check is the file bit is set
+func (f *FilterScope) IsFile() bool {
+	return (*f & ScopeFile) > 0
+}
+
+// Scrub ensures only file/folder scopes are set
+func (f *FilterScope) Scrub() FilterScope {
+	var (
+		scrub FilterScope
+	)
+
+	if f.IsFile() {
+		scrub.Set(ScopeFile)
+	}
+
+	if f.IsFolder() {
+		scrub.Set(ScopeFolder)
+	}
+
+	return scrub
+}

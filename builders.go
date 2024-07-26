@@ -52,9 +52,15 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	actions := &override.Actions{
 		HandleChildren: override.NewActionCtrl[override.HandleChildrenInterceptor](
 			func(inspection core.Inspection, mums measure.MutableMetrics) {
-				// [KEEP-FILTER-IN-SYNC] keep this in sync with filter plugin.Init
+				// [KEEP-FILTER-IN-SYNC] keep this in sync with filter-plugin/childScheme.init
 				files := inspection.Sort(enums.EntryTypeFile)
 				inspection.AssignChildren(files)
+
+				// The behaviour of this default child handler is to assign
+				// the children and tick the metrics. However, when filtering is
+				// active, then this handler should be overridden by the filter
+				// to only tick the child metric, if their parent is filtered in.
+				//
 				mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))
 			},
 		),
@@ -96,17 +102,20 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// INIT PLUGINS
 	//
-	artefacts.Mediator.Arrange(lo.Map(plugins,
+	active := lo.Map(plugins,
 		func(plugin types.Plugin, _ int) enums.Role {
 			return plugin.Role()
 		},
-	))
+	)
+	order := manifest(active)
+	artefacts.Mediator.Arrange(active, order)
+	pi := &types.PluginInit{
+		Actions: actions,
+		O:       o,
+	}
 
 	for _, p := range plugins {
-		if bindErr := p.Init(&types.PluginInit{
-			Actions: actions,
-			O:       o,
-		}); bindErr != nil {
+		if bindErr := p.Init(pi); bindErr != nil {
 			return &buildArtefacts{
 				o:       o,
 				kc:      artefacts.Kontroller,

@@ -84,8 +84,8 @@ var (
 	NewQueryStatusFS = nfs.NewQueryStatusFS
 
 	// 🌀 pref
-	If                        = pref.If
 	IfOption                  = pref.IfOption
+	IfOptionF                 = pref.IfOptionF
 	WithCPU                   = pref.WithCPU
 	WithDepth                 = pref.WithDepth
 	WithFaultHandler          = pref.WithFaultHandler

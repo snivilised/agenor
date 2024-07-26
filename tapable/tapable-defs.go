@@ -15,7 +15,7 @@ type (
 	// F: core hook function
 	// C: chained client hook, ie the hook the client provides when they call Chain
 	// B: pre-defined broadcaster function
-	Hook[F, C, B any] interface {
+	Hook[F, C any] interface {
 		Invokable[F]
 		// Tap overrides the default tap-able core function
 		Tap(handler F)

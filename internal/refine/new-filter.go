@@ -236,3 +236,49 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 
 	return filter, nil
 }
+
+func newSampleFilter(def *core.SampleFilterDef,
+	so *pref.SamplingOptions,
+) (core.SampleTraverseFilter, error) {
+	var (
+		filter core.SampleTraverseFilter
+	)
+
+	if def == nil {
+		return nil, i18n.ErrFilterIsNil
+	}
+
+	scrubbed := def.Scope.Scrub()
+
+	if scrubbed.IsFile() && so.NoOf.Files == 0 {
+		return nil, i18n.ErrInvalidFileSamplingSpecification
+	}
+
+	if scrubbed.IsFolder() && so.NoOf.Folders == 0 {
+		return nil, i18n.ErrInvalidFolderSamplingSpecification
+	}
+
+	switch def.Type {
+	case enums.FilterTypeExtendedGlob:
+	case enums.FilterTypeRegex:
+	case enums.FilterTypeGlob:
+		filter = &SampleGlobFilter{
+			SampleFilter: SampleFilter{
+				Filter: Filter{
+					name:    def.Description,
+					scope:   scrubbed,
+					pattern: def.Pattern,
+					negate:  def.Negate,
+					// ifNotApplicable: def.IfNotApplicable,
+				},
+			},
+		}
+
+	case enums.FilterTypeCustom:
+	case enums.FilterTypePoly:
+	case enums.FilterTypeUndefined:
+		return nil, i18n.ErrFilterMissingType
+	}
+
+	return filter, nil
+}

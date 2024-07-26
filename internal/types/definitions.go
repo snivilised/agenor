@@ -20,7 +20,7 @@ type (
 		// Next invokes this decorator which returns true if
 		// next link in the chain can be run or false to stop
 		// execution of subsequent links.
-		Next(node *core.Node) (bool, error)
+		Next(node *core.Node, inspection core.Inspection) (bool, error)
 
 		// Role indicates the identity of the link
 		Role() enums.Role
@@ -44,7 +44,7 @@ type (
 
 	// Arrangeable
 	Arrangeable interface {
-		Arrange(roles []enums.Role)
+		Arrange(active, order []enums.Role)
 	}
 
 	// PluginInit

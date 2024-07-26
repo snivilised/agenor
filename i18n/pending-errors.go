@@ -12,4 +12,6 @@ var (
 	ErrInternalFailedToGetNavigatorDriver = errors.New("failed to get navigator driver (internal)")
 	ErrInvalidIncaseFilterDef             = errors.New("invalid incase filter definition; pattern is missing separator")
 	ErrWorkerPoolCreationFailed           = errors.New("failed to create worker pool")
+	ErrInvalidFileSamplingSpecification   = errors.New("invalid file sampling specification, missing no of files")
+	ErrInvalidFolderSamplingSpecification = errors.New("invalid folder sampling specification, missing no of folders")
 )
