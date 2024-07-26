@@ -24,14 +24,17 @@ func features(o *pref.Options, mediator types.Mediator,
 ) (plugins []types.Plugin, err error) {
 	var (
 		all = []ifActive{
-			// sampling must be considered before filtering
-			// so that manifest works ok.
-			hiber.IfActive, sampling.IfActive, refine.IfActive,
+			// filtering must happen before sampling so that
+			// ReadDirectory hooks are applied to incorrect
+			// order. How can we decouple ourselves from this
+			// requirement? => the cure is worse than the disease
+			//
+			hiber.IfActive, refine.IfActive, sampling.IfActive,
 		}
 	)
 
 	// double reduce, the first reduce 'all' creates list of active plugins
-	// and the second, adds others to the activated list.
+	// and the second, adds other plugins to the activated list.
 	plugins = lo.Reduce(others,
 		func(acc []types.Plugin, plugin types.Plugin, _ int) []types.Plugin {
 			if plugin != nil {

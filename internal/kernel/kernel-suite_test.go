@@ -50,6 +50,7 @@ type naviTE struct {
 	mandatory     []string
 	prohibited    []string
 	expectedNoOf  quantities
+	expectedErr   error
 }
 
 type filterTE struct {
@@ -58,7 +59,6 @@ type filterTE struct {
 	pattern         string
 	scope           enums.FilterScope
 	negate          bool
-	expectedErr     error
 	errorContains   string
 	ifNotApplicable enums.TriStateBool
 	custom          core.TraverseFilter
@@ -215,15 +215,21 @@ func subscribes(subscription enums.Subscription, de fs.DirEntry) bool {
 }
 
 type testOptions struct {
-	vfs       fstest.MapFS
-	recording recordingMap
-	path      string
-	result    core.TraverseResult
-	err       error
-	every     func(p string) bool
+	vfs         fstest.MapFS
+	recording   recordingMap
+	path        string
+	result      core.TraverseResult
+	err         error
+	expectedErr error
+	every       func(p string) bool
 }
 
-func assertNavigation(entry *naviTE, to testOptions) {
+func assertNavigation(entry *naviTE, to *testOptions) {
+	if to.expectedErr != nil {
+		Expect(to.err).To(MatchError(to.expectedErr))
+		return
+	}
+
 	Expect(to.err).To(Succeed())
 
 	visited := []string{}
@@ -287,7 +293,7 @@ func assertNavigation(entry *naviTE, to testOptions) {
 	assertMetrics(entry, to)
 }
 
-func assertMetrics(entry *naviTE, to testOptions) {
+func assertMetrics(entry *naviTE, to *testOptions) {
 	Expect(to.result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
 		Equal(entry.expectedNoOf.files),
 		helpers.BecauseQuantity("Incorrect no of files",

@@ -27,6 +27,10 @@ type (
 	}
 )
 
+func (o SamplingOptions) IsSamplingActive() bool {
+	return o.SampleType != enums.SampleTypeUndefined
+}
+
 func WithSamplingOptions(so *SamplingOptions) Option {
 	return func(o *Options) error {
 		o.Core.Sampling = *so

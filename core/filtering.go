@@ -95,6 +95,48 @@ type (
 		Negate bool
 	}
 
+	SampleFilterDef struct {
+		// Type specifies the type of filter (mandatory)
+		Type enums.FilterType
+
+		// Description describes filter (optional)
+		Description string
+
+		// Pattern filter definition (mandatory)
+		Pattern string
+
+		// Scope which file system entries this filter applies to;
+		// for sampling, only ScopeFile and ScopeFolder are valid.
+		Scope enums.FilterScope
+
+		// Negate, reverses the applicability of the filter (Defaults to false)
+		Negate bool
+
+		// Poly allows for the definition of a PolyFilter which contains separate
+		// filters that target files and folders separately. If present, then
+		// all other fields are redundant, since the filter definitions inside
+		// Poly should be referred to instead.
+		Poly *PolyFilterDef
+	}
+	SampleTraverseFilter interface {
+		// Description describes filter
+		Description() string
+
+		// Validate ensures the filter definition is valid, panics when invalid
+		Validate()
+
+		// Source, filter definition (comes from filter definition Pattern)
+		Source() string
+
+		// Matching returns the collection of files contained within this
+		// item's folder that matches this filter.
+		Matching(children []fs.DirEntry) []fs.DirEntry
+
+		// Scope, what items this filter applies to, although only file/folder
+		// scopes are valid for Sample filter
+		Scope() enums.FilterScope
+	}
+
 	compoundCounters struct {
 		filteredIn  uint
 		filteredOut uint

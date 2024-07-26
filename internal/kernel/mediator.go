@@ -24,6 +24,7 @@ type mediator struct {
 	o            *pref.Options
 	resources    *types.Resources
 	mums         measure.MutableMetrics
+	order        []enums.Role
 }
 
 func newMediator(using *pref.Using,
@@ -76,8 +77,9 @@ func (m *mediator) Unwind(role enums.Role) error {
 	return m.guardian.Unwind(role)
 }
 
-func (m *mediator) Arrange(activeRoles []enums.Role) {
-	m.guardian.arrange(activeRoles)
+func (m *mediator) Arrange(active, order []enums.Role) {
+	m.order = order
+	m.guardian.arrange(active, order)
 }
 
 func (m *mediator) Ignite(ignition *types.Ignition) {
@@ -109,8 +111,8 @@ func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult,
 	})
 }
 
-func (m *mediator) Invoke(node *core.Node) error {
-	return m.guardian.Invoke(node)
+func (m *mediator) Invoke(node *core.Node, inspection core.Inspection) error {
+	return m.guardian.Invoke(node, inspection)
 }
 
 func (m *mediator) Supervisor() *measure.Supervisor {

@@ -16,4 +16,8 @@ type NavigationFilters struct {
 	// of the current file system item being visited.
 	//
 	Children core.ChildTraverseFilter
+
+	// Sampler is the filter used for sampling
+	//
+	Sampler core.SampleTraverseFilter
 }

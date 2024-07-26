@@ -12,6 +12,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/i18n"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
@@ -44,7 +45,15 @@ var _ = Describe("Sampling", Ordered, func() {
 
 	DescribeTable("sample",
 		func(ctx SpecContext, entry *sampleTE) {
-			// recording := make(recordingMap)
+			recording := make(recordingMap)
+			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
+				_, found := recording[node.Extension.Name]
+				Expect(found).To(BeFalse())
+				recording[node.Extension.Name] = len(node.Children)
+
+				return nil
+			}
+
 			path := helpers.Path(
 				root,
 				lo.Ternary(entry.naviTE.relative == "",
@@ -57,12 +66,12 @@ var _ = Describe("Sampling", Ordered, func() {
 				GinkgoWriter.Printf(
 					"---> 🌊 SAMPLE-CALLBACK: '%v'\n", node.Path,
 				)
-				// prohibited := fmt.Sprintf("%v, was invoked, but does not satisfy sample criteria",
-				// 	helpers.Reason(node.Extension.Name),
-				// )
-				// Expect(entry.prohibited).ToNot(ContainElement(node.Extension.Name), prohibited)
+				prohibited := fmt.Sprintf("%v, was invoked, but does not satisfy sample criteria",
+					helpers.Reason(node.Extension.Name),
+				)
+				Expect(entry.prohibited).ToNot(ContainElement(node.Extension.Name), prohibited)
 
-				return nil
+				return once(node)
 			}
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
@@ -78,44 +87,47 @@ var _ = Describe("Sampling", Ordered, func() {
 					},
 				},
 				tv.WithSamplingType(entry.sampleType),
-				tv.If(entry.reverse, tv.WithSamplingInReverse()),
-				tv.WithSampler(&pref.SamplerOptions{
-					Iteration: pref.SamplingIterationOptions{
-						Each:  entry.each,
-						While: entry.while,
-					},
-				}),
-				tv.IfOption(entry.filter != nil, func() pref.Option {
-					return tv.WithFilter(&pref.FilterOptions{
-						Node: &core.FilterDef{
-							Type:        enums.FilterTypeGlob,
-							Description: entry.filter.name,
-							Pattern:     entry.filter.pattern,
-							Scope:       entry.filter.scope,
+				tv.IfOption(entry.reverse, tv.WithSamplingInReverse()),
+				tv.IfOptionF(entry.each != nil, func() pref.Option {
+					return tv.WithSampler(&pref.SamplerOptions{
+						Iteration: pref.SamplingIterationOptions{
+							Each:  entry.each,
+							While: entry.while,
 						},
 					})
 				}),
-				tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
+				tv.WithSampling(entry.noOf.Files, entry.noOf.Folders),
+				tv.IfOptionF(entry.filter != nil, func() pref.Option {
+					return tv.WithFilter(&pref.FilterOptions{
+						Sampler: &core.SampleFilterDef{
+							Type:        enums.FilterTypeGlob,
+							Description: entry.filter.name,
+							Scope:       entry.filter.scope,
+							Pattern:     entry.filter.pattern,
+						},
+					})
+				}),
+				tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))
 					},
 				),
 				tv.WithHookReadDirectory(
-					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(helpers.TrimRoot(dirname))
+					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+						return rsys.ReadDir(helpers.TrimRoot(dirname))
 					},
 				),
 			)).Navigate(ctx)
 
-			_, _ = result, err
-			// assertNavigation(&entry.naviTE, testOptions{
-			// 	vfs:       vfs,
-			// 	recording: recording,
-			// 	path:      path,
-			// 	result:    result,
-			// 	err:       err,
-			// })
+			assertNavigation(&entry.naviTE, &testOptions{
+				vfs:         vfs,
+				recording:   recording,
+				path:        path,
+				result:      result,
+				err:         err,
+				expectedErr: entry.expectedErr,
+			})
 		},
 		func(entry *sampleTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.given, entry.should)
@@ -129,7 +141,8 @@ var _ = Describe("Sampling", Ordered, func() {
 				subscription: enums.SubscribeUniversal,
 				prohibited:   []string{"cover.night-drive.jpg"},
 				expectedNoOf: quantities{
-					files: 8,
+					files:   8,
+					folders: 8,
 				},
 			},
 			sampleType: enums.SampleTypeSlice,
@@ -181,12 +194,13 @@ var _ = Describe("Sampling", Ordered, func() {
 				subscription: enums.SubscribeUniversal,
 				prohibited:   []string{"02 - Swab.flac"},
 				expectedNoOf: quantities{
-					files: 7,
-					// folders: 7,
+					files:   7,
+					folders: 14,
 				},
 			},
 			filter: &filterTE{
-				name:    "items with .flac suffix",
+				name: "items with .flac suffix",
+
 				pattern: "*.flac",
 				scope:   enums.ScopeFile,
 			},
@@ -205,7 +219,8 @@ var _ = Describe("Sampling", Ordered, func() {
 				subscription: enums.SubscribeUniversal,
 				prohibited:   []string{"01 - Dre.flac"},
 				expectedNoOf: quantities{
-					files: 8,
+					files:   8,
+					folders: 15,
 				},
 			},
 			filter: &filterTE{
@@ -245,6 +260,9 @@ var _ = Describe("Sampling", Ordered, func() {
 				should:       "invoke for only last folder per directory",
 				subscription: enums.SubscribeFolders,
 				prohibited:   []string{"Chromatics"},
+				expectedNoOf: quantities{
+					folders: 3,
+				},
 			},
 			sampleType: enums.SampleTypeSlice,
 			reverse:    true,
@@ -290,7 +308,7 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{
 				name:    "items with that start with A",
 				pattern: "A*",
-				scope:   enums.ScopeAll,
+				scope:   enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -309,6 +327,11 @@ var _ = Describe("Sampling", Ordered, func() {
 				prohibited:   []string{"Electric Youth"},
 				expectedNoOf: quantities{
 					folders: 6,
+					children: map[string]int{
+						"Night Drive":      4,
+						"Northern Council": 4,
+						"Teenage Color":    3,
+					},
 				},
 			},
 			sampleType: enums.SampleTypeSlice,
@@ -325,6 +348,9 @@ var _ = Describe("Sampling", Ordered, func() {
 				prohibited:   []string{"Chromatics"},
 				expectedNoOf: quantities{
 					folders: 3,
+					children: map[string]int{
+						"Innerworld": 3,
+					},
 				},
 			},
 			sampleType: enums.SampleTypeSlice,
@@ -334,6 +360,7 @@ var _ = Describe("Sampling", Ordered, func() {
 			},
 		}),
 
+		// child filter not implemented yet
 		Entry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered folders with files(filter): last, with single folder that start with A",
@@ -342,13 +369,14 @@ var _ = Describe("Sampling", Ordered, func() {
 				subscription: enums.SubscribeFoldersWithFiles,
 				prohibited:   []string{"Amorphous Androgynous"},
 				expectedNoOf: quantities{
-					folders: 2,
+					folders:  2,
+					children: map[string]int{},
 				},
 			},
-			filter: &filterTE{
-				name:    "items with that start with A",
+			filter: &filterTE{ // this is folder filter, not child filter
+				name:    "items that start with A",
 				pattern: "A*",
-				scope:   enums.ScopeAll,
+				scope:   enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -392,6 +420,11 @@ var _ = Describe("Sampling", Ordered, func() {
 			},
 		}),
 
+		// ScopeLeaf is not supported. Sampling filters only support
+		// file/folder scopes because a node's scope is determined after
+		// a directory's contents are read, but sampling filter is
+		// applied at the point the contents are read. Any scopes other
+		// than file/folder are ignored.
 		Entry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered files(filter): first, 2 files",
@@ -406,7 +439,7 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{
 				name:    "items with .flac suffix",
 				pattern: "*.flac",
-				scope:   enums.ScopeLeaf,
+				scope:   enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -428,7 +461,7 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{
 				name:    "items with .flac suffix",
 				pattern: "*.flac",
-				scope:   enums.ScopeAll,
+				scope:   enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -439,7 +472,8 @@ var _ = Describe("Sampling", Ordered, func() {
 
 		// === custom ========================================================
 
-		Entry(nil, &sampleTE{
+		// custom not implemented yet
+		XEntry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "universal(custom): first, single file, 2 folders",
 				should:       "invoke for at most single file per directory",
@@ -451,7 +485,8 @@ var _ = Describe("Sampling", Ordered, func() {
 					folders: 14,
 				},
 			},
-			each: func(node *core.Node) bool {
+			filter: &filterTE{},
+			each: func(node *core.Node) bool { // convert to child filter
 				if node.IsFolder() {
 					return true
 				}
@@ -471,7 +506,8 @@ var _ = Describe("Sampling", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &sampleTE{
+		// custom not implemented yet
+		XEntry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered folders(custom): last, single folder that starts with A",
 				should:       "invoke for at most a single folder per directory",
@@ -492,7 +528,8 @@ var _ = Describe("Sampling", Ordered, func() {
 			reverse:    true,
 		}),
 
-		Entry(nil, &sampleTE{
+		// custom filter not implemented yet
+		XEntry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered files(custom): last, last 2 files",
 				should:       "invoke for at most 2 files per directory",
@@ -511,6 +548,54 @@ var _ = Describe("Sampling", Ordered, func() {
 			},
 			sampleType: enums.SampleTypeCustom,
 			reverse:    true,
+		}),
+
+		// === errors ========================================================
+
+		Entry(nil, &sampleTE{
+			naviTE: naviTE{
+				given:        "folder spec, without no of folders",
+				should:       "return invalid folder spec error",
+				relative:     "edm/ELECTRONICA",
+				subscription: enums.SubscribeFiles,
+				prohibited:   []string{"03 - Mountain Goat.flac"},
+				expectedNoOf: quantities{
+					files: 24,
+				},
+				expectedErr: i18n.ErrInvalidFolderSamplingSpecification,
+			},
+			filter: &filterTE{
+				name:    "items with .flac suffix",
+				pattern: "*.flac",
+				scope:   enums.ScopeFolder,
+			},
+			sampleType: enums.SampleTypeFilter,
+			noOf: pref.EntryQuantities{
+				Files: 2,
+			},
+		}),
+
+		Entry(nil, &sampleTE{
+			naviTE: naviTE{
+				given:        "file spec, without no of files",
+				should:       "return invalid file spec error",
+				relative:     "edm/ELECTRONICA",
+				subscription: enums.SubscribeFiles,
+				prohibited:   []string{"03 - Mountain Goat.flac"},
+				expectedNoOf: quantities{
+					files: 24,
+				},
+				expectedErr: i18n.ErrInvalidFileSamplingSpecification,
+			},
+			filter: &filterTE{
+				name:    "items with .flac suffix",
+				pattern: "*.flac",
+				scope:   enums.ScopeFile,
+			},
+			sampleType: enums.SampleTypeFilter,
+			noOf: pref.EntryQuantities{
+				Folders: 2,
+			},
 		}),
 	)
 })

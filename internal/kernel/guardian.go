@@ -23,7 +23,7 @@ type anchor struct {
 	owner  measure.Owned
 }
 
-func (t *anchor) Next(node *core.Node) (bool, error) {
+func (t *anchor) Next(node *core.Node, _ core.Inspection) (bool, error) {
 	if metric := lo.Ternary(node.IsFolder(),
 		t.owner.Mums[enums.MetricNoFoldersInvoked],
 		t.owner.Mums[enums.MetricNoFilesInvoked],
@@ -71,23 +71,21 @@ func newGuardian(client core.Client,
 	}
 }
 
-func (g *guardian) arrange(active []enums.Role) {
+func (g *guardian) arrange(active, order []enums.Role) {
 	g.container.chain[enums.RoleAnchor] = g.anchor
 
 	if len(active) == 0 {
-		g.container.invoker = NodeInvoker(func(node *core.Node) error {
-			_, err := g.anchor.Next(node)
+		g.container.invoker = NodeInvoker(func(node *core.Node, inspection core.Inspection) error {
+			_, err := g.anchor.Next(node, inspection)
 			return err
 		})
 
 		return
 	}
 
-	order := manifest(active)
-
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
-	g.container.invoker = NodeInvoker(func(node *core.Node) error {
-		return g.iterate(node)
+	g.container.invoker = NodeInvoker(func(node *core.Node, inspection core.Inspection) error {
+		return g.iterate(node, inspection)
 	})
 
 	g.container.positions.Items()
@@ -127,15 +125,15 @@ func (g *guardian) Unwind(role enums.Role) error {
 // Invoke executes the chain which may or may not end up resulting in
 // the invocation of the client's callback, depending on the contents
 // of the chain.
-func (g *guardian) Invoke(node *core.Node) error {
-	return g.container.invoker.Invoke(node)
+func (g *guardian) Invoke(node *core.Node, inspection core.Inspection) error {
+	return g.container.invoker.Invoke(node, inspection)
 }
 
-func (g *guardian) iterate(node *core.Node) error {
+func (g *guardian) iterate(node *core.Node, inspection core.Inspection) error {
 	for _, role := range g.container.positions.Items() {
 		link := g.container.chain[role]
 
-		if next, err := link.Next(node); !next || err != nil {
+		if next, err := link.Next(node, inspection); !next || err != nil {
 			return err
 		}
 	}

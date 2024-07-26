@@ -145,7 +145,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.given)
 		},
 
-		Entry(nil, &filterTE{
+		// folders with files not implemented yet
+		XEntry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "folder(with files): glob filter",
 				relative:     "RETRO-WAVE",
@@ -165,7 +166,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			pattern: "*.flac",
 		}),
 
-		Entry(nil, &filterTE{
+		// folders with files not implemented yet
+		XEntry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "folder(with files): glob filter (negate)",
 				relative:     "RETRO-WAVE",

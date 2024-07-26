@@ -6,6 +6,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/nfs"
 )
 
 // GlobFilter wildcard filter.
@@ -32,8 +33,74 @@ type ChildGlobFilter struct {
 // Matching returns the collection of files contained within this
 // node's folder that matches this filter.
 func (f *ChildGlobFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
-	return lo.Filter(children, func(entry fs.DirEntry, _ int) bool {
-		matched, _ := filepath.Match(f.Pattern, entry.Name())
-		return f.invert(matched)
-	})
+	return lo.Filter(children,
+		func(entry fs.DirEntry, _ int) bool {
+			matched, _ := filepath.Match(f.Pattern, entry.Name())
+			return f.invert(matched)
+		},
+	)
+}
+
+type (
+	candidates   func(entries []fs.DirEntry) (wanted, others []fs.DirEntry)
+	SampleFilter struct {
+		Filter
+	}
+)
+
+func (f *SampleFilter) files(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+	wanted, others = nfs.Separate(entries)
+	return wanted, others
+}
+
+func (f *SampleFilter) folders(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+	others, wanted = nfs.Separate(entries)
+	return wanted, others
+}
+
+func (f *SampleFilter) all(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+	return entries, []fs.DirEntry{}
+}
+
+func (f *SampleFilter) fn() candidates {
+	if f.scope.IsFolder() {
+		return f.folders
+	}
+
+	if f.scope.IsFile() {
+		return f.files
+	}
+
+	return f.all
+}
+
+func (f *SampleFilter) fetch(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+	return f.fn()(entries)
+}
+
+// SampleGlobFilter ===========================================================
+
+// SampleGlobFilter is a hybrid between a child filter and a node filter. It
+// is used to filter on a compound basis but has some differences to ChildGlobFilter
+// that necessitates its use. The biggest difference is that ChildGlobFilter is
+// designed to only be applied to file directory entries, where as SampleGlobFilter
+// can be applied to files or folders. It also possesses a scope field used to
+// distinguish only between files and folders.
+type SampleGlobFilter struct {
+	SampleFilter
+}
+
+func (f *SampleGlobFilter) Matching(entries []fs.DirEntry) []fs.DirEntry {
+	filterable, bypass := f.fetch(entries)
+
+	filtered := lo.Filter(filterable,
+		func(entry fs.DirEntry, _ int) bool {
+			matched, _ := filepath.Match(f.pattern, entry.Name())
+			return f.invert(matched)
+		},
+	)
+
+	filtered = append(filtered, bypass...)
+
+	return filtered
 }

@@ -89,7 +89,7 @@ type (
 
 	// Invokable
 	Invokable interface {
-		Invoke(node *core.Node) error
+		Invoke(node *core.Node, inspection core.Inspection) error
 	}
 
 	// Mutant represents the mutable interface to the Guardian
@@ -185,8 +185,8 @@ func (v *navigationVapour) AssignChildren(children []fs.DirEntry) {
 	v.present.Children = children
 }
 
-type NodeInvoker func(node *core.Node) error
+type NodeInvoker func(node *core.Node, inspection core.Inspection) error
 
-func (fn NodeInvoker) Invoke(node *core.Node) error {
-	return fn(node)
+func (fn NodeInvoker) Invoke(node *core.Node, inspection core.Inspection) error {
+	return fn(node, inspection)
 }

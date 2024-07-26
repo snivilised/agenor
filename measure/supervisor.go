@@ -40,13 +40,7 @@ func (s *Supervisor) Many(metrics ...enums.Metric) MutableMetrics {
 	result := make(MutableMetrics)
 
 	for _, mt := range metrics {
-		metric := &BaseMetric{
-			t: mt,
-		}
-		if _, exists := s.metrics[mt]; !exists {
-			s.metrics[mt] = metric
-		}
-		result[mt] = metric
+		result[mt] = s.Single(mt)
 	}
 
 	return result

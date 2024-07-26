@@ -1,12 +1,9 @@
 package refine
 
 import (
-	"io/fs"
-
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
@@ -20,7 +17,8 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 				Mediator:      mediator,
 				ActivatedRole: enums.RoleClientFilter,
 			},
-			sink: o.Filtering.FilterSink,
+			sink:   o.Filtering.FilterSink,
+			scheme: newScheme(o),
 		}
 	}
 
@@ -30,9 +28,9 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 // Plugin manages all filtering aspects of navigation
 type Plugin struct {
 	kernel.BasePlugin
-	filters NavigationFilters
-	sink    pref.FilteringSink
-	owner   measure.Owned
+	sink   pref.FilteringSink
+	owner  measure.Owned
+	scheme scheme
 }
 
 func (p *Plugin) Name() string {
@@ -41,86 +39,22 @@ func (p *Plugin) Name() string {
 
 func (p *Plugin) Register(kc types.KernelController) error {
 	p.Kontroller = kc
-
-	if p.O.Core.Filter.IsNodeFilteringActive() {
-		filter, err := newNodeFilter(p.O.Core.Filter.Node, &p.O.Filtering)
-		if err != nil {
-			return err
-		}
-
-		p.filters.Node = filter
-	}
-
-	if p.O.Filtering.IsCustomFilteringActive() {
-		p.O.Filtering.Custom.Validate()
-	}
-
-	p.filters.Node = pref.ResolveFilter(p.filters.Node, p.O.Filtering)
-
-	if p.O.Core.Filter.IsChildFilteringActive() {
-		filter, err := newChildFilter(p.O.Core.Filter.Child)
-		if err != nil {
-			return err
-		}
-		p.filters.Children = filter
-	}
-
-	if p.sink != nil {
-		p.sink(pref.FilterReply{
-			Node:  p.filters.Node,
-			Child: p.filters.Children,
-		})
-	}
-
-	return nil
+	return p.scheme.create()
 }
 
-func (p *Plugin) Next(node *core.Node) (bool, error) {
-	if p.filters.Node == nil {
-		return true, nil
-	}
-
-	matched := p.filters.Node.IsMatch(node)
-
-	if !matched {
-		filteredOutMetric := lo.Ternary(node.IsFolder(),
-			enums.MetricNoFoldersFilteredOut,
-			enums.MetricNoFilesFilteredOut,
-		)
-		p.owner.Mums[filteredOutMetric].Tick()
-	}
-
-	return matched, nil
+func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error) {
+	return p.scheme.next(node, inspection)
 }
 
 func (p *Plugin) Init(pi *types.PluginInit) error {
-	// [KEEP-FILTER-IN-SYNC] keep this in sync with the default
-	// behaviour in builders.override.Actions
 	p.owner.Mums = p.Mediator.Supervisor().Many(
 		enums.MetricNoFoldersFilteredOut,
 		enums.MetricNoFilesFilteredOut,
+		enums.MetricNoChildFilesFound,
 		enums.MetricNoChildFilesFilteredOut,
 	)
 
-	pi.Actions.HandleChildren.Intercept(
-		func(inspection core.Inspection, mums measure.MutableMetrics) {
-			files := inspection.Sort(enums.EntryTypeFile)
-			matching := lo.TernaryF(p.filters.Children != nil,
-				func() []fs.DirEntry {
-					return p.filters.Children.Matching(files)
-				},
-				func() []fs.DirEntry {
-					return files
-				},
-			)
-
-			inspection.AssignChildren(matching)
-			mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))
-
-			filteredOut := len(files) - len(matching)
-			p.owner.Mums[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut))
-		},
-	)
+	p.scheme.init(pi, &p.owner)
 
 	return p.Mediator.Decorate(p)
 }

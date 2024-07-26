@@ -111,9 +111,9 @@ func apply(o *Options, settings ...Option) (err error) {
 	return
 }
 
-// If enables options to be conditional. If condition evaluates to true
+// IfOption enables options to be conditional. IfOption condition evaluates to true
 // then the option is returned, otherwise nil.
-func If(condition bool, option Option) Option {
+func IfOption(condition bool, option Option) Option {
 	if condition {
 		return option
 	}
@@ -126,8 +126,8 @@ func If(condition bool, option Option) Option {
 // Option is pre-created, regardless of the condition.
 type ConditionalOption func() Option
 
-// IfOption
-func IfOption(condition bool, option ConditionalOption) Option {
+// IfOptionF
+func IfOptionF(condition bool, option ConditionalOption) Option {
 	if condition {
 		return option()
 	}
@@ -161,50 +161,7 @@ func DefaultOptions() *Options {
 				Format: enums.PersistJSON,
 			},
 		},
-
-		// convert this into a call to a newly defined function NewHooks
-		Hooks: tapable.Hooks{
-			FileSubPath: tapable.NewHookCtrl[
-				core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
-			](
-				RootParentSubPathHook,
-				tapable.GetSubPathBroadcaster,
-				tapable.SubPathAttacher,
-			),
-
-			FolderSubPath: tapable.NewHookCtrl[
-				core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
-			](
-				RootParentSubPathHook,
-				tapable.GetSubPathBroadcaster,
-				tapable.SubPathAttacher,
-			),
-
-			ReadDirectory: tapable.NewHookCtrl[
-				core.ReadDirectoryHook, core.ChainReadDirectoryHook, tapable.ReadDirectoryBroadcaster,
-			](
-				DefaultReadEntriesHook,
-				tapable.GetReadDirectoryBroadcaster,
-				tapable.ReadDirectoryAttacher,
-			),
-
-			QueryStatus: tapable.NewHookCtrl[
-				core.QueryStatusHook, core.ChainQueryStatusHook, tapable.QueryStatusBroadcaster,
-			](
-				DefaultQueryStatusHook,
-				tapable.GetQueryStatusBroadcaster,
-				tapable.QueryStatusAttacher,
-			),
-
-			Sort: tapable.NewHookCtrl[
-				core.SortHook, core.ChainSortHook, tapable.SortBroadcaster,
-			](
-				CaseInSensitiveSortHook,
-				tapable.GetSortBroadcaster,
-				tapable.SortAttacher,
-			),
-		},
-
+		Hooks: newHooks(),
 		Monitor: MonitorOptions{
 			Log: nopLogger,
 		},
@@ -217,4 +174,48 @@ func DefaultOptions() *Options {
 	}
 
 	return o
+}
+
+func newHooks() tapable.Hooks {
+	return tapable.Hooks{
+		FileSubPath: tapable.NewHookCtrl[
+			core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
+		](
+			RootParentSubPathHook,
+			tapable.GetSubPathBroadcaster,
+			tapable.SubPathAttacher,
+		),
+
+		FolderSubPath: tapable.NewHookCtrl[
+			core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
+		](
+			RootParentSubPathHook,
+			tapable.GetSubPathBroadcaster,
+			tapable.SubPathAttacher,
+		),
+
+		ReadDirectory: tapable.NewHookCtrl[
+			core.ReadDirectoryHook, core.ChainReadDirectoryHook, tapable.ReadDirectoryBroadcaster,
+		](
+			DefaultReadEntriesHook,
+			tapable.GetReadDirectoryBroadcaster,
+			tapable.ReadDirectoryAttacher,
+		),
+
+		QueryStatus: tapable.NewHookCtrl[
+			core.QueryStatusHook, core.ChainQueryStatusHook, tapable.QueryStatusBroadcaster,
+		](
+			DefaultQueryStatusHook,
+			tapable.GetQueryStatusBroadcaster,
+			tapable.QueryStatusAttacher,
+		),
+
+		Sort: tapable.NewHookCtrl[
+			core.SortHook, core.ChainSortHook, tapable.SortBroadcaster,
+		](
+			CaseInSensitiveSortHook,
+			tapable.GetSortBroadcaster,
+			tapable.SortAttacher,
+		),
+	}
 }

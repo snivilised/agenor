@@ -34,7 +34,7 @@ func (n *navigatorFolders) Traverse(ctx context.Context,
 
 	vapour, err := n.inspect(ns, current)
 
-	if e := ns.mediator.Invoke(current); e != nil {
+	if e := ns.mediator.Invoke(current, vapour); e != nil {
 		return continueTraversal, e
 	}
 

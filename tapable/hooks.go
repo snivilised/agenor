@@ -6,11 +6,11 @@ import (
 
 type (
 	Hooks struct {
-		FileSubPath   Hook[core.SubPathHook, core.ChainSubPathHook, SubPathBroadcaster]
-		FolderSubPath Hook[core.SubPathHook, core.ChainSubPathHook, SubPathBroadcaster]
-		ReadDirectory Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook, ReadDirectoryBroadcaster]
-		QueryStatus   Hook[core.QueryStatusHook, core.ChainQueryStatusHook, QueryStatusBroadcaster]
-		Sort          Hook[core.SortHook, core.ChainSortHook, SortBroadcaster]
+		FileSubPath   Hook[core.SubPathHook, core.ChainSubPathHook]
+		FolderSubPath Hook[core.SubPathHook, core.ChainSubPathHook]
+		ReadDirectory Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
+		QueryStatus   Hook[core.QueryStatusHook, core.ChainQueryStatusHook]
+		Sort          Hook[core.SortHook, core.ChainSortHook]
 	}
 
 	// HookCtrl contains the handler function to be invoked.
@@ -31,17 +31,17 @@ type (
 		handler     F
 		def         F
 		broadcaster B
-		adapter     Attacher[F, C, B]
+		adapter     attacher[F, C, B]
 		listeners   []C
 	}
 )
 
 type (
-	// ListenerProvider
+	// listenerProvider
 	// C: chained client hook, ie the hook the client provides when they call Chain
-	ListenerProvider[C any] interface {
-		// Get returns the collection of interested listeners
-		Get() []C
+	listenerProvider[C any] interface {
+		// get returns the collection of interested listeners
+		get() []C
 	}
 
 	// ProvideListeners represents an entity that contains the list of listeners
@@ -49,18 +49,18 @@ type (
 	ProvideListeners[C any] func() []C
 )
 
-func (fn ProvideListeners[C]) Get() []C {
+func (fn ProvideListeners[C]) get() []C {
 	return fn()
 }
 
 type (
-	// BroadcastAdapter adapts a default hook so that it can be broadcasted to
+	// broadcastAdapter adapts a default hook so that it can be broadcasted to
 	// all members in the chain.
 	// F: core hook function
 	// C: chained client hook, ie the hook the client provides when they call Chain
 	// B: pre-defined broadcaster function
-	BroadcastAdapter[F, C, B any] interface {
-		// Attach effectively adds a new listener to the broadcast chain
+	broadcastAdapter[F, C, B any] interface {
+		// attach effectively adds a new listener to the broadcast chain
 		// which in itself is attached to the default hook. That is to say,
 		// initially, each hook is defined to run default functionality. If
 		// an entity registers interest in augmenting the default functionality
@@ -68,22 +68,22 @@ type (
 		// to invoke the default hook, the result (if a result is generated) of
 		// which is passed down the invocation chain. This allows subsequent
 		// parties to modify the ultimate result.
-		Attach(def F, provider ListenerProvider[C], broadcaster B) F
+		attach(def F, provider listenerProvider[C], broadcaster B) F
 	}
 
-	// Attacher
-	Attacher[F, C, B any] func(def F, provider ListenerProvider[C], broadcaster B) F
+	// attacher
+	attacher[F, C, B any] func(def F, provider listenerProvider[C], broadcaster B) F
 )
 
-func (fn Attacher[F, C, B]) Attach(def F, provider ListenerProvider[C], broadcaster B) F {
+func (fn attacher[F, C, B]) attach(def F, provider listenerProvider[C], broadcaster B) F {
 	return fn(def, provider, broadcaster)
 }
 
 // NewHookCtrl creates a new hook controller
 func NewHookCtrl[F, C, B any](
-	handler F,
+	def F,
 	broadcaster B,
-	adapter Attacher[F, C, B],
+	adapter attacher[F, C, B],
 ) *HookCtrl[F, C, B] {
 	// The control is agnostic to the handler's signature and therefore can not
 	// invoke it; this is the reason why there is delegation to hook specific
@@ -91,8 +91,8 @@ func NewHookCtrl[F, C, B any](
 	// the adapter, eg: GetSubPathBroadcaster/SubPathAttacher,
 	//
 	return &HookCtrl[F, C, B]{
-		handler:     handler,
-		def:         handler,
+		handler:     def,
+		def:         def,
 		broadcaster: broadcaster,
 		adapter:     adapter,
 	}
@@ -105,7 +105,7 @@ func (c *HookCtrl[F, C, B]) Tap(handler F) {
 func (c *HookCtrl[F, C, B]) Chain(handler C) {
 	if c.listeners == nil {
 		c.listeners = []C{handler}
-		c.handler = c.adapter.Attach(c.def, c, c.broadcaster)
+		c.handler = c.adapter.attach(c.handler, c, c.broadcaster)
 
 		return
 	}
@@ -121,6 +121,6 @@ func (c *HookCtrl[F, C, B]) Invoke() F {
 	return c.handler
 }
 
-func (c *HookCtrl[F, C, B]) Get() []C {
+func (c *HookCtrl[F, C, B]) get() []C {
 	return c.listeners
 }

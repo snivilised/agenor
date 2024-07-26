@@ -72,7 +72,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				},
 				tv.WithOnBegin(begin("🛡️")),
 				tv.WithOnEnd(end("🏁")),
-				tv.If(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
+				tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))
@@ -85,7 +85,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertNavigation(entry, testOptions{
+			assertNavigation(entry, &testOptions{
 				vfs:       vfs,
 				recording: recording,
 				path:      path,

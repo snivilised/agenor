@@ -43,7 +43,7 @@ func (n *navigatorFiles) Traverse(ctx context.Context,
 	if !current.IsFolder() {
 		// Effectively, this is the file only filter
 		//
-		return false, ns.mediator.Invoke(current)
+		return false, ns.mediator.Invoke(current, vapour)
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(

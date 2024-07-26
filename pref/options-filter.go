@@ -6,8 +6,9 @@ import (
 
 type (
 	FilterReply struct {
-		Node  core.TraverseFilter
-		Child core.ChildTraverseFilter
+		Node    core.TraverseFilter
+		Child   core.ChildTraverseFilter
+		Sampler core.SampleTraverseFilter
 	}
 
 	// FilteringSink is represents the callback function a client
@@ -36,6 +37,10 @@ type (
 		// are direct descendants of the current directory node being visited.
 		//
 		Child *core.ChildFilterDef
+
+		// Filter used for sampling
+		//
+		Sampler *core.SampleFilterDef
 	}
 )
 
@@ -72,16 +77,22 @@ func (fo FilterOptions) IsChildFilteringActive() bool {
 	return (fo.Child != nil) && (fo.Child.Pattern != "")
 }
 
+func (fo FilterOptions) IsSampleFilteringActive() bool {
+	return fo.Sampler != nil
+}
+
 func (fo FilterOptions) IsFilteringActive() bool {
-	return fo.IsNodeFilteringActive() || (fo.IsChildFilteringActive())
+	return fo.IsNodeFilteringActive() ||
+		fo.IsChildFilteringActive() ||
+		fo.IsSampleFilteringActive()
 }
 
 func (fo FilteringOptions) IsCustomFilteringActive() bool {
 	return fo.Custom != nil
 }
 
-func IsFilteringActive(fo FilterOptions, fog FilteringOptions) bool {
-	return fo.IsNodeFilteringActive() || fog.IsCustomFilteringActive()
+func IsFilteringActive(fo FilterOptions, figo FilteringOptions) bool {
+	return fo.IsNodeFilteringActive() || figo.IsCustomFilteringActive()
 }
 
 func ResolveFilter(node core.TraverseFilter, fog FilteringOptions) core.TraverseFilter {
