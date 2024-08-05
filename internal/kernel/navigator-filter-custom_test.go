@@ -14,6 +14,7 @@ import (
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("NavigatorFilterCustom", Ordered, func() {
@@ -78,7 +79,9 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 						return vfs
 					},
 				},
-				tv.WithFilterCustom(customFilter),
+				tv.WithFilter(&pref.FilterOptions{
+					Custom: customFilter,
+				}),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))

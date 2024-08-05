@@ -24,25 +24,25 @@ type (
 func newScheme(o *pref.Options) scheme {
 	c := common{o: o}
 
-	if o.Core.Filter.IsNodeFilteringActive() {
+	if o.Filter.IsNodeFilteringActive() {
 		return &nativeScheme{
 			common: c,
 		}
 	}
 
-	if o.Core.Filter.IsChildFilteringActive() {
+	if o.Filter.IsChildFilteringActive() {
 		return &childScheme{
 			common: c,
 		}
 	}
 
-	if o.Core.Filter.IsSampleFilteringActive() {
+	if o.Filter.IsSampleFilteringActive() {
 		return &samplerScheme{
 			common: c,
 		}
 	}
 
-	if o.Filtering.IsCustomFilteringActive() {
+	if o.Filter.IsCustomFilteringActive() {
 		return &customScheme{
 			common: c,
 		}
@@ -66,15 +66,15 @@ type nativeScheme struct {
 }
 
 func (f *nativeScheme) create() error {
-	filter, err := newNodeFilter(f.o.Core.Filter.Node, &f.o.Filtering)
+	filter, err := newNodeFilter(f.o.Filter.Node, &f.o.Filter)
 	if err != nil {
 		return err
 	}
 
 	f.filter = filter
 
-	if f.o.Filtering.FilterSink != nil {
-		f.o.Filtering.FilterSink(pref.FilterReply{
+	if f.o.Filter.Sink != nil {
+		f.o.Filter.Sink(pref.FilterReply{
 			Node: f.filter,
 		})
 	}
@@ -102,15 +102,15 @@ type childScheme struct {
 }
 
 func (f *childScheme) create() error {
-	filter, err := newChildFilter(f.o.Core.Filter.Child)
+	filter, err := newChildFilter(f.o.Filter.Child)
 
 	if err != nil {
 		return err
 	}
 	f.filter = filter
 
-	if f.o.Filtering.FilterSink != nil {
-		f.o.Filtering.FilterSink(pref.FilterReply{
+	if f.o.Filter.Sink != nil {
+		f.o.Filter.Sink(pref.FilterReply{
 			Child: f.filter,
 		})
 	}
@@ -148,7 +148,7 @@ type samplerScheme struct {
 }
 
 func (f *samplerScheme) create() error {
-	filter, err := newSampleFilter(f.o.Core.Filter.Sampler, &f.o.Core.Sampling)
+	filter, err := newSampleFilter(f.o.Filter.Sample, &f.o.Sampling)
 
 	if err != nil {
 		return err
@@ -165,8 +165,8 @@ func (f *samplerScheme) create() error {
 			return f.filter.Matching(result), err
 		})
 
-	if f.o.Filtering.FilterSink != nil {
-		f.o.Filtering.FilterSink(pref.FilterReply{
+	if f.o.Filter.Sink != nil {
+		f.o.Filter.Sink(pref.FilterReply{
 			Sampler: f.filter,
 		})
 	}
@@ -214,13 +214,13 @@ type customScheme struct {
 }
 
 func (f *customScheme) create() error {
-	f.o.Filtering.Custom.Validate()
+	f.o.Filter.Custom.Validate()
 	return nil
 }
 
 func (f *customScheme) next(_ *core.Node, _ core.Inspection) (bool, error) {
-	if f.o.Filtering.FilterSink != nil {
-		f.o.Filtering.FilterSink(pref.FilterReply{
+	if f.o.Filter.Sink != nil {
+		f.o.Filter.Sink(pref.FilterReply{
 			Node: f.filter,
 		})
 	}

@@ -10,7 +10,7 @@ type ConcurrencyOptions struct {
 
 func WithCPU() Option {
 	return func(o *Options) error {
-		o.Core.Concurrency.NoW = uint(runtime.NumCPU())
+		o.Concurrency.NoW = uint(runtime.NumCPU())
 
 		return nil
 	}
@@ -18,7 +18,7 @@ func WithCPU() Option {
 
 func WithNoW(now uint) Option {
 	return func(o *Options) error {
-		o.Core.Concurrency.NoW = now
+		o.Concurrency.NoW = now
 
 		return nil
 	}

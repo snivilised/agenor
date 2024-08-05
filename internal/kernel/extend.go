@@ -35,7 +35,7 @@ func extend(ns *navigationStatic, vapour inspection) {
 		Scope:  scope,
 	}
 
-	keepTrailingSep := ns.mediator.o.Core.Behaviours.SubPath.KeepTrailingSep
+	keepTrailingSep := ns.mediator.o.Behaviours.SubPath.KeepTrailingSep
 
 	spInfo := &core.SubPathInfo{
 		Root:            ns.root,

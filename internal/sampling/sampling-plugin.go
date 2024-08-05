@@ -8,7 +8,7 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	if o.Core.Sampling.IsSamplingActive() {
+	if o.Sampling.IsSamplingActive() {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				O:             o,
@@ -16,10 +16,7 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 				ActivatedRole: enums.RoleSampler,
 			},
 			ctrl: controller{
-				o: &samplingOptions{
-					sampling: &o.Core.Sampling,
-					sampler:  &o.Sampler,
-				},
+				o: &o.Sampling,
 			},
 		}
 	}
@@ -29,7 +26,6 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 
 type samplingOptions struct {
 	sampling *pref.SamplingOptions
-	sampler  *pref.SamplerOptions
 }
 
 type Plugin struct {

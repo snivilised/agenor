@@ -9,7 +9,7 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	if o.Core.Hibernate.Wake != nil {
+	if o.Hibernate.Wake != nil {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				Mediator:      mediator,

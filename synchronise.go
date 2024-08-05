@@ -88,7 +88,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 				Error: err,
 			}, err
 		}, c.wg,
-		boost.WithSize(c.o.Core.Concurrency.NoW),
+		boost.WithSize(c.o.Concurrency.NoW),
 		boost.WithOutput(OutputChSize, CheckCloseInterval, TimeoutOnSend),
 	)
 

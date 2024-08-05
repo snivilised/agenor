@@ -53,7 +53,7 @@ func newMediator(using *pref.Using,
 }
 
 func (m *mediator) descend(node *core.Node) bool {
-	if !m.periscope.Descend(m.o.Core.Behaviours.Cascade.Depth) {
+	if !m.periscope.Descend(m.o.Behaviours.Cascade.Depth) {
 		return false
 	}
 

@@ -90,8 +90,6 @@ var (
 	WithDepth                 = pref.WithDepth
 	WithFaultHandler          = pref.WithFaultHandler
 	WithFilter                = pref.WithFilter
-	WithFilterCustom          = pref.WithFilterCustom
-	WithFilterSink            = pref.WithFilterSink
 	WithHibernationWake       = pref.WithHibernationWake
 	WithHibernationSleep      = pref.WithHibernationSleep
 	WithHibernationBehaviour  = pref.WithHibernationBehaviour
@@ -111,12 +109,7 @@ var (
 	WithPanicHandler          = pref.WithPanicHandler
 	WithNoRecurse             = pref.WithNoRecurse
 	WithNoW                   = pref.WithNoW
-	WithSampler               = pref.WithSampler
 	WithSampling              = pref.WithSampling
-	WithSamplingInReverse     = pref.WithSamplingInReverse
-	WithSamplingNoOf          = pref.WithSamplingNoOf
-	WithSamplingOptions       = pref.WithSamplingOptions
-	WithSamplingType          = pref.WithSamplingType
 	WithSkipHandler           = pref.WithSkipHandler
 	WithSortBehaviour         = pref.WithSortBehaviour
 	WithSubPathBehaviour      = pref.WithSubPathBehaviour
