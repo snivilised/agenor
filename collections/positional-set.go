@@ -10,10 +10,12 @@ type Orderable interface {
 }
 
 type PositionalSet[T Orderable] struct {
-	order     []T        // Defines the valid elements and their order
-	items     map[T]bool // Tracks which items are in the set
-	positions map[T]int  // Maps each item to its position in the order
-	anchor    T
+	order       []T        // Defines the valid elements and their order
+	items       map[T]bool // Tracks which items are in the set
+	positions   map[T]int  // Maps each item to its position in the order
+	anchor      T
+	invalidated bool
+	cache       []T
 }
 
 func NewPositionalSet[T Orderable](order []T, anchor T) *PositionalSet[T] {
@@ -25,10 +27,11 @@ func NewPositionalSet[T Orderable](order []T, anchor T) *PositionalSet[T] {
 	o = append(o, anchor)
 
 	ps := &PositionalSet[T]{
-		order:     o,
-		items:     make(map[T]bool),
-		positions: make(map[T]int),
-		anchor:    anchor,
+		order:       o,
+		items:       make(map[T]bool),
+		positions:   make(map[T]int),
+		anchor:      anchor,
+		invalidated: true,
 	}
 
 	for i, item := range o {
@@ -50,6 +53,7 @@ func (ps *PositionalSet[T]) Insert(item T) bool {
 			return false
 		}
 		ps.items[item] = true
+		ps.invalidated = true
 		return true
 	}
 
@@ -79,6 +83,7 @@ func (ps *PositionalSet[T]) Delete(item T) {
 	}
 
 	ps.items[item] = false
+	ps.invalidated = true
 	delete(ps.items, item)
 }
 
@@ -89,13 +94,18 @@ func (ps *PositionalSet[T]) Contains(item T) bool {
 
 // Items returns all items in the set, in the defined order
 func (ps *PositionalSet[T]) Items() []T {
-	result := make([]T, 0, len(ps.items))
+	if !ps.invalidated {
+		return ps.cache
+	}
+
+	ps.cache = make([]T, 0, len(ps.items))
 	for _, item := range ps.order {
 		if ps.items[item] {
-			result = append(result, item)
+			ps.cache = append(ps.cache, item)
 		}
 	}
-	return result
+
+	return ps.cache
 }
 
 // Position returns the position of an item in the order
