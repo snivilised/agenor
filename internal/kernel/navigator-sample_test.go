@@ -86,20 +86,28 @@ var _ = Describe("Sampling", Ordered, func() {
 						return vfs
 					},
 				},
-				tv.WithSamplingType(entry.sampleType),
-				tv.IfOption(entry.reverse, tv.WithSamplingInReverse()),
-				tv.IfOptionF(entry.each != nil, func() pref.Option {
-					return tv.WithSampler(&pref.SamplerOptions{
-						Iteration: pref.SamplingIterationOptions{
-							Each:  entry.each,
-							While: entry.while,
+				tv.WithSampling(&pref.SamplingOptions{
+					SampleType:      entry.sampleType,
+					SampleInReverse: entry.reverse,
+					NoOf: pref.EntryQuantities{
+						Files:   entry.noOf.Files,
+						Folders: entry.noOf.Folders,
+					},
+					Iteration: lo.TernaryF(entry.each != nil,
+						func() pref.SamplingIterationOptions {
+							return pref.SamplingIterationOptions{
+								Each:  entry.each,
+								While: entry.while,
+							}
 						},
-					})
+						func() pref.SamplingIterationOptions {
+							return pref.SamplingIterationOptions{}
+						},
+					),
 				}),
-				tv.WithSampling(entry.noOf.Files, entry.noOf.Folders),
 				tv.IfOptionF(entry.filter != nil, func() pref.Option {
 					return tv.WithFilter(&pref.FilterOptions{
-						Sampler: &core.SampleFilterDef{
+						Sample: &core.SampleFilterDef{
 							Type:        enums.FilterTypeGlob,
 							Description: entry.filter.name,
 							Scope:       entry.filter.scope,

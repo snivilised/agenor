@@ -12,7 +12,7 @@ import (
 )
 
 type controller struct {
-	o      *samplingOptions
+	o      *pref.SamplingOptions
 	filter core.ChildTraverseFilter
 }
 
@@ -36,7 +36,7 @@ func (p *controller) sample(result []fs.DirEntry, _ error,
 	return union(&readResult{
 		files:   files,
 		folders: folders,
-		o:       p.o.sampling,
+		o:       p.o,
 	}), nil
 }
 

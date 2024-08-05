@@ -40,6 +40,10 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 	DescribeTable("folders with files filtered",
 		func(ctx SpecContext, entry *filterTE) {
+			var (
+				childFilter core.ChildTraverseFilter
+			)
+
 			recording := make(recordingMap)
 			filterDefs := &pref.FilterOptions{
 				Child: &core.ChildFilterDef{
@@ -48,8 +52,11 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					Pattern:     entry.pattern,
 					Negate:      entry.negate,
 				},
+				Sink: func(reply pref.FilterReply) {
+					childFilter = reply.Child
+				},
 			}
-			var childFilter core.ChildTraverseFilter
+
 			path := helpers.Path(root, entry.relative)
 
 			callback := func(item *core.Node) error {
@@ -81,11 +88,6 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					},
 				},
 				tv.WithFilter(filterDefs),
-				tv.WithFilterSink(
-					func(reply pref.FilterReply) {
-						childFilter = reply.Child
-					},
-				),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))

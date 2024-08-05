@@ -42,7 +42,7 @@ func newImpl(using *pref.Using,
 				read: o.Hooks.ReadDirectory,
 				sort: o.Hooks.Sort,
 			},
-			behaviour: &o.Core.Behaviours.Sort,
+			behaviour: &o.Behaviours.Sort,
 		},
 		resources: resources,
 	}

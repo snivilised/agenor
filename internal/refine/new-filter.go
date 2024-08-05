@@ -29,8 +29,8 @@ func fromExtendedGlobPattern(pattern string) (segments, suffixes []string, err e
 	return segments, suffixes, nil
 }
 
-func newNodeFilter(def *core.FilterDef,
-	filtering *pref.FilteringOptions,
+func newNodeFilter(def *core.FilterDef, // def:REDUNDANT
+	fo *pref.FilterOptions,
 ) (core.TraverseFilter, error) {
 	var (
 		filter             core.TraverseFilter
@@ -96,12 +96,12 @@ func newNodeFilter(def *core.FilterDef,
 		}
 
 	case enums.FilterTypeCustom:
-		if filtering.Custom == nil {
+		if fo.Custom == nil {
 			return nil, xi18n.NewMissingCustomFilterDefinitionError(
 				"Options/Store/FilterDefs/Node/Custom",
 			)
 		}
-		filter = filtering.Custom
+		filter = fo.Custom
 
 	case enums.FilterTypePoly:
 		var polyE error

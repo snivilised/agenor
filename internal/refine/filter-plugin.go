@@ -10,14 +10,14 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	if o.Core.Filter.IsFilteringActive() || o.Filtering.IsCustomFilteringActive() {
+	if o.Filter.IsFilteringActive() || o.Filter.IsCustomFilteringActive() {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				O:             o,
 				Mediator:      mediator,
 				ActivatedRole: enums.RoleClientFilter,
 			},
-			sink:   o.Filtering.FilterSink,
+			sink:   o.Filter.Sink,
 			scheme: newScheme(o),
 		}
 	}

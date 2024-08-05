@@ -41,6 +41,10 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 
 	DescribeTable("regex-filter",
 		func(ctx SpecContext, entry *filterTE) {
+			var (
+				traverseFilter core.TraverseFilter
+			)
+
 			recording := make(recordingMap)
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
@@ -51,8 +55,10 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					Negate:          entry.negate,
 					IfNotApplicable: entry.ifNotApplicable,
 				},
+				Sink: func(reply pref.FilterReply) {
+					traverseFilter = reply.Node
+				},
 			}
-			var traverseFilter core.TraverseFilter
 
 			path := helpers.Path(root, entry.relative)
 
@@ -87,11 +93,6 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					},
 				},
 				tv.WithFilter(filterDefs),
-				tv.WithFilterSink(
-					func(reply pref.FilterReply) {
-						traverseFilter = reply.Node
-					},
-				),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))

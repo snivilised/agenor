@@ -14,6 +14,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
 )
@@ -177,8 +178,12 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
-						tv.WithSampling(files, folders),
-						tv.WithSampler(&pref.SamplerOptions{
+						tv.WithSampling(&pref.SamplingOptions{
+							NoOf: pref.EntryQuantities{
+								Files:   files,
+								Folders: folders,
+							},
+							SampleType: enums.SampleTypeSlice,
 							Iteration: pref.SamplingIterationOptions{
 								Each:  func(_ *core.Node) bool { return false },
 								While: func(_ *pref.FilteredInfo) bool { return false },

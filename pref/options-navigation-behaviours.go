@@ -65,7 +65,7 @@ type (
 
 func WithNavigationBehaviours(nb *NavigationBehaviours) Option {
 	return func(o *Options) error {
-		o.Core.Behaviours = *nb
+		o.Behaviours = *nb
 
 		return nil
 	}
@@ -73,7 +73,7 @@ func WithNavigationBehaviours(nb *NavigationBehaviours) Option {
 
 func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 	return func(o *Options) error {
-		o.Core.Behaviours.SubPath = *sb
+		o.Behaviours.SubPath = *sb
 
 		return nil
 	}
@@ -81,7 +81,7 @@ func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 
 func WithSortBehaviour(sb *SortBehaviour) Option {
 	return func(o *Options) error {
-		o.Core.Behaviours.Sort = *sb
+		o.Behaviours.Sort = *sb
 
 		return nil
 	}
@@ -89,7 +89,7 @@ func WithSortBehaviour(sb *SortBehaviour) Option {
 
 func WithHibernationWake(wake *core.FilterDef) Option {
 	return func(o *Options) error {
-		o.Core.Hibernate.Wake = wake
+		o.Hibernate.Wake = wake
 
 		return nil
 	}
@@ -97,7 +97,7 @@ func WithHibernationWake(wake *core.FilterDef) Option {
 
 func WithHibernationSleep(sleep *core.FilterDef) Option {
 	return func(o *Options) error {
-		o.Core.Hibernate.Sleep = sleep
+		o.Hibernate.Sleep = sleep
 
 		return nil
 	}
@@ -105,7 +105,7 @@ func WithHibernationSleep(sleep *core.FilterDef) Option {
 
 func WithHibernationBehaviour(hb *HibernationBehaviour) Option {
 	return func(o *Options) error {
-		o.Core.Behaviours.Hibernation = *hb
+		o.Behaviours.Hibernation = *hb
 
 		return nil
 	}
@@ -113,7 +113,7 @@ func WithHibernationBehaviour(hb *HibernationBehaviour) Option {
 
 func WithDepth(depth uint) Option {
 	return func(o *Options) error {
-		o.Core.Behaviours.Cascade.Depth = depth
+		o.Behaviours.Cascade.Depth = depth
 
 		return nil
 	}
@@ -121,7 +121,7 @@ func WithDepth(depth uint) Option {
 
 func WithNoRecurse() Option {
 	return func(o *Options) error {
-		o.Core.Behaviours.Cascade.NoRecurse = true
+		o.Behaviours.Cascade.NoRecurse = true
 
 		return nil
 	}

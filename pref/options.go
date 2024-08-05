@@ -19,14 +19,29 @@ const (
 
 type (
 	Options struct {
-		Core CoreOptions
+		// Behaviours collection of behaviours that adjust the way navigation occurs,
+		// that can be tweaked by the client.
+		//
+		Behaviours NavigationBehaviours
 
-		// Sampler defines options for sampling directory entries. There are
-		// multiple ways of performing sampling. The client can either:
+		// Sampling options
+		// There are multiple ways of performing sampling. The client can either:
 		// A) Use one of the four predefined functions see (SamplerOptions.Fn)
 		// B) Use a Custom iterator. When setting the Custom iterator properties
 		//
-		Sampler SamplerOptions
+		Sampling SamplingOptions
+
+		// Filter
+		//
+		Filter FilterOptions
+
+		// Hibernation
+		//
+		Hibernate HibernateOptions
+
+		// Concurrency contains options relating concurrency
+		//
+		Concurrency ConcurrencyOptions
 
 		// Events provides the ability to tap into life cycle events
 		//
@@ -43,10 +58,6 @@ type (
 		// Defects contains error handling options
 		//
 		Defects DefectOptions
-
-		// FilterDefined allows the client to receive the filter instance.
-		//
-		Filtering FilteringOptions
 
 		Binder *Binder
 	}
@@ -140,26 +151,21 @@ func DefaultOptions() *Options {
 	nopLogger := &slog.Logger{}
 
 	o := &Options{
-		Core: CoreOptions{
-			Behaviours: NavigationBehaviours{
-				SubPath: SubPathBehaviour{
-					KeepTrailingSep: true,
-				},
-				Sort: SortBehaviour{
-					IsCaseSensitive:     false,
-					DirectoryEntryOrder: enums.DirectoryContentsOrderFoldersFirst,
-				},
-				Hibernation: HibernationBehaviour{
-					InclusiveStart: true,
-					InclusiveStop:  false,
-				},
+		Behaviours: NavigationBehaviours{
+			SubPath: SubPathBehaviour{
+				KeepTrailingSep: true,
 			},
-			Concurrency: ConcurrencyOptions{
-				NoW: uint(runtime.NumCPU()),
+			Sort: SortBehaviour{
+				IsCaseSensitive:     false,
+				DirectoryEntryOrder: enums.DirectoryContentsOrderFoldersFirst,
 			},
-			Persist: PersistOptions{
-				Format: enums.PersistJSON,
+			Hibernation: HibernationBehaviour{
+				InclusiveStart: true,
+				InclusiveStop:  false,
 			},
+		},
+		Concurrency: ConcurrencyOptions{
+			NoW: uint(runtime.NumCPU()),
 		},
 		Hooks: newHooks(),
 		Monitor: MonitorOptions{

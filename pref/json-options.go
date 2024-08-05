@@ -1,6 +1,9 @@
 package pref
 
-type CoreOptions struct {
+// JSONOptions defines the JSON persist format for options.
+type JSONOptions struct {
+	// all fields should be flattened out here when implemented
+
 	// Behaviours collection of behaviours that adjust the way navigation occurs,
 	// that can be tweaked by the client.
 	//
@@ -21,4 +24,12 @@ type CoreOptions struct {
 	// Concurrency contains options relating concurrency
 	//
 	Concurrency ConcurrencyOptions
+}
+
+func ToJSON(*Options) *JSONOptions {
+	return &JSONOptions{}
+}
+
+func FromJSON(*JSONOptions) *Options {
+	return &Options{}
 }
