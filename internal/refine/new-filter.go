@@ -258,26 +258,34 @@ func newSampleFilter(def *core.SampleFilterDef,
 		return nil, i18n.ErrInvalidFolderSamplingSpecification
 	}
 
+	sampleFilter := SampleFilter{
+		Filter: Filter{
+			name:    def.Description,
+			scope:   scrubbed,
+			pattern: def.Pattern,
+			negate:  def.Negate,
+		},
+	}
+
 	switch def.Type {
 	case enums.FilterTypeExtendedGlob:
 	case enums.FilterTypeRegex:
+		filter = &SampleRegexFilter{
+			SampleFilter: sampleFilter,
+		}
 	case enums.FilterTypeGlob:
 		filter = &SampleGlobFilter{
-			SampleFilter: SampleFilter{
-				Filter: Filter{
-					name:    def.Description,
-					scope:   scrubbed,
-					pattern: def.Pattern,
-					negate:  def.Negate,
-					// ifNotApplicable: def.IfNotApplicable,
-				},
-			},
+			SampleFilter: sampleFilter,
 		}
 
 	case enums.FilterTypeCustom:
 	case enums.FilterTypePoly:
 	case enums.FilterTypeUndefined:
 		return nil, i18n.ErrFilterMissingType
+	}
+
+	if filter != nil {
+		filter.Validate()
 	}
 
 	return filter, nil
