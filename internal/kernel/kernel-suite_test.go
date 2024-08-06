@@ -62,6 +62,7 @@ type filterTE struct {
 	errorContains   string
 	ifNotApplicable enums.TriStateBool
 	custom          core.TraverseFilter
+	typ             enums.FilterType
 }
 
 type polyTE struct {
