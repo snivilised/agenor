@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/refine"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
@@ -52,6 +53,9 @@ type (
 	Subscription   = enums.Subscription
 	ResumeStrategy = enums.ResumeStrategy
 
+	// 🌀 refine
+	BaseSampleFilter = refine.SampleFilter
+
 	// 🌀 nfs
 	FileSystems = nfs.FileSystems
 
@@ -82,6 +86,9 @@ var (
 	// 🌀 nfs
 	NewNativeFS      = nfs.NewNativeFS
 	NewQueryStatusFS = nfs.NewQueryStatusFS
+
+	// 🌀 refine
+	NewSampleFilter = refine.NewSampleFilter
 
 	// 🌀 pref
 	IfOption                  = pref.IfOption

@@ -258,7 +258,7 @@ func newSampleFilter(def *core.SampleFilterDef,
 		return nil, i18n.ErrInvalidFolderSamplingSpecification
 	}
 
-	sampleFilter := SampleFilter{
+	base := SampleFilter{
 		Filter: Filter{
 			name:    def.Description,
 			scope:   scrubbed,
@@ -271,14 +271,18 @@ func newSampleFilter(def *core.SampleFilterDef,
 	case enums.FilterTypeExtendedGlob:
 	case enums.FilterTypeRegex:
 		filter = &SampleRegexFilter{
-			SampleFilter: sampleFilter,
+			SampleFilter: base,
 		}
 	case enums.FilterTypeGlob:
 		filter = &SampleGlobFilter{
-			SampleFilter: sampleFilter,
+			SampleFilter: base,
 		}
 
 	case enums.FilterTypeCustom:
+		if def.Custom == nil {
+			return nil, i18n.ErrFilterIsNil
+		}
+		filter = def.Custom
 	case enums.FilterTypePoly:
 	case enums.FilterTypeUndefined:
 		return nil, i18n.ErrFilterMissingType

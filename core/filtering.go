@@ -102,7 +102,7 @@ type (
 		// Description describes filter (optional)
 		Description string
 
-		// Pattern filter definition (mandatory)
+		// Pattern filter definition (mandatory except if using Custom)
 		Pattern string
 
 		// Scope which file system entries this filter applies to;
@@ -117,6 +117,10 @@ type (
 		// all other fields are redundant, since the filter definitions inside
 		// Poly should be referred to instead.
 		Poly *PolyFilterDef
+
+		// Custom client defined sampling filter
+		//
+		Custom SampleTraverseFilter
 	}
 	SampleTraverseFilter interface {
 		// Description describes filter
@@ -125,16 +129,9 @@ type (
 		// Validate ensures the filter definition is valid, panics when invalid
 		Validate()
 
-		// Source, filter definition (comes from filter definition Pattern)
-		Source() string
-
 		// Matching returns the collection of files contained within this
 		// item's folder that matches this filter.
 		Matching(children []fs.DirEntry) []fs.DirEntry
-
-		// Scope, what items this filter applies to, although only file/folder
-		// scopes are valid for Sample filter
-		Scope() enums.FilterScope
 	}
 
 	compoundCounters struct {

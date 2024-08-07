@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	"strings"
 	"testing/fstest"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -109,10 +108,12 @@ var _ = Describe("Sampling", Ordered, func() {
 					return tv.WithFilter(&pref.FilterOptions{
 						Sample: &core.SampleFilterDef{
 							Type:        entry.filter.typ,
-							Description: entry.filter.name,
+							Description: entry.filter.description,
 							Scope:       entry.filter.scope,
 							Pattern:     entry.filter.pattern,
+							Custom:      entry.filter.sample,
 						},
+						Custom: entry.filter.custom,
 					})
 				}),
 				tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
@@ -207,10 +208,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFile,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -232,10 +233,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with .flac suffix",
-				typ:     enums.FilterTypeRegex,
-				pattern: "\\.flac$",
-				scope:   enums.ScopeFile,
+				description: "regex: items with .flac suffix",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "\\.flac$",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -257,10 +258,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFile,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -283,10 +284,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with .flac suffix",
-				typ:     enums.FilterTypeRegex,
-				pattern: "\\.flac$",
-				scope:   enums.ScopeFile,
+				description: "regex: items with .flac suffix",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "\\.flac$",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -344,10 +345,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with that start with A",
-				typ:     enums.FilterTypeGlob,
-				pattern: "A*",
-				scope:   enums.ScopeFolder,
+				description: "glob: items with that start with A",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "A*",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -368,10 +369,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with that start with A",
-				typ:     enums.FilterTypeRegex,
-				pattern: "^A",
-				scope:   enums.ScopeFolder,
+				description: "regex: items with that start with A",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "^A",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -391,10 +392,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with that start with A",
-				typ:     enums.FilterTypeGlob,
-				pattern: "A*",
-				scope:   enums.ScopeFolder,
+				description: "glob: items with that start with A",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "A*",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -415,10 +416,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with that start with A",
-				typ:     enums.FilterTypeRegex,
-				pattern: "^A",
-				scope:   enums.ScopeFolder,
+				description: "regex: items with that start with A",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "^A",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -483,10 +484,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄 this is folder filter, not child filter
-				name:    "glob: items that start with A",
-				typ:     enums.FilterTypeGlob,
-				pattern: "A*",
-				scope:   enums.ScopeFolder,
+				description: "glob: items that start with A",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "A*",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -508,10 +509,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items that start with A",
-				typ:     enums.FilterTypeRegex,
-				pattern: "^A",
-				scope:   enums.ScopeFolder,
+				description: "regex: items that start with A",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "^A",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -572,10 +573,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFile,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -595,10 +596,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with .flac suffix",
-				typ:     enums.FilterTypeRegex,
-				pattern: "\\.flac$",
-				scope:   enums.ScopeFile,
+				description: "regex: items with .flac suffix",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "\\.flac$",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -618,10 +619,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFile,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -642,10 +643,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				},
 			},
 			filter: &filterTE{ // 🚀
-				name:    "regex: items with .flac suffix",
-				typ:     enums.FilterTypeRegex,
-				pattern: "\\.flac$",
-				scope:   enums.ScopeFile,
+				description: "regex: items with .flac suffix",
+				typ:         enums.FilterTypeRegex,
+				pattern:     "\\.flac$",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			reverse:    true,
@@ -656,8 +657,7 @@ var _ = Describe("Sampling", Ordered, func() {
 
 		// === custom ========================================================
 
-		// custom not implemented yet
-		XEntry(nil, &sampleTE{
+		Entry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "universal(custom): first, single file, 2 folders",
 				should:       "invoke for at most single file per directory",
@@ -669,19 +669,13 @@ var _ = Describe("Sampling", Ordered, func() {
 					folders: 14,
 				},
 			},
-			filter: &filterTE{},
-			each: func(node *core.Node) bool { // convert to child filter
-				if node.IsFolder() {
-					return true
-				}
-
-				return strings.HasPrefix(node.Extension.Name, "cover")
-			},
-			while: func(fi *pref.FilteredInfo) bool {
-				fi.Enough.Files = fi.Counts.Files == 1
-				fi.Enough.Folders = fi.Counts.Folders == 2
-
-				return !fi.Enough.Files && !fi.Enough.Folders
+			filter: &filterTE{ // 🍒
+				typ: enums.FilterTypeCustom,
+				sample: &customSamplingFilter{
+					SampleFilter: tv.NewSampleFilter(enums.ScopeFile),
+					description:  "custom(glob): items with cover prefix",
+					pattern:      "cover*",
+				},
 			},
 			sampleType: enums.SampleTypeCustom,
 			noOf: pref.EntryQuantities{
@@ -690,8 +684,7 @@ var _ = Describe("Sampling", Ordered, func() {
 			},
 		}),
 
-		// custom not implemented yet
-		XEntry(nil, &sampleTE{
+		Entry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered folders(custom): last, single folder that starts with A",
 				should:       "invoke for at most a single folder per directory",
@@ -699,21 +692,25 @@ var _ = Describe("Sampling", Ordered, func() {
 				subscription: enums.SubscribeFolders,
 				prohibited:   []string{"Amorphous Androgynous"},
 				expectedNoOf: quantities{
-					folders: 3,
+					folders: 2,
 				},
 			},
-			each: func(node *core.Node) bool {
-				return strings.HasPrefix(node.Extension.Name, "A")
-			},
-			while: func(fi *pref.FilteredInfo) bool {
-				return fi.Counts.Folders < 1
+			filter: &filterTE{ // 🍒
+				typ: enums.FilterTypeCustom,
+				sample: &customSamplingFilter{
+					SampleFilter: tv.NewSampleFilter(enums.ScopeFolder),
+					description:  "custom(glob): items with A prefix",
+					pattern:      "A*",
+				},
 			},
 			sampleType: enums.SampleTypeCustom,
-			reverse:    true,
+			noOf: pref.EntryQuantities{
+				Folders: 1,
+			},
+			reverse: true,
 		}),
 
-		// custom filter not implemented yet
-		XEntry(nil, &sampleTE{
+		Entry(nil, &sampleTE{
 			naviTE: naviTE{
 				given:        "filtered files(custom): last, last 2 files",
 				should:       "invoke for at most 2 files per directory",
@@ -724,14 +721,19 @@ var _ = Describe("Sampling", Ordered, func() {
 					files: 42,
 				},
 			},
-			each: func(node *core.Node) bool {
-				return strings.HasSuffix(node.Extension.Name, ".flac")
-			},
-			while: func(fi *pref.FilteredInfo) bool {
-				return fi.Counts.Files != 2
+			filter: &filterTE{ // 🍒
+				typ: enums.FilterTypeCustom,
+				sample: &customSamplingFilter{
+					SampleFilter: tv.NewSampleFilter(enums.ScopeFile),
+					description:  "custom(glob): items with .flac suffix",
+					pattern:      "*.flac",
+				},
 			},
 			sampleType: enums.SampleTypeCustom,
-			reverse:    true,
+			noOf: pref.EntryQuantities{
+				Files: 2,
+			},
+			reverse: true,
 		}),
 
 		// === errors ========================================================
@@ -749,10 +751,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				expectedErr: i18n.ErrInvalidFolderSamplingSpecification,
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFolder,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFolder,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{
@@ -773,10 +775,10 @@ var _ = Describe("Sampling", Ordered, func() {
 				expectedErr: i18n.ErrInvalidFileSamplingSpecification,
 			},
 			filter: &filterTE{ // 🧄
-				name:    "glob: items with .flac suffix",
-				typ:     enums.FilterTypeGlob,
-				pattern: "*.flac",
-				scope:   enums.ScopeFile,
+				description: "glob: items with .flac suffix",
+				typ:         enums.FilterTypeGlob,
+				pattern:     "*.flac",
+				scope:       enums.ScopeFile,
 			},
 			sampleType: enums.SampleTypeFilter,
 			noOf: pref.EntryQuantities{

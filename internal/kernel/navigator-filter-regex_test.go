@@ -49,7 +49,7 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeRegex,
-					Description:     entry.name,
+					Description:     entry.description,
 					Pattern:         entry.pattern,
 					Scope:           entry.scope,
 					Negate:          entry.negate,
@@ -129,9 +129,9 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items that start with 'vinyl'",
-			pattern: "^vinyl",
-			scope:   enums.ScopeAll,
+			description: "items that start with 'vinyl'",
+			pattern:     "^vinyl",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -144,10 +144,10 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items that don't start with 'vinyl'",
-			pattern: "^vinyl",
-			scope:   enums.ScopeAll,
-			negate:  true,
+			description: "items that don't start with 'vinyl'",
+			pattern:     "^vinyl",
+			scope:       enums.ScopeAll,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -160,8 +160,8 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items that start with 'vinyl'",
-			pattern: "^vinyl",
+			description: "items that start with 'vinyl'",
+			pattern:     "^vinyl",
 		}),
 
 		// === folders =======================================================
@@ -176,9 +176,9 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 2,
 				},
 			},
-			name:    "items that start with 'C'",
-			pattern: "^C",
-			scope:   enums.ScopeAll,
+			description: "items that start with 'C'",
+			pattern:     "^C",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -191,10 +191,10 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 6,
 				},
 			},
-			name:    "items that don't start with 'C'",
-			pattern: "^C",
-			scope:   enums.ScopeAll,
-			negate:  true,
+			description: "items that don't start with 'C'",
+			pattern:     "^C",
+			scope:       enums.ScopeAll,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -207,8 +207,8 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 					folders: 2,
 				},
 			},
-			name:    "items that start with 'C'",
-			pattern: "^C",
+			description: "items that start with 'C'",
+			pattern:     "^C",
 		}),
 
 		// === ifNotApplicable ===============================================
@@ -224,7 +224,7 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 				},
 				mandatory: []string{"PROGRESSIVE-HOUSE"},
 			},
-			name:            "top items that contain 'HOUSE'",
+			description:     "top items that contain 'HOUSE'",
 			pattern:         "HOUSE",
 			scope:           enums.ScopeTop,
 			ifNotApplicable: enums.TriStateBoolTrue,
@@ -242,7 +242,7 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 				},
 				prohibited: []string{"Blue Amazon", "The Javelin"},
 			},
-			name:            "top items that contain 'HOUSE'",
+			description:     "top items that contain 'HOUSE'",
 			pattern:         "HOUSE",
 			scope:           enums.ScopeTop,
 			ifNotApplicable: enums.TriStateBoolFalse,
