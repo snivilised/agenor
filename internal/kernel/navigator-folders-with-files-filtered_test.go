@@ -48,7 +48,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			filterDefs := &pref.FilterOptions{
 				Child: &core.ChildFilterDef{
 					Type:        enums.FilterTypeGlob,
-					Description: entry.name,
+					Description: entry.description,
 					Pattern:     entry.pattern,
 					Negate:      entry.negate,
 				},
@@ -164,8 +164,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					},
 				},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*.flac",
+			description: "items with '.flac' suffix",
+			pattern:     "*.flac",
 		}),
 
 		// folders with files not implemented yet
@@ -185,9 +185,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					},
 				},
 			},
-			name:    "items without '.txt' suffix",
-			pattern: "*.txt",
-			negate:  true,
+			description: "items without '.txt' suffix",
+			pattern:     "*.txt",
+			negate:      true,
 		}),
 	)
 })

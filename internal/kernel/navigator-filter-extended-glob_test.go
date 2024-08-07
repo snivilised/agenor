@@ -48,7 +48,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeExtendedGlob,
-					Description:     entry.name,
+					Description:     entry.description,
 					Pattern:         entry.pattern,
 					Scope:           entry.scope,
 					Negate:          entry.negate,
@@ -130,9 +130,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "it6ems with 'flac' suffix",
-			pattern: "*|flac",
-			scope:   enums.ScopeAll,
+			description: "it6ems with 'flac' suffix",
+			pattern:     "*|flac",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -146,9 +146,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|.flac",
-			scope:   enums.ScopeAll,
+			description: "items with 'flac' suffix",
+			pattern:     "*|.flac",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -163,9 +163,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"front.jpg"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|flac,jpg",
-			scope:   enums.ScopeAll,
+			description: "items with 'flac' suffix",
+			pattern:     "*|flac,jpg",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -180,9 +180,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|",
-			scope:   enums.ScopeAll,
+			description: "items with 'flac' suffix",
+			pattern:     "*|",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -196,10 +196,10 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "files without .flac suffix",
-			pattern: "*|flac",
-			scope:   enums.ScopeFile,
-			negate:  true,
+			description: "files without .flac suffix",
+			pattern:     "*|flac",
+			scope:       enums.ScopeFile,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -213,8 +213,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*|flac",
+			description: "items with '.flac' suffix",
+			pattern:     "*|flac",
 		}),
 
 		Entry(nil, &filterTE{
@@ -229,9 +229,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "starts with c, any extension",
-			pattern: "c*|*",
-			scope:   enums.ScopeAll,
+			description: "starts with c, any extension",
+			pattern:     "c*|*",
+			scope:       enums.ScopeAll,
 		}),
 
 		// === folders =======================================================
@@ -248,9 +248,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"Marillion"},
 				prohibited: []string{"Fugazi"},
 			},
-			name:    "folders starting with M",
-			pattern: "M*|",
-			scope:   enums.ScopeFolder,
+			description: "folders starting with M",
+			pattern:     "M*|",
+			scope:       enums.ScopeFolder,
 		}),
 
 		Entry(nil, &filterTE{
@@ -265,10 +265,10 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"Fugazi"},
 				prohibited: []string{"Marillion"},
 			},
-			name:    "folders NOT starting with M",
-			pattern: "M*|",
-			scope:   enums.ScopeFolder,
-			negate:  true,
+			description: "folders NOT starting with M",
+			pattern:     "M*|",
+			scope:       enums.ScopeFolder,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -283,8 +283,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"Marillion"},
 				prohibited: []string{"Fugazi"},
 			},
-			name:    "folders starting with M",
-			pattern: "M*|",
+			description: "folders starting with M",
+			pattern:     "M*|",
 		}),
 
 		// === files =========================================================
@@ -301,9 +301,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|flac",
-			scope:   enums.ScopeFile,
+			description: "items with 'flac' suffix",
+			pattern:     "*|flac",
+			scope:       enums.ScopeFile,
 		}),
 
 		Entry(nil, &filterTE{
@@ -318,9 +318,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|.flac",
-			scope:   enums.ScopeFile,
+			description: "items with 'flac' suffix",
+			pattern:     "*|.flac",
+			scope:       enums.ScopeFile,
 		}),
 
 		Entry(nil, &filterTE{
@@ -335,9 +335,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"front.jpg"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|flac,jpg",
-			scope:   enums.ScopeFile,
+			description: "items with 'flac' suffix",
+			pattern:     "*|flac,jpg",
+			scope:       enums.ScopeFile,
 		}),
 
 		Entry(nil, &filterTE{
@@ -352,9 +352,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "items with 'flac' suffix",
-			pattern: "*|",
-			scope:   enums.ScopeFile,
+			description: "items with 'flac' suffix",
+			pattern:     "*|",
+			scope:       enums.ScopeFile,
 		}),
 
 		Entry(nil, &filterTE{
@@ -369,10 +369,10 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "files without .flac suffix",
-			pattern: "*|flac",
-			scope:   enums.ScopeFile,
-			negate:  true,
+			description: "files without .flac suffix",
+			pattern:     "*|flac",
+			scope:       enums.ScopeFile,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -387,8 +387,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*|flac",
+			description: "items with '.flac' suffix",
+			pattern:     "*|flac",
 		}),
 
 		Entry(nil, &filterTE{
@@ -403,9 +403,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "starts with c, any extension",
-			pattern: "c*|*",
-			scope:   enums.ScopeAll,
+			description: "starts with c, any extension",
+			pattern:     "c*|*",
+			scope:       enums.ScopeAll,
 		}),
 
 		// === ifNotApplicable ===============================================
@@ -422,7 +422,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				mandatory:  []string{"Marillion"},
 				prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
-			name:            "leaf items with 'flac' suffix",
+			description:     "leaf items with 'flac' suffix",
 			pattern:         "*|flac",
 			scope:           enums.ScopeLeaf,
 			ifNotApplicable: enums.TriStateBoolTrue,
@@ -439,7 +439,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"Marillion"},
 			},
-			name:            "items with '.flac' suffix",
+			description:     "items with '.flac' suffix",
 			pattern:         "*|flac",
 			scope:           enums.ScopeLeaf,
 			ifNotApplicable: enums.TriStateBoolFalse,
@@ -458,9 +458,9 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 				prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			name:    "files starting with 0, except 01 items and flac suffix",
-			pattern: "0*/*01*|flac",
-			scope:   enums.ScopeFile,
+			description: "files starting with 0, except 01 items and flac suffix",
+			pattern:     "0*/*01*|flac",
+			scope:       enums.ScopeFile,
 		}),
 	)
 })

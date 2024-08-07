@@ -49,7 +49,7 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeGlob,
-					Description:     entry.name,
+					Description:     entry.description,
 					Pattern:         entry.pattern,
 					Scope:           entry.scope,
 					Negate:          entry.negate,
@@ -127,9 +127,9 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*.flac",
-			scope:   enums.ScopeAll,
+			description: "items with '.flac' suffix",
+			pattern:     "*.flac",
+			scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &filterTE{
@@ -142,10 +142,10 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 					folders: 8,
 				},
 			},
-			name:    "items without .flac suffix",
-			pattern: "*.flac",
-			scope:   enums.ScopeAll,
-			negate:  true,
+			description: "items without .flac suffix",
+			pattern:     "*.flac",
+			scope:       enums.ScopeAll,
+			negate:      true,
 		}),
 
 		Entry(nil, &filterTE{
@@ -158,8 +158,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*.flac",
+			description: "items with '.flac' suffix",
+			pattern:     "*.flac",
 		}),
 
 		// === ifNotApplicable ===============================================
@@ -175,7 +175,7 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				},
 				mandatory: []string{"A1 - Can You Kiss Me First.flac"},
 			},
-			name:            "items with '.flac' suffix",
+			description:     "items with '.flac' suffix",
 			pattern:         "*.flac",
 			scope:           enums.ScopeLeaf,
 			ifNotApplicable: enums.TriStateBoolTrue,
@@ -193,7 +193,7 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				mandatory:  []string{"A1 - Can You Kiss Me First.flac"},
 				prohibited: []string{"vinyl-info.teenage-color"},
 			},
-			name:            "items with '.flac' suffix",
+			description:     "items with '.flac' suffix",
 			pattern:         "*.flac",
 			scope:           enums.ScopeLeaf,
 			ifNotApplicable: enums.TriStateBoolFalse,

@@ -48,12 +48,12 @@ func (f *ChildRegexFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
 	})
 }
 
-// SampleGlobFilter ===========================================================
+// SampleRegexFilter ==========================================================
 
-// SampleGlobFilter is a hybrid between a child filter and a node filter. It
-// is used to filter on a compound basis but has some differences to ChildGlobFilter
-// that necessitates its use. The biggest difference is that ChildGlobFilter is
-// designed to only be applied to file directory entries, where as SampleGlobFilter
+// SampleRegexFilter is a hybrid between a child filter and a node filter. It
+// is used to filter on a compound basis but has some differences to ChildRegexFilter
+// that necessitates its use. The biggest difference is that ChildRegexFilter is
+// designed to only be applied to file directory entries, where as SampleRegexFilter
 // can be applied to files or folders. It also possesses a scope field used to
 // distinguish only between files and folders.
 type SampleRegexFilter struct {
@@ -68,7 +68,7 @@ func (f *SampleRegexFilter) Validate() {
 }
 
 func (f *SampleRegexFilter) Matching(entries []fs.DirEntry) []fs.DirEntry {
-	filterable, bypass := f.fetch(entries)
+	filterable, bypass := f.Fetch(entries)
 	filtered := lo.Filter(filterable, func(entry fs.DirEntry, _ int) bool {
 		return f.invert(f.rex.MatchString(entry.Name()))
 	})

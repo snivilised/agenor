@@ -6,7 +6,6 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/lo"
-	"github.com/snivilised/traverse/nfs"
 )
 
 // GlobFilter wildcard filter.
@@ -41,43 +40,6 @@ func (f *ChildGlobFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
 	)
 }
 
-type (
-	candidates   func(entries []fs.DirEntry) (wanted, others []fs.DirEntry)
-	SampleFilter struct {
-		Filter
-	}
-)
-
-func (f *SampleFilter) files(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	wanted, others = nfs.Separate(entries)
-	return wanted, others
-}
-
-func (f *SampleFilter) folders(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	others, wanted = nfs.Separate(entries)
-	return wanted, others
-}
-
-func (f *SampleFilter) all(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	return entries, []fs.DirEntry{}
-}
-
-func (f *SampleFilter) fn() candidates {
-	if f.scope.IsFolder() {
-		return f.folders
-	}
-
-	if f.scope.IsFile() {
-		return f.files
-	}
-
-	return f.all
-}
-
-func (f *SampleFilter) fetch(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	return f.fn()(entries)
-}
-
 // SampleGlobFilter ===========================================================
 
 // SampleGlobFilter is a hybrid between a child filter and a node filter. It
@@ -91,7 +53,7 @@ type SampleGlobFilter struct {
 }
 
 func (f *SampleGlobFilter) Matching(entries []fs.DirEntry) []fs.DirEntry {
-	filterable, bypass := f.fetch(entries)
+	filterable, bypass := f.Fetch(entries)
 
 	filtered := lo.Filter(filterable,
 		func(entry fs.DirEntry, _ int) bool {

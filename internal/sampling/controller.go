@@ -1,7 +1,6 @@
 package sampling
 
 import (
-	"fmt"
 	"io/fs"
 
 	"github.com/snivilised/traverse/core"
@@ -20,11 +19,7 @@ func (p *controller) Role() enums.Role {
 	return enums.RoleSampler
 }
 
-func (p *controller) Next(node *core.Node, inspection core.Inspection) (bool, error) {
-	_ = inspection
-	// ensure invoke count is correct
-	//
-	fmt.Printf("sampler🌀 ~ name(Next): '%v' true\n", node.Extension.Name)
+func (p *controller) Next(_ *core.Node, _ core.Inspection) (bool, error) {
 	return true, nil
 }
 

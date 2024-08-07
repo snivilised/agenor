@@ -42,7 +42,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		func(ctx SpecContext, entry *filterTE) {
 			recording := make(recordingMap)
 			customFilter := &customFilter{
-				name:    entry.name,
+				name:    entry.description,
 				pattern: entry.pattern,
 				scope:   entry.scope,
 				negate:  entry.negate,
@@ -119,9 +119,9 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*.flac",
-			scope:   enums.ScopeFile,
+			description: "items with '.flac' suffix",
+			pattern:     "*.flac",
+			scope:       enums.ScopeFile,
 		}),
 
 		// negate tot implemented yet
@@ -135,10 +135,10 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					folders: 8,
 				},
 			},
-			name:    "items without .flac suffix",
-			pattern: "*.flac",
-			scope:   enums.ScopeAll,
-			negate:  true,
+			description: "items without .flac suffix",
+			pattern:     "*.flac",
+			scope:       enums.ScopeAll,
+			negate:      true,
 		}),
 
 		// custom not implemented yet
@@ -152,8 +152,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					folders: 0,
 				},
 			},
-			name:    "items with '.flac' suffix",
-			pattern: "*.flac",
+			description: "items with '.flac' suffix",
+			pattern:     "*.flac",
 		}),
 	)
 })
