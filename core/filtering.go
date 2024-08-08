@@ -13,8 +13,9 @@ type (
 		// Description describes filter
 		Description() string
 
-		// Validate ensures the filter definition is valid, panics when invalid
-		Validate()
+		// Validate ensures the filter definition is valid, returns
+		// error when invalid
+		Validate() error
 
 		// Source, filter definition (comes from filter definition Pattern)
 		Source() string
@@ -70,8 +71,9 @@ type (
 		// Description describes filter
 		Description() string
 
-		// Validate ensures the filter definition is valid, panics when invalid
-		Validate()
+		// Validate ensures the filter definition is valid, returns
+		// error when invalid
+		Validate() error
 
 		// Source, filter definition (comes from filter definition Pattern)
 		Source() string
@@ -127,16 +129,11 @@ type (
 		Description() string
 
 		// Validate ensures the filter definition is valid, panics when invalid
-		Validate()
+		Validate() error
 
 		// Matching returns the collection of files contained within this
 		// item's folder that matches this filter.
 		Matching(children []fs.DirEntry) []fs.DirEntry
-	}
-
-	compoundCounters struct {
-		filteredIn  uint
-		filteredOut uint
 	}
 )
 

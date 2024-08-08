@@ -96,10 +96,12 @@ func (f *customFilter) Description() string {
 	return f.name
 }
 
-func (f *customFilter) Validate() {
+func (f *customFilter) Validate() error {
 	if f.scope == enums.ScopeUndefined {
 		f.scope = enums.ScopeAll
 	}
+
+	return nil
 }
 
 func (f *customFilter) Source() string {
@@ -340,8 +342,6 @@ func (f *customSamplingFilter) Description() string {
 func (f *customSamplingFilter) Scope() enums.FilterScope {
 	return f.SampleFilter.Scope()
 }
-
-func (f *customSamplingFilter) Validate() {}
 
 func (f *customSamplingFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
 	return f.SampleFilter.Matching(children,

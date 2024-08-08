@@ -214,8 +214,7 @@ type customScheme struct {
 }
 
 func (f *customScheme) create() error {
-	f.o.Filter.Custom.Validate()
-	return nil
+	return f.o.Filter.Custom.Validate()
 }
 
 func (f *customScheme) next(_ *core.Node, _ core.Inspection) (bool, error) {
