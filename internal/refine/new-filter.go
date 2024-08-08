@@ -114,7 +114,7 @@ func newNodeFilter(def *core.FilterDef,
 		return nil, i18n.ErrFilterMissingType
 	}
 
-	if fo.Node.Type != enums.FilterTypePoly {
+	if filter != nil {
 		err = filter.Validate()
 	}
 
@@ -250,23 +250,21 @@ func newSampleFilter(def *core.SampleFilterDef,
 		return nil, i18n.ErrFilterIsNil
 	}
 
-	scrubbed := def.Scope.Scrub()
-
-	if scrubbed.IsFile() && so.NoOf.Files == 0 {
-		return nil, i18n.ErrInvalidFileSamplingSpecification
-	}
-
-	if scrubbed.IsFolder() && so.NoOf.Folders == 0 {
-		return nil, i18n.ErrInvalidFolderSamplingSpecification
-	}
-
 	base := SampleFilter{
 		Filter: Filter{
 			name:    def.Description,
-			scope:   scrubbed,
+			scope:   def.Scope.Scrub(),
 			pattern: def.Pattern,
 			negate:  def.Negate,
 		},
+	}
+
+	if base.scope.IsFile() && so.NoOf.Files == 0 {
+		return nil, i18n.ErrInvalidFileSamplingSpecification
+	}
+
+	if base.scope.IsFolder() && so.NoOf.Folders == 0 {
+		return nil, i18n.ErrInvalidFolderSamplingSpecification
 	}
 
 	switch def.Type {
