@@ -17,9 +17,17 @@ type RegexFilter struct {
 }
 
 // Validate ensures the filter definition is valid, panics when invalid
-func (f *RegexFilter) Validate() {
-	f.Filter.Validate()
-	f.rex = regexp.MustCompile(f.pattern)
+func (f *RegexFilter) Validate() error {
+	if err := f.Filter.Validate(); err != nil {
+		return err
+	}
+
+	var (
+		err error
+	)
+	f.rex, err = regexp.Compile(f.pattern)
+
+	return err
 }
 
 // IsMatch
@@ -38,8 +46,13 @@ type ChildRegexFilter struct {
 	rex *regexp.Regexp
 }
 
-func (f *ChildRegexFilter) Validate() {
-	f.rex = regexp.MustCompile(f.Pattern)
+func (f *ChildRegexFilter) Validate() error {
+	var (
+		err error
+	)
+	f.rex, err = regexp.Compile(f.Pattern)
+
+	return err
 }
 
 func (f *ChildRegexFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
@@ -62,13 +75,21 @@ type SampleRegexFilter struct {
 }
 
 // Validate ensures the filter definition is valid, panics when invalid
-func (f *SampleRegexFilter) Validate() {
-	f.Filter.Validate()
-	f.rex = regexp.MustCompile(f.pattern)
+func (f *SampleRegexFilter) Validate() error {
+	if err := f.Filter.Validate(); err != nil {
+		return err
+	}
+
+	var (
+		err error
+	)
+	f.rex, err = regexp.Compile(f.pattern)
+
+	return err
 }
 
 func (f *SampleRegexFilter) Matching(entries []fs.DirEntry) []fs.DirEntry {
-	filterable, bypass := f.Fetch(entries)
+	filterable, bypass := f.fetch(entries)
 	filtered := lo.Filter(filterable, func(entry fs.DirEntry, _ int) bool {
 		return f.invert(f.rex.MatchString(entry.Name()))
 	})

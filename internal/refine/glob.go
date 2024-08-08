@@ -53,7 +53,7 @@ type SampleGlobFilter struct {
 }
 
 func (f *SampleGlobFilter) Matching(entries []fs.DirEntry) []fs.DirEntry {
-	filterable, bypass := f.Fetch(entries)
+	filterable, bypass := f.fetch(entries)
 
 	filtered := lo.Filter(filterable,
 		func(entry fs.DirEntry, _ int) bool {

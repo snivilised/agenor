@@ -39,9 +39,12 @@ func (f *PolyFilter) Description() string {
 }
 
 // Validate ensures that both filters definition are valid, panics when invalid
-func (f *PolyFilter) Validate() {
-	f.File.Validate()
-	f.Folder.Validate()
+func (f *PolyFilter) Validate() error {
+	if err := f.File.Validate(); err != nil {
+		return err
+	}
+
+	return f.Folder.Validate()
 }
 
 // Source returns the Sources of both the File and Folder filters separated

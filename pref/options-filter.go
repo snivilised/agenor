@@ -73,11 +73,3 @@ func (fo FilterOptions) IsFilteringActive() bool {
 func (fo FilterOptions) IsCustomFilteringActive() bool {
 	return fo.Custom != nil
 }
-
-func (fo FilterOptions) ResolveFilter(node core.TraverseFilter) core.TraverseFilter {
-	if node != nil {
-		return node
-	}
-
-	return fo.Custom
-}

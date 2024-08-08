@@ -29,7 +29,7 @@ func fromExtendedGlobPattern(pattern string) (segments, suffixes []string, err e
 	return segments, suffixes, nil
 }
 
-func newNodeFilter(def *core.FilterDef, // def:REDUNDANT
+func newNodeFilter(def *core.FilterDef,
 	fo *pref.FilterOptions,
 ) (core.TraverseFilter, error) {
 	var (
@@ -98,7 +98,7 @@ func newNodeFilter(def *core.FilterDef, // def:REDUNDANT
 	case enums.FilterTypeCustom:
 		if fo.Custom == nil {
 			return nil, xi18n.NewMissingCustomFilterDefinitionError(
-				"Options/Store/FilterDefs/Node/Custom",
+				"Options.Filter.Custom",
 			)
 		}
 		filter = fo.Custom
@@ -106,7 +106,7 @@ func newNodeFilter(def *core.FilterDef, // def:REDUNDANT
 	case enums.FilterTypePoly:
 		var polyE error
 
-		if filter, polyE = newPolyFilter(def.Poly); polyE != nil {
+		if filter, polyE = newPolyFilter(fo.Node.Poly); polyE != nil {
 			return nil, polyE
 		}
 
@@ -114,11 +114,11 @@ func newNodeFilter(def *core.FilterDef, // def:REDUNDANT
 		return nil, i18n.ErrFilterMissingType
 	}
 
-	if def.Type != enums.FilterTypePoly {
-		filter.Validate()
+	if fo.Node.Type != enums.FilterTypePoly {
+		err = filter.Validate()
 	}
 
-	return filter, nil
+	return filter, err
 }
 
 func newPolyFilter(polyDef *core.PolyFilterDef) (core.TraverseFilter, error) {
@@ -231,7 +231,9 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 	}
 
 	if filter != nil {
-		filter.Validate()
+		if err := filter.Validate(); err != nil {
+			return nil, err
+		}
 	}
 
 	return filter, nil
@@ -289,7 +291,9 @@ func newSampleFilter(def *core.SampleFilterDef,
 	}
 
 	if filter != nil {
-		filter.Validate()
+		if err := filter.Validate(); err != nil {
+			return nil, err
+		}
 	}
 
 	return filter, nil

@@ -42,10 +42,12 @@ func (f *Filter) invert(result bool) bool {
 	return lo.Ternary(f.negate, !result, result)
 }
 
-func (f *Filter) Validate() {
+func (f *Filter) Validate() error {
 	if f.scope == enums.ScopeUndefined {
 		f.scope = enums.ScopeAll
 	}
+
+	return nil
 }
 
 // ChildFilter ================================================================
@@ -61,7 +63,9 @@ func (f *ChildFilter) Description() string {
 	return f.Name
 }
 
-func (f *ChildFilter) Validate() {}
+func (f *ChildFilter) Validate() error {
+	return nil
+}
 
 func (f *ChildFilter) Source() string {
 	return f.Pattern
@@ -116,7 +120,7 @@ func (f *SampleFilter) fn() candidates {
 	return f.all
 }
 
-func (f *SampleFilter) Fetch(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+func (f *SampleFilter) fetch(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
 	return f.fn()(entries)
 }
 
@@ -126,7 +130,7 @@ type GetMatching func(entry fs.DirEntry, index int) bool
 func (f *SampleFilter) Matching(children []fs.DirEntry,
 	get GetMatching,
 ) []fs.DirEntry {
-	filterable, bypass := f.Fetch(children)
+	filterable, bypass := f.fetch(children)
 	filtered := lo.Filter(filterable, get)
 
 	return append(filtered, bypass...)

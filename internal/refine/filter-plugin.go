@@ -1,5 +1,7 @@
 package refine
 
+// 📚 package: refine defines filters
+
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
