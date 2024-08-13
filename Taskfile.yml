@@ -52,6 +52,10 @@ tasks:
     cmds:
       - go test ./i18n
 
+  tn:
+    cmds:
+      - go test ./nfs
+
   toc:
     cmds:
       - go test ./collections
@@ -63,6 +67,14 @@ tasks:
   tt:
     cmds:
       - go test
+
+  clean:
+    cmds:
+      - go clean
+
+  clean-t:
+    cmds:
+      - go clean -testcache
 
   # === ginkgo ================================================
 

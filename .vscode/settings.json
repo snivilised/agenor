@@ -76,6 +76,7 @@
     "pixa",
     "prealloc",
     "qsys",
+    "rabbitweed",
     "repotoken",
     "respoofed",
     "rsys",
@@ -91,6 +92,7 @@
     "tapable",
     "tapcore",
     "Taskfile",
+    "testcache",
     "thelper",
     "tparallel",
     "trimprefix",
@@ -103,6 +105,7 @@
     "watchvc",
     "watchvi",
     "Wrapf",
-    "xcol"
+    "xcol",
+    "xpander"
   ]
 }
