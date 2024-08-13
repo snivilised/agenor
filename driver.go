@@ -3,8 +3,8 @@ package tv
 import (
 	"context"
 
-	"github.com/snivilised/extendio/bus"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/bus"
 	"github.com/snivilised/traverse/internal/services"
 )
 

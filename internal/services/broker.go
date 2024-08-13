@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/snivilised/extendio/bus"
+	"github.com/snivilised/traverse/internal/bus"
 )
 
 // 📚 package: services can contain anything which is a cross cutting concern
