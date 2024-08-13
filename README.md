@@ -66,3 +66,7 @@ To maintain localisation of the application, the user must take care to implemen
 - define template struct (__xxxTemplData__) in __src/i18n/messages.go__ and corresponding __Message()__ method. All messages are defined here in the same location, simplifying the message extraction process as all extractable strings occur at the same place. Please see [go-i18n](https://github.com/nicksnyder/go-i18n) for all translation/pluralisation options and other regional sensitive content.
 
 For more detailed workflow instructions relating to i18n, please see [i18n README](./resources/doc/i18n-README.md)
+
+### 📨 Message Bus
+
+- Contains an alternative version of [bus](https://github.com/mustafaturan/bus). The requirement for a bus implementation is based upon the need to create loosely coupled internal code. The original bus was designed with concurrency in mind so it uses locks to achieve thread safety. This aspect is surplus to requirements as all we need it for are synchronous scenarios, so it has been striped out.
