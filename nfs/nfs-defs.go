@@ -2,6 +2,7 @@ package nfs
 
 import (
 	"io/fs"
+	"os"
 )
 
 // 📚 package: nfs contains file system abstractions for navigation. Since
@@ -26,5 +27,20 @@ type (
 		// write access and whose path should be outside of the path
 		// represented by N, the navigation file system.
 		R fs.FS
+	}
+
+	// ExistsInFS contains methods that check the existence of file system items.
+	ExistsInFS interface {
+		// FileExists does file exist at the path specified
+		FileExists(path string) bool
+
+		// DirectoryExists does directory exist at the path specified
+		DirectoryExists(path string) bool
+	}
+
+	// MkDirAllFS is a file system with a MkDirAll method.
+	MkDirAllFS interface {
+		ExistsInFS
+		MkDirAll(path string, perm os.FileMode) error
 	}
 )
