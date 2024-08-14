@@ -3,7 +3,6 @@ package core
 import (
 	"io/fs"
 
-	"github.com/snivilised/extendio/xfs/utils"
 	"github.com/snivilised/traverse/enums"
 )
 
@@ -84,9 +83,9 @@ func (n *Node) key() string {
 }
 
 func isDir(n *Node) bool {
-	if !utils.IsNil(n.Entry) {
+	if n.Entry != nil {
 		return n.Entry.IsDir()
-	} else if !utils.IsNil(n.Info) {
+	} else if n.Info != nil {
 		return n.Info.IsDir()
 	}
 

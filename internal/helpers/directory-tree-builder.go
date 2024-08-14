@@ -10,10 +10,9 @@ import (
 	"strings"
 	"testing/fstest"
 
-	"github.com/snivilised/extendio/collections"
+	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/lo"
-
-	"github.com/snivilised/extendio/xfs/utils"
+	"github.com/snivilised/traverse/nfs"
 )
 
 const (
@@ -38,7 +37,10 @@ func Musico(verbose bool, portions ...string) (msys fstest.MapFS, root string) {
 
 func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {
 	repo := Repo(filepath.Join("..", "..", "test", "data", "MUSICO"))
-	utils.Must(ensure(repo, provider, verbose))
+
+	if ensure(repo, provider, verbose) != nil {
+		return ""
+	}
 
 	if verbose {
 		fmt.Printf("\n🤖 re-generated tree at '%v' (filters: '%v')\n\n",
@@ -53,7 +55,7 @@ func Provision(provider *IOProvider, verbose bool, portions ...string) (root str
 func ensure(root string, provider *IOProvider, verbose bool) error {
 	repo := Repo(filepath.Join("..", ".."))
 	index := Path(repo, "test/data/musico-index.xml")
-	parent, _ := utils.SplitParent(root)
+	parent, _ := nfs.SplitParent(root)
 	builder := directoryTreeBuilder{
 		root:     TrimRoot(root),
 		stack:    collections.NewStackWith([]string{parent}),
@@ -275,10 +277,6 @@ func (r *directoryTreeBuilder) read() (*Directory, error) {
 	return &tree.Root, nil
 }
 
-func (r *directoryTreeBuilder) status(path string) string {
-	return lo.Ternary(utils.Exists(path), "✅", "❌")
-}
-
 func (r *directoryTreeBuilder) pad() string {
 	return string(bytes.Repeat([]byte{' '}, (r.depth+offset)*tabSize))
 }
@@ -302,15 +300,6 @@ func (r *directoryTreeBuilder) dec() {
 
 	r.depth--
 	r.padding = r.pad()
-}
-
-func (r *directoryTreeBuilder) showL(path, indicator, name string) {
-	if r.verbose {
-		status := r.status(path)
-		fmt.Printf("%v(depth: '%v') (%v) %v: -> '%v' (🔥 %v)\n",
-			r.padding, r.depth, status, indicator, name, r.full,
-		)
-	}
 }
 
 func (r *directoryTreeBuilder) walk() error {

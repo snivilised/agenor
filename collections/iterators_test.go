@@ -7,8 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ginkgo ok
 	. "github.com/onsi/gomega"    //nolint:revive // gomega ok
 
-	"github.com/snivilised/extendio/collections"
-	"github.com/snivilised/extendio/xfs/utils"
+	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/lo"
 )
 
@@ -123,7 +122,7 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getSleeveIt(entry.forward, entry.sleeves)
 
-				Expect(utils.IsNil(it)).To(BeFalse(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.should))
 			},
 			func(entry *beginTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
@@ -168,7 +167,7 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getRecordPtrIt(entry.forward, entry.recordPtrs)
 
-				Expect(utils.IsNil(it)).To(BeFalse(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.should))
 			},
 			func(entry *beginTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
@@ -213,7 +212,7 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getRecordsIt(entry.forward, entry.records)
 
-				Expect(utils.IsNil(it)).To(BeFalse(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.should))
 			},
 			func(entry *beginTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
@@ -258,7 +257,7 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getInt32It(entry.forward, entry.numbersN32)
 
-				Expect(utils.IsNil(it)).To(BeFalse(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.should))
 			},
 			func(entry *beginTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
@@ -312,7 +311,7 @@ var _ = Describe("Iterators", func() {
 				},
 			)
 
-			Expect(utils.IsNil(it)).To(BeFalse(), reason(entry.should))
+			Expect(it).NotTo(BeNil(), reason(entry.should))
 		},
 		func(entry *beginTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
