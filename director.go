@@ -5,8 +5,8 @@ import (
 
 	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/feat/refine"
+	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/resume"
 	"github.com/snivilised/traverse/internal/sampling"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
