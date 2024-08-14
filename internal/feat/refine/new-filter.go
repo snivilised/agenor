@@ -8,8 +8,8 @@ import (
 	xi18n "github.com/snivilised/extendio/i18n"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/i18n"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -111,7 +111,7 @@ func newNodeFilter(def *core.FilterDef,
 		}
 
 	case enums.FilterTypeUndefined:
-		return nil, i18n.ErrFilterMissingType
+		return nil, locale.ErrFilterMissingType
 	}
 
 	if filter != nil {
@@ -173,7 +173,7 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 	)
 
 	if def == nil {
-		return nil, i18n.ErrFilterIsNil
+		return nil, locale.ErrFilterIsNil
 	}
 
 	switch def.Type {
@@ -184,7 +184,7 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		)
 
 		if segments, suffixes, err = fromExtendedGlobPattern(def.Pattern); err != nil {
-			return nil, i18n.ErrInvalidIncaseFilterDef
+			return nil, locale.ErrInvalidIncaseFilterDef
 		}
 
 		base, exclusion := splitGlob(segments[0])
@@ -222,10 +222,10 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		}
 
 	case enums.FilterTypeCustom:
-		return nil, i18n.ErrFilterCustomNotSupported
+		return nil, locale.ErrFilterCustomNotSupported
 
 	case enums.FilterTypeUndefined:
-		return nil, i18n.ErrFilterUndefined
+		return nil, locale.ErrFilterUndefined
 
 	case enums.FilterTypePoly:
 	}
@@ -247,7 +247,7 @@ func newSampleFilter(def *core.SampleFilterDef,
 	)
 
 	if def == nil {
-		return nil, i18n.ErrFilterIsNil
+		return nil, locale.ErrFilterIsNil
 	}
 
 	base := SampleFilter{
@@ -260,11 +260,11 @@ func newSampleFilter(def *core.SampleFilterDef,
 	}
 
 	if base.scope.IsFile() && so.NoOf.Files == 0 {
-		return nil, i18n.ErrInvalidFileSamplingSpecification
+		return nil, locale.ErrInvalidFileSamplingSpecification
 	}
 
 	if base.scope.IsFolder() && so.NoOf.Folders == 0 {
-		return nil, i18n.ErrInvalidFolderSamplingSpecification
+		return nil, locale.ErrInvalidFolderSamplingSpecification
 	}
 
 	switch def.Type {
@@ -280,12 +280,12 @@ func newSampleFilter(def *core.SampleFilterDef,
 
 	case enums.FilterTypeCustom:
 		if def.Custom == nil {
-			return nil, i18n.ErrFilterIsNil
+			return nil, locale.ErrFilterIsNil
 		}
 		filter = def.Custom
 	case enums.FilterTypePoly:
 	case enums.FilterTypeUndefined:
-		return nil, i18n.ErrFilterMissingType
+		return nil, locale.ErrFilterMissingType
 	}
 
 	if filter != nil {
