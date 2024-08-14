@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/snivilised/lorax/boost"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/i18n"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -93,7 +93,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	)
 
 	if c.err != nil {
-		err := errors.Wrapf(c.err, i18n.ErrWorkerPoolCreationFailed.Error())
+		err := errors.Wrapf(c.err, locale.ErrWorkerPoolCreationFailed.Error())
 
 		return c.kc.Result(ctx, err), err
 	}
