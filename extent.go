@@ -3,8 +3,8 @@ package tv
 import (
 	"io/fs"
 
+	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/resume"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )

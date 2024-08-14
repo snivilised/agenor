@@ -5,7 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/refine"
+	"github.com/snivilised/traverse/internal/feat/refine"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
