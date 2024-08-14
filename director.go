@@ -3,7 +3,7 @@ package tv
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/internal/hiber"
+	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/refine"
 	"github.com/snivilised/traverse/internal/resume"
