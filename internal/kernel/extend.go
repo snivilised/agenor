@@ -6,7 +6,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 func extend(ns *navigationStatic, vapour inspection) {

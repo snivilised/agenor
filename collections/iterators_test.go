@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // gomega ok
 
 	"github.com/snivilised/traverse/collections"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 const (

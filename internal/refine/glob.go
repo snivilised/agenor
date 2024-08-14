@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 // GlobFilter wildcard filter.

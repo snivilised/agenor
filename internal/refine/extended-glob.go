@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 type ExtendedGlobFilter struct {

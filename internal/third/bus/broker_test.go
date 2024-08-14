@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/internal/bus"
+	"github.com/snivilised/traverse/internal/third/bus"
 )
 
 const (

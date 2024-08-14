@@ -5,7 +5,7 @@ import (
 	"regexp"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 // RegexFilter ================================================================

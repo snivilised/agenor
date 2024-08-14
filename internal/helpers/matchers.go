@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	. "github.com/onsi/gomega/types" //nolint:stylecheck,revive // ok
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 type DirectoryContentsMatcher struct {

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"

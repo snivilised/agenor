@@ -9,7 +9,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/i18n"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 )
 

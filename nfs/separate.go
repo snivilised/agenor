@@ -3,7 +3,7 @@ package nfs
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 func Separate(entries []fs.DirEntry) (files, folders []fs.DirEntry) {

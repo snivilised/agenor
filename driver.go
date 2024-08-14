@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/bus"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/internal/third/bus"
 )
 
 const (

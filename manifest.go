@@ -4,7 +4,7 @@ import (
 	"slices"
 
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 type (
