@@ -5,7 +5,7 @@ import (
 
 	. "github.com/onsi/gomega/types" //nolint:revive // ok
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/refine"
+	"github.com/snivilised/traverse/internal/feat/refine"
 )
 
 // === MatchCurrentRegexFilter ===
