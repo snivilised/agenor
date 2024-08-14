@@ -11,7 +11,7 @@ import (
 	"testing/fstest"
 
 	"github.com/snivilised/traverse/collections"
-	"github.com/snivilised/traverse/internal/lo"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/nfs"
 )
 

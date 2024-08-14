@@ -5,10 +5,10 @@ import (
 
 	"github.com/snivilised/traverse/internal/hiber"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/refine"
 	"github.com/snivilised/traverse/internal/resume"
 	"github.com/snivilised/traverse/internal/sampling"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )

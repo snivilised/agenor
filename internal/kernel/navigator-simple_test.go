@@ -12,8 +12,8 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/helpers"
-	"github.com/snivilised/traverse/internal/lo"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
