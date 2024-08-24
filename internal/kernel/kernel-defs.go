@@ -9,7 +9,7 @@ import (
 	"github.com/snivilised/traverse/internal/types"
 )
 
-// 📚 package: kernel contains the core traversal functionality. Kernel
+// 📦 pkg: kernel - contains the core traversal functionality. Kernel
 // is concerned only with the core task of navigation. Supplementary
 // functionality is implemented externally in plugins.
 

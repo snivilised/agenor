@@ -1,11 +1,9 @@
 package refine
 
 import (
-	"errors"
 	"slices"
 	"strings"
 
-	xi18n "github.com/snivilised/extendio/i18n"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
@@ -16,7 +14,7 @@ import (
 func fromExtendedGlobPattern(pattern string) (segments, suffixes []string, err error) {
 	if !strings.Contains(pattern, "|") {
 		return []string{}, []string{},
-			errors.New("invalid extended glob filter definition; pattern is missing separator")
+			locale.NewInvalidExtGlobFilterMissingSeparatorError(pattern)
 	}
 
 	segments = strings.Split(pattern, "|")
@@ -97,9 +95,7 @@ func newNodeFilter(def *core.FilterDef,
 
 	case enums.FilterTypeCustom:
 		if fo.Custom == nil {
-			return nil, xi18n.NewMissingCustomFilterDefinitionError(
-				"Options.Filter.Custom",
-			)
+			return nil, locale.ErrMissingCustomFilterDefinition
 		}
 		filter = fo.Custom
 
@@ -184,7 +180,7 @@ func newChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		)
 
 		if segments, suffixes, err = fromExtendedGlobPattern(def.Pattern); err != nil {
-			return nil, locale.ErrInvalidIncaseFilterDef
+			return nil, locale.NewInvalidIncaseFilterDefError(def.Pattern)
 		}
 
 		base, exclusion := splitGlob(segments[0])
@@ -260,11 +256,11 @@ func newSampleFilter(def *core.SampleFilterDef,
 	}
 
 	if base.scope.IsFile() && so.NoOf.Files == 0 {
-		return nil, locale.ErrInvalidFileSamplingSpecification
+		return nil, locale.ErrInvalidFileSamplingSpecMissingFiles
 	}
 
 	if base.scope.IsFolder() && so.NoOf.Folders == 0 {
-		return nil, locale.ErrInvalidFolderSamplingSpecification
+		return nil, locale.ErrInvalidFolderSamplingSpecMissingFolders
 	}
 
 	switch def.Type {

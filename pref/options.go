@@ -11,7 +11,8 @@ import (
 	"github.com/snivilised/traverse/tapable"
 )
 
-// 📚 package: pref contains user option definitions; do not use anything in kernel (cyclic)
+// 📦 pkg: pref - contains user option definitions; do not use anything
+// in kernel (cyclic).
 
 const (
 	badge = "badge: option-requester"

@@ -302,16 +302,16 @@ func assertMetrics(entry *naviTE, to *testOptions) {
 	Expect(to.result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
 		Equal(entry.expectedNoOf.files),
 		helpers.BecauseQuantity("Incorrect no of files",
-			int(entry.expectedNoOf.files),
-			int(to.result.Metrics().Count(enums.MetricNoFilesInvoked)),
+			int(entry.expectedNoOf.files),                              //nolint:gosec // ok
+			int(to.result.Metrics().Count(enums.MetricNoFilesInvoked)), //nolint:gosec // ok
 		),
 	)
 
 	Expect(to.result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
 		Equal(entry.expectedNoOf.folders),
 		helpers.BecauseQuantity("Incorrect no of folders",
-			int(entry.expectedNoOf.folders),
-			int(to.result.Metrics().Count(enums.MetricNoFoldersInvoked)),
+			int(entry.expectedNoOf.folders),                              //nolint:gosec // ok
+			int(to.result.Metrics().Count(enums.MetricNoFoldersInvoked)), //nolint:gosec // ok
 		),
 	)
 
@@ -321,7 +321,7 @@ func assertMetrics(entry *naviTE, to *testOptions) {
 		Equal(uint(sum)),
 		helpers.BecauseQuantity("Incorrect total no of child files",
 			sum,
-			int(to.result.Metrics().Count(enums.MetricNoChildFilesFound)),
+			int(to.result.Metrics().Count(enums.MetricNoChildFilesFound)), //nolint:gosec // ok
 		),
 	)
 }

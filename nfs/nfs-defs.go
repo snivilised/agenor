@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// 📚 package: nfs contains file system abstractions for navigation. Since
+// 📦 pkg: nfs - contains file system abstractions for navigation. Since
 // there are no standard write-able file system interfaces,
 // we need to define proprietary ones here in this package.
 // This is a low level package that should not use anything else in

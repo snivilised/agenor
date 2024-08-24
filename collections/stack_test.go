@@ -78,7 +78,7 @@ var _ = Describe("Stack", func() {
 
 				Expect(func() {
 					stack.MustPop()
-				}).To(PanicWith(collections.NewStackIsEmptyNativeError()))
+				}).To(PanicWith(collections.ErrStackIsEmpty))
 			})
 		})
 	})

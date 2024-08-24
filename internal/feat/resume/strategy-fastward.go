@@ -3,7 +3,7 @@ package resume
 import (
 	"context"
 
-	"github.com/pkg/errors"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/types"
 )
@@ -13,7 +13,7 @@ type fastwardGuardianSealer struct {
 
 func (g *fastwardGuardianSealer) Seal(top types.Link) error {
 	if top.Role() == enums.RoleFastward {
-		return errors.New("can't decorate, last item is sealed (fastward)")
+		return core.ErrGuardianCantDecorateItemSealed
 	}
 	return nil
 }

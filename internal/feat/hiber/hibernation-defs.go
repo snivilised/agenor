@@ -4,7 +4,7 @@ const (
 	badge = "badge: hibernator"
 )
 
-// 📚 package: hiber represents the facility to be able to start navigation in
+// 📦 pkg: hiber - represents the facility to be able to start navigation in
 // hibernated state, ie we navigate but dont invoke a client action,
 // until a certain condition occurs, specified by a node matching a
 // filter. This is what used to be called listening in extendio. We

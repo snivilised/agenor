@@ -93,8 +93,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 	)
 
 	if c.err != nil {
-		err := errors.Wrapf(c.err, locale.ErrWorkerPoolCreationFailed.Error())
-
+		err := errors.Wrap(c.err, locale.ErrWorkerPoolCreationFailed.Error())
 		return c.kc.Result(ctx, err), err
 	}
 	c.open(ctx)

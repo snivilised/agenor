@@ -22,7 +22,7 @@ import (
 // If vfs is not provided, then the path is ensured directly on the native file
 // system.
 
-func EnsurePathAt(path, defaultFilename string, perm int,
+func EnsurePathAt(path, defaultFilename string, perm os.FileMode,
 	vfs ...MkDirAllFS,
 ) (at string, err error) {
 	var (
@@ -38,10 +38,10 @@ func EnsurePathAt(path, defaultFilename string, perm int,
 
 	if len(vfs) > 0 {
 		if !vfs[0].DirectoryExists(directory) {
-			err = vfs[0].MkDirAll(directory, os.FileMode(perm))
+			err = vfs[0].MkDirAll(directory, perm)
 		}
 	} else {
-		err = os.MkdirAll(directory, os.FileMode(perm))
+		err = os.MkdirAll(directory, perm)
 	}
 
 	return filepath.Clean(filepath.Join(directory, file)), err

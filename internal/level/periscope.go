@@ -8,7 +8,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 )
 
-// 📚 package: level contains functionality concerned only with depth
+// 📦 pkg: level - contains functionality concerned only with depth
 // management.
 
 // Periscope: depth and scope manager
@@ -63,7 +63,7 @@ func (p *Periscope) Delta(root, current string) (err error) {
 	currentSize := len(strings.Split(current, string(filepath.Separator)))
 
 	if rootSize > currentSize {
-		return core.NewInvalidPeriscopeRootPathNativeError(root, current)
+		return core.NewInvalidPeriscopeRootPathError(root, current)
 	}
 
 	p.offset = currentSize - rootSize
@@ -72,7 +72,7 @@ func (p *Periscope) Delta(root, current string) (err error) {
 }
 
 func (p *Periscope) Descend(maximum uint) bool {
-	if maximum > 0 && p.depth > int(maximum) {
+	if maximum > 0 && p.depth > int(maximum) { //nolint:gosec // ok
 		return false
 	}
 

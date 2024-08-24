@@ -1,8 +1,6 @@
 package kernel
 
 import (
-	"errors"
-
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -99,7 +97,7 @@ func (g *guardian) Decorate(link types.Link) error {
 	top := g.container.chain[g.container.positions.Items()[0]]
 
 	if g.master.IsSealed(top) {
-		return errors.New("can't decorate, last item is sealed")
+		return core.ErrGuardianCantDecorateItemSealed
 	}
 
 	role := link.Role()
