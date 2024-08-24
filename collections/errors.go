@@ -1,13 +1,8 @@
 package collections
 
-import (
-	"fmt"
-)
+import "errors"
 
 // ❌ Stack Is Empty (internal error)
 
-// NewStackIsEmptyNativeError creates an untranslated error to
-// indicate stack is empty (internal error)
-func NewStackIsEmptyNativeError() error {
-	return fmt.Errorf("internal: stack is empty")
-}
+// ErrStackIsEmpty indicates stack is empty (internal error)
+var ErrStackIsEmpty = errors.New("internal: stack is empty")

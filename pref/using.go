@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/locale"
 )
 
 // Using contains essential properties required for a traversal. If
@@ -45,9 +46,7 @@ type Using struct {
 // Validate checks that the properties on Using are all valid.
 func (u Using) Validate() error {
 	if u.Root == "" {
-		return UsageError{
-			message: "missing root path",
-		}
+		return locale.ErrUsageMissingRootPath
 	}
 
 	return validate(&u)
@@ -70,15 +69,11 @@ type Was struct {
 // Validate checks that the properties on Using and Was are all valid.
 func (a Was) Validate() error { //nolint:gocritic // heavy, so what, low frequency
 	if a.From == "" {
-		return UsageError{
-			message: "missing restore from path",
-		}
+		return locale.ErrUsageMissingRestorePath
 	}
 
 	if a.Strategy == enums.ResumeStrategyUndefined {
-		return UsageError{
-			message: "missing subscription",
-		}
+		return locale.ErrUsageMissingSubscription
 	}
 
 	return validate(&a.Using)
@@ -86,15 +81,11 @@ func (a Was) Validate() error { //nolint:gocritic // heavy, so what, low frequen
 
 func validate(using *Using) error {
 	if using.Subscription == enums.SubscribeUndefined {
-		return UsageError{
-			message: "missing subscription",
-		}
+		return locale.ErrUsageMissingSubscription
 	}
 
 	if using.Handler == nil {
-		return UsageError{
-			message: "missing handler",
-		}
+		return locale.ErrUsageMissingHandler
 	}
 
 	return nil

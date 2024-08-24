@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/third/bus"
 )
 
@@ -107,12 +108,14 @@ var _ = Describe("Bus", func() {
 			})
 
 			When("with unknown topic", func() {
-				It("🧪 should: tbd", func() {
+				It("🧪 should: return broker topic not found error", func() {
 					ctx := context.Background()
 					err := b.Emit(ctx, topicCommentUpdated, "my comment")
 
 					Expect(err).NotTo(Succeed())
-					Expect(err.Error()).To(Equal("topics(comment.updated) not found"))
+					Expect(core.IsBrokerTopicNotFoundError(err)).To(BeTrue(),
+						"error is not BrokerTopicNotFound",
+					)
 				})
 			})
 		})
@@ -162,7 +165,9 @@ var _ = Describe("Bus", func() {
 					err := b.EmitWithOpts(ctx, topicCommentUpdated, "my comment")
 
 					Expect(err).NotTo(Succeed())
-					Expect(err.Error()).To(Equal("topics(comment.updated) not found"))
+					Expect(core.IsBrokerTopicNotFoundError(err)).To(BeTrue(),
+						"error is not BrokerTopicNotFound",
+					)
 				})
 			})
 		})

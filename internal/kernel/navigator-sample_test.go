@@ -14,7 +14,7 @@ import (
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
-	i18n "github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -748,7 +748,7 @@ var _ = Describe("Sampling", Ordered, func() {
 				expectedNoOf: quantities{
 					files: 24,
 				},
-				expectedErr: i18n.ErrInvalidFolderSamplingSpecification,
+				expectedErr: locale.ErrInvalidFolderSamplingSpecMissingFolders,
 			},
 			filter: &filterTE{ // 🧄
 				description: "glob: items with .flac suffix",
@@ -772,7 +772,7 @@ var _ = Describe("Sampling", Ordered, func() {
 				expectedNoOf: quantities{
 					files: 24,
 				},
-				expectedErr: i18n.ErrInvalidFileSamplingSpecification,
+				expectedErr: locale.ErrInvalidFileSamplingSpecMissingFiles,
 			},
 			filter: &filterTE{ // 🧄
 				description: "glob: items with .flac suffix",

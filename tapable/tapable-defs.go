@@ -1,6 +1,6 @@
 package tapable
 
-// 📚 package: tapable enables entities to expose hooks
+// 📦 pkg: tapable - enables entities to expose hooks
 
 type (
 	// Invokable

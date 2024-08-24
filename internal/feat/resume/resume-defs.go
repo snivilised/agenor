@@ -8,7 +8,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// 📚 package: resume depends on hiber, refine and persist.
+// 📦 pkg: resume - depends on hiber, refine and persist.
 // refine should also contain persistence concerns (actually
 // these may be internal modules, eg internal/serial/JSON).
 

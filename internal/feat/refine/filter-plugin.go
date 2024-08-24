@@ -1,6 +1,6 @@
 package refine
 
-// 📚 package: refine defines filters
+// 📦 pkg: refine - defines filters
 
 import (
 	"github.com/snivilised/traverse/core"

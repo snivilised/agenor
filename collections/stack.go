@@ -27,7 +27,7 @@ func (s *Stack[T]) Push(item T) {
 func (s *Stack[T]) Pop() (T, error) {
 	if s.IsEmpty() {
 		var zero T
-		return zero, NewStackIsEmptyNativeError()
+		return zero, ErrStackIsEmpty
 	}
 
 	item := s.pop()
@@ -38,7 +38,7 @@ func (s *Stack[T]) Pop() (T, error) {
 // MustPop
 func (s *Stack[T]) MustPop() T {
 	if s.IsEmpty() {
-		panic(NewStackIsEmptyNativeError())
+		panic(ErrStackIsEmpty)
 	}
 
 	return s.pop()
@@ -48,7 +48,7 @@ func (s *Stack[T]) MustPop() T {
 func (s *Stack[T]) Current() (T, error) {
 	if s.IsEmpty() {
 		var zero T
-		return zero, NewStackIsEmptyNativeError()
+		return zero, ErrStackIsEmpty
 	}
 
 	return s.content[s.top()], nil

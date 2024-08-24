@@ -12,7 +12,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// 📚 package: types package defines internal types
+// 📦 pkg: types - defines internal types
 
 type (
 	// Link represents a single decorator in the chain

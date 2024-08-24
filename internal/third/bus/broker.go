@@ -9,6 +9,9 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/locale"
 )
 
 type (
@@ -71,7 +74,7 @@ const (
 // New inits a new bus
 func New(g IDGenerator) (*Broker, error) {
 	if g == nil {
-		return nil, fmt.Errorf("bus: Next() id generator func can't be nil") // TODO: i18n
+		return nil, locale.ErrIDGeneratorFuncCantBeNil
 	}
 
 	return &Broker{
@@ -125,9 +128,7 @@ func (b *Broker) Emit(ctx context.Context,
 	handlers, ok := b.topics[topic]
 
 	if !ok {
-		return &BrokerError{
-			message: fmt.Sprintf("topics(%s) not found", topic), // TODO: i18n
-		}
+		return core.NewBrokerTopicNotFoundError(topic)
 	}
 
 	source, _ := ctx.Value(CtxKeySource).(string)
@@ -161,9 +162,7 @@ func (b *Broker) EmitWithOpts(ctx context.Context,
 	handlers, ok := b.topics[topic]
 
 	if !ok {
-		return &BrokerError{
-			message: fmt.Sprintf("topics(%s) not found", topic), // TODO: i18n
-		}
+		return core.NewBrokerTopicNotFoundError(topic)
 	}
 
 	e := Message{Topic: topic, Data: data}

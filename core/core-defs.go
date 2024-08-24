@@ -6,7 +6,7 @@ import (
 	"github.com/snivilised/traverse/measure"
 )
 
-// 📚 package: core contains universal definitions and handles user facing cross
+// 📦 pkg: core - contains universal definitions and handles user facing cross
 // cutting concerns try to keep to a minimum to reduce rippling changes.
 
 type (

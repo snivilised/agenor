@@ -36,7 +36,7 @@ func Musico(verbose bool, portions ...string) (msys fstest.MapFS, root string) {
 }
 
 func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {
-	repo := Repo(filepath.Join("..", "..", "test", "data", "MUSICO"))
+	repo := Repo(filepath.Join("test", "data", "MUSICO"))
 
 	if ensure(repo, provider, verbose) != nil {
 		return ""
@@ -53,7 +53,7 @@ func Provision(provider *IOProvider, verbose bool, portions ...string) (root str
 
 // ensure
 func ensure(root string, provider *IOProvider, verbose bool) error {
-	repo := Repo(filepath.Join("..", ".."))
+	repo := Repo("")
 	index := Path(repo, "test/data/musico-index.xml")
 	parent, _ := nfs.SplitParent(root)
 	builder := directoryTreeBuilder{

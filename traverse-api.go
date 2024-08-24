@@ -10,12 +10,12 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// 📚 package: traverse is the front line user facing interface to this module. It sits
+// 📦 pkg: traverse - is the front line user facing interface to this module. It sits
 // on the top of the code stack and is allowed to use anything, but nothing
 // else can depend on definitions here, except unit tests.
 
-// Director
 type (
+	// Director
 	Director interface {
 		// Extent represents the magnitude of the traversal; ie we can
 		// perform a full Prime run, or Resume from a previously

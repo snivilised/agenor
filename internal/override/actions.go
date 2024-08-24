@@ -6,7 +6,7 @@ import (
 	"github.com/snivilised/traverse/tapable"
 )
 
-// 📚 package: override provides a similar function to tapable except we
+// 📦 pkg: override - provides a similar function to tapable except we
 // use the name action to replace hook. The difference between the
 // two are that hooks allow for the client to customise core internal
 // behaviour, where as an action allows for internal behaviour to
