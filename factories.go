@@ -1,7 +1,7 @@
 package tv
 
 import (
-	"github.com/snivilised/lorax/boost"
+	"github.com/snivilised/pants"
 	"github.com/snivilised/traverse/core"
 )
 
@@ -11,7 +11,7 @@ func Walk() NavigatorFactory {
 }
 
 // Run requests a concurrent traversal of a directory tree.
-func Run(wg boost.WaitGroup) NavigatorFactory {
+func Run(wg pants.WaitGroup) NavigatorFactory {
 	return &runnerFac{
 		wg: wg,
 	}
@@ -56,7 +56,7 @@ func (f *walkerFac) Configure() Director {
 
 type runnerFac struct {
 	factory
-	wg boost.WaitGroup
+	wg pants.WaitGroup
 }
 
 // Configure

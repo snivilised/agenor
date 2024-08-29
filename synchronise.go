@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/snivilised/lorax/boost"
+	"github.com/snivilised/pants"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/locale"
@@ -46,10 +46,10 @@ func (t trunk) Conclude(result core.TraverseResult) {
 
 type concurrent struct {
 	trunk
-	wg        boost.WaitGroup
-	pool      *boost.ManifoldFuncPool[*TraverseInput, *TraverseOutput]
+	wg        pants.WaitGroup
+	pool      *pants.ManifoldFuncPool[*TraverseInput, *TraverseOutput]
 	decorator core.Client
-	inputCh   boost.SourceStreamW[*TraverseInput]
+	inputCh   pants.SourceStreamW[*TraverseInput]
 }
 
 func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) {
@@ -79,7 +79,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 		return nil
 	}
 
-	c.pool, c.err = boost.NewManifoldFuncPool(
+	c.pool, c.err = pants.NewManifoldFuncPool(
 		ctx, func(input *TraverseInput) (*TraverseOutput, error) {
 			err := input.Handler(input.Node)
 
@@ -88,8 +88,8 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 				Error: err,
 			}, err
 		}, c.wg,
-		boost.WithSize(c.o.Concurrency.NoW),
-		boost.WithOutput(OutputChSize, CheckCloseInterval, TimeoutOnSend),
+		pants.WithSize(c.o.Concurrency.NoW),
+		pants.WithOutput(OutputChSize, CheckCloseInterval, TimeoutOnSend),
 	)
 
 	if c.err != nil {
