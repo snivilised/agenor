@@ -1,7 +1,7 @@
 package tv
 
 import (
-	"github.com/snivilised/lorax/boost"
+	"github.com/snivilised/pants"
 	"github.com/snivilised/traverse/core"
 )
 
@@ -21,13 +21,13 @@ type (
 	// input stream. The client owns this channel and is responsible for
 	// closing it when done or invoking Conclude directly on the pool (See
 	// boost for more details).
-	TraverseJobStream = boost.JobStream[TraverseInput]
+	TraverseJobStream = pants.JobStream[TraverseInput]
 
 	// TraverseJobStreamR worker pool's read stream, pool reads from this channel.
-	TraverseJobStreamR = boost.JobStreamR[TraverseInput]
+	TraverseJobStreamR = pants.JobStreamR[TraverseInput]
 
 	// TraverseJobStreamW worker pool's write stream, client writes to this channel.
-	TraverseJobStreamW = boost.JobStreamW[TraverseInput]
+	TraverseJobStreamW = pants.JobStreamW[TraverseInput]
 
 	// TraverseOutput represents the output of a single job executed by the pool.
 	TraverseOutput struct {
@@ -47,11 +47,11 @@ type (
 	// safe to do so, which will be anytime after navigation is complete.
 	// The channel is only closed when there are no remaining outstanding jobs
 	// and all workers are idle.
-	TraverseOutputStream = boost.JobOutputStream[TraverseOutput]
+	TraverseOutputStream = pants.JobOutputStream[TraverseOutput]
 
 	// TraverseOutputStreamR worker pool's output stream read by the client.
-	TraverseOutputStreamR = boost.JobOutputStreamR[TraverseOutput]
+	TraverseOutputStreamR = pants.JobOutputStreamR[TraverseOutput]
 
 	// TraverseOutputStreamW worker pool's output stream written to by the pool.
-	TraverseOutputStreamW = boost.JobOutputStreamW[TraverseOutput]
+	TraverseOutputStreamW = pants.JobOutputStreamW[TraverseOutput]
 )
