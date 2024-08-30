@@ -33,7 +33,7 @@ func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error)
 }
 
 func (p *Plugin) Role() enums.Role {
-	return enums.RoleFastward
+	return enums.RoleHibernate
 }
 
 func (p *Plugin) Init(_ *types.PluginInit) error {

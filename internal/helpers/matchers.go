@@ -48,7 +48,7 @@ func (m *DirectoryContentsMatcher) FailureMessage(actual interface{}) string {
 	expected, _ := m.expected.([]string)
 	slices.Sort(expected)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nto match contents\n\t%v\n",
+	return fmt.Sprintf("❌ Expected\n\t%v\nto match contents\n\t%v\n",
 		strings.Join(names, ", "), strings.Join(expected, ", "),
 	)
 }
@@ -63,7 +63,111 @@ func (m *DirectoryContentsMatcher) NegatedFailureMessage(actual interface{}) str
 	expected, _ := m.expected.([]string)
 	slices.Sort(expected)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match contents\n\t%v\n",
+	return fmt.Sprintf("❌ Expected\n\t%v\nNOT to match contents\n\t%v\n",
 		strings.Join(names, ", "), strings.Join(expected, ", "),
+	)
+}
+
+type InvokeNodeMatcher struct {
+	expected interface{}
+}
+
+func HaveInvokedNode(expected interface{}) GomegaMatcher {
+	return &InvokeNodeMatcher{
+		expected: expected,
+	}
+}
+
+func (m *InvokeNodeMatcher) Match(actual interface{}) (bool, error) {
+	recording, ok := actual.(RecordingMap)
+	if !ok {
+		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
+	}
+
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return false, fmt.Errorf("matcher expected string (%T)", actual)
+	}
+
+	_, found := recording[mandatory]
+
+	if !found {
+		return false, fmt.Errorf("❌ missing invoke for node: '%v'", mandatory)
+	}
+
+	return true, nil
+}
+
+func (m *InvokeNodeMatcher) FailureMessage(_ interface{}) string {
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
+		mandatory,
+	)
+}
+
+func (m *InvokeNodeMatcher) NegatedFailureMessage(_ interface{}) string {
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode NOT to be invoked\n",
+		mandatory,
+	)
+}
+
+type NotInvokeNodeMatcher struct {
+	expected interface{}
+}
+
+func HaveNotInvokedNode(expected interface{}) GomegaMatcher {
+	return &NotInvokeNodeMatcher{
+		expected: expected,
+	}
+}
+
+func (m *NotInvokeNodeMatcher) Match(actual interface{}) (bool, error) {
+	recording, ok := actual.(RecordingMap)
+	if !ok {
+		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
+	}
+
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return false, fmt.Errorf("matcher expected string (%T)", actual)
+	}
+
+	_, found := recording[mandatory]
+
+	if found {
+		return false, fmt.Errorf("❌ prohibited invoke occurred for node: '%v'", mandatory)
+	}
+
+	return true, nil
+}
+
+func (m *NotInvokeNodeMatcher) FailureMessage(_ interface{}) string {
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode to NOT be invoked\n",
+		mandatory,
+	)
+}
+
+func (m *NotInvokeNodeMatcher) NegatedFailureMessage(_ interface{}) string {
+	mandatory, ok := m.expected.(string)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
+		mandatory,
 	)
 }

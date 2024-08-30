@@ -110,8 +110,9 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	order := manifest(active)
 	artefacts.Mediator.Arrange(active, order)
 	pi := &types.PluginInit{
-		Actions: actions,
-		O:       o,
+		Actions:  actions,
+		O:        o,
+		Controls: artefacts.Mediator.Controls(),
 	}
 
 	for _, p := range plugins {

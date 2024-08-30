@@ -14,9 +14,7 @@ type (
 
 var (
 	manifestOrder = []enums.Role{
-		enums.RoleFastward,
-		enums.RoleClientHiberWake,
-		enums.RoleClientHiberSleep,
+		enums.RoleHibernate,
 		enums.RoleClientFilter,
 		enums.RoleSampler,
 	}

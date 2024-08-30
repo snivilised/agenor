@@ -91,35 +91,38 @@ var (
 	NewSampleFilter = refine.NewSampleFilter
 
 	// 🌀 pref
-	IfOption                  = pref.IfOption
-	IfOptionF                 = pref.IfOptionF
-	WithCPU                   = pref.WithCPU
-	WithDepth                 = pref.WithDepth
-	WithFaultHandler          = pref.WithFaultHandler
-	WithFilter                = pref.WithFilter
-	WithHibernationWake       = pref.WithHibernationWake
-	WithHibernationSleep      = pref.WithHibernationSleep
-	WithHibernationBehaviour  = pref.WithHibernationBehaviour
-	WithHookQueryStatus       = pref.WithHookQueryStatus
-	WithHookReadDirectory     = pref.WithHookReadDirectory
-	WithHookSort              = pref.WithHookSort
-	WithHookCaseSensitiveSort = pref.WithHookCaseSensitiveSort
-	WithHookFileSubPath       = pref.WithHookFileSubPath
-	WithHookFolderSubPath     = pref.WithHookFolderSubPath
-	WithNavigationBehaviours  = pref.WithNavigationBehaviours
-	WithOnAscend              = pref.WithOnAscend
-	WithOnBegin               = pref.WithOnBegin
-	WithOnDescend             = pref.WithOnDescend
-	WithOnEnd                 = pref.WithOnEnd
-	WithOnStart               = pref.WithOnStart
-	WithOnStop                = pref.WithOnStop
-	WithPanicHandler          = pref.WithPanicHandler
-	WithNoRecurse             = pref.WithNoRecurse
-	WithNoW                   = pref.WithNoW
-	WithSampling              = pref.WithSampling
-	WithSkipHandler           = pref.WithSkipHandler
-	WithSortBehaviour         = pref.WithSortBehaviour
-	WithSubPathBehaviour      = pref.WithSubPathBehaviour
+	IfOption                               = pref.IfOption
+	IfOptionF                              = pref.IfOptionF
+	WithCPU                                = pref.WithCPU
+	WithDepth                              = pref.WithDepth
+	WithFaultHandler                       = pref.WithFaultHandler
+	WithFilter                             = pref.WithFilter
+	WithHibernationBehaviourExclusiveWake  = pref.WithHibernationBehaviourExclusiveWake
+	WithHibernationBehaviourInclusiveSleep = pref.WithHibernationBehaviourInclusiveSleep
+	WithHibernationFilterSleep             = pref.WithHibernationFilterSleep
+	WithHibernationFilterWake              = pref.WithHibernationFilterWake
+	WithHibernationOptions                 = pref.WithHibernationOptions
+	WithHibernationBehaviour               = pref.WithHibernationOptions
+	WithHookQueryStatus                    = pref.WithHookQueryStatus
+	WithHookReadDirectory                  = pref.WithHookReadDirectory
+	WithHookSort                           = pref.WithHookSort
+	WithHookCaseSensitiveSort              = pref.WithHookCaseSensitiveSort
+	WithHookFileSubPath                    = pref.WithHookFileSubPath
+	WithHookFolderSubPath                  = pref.WithHookFolderSubPath
+	WithNavigationBehaviours               = pref.WithNavigationBehaviours
+	WithOnAscend                           = pref.WithOnAscend
+	WithOnBegin                            = pref.WithOnBegin
+	WithOnDescend                          = pref.WithOnDescend
+	WithOnEnd                              = pref.WithOnEnd
+	WithOnStart                            = pref.WithOnStart
+	WithOnStop                             = pref.WithOnStop
+	WithPanicHandler                       = pref.WithPanicHandler
+	WithNoRecurse                          = pref.WithNoRecurse
+	WithNoW                                = pref.WithNoW
+	WithSampling                           = pref.WithSampling
+	WithSkipHandler                        = pref.WithSkipHandler
+	WithSortBehaviour                      = pref.WithSortBehaviour
+	WithSubPathBehaviour                   = pref.WithSubPathBehaviour
 )
 
 // sub package description:

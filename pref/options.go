@@ -38,7 +38,7 @@ type (
 
 		// Hibernation
 		//
-		Hibernate HibernateOptions
+		Hibernate core.HibernateOptions
 
 		// Concurrency contains options relating concurrency
 		//
@@ -152,6 +152,12 @@ func DefaultOptions() *Options {
 	nopLogger := &slog.Logger{}
 
 	o := &Options{
+		Hibernate: core.HibernateOptions{
+			Behaviour: core.HibernationBehaviour{
+				InclusiveWake:  true,
+				InclusiveSleep: false,
+			},
+		},
 		Behaviours: NavigationBehaviours{
 			SubPath: SubPathBehaviour{
 				KeepTrailingSep: true,
@@ -159,10 +165,6 @@ func DefaultOptions() *Options {
 			Sort: SortBehaviour{
 				IsCaseSensitive:     false,
 				DirectoryEntryOrder: enums.DirectoryContentsOrderFoldersFirst,
-			},
-			Hibernation: HibernationBehaviour{
-				InclusiveStart: true,
-				InclusiveStop:  false,
 			},
 		},
 		Concurrency: ConcurrencyOptions{

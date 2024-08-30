@@ -9,16 +9,14 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[HibernationUndefined-0]
-	_ = x[HibernationSleep-1]
-	_ = x[HibernationFastward-2]
-	_ = x[HibernationPending-3]
-	_ = x[HibernationAwake-4]
-	_ = x[HibernationRetired-5]
+	_ = x[HibernationPending-1]
+	_ = x[HibernationActive-2]
+	_ = x[HibernationRetired-3]
 }
 
-const _Hibernation_name = "undefinedsleep-hibernationfastward-hibernationpending-hibernationawake-hibernationretired-hibernation"
+const _Hibernation_name = "undefinedpending-hibernationactive-hibernationretired-hibernation"
 
-var _Hibernation_index = [...]uint8{0, 9, 26, 46, 65, 82, 101}
+var _Hibernation_index = [...]uint8{0, 9, 28, 46, 65}
 
 func (i Hibernation) String() string {
 	if i >= Hibernation(len(_Hibernation_index)-1) {

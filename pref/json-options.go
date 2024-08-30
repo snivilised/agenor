@@ -1,5 +1,9 @@
 package pref
 
+import (
+	"github.com/snivilised/traverse/core"
+)
+
 // JSONOptions defines the JSON persist format for options.
 type JSONOptions struct {
 	// all fields should be flattened out here when implemented
@@ -19,7 +23,7 @@ type JSONOptions struct {
 
 	// Hibernation
 	//
-	Hibernate HibernateOptions
+	Hibernate core.HibernateOptions
 
 	// Concurrency contains options relating concurrency
 	//

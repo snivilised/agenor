@@ -1,5 +1,9 @@
 package pref
 
+import (
+	"github.com/snivilised/traverse/core"
+)
+
 type CoreOptions struct {
 	// Behaviours collection of behaviours that adjust the way navigation occurs,
 	// that can be tweaked by the client.
@@ -16,7 +20,7 @@ type CoreOptions struct {
 
 	// Hibernation
 	//
-	Hibernate HibernateOptions
+	Hibernate core.HibernateOptions
 
 	// Concurrency contains options relating concurrency
 	//
