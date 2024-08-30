@@ -7,8 +7,8 @@ import (
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/level"
+	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/pref"
 )
 

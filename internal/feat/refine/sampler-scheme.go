@@ -5,9 +5,9 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )

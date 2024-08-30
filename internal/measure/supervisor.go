@@ -1,11 +1,12 @@
 package measure
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 )
 
 type (
-	Metrics        map[enums.Metric]Metric
+	Metrics        map[enums.Metric]core.Metric
 	MutableMetrics map[enums.Metric]MutableMetric
 
 	Supervisor struct {
@@ -46,7 +47,7 @@ func (s *Supervisor) Many(metrics ...enums.Metric) MutableMetrics {
 	return result
 }
 
-func (s *Supervisor) Count(mt enums.Metric) MetricValue {
+func (s *Supervisor) Count(mt enums.Metric) core.MetricValue {
 	if metric, exists := s.metrics[mt]; exists {
 		return metric.Value()
 	}

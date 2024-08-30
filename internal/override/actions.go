@@ -2,7 +2,7 @@ package override
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/measure"
+	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/tapable"
 )
 

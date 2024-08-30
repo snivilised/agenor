@@ -2,8 +2,6 @@ package core
 
 import (
 	"time"
-
-	"github.com/snivilised/traverse/measure"
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
@@ -28,7 +26,7 @@ type (
 
 	// TraverseResult
 	TraverseResult interface {
-		Metrics() measure.Reporter
+		Metrics() Reporter
 		Session() Session
 		Error() error
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/override"
-	"github.com/snivilised/traverse/measure"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
@@ -108,7 +108,7 @@ type (
 // KernelResult is the internal representation of core.TraverseResult
 type KernelResult struct {
 	session  core.Session
-	reporter measure.Reporter
+	reporter core.Reporter
 	complete bool
 	err      error
 }
@@ -140,7 +140,7 @@ func (r *KernelResult) Session() core.Session {
 	return r.session
 }
 
-func (r *KernelResult) Metrics() measure.Reporter {
+func (r *KernelResult) Metrics() core.Reporter {
 	return r.reporter
 }
 
