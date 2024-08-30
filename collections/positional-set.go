@@ -92,6 +92,10 @@ func (ps *PositionalSet[T]) Contains(item T) bool {
 	return ps.items[item]
 }
 
+func (ps *PositionalSet[T]) Top() T {
+	return ps.Items()[0]
+}
+
 // Items returns all items in the set, in the defined order
 func (ps *PositionalSet[T]) Items() []T {
 	if !ps.invalidated {

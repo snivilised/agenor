@@ -85,8 +85,6 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	g.container.invoker = NodeInvoker(func(node *core.Node, inspection core.Inspection) error {
 		return g.iterate(node, inspection)
 	})
-
-	g.container.positions.Items()
 }
 
 // role indicates the guise under which the decorator is being applied.
@@ -94,7 +92,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 // sealed. If an attempt is made to Decorate a sealed decorator,
 // an error is returned.
 func (g *guardian) Decorate(link types.Link) error {
-	top := g.container.chain[g.container.positions.Items()[0]]
+	top := g.container.chain[g.container.positions.Top()]
 
 	if g.master.IsSealed(top) {
 		return core.ErrGuardianCantDecorateItemSealed
