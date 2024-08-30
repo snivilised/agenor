@@ -8,21 +8,13 @@ type Hibernation uint
 const (
 	HibernationUndefined Hibernation = iota // undefined
 
-	// HibernationSleep listen not active, callback always invoked (subject to filtering)
-	//
-	HibernationSleep // sleep-hibernation
-
-	// HibernationFastward listen used to resume by fast-forwarding
-	//
-	HibernationFastward // fastward-hibernation
-
 	// HibernationPending conditional listening is awaiting activation
 	//
 	HibernationPending // pending-hibernation
 
-	// HibernationAwake conditional listening is active (callback is invoked)
+	// HibernationActive conditional listening is active (callback is invoked)
 	//
-	HibernationAwake // awake-hibernation
+	HibernationActive // active-hibernation
 
 	// HibernationRetired conditional listening is now deactivated
 	//

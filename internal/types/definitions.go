@@ -5,6 +5,7 @@ import (
 	"io/fs"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/override"
@@ -49,8 +50,9 @@ type (
 
 	// PluginInit
 	PluginInit struct {
-		Actions *override.Actions
-		O       *pref.Options
+		Actions  *override.Actions
+		O        *pref.Options
+		Controls *cycle.Controls
 	}
 
 	// Mediator controls interactions between different entities of
@@ -61,6 +63,7 @@ type (
 		Navigate(ctx context.Context) (core.TraverseResult, error)
 		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
 		Supervisor() *measure.Supervisor
+		Controls() *cycle.Controls
 	}
 
 	// Resources are dependencies required for navigation

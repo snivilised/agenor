@@ -80,6 +80,10 @@ tasks:
     cmds:
       - go test ./core
 
+  tf-hiber:
+    cmds:
+      - go test ./internal/feat/hiber
+
   toc:
     cmds:
       - go test ./collections

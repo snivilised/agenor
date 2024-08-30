@@ -12,7 +12,7 @@ type fastwardGuardianSealer struct {
 }
 
 func (g *fastwardGuardianSealer) Seal(top types.Link) error {
-	if top.Role() == enums.RoleFastward {
+	if top.Role() == enums.RoleHibernate {
 		return core.ErrGuardianCantDecorateItemSealed
 	}
 	return nil

@@ -118,3 +118,7 @@ func (m *mediator) Invoke(node *core.Node, inspection core.Inspection) error {
 func (m *mediator) Supervisor() *measure.Supervisor {
 	return m.resources.Supervisor
 }
+
+func (m *mediator) Controls() *cycle.Controls {
+	return &m.o.Binder.Controls
+}

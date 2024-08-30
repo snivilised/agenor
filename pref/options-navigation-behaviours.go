@@ -1,7 +1,6 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 )
 
@@ -53,10 +52,6 @@ type (
 		//
 		Sort SortBehaviour
 
-		// Hibernation, behaviours relating to listen functionality.
-		//
-		Hibernation HibernationBehaviour
-
 		// Cascade controls how deep to navigate
 		//
 		Cascade CascadeBehaviour
@@ -82,30 +77,6 @@ func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 func WithSortBehaviour(sb *SortBehaviour) Option {
 	return func(o *Options) error {
 		o.Behaviours.Sort = *sb
-
-		return nil
-	}
-}
-
-func WithHibernationWake(wake *core.FilterDef) Option {
-	return func(o *Options) error {
-		o.Hibernate.Wake = wake
-
-		return nil
-	}
-}
-
-func WithHibernationSleep(sleep *core.FilterDef) Option {
-	return func(o *Options) error {
-		o.Hibernate.Sleep = sleep
-
-		return nil
-	}
-}
-
-func WithHibernationBehaviour(hb *HibernationBehaviour) Option {
-	return func(o *Options) error {
-		o.Behaviours.Hibernation = *hb
 
 		return nil
 	}

@@ -9,11 +9,16 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	if o.Hibernate.Wake != nil {
+	if o.Hibernate.IsHibernateActive() {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				Mediator:      mediator,
-				ActivatedRole: enums.RoleClientHiberSleep, // TODO: or wake; to be resolved
+				ActivatedRole: enums.RoleHibernate,
+			},
+			profile: &simple{
+				common: common{
+					ho: &o.Hibernate,
+				},
 			},
 		}
 	}
@@ -23,6 +28,7 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 
 type Plugin struct {
 	kernel.BasePlugin
+	profile profile
 }
 
 func (p *Plugin) Name() string {
@@ -36,11 +42,13 @@ func (p *Plugin) Register(kc types.KernelController) error {
 }
 
 func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error) {
-	_, _ = node, inspection
-
-	return true, nil
+	return p.profile.next(node, inspection)
 }
 
-func (p *Plugin) Init(_ *types.PluginInit) error {
+func (p *Plugin) Init(pi *types.PluginInit) error {
+	if err := p.profile.init(pi.Controls); err != nil {
+		return err
+	}
+
 	return p.Mediator.Decorate(p)
 }

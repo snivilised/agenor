@@ -11,15 +11,13 @@ func _() {
 	_ = x[RoleUndefined-0]
 	_ = x[RoleAnchor-1]
 	_ = x[RoleClientFilter-2]
-	_ = x[RoleClientHiberWake-3]
-	_ = x[RoleClientHiberSleep-4]
-	_ = x[RoleFastward-5]
-	_ = x[RoleSampler-6]
+	_ = x[RoleHibernate-3]
+	_ = x[RoleSampler-4]
 }
 
-const _Role_name = "undefined-roleanchor-roleclient-filter-roleclient-hiber-wake-roleclient-hiber-sleep-rolefastward-rolesampler-role"
+const _Role_name = "undefined-roleanchor-roleclient-filter-rolehibernate-rolesampler-role"
 
-var _Role_index = [...]uint8{0, 14, 25, 43, 65, 88, 101, 113}
+var _Role_index = [...]uint8{0, 14, 25, 43, 57, 69}
 
 func (i Role) String() string {
 	if i >= Role(len(_Role_index)-1) {
