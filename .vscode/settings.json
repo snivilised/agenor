@@ -46,6 +46,7 @@
     "golangci",
     "gomega",
     "gomnd",
+    "gomod",
     "goreleaser",
     "gosec",
     "gosimple",
