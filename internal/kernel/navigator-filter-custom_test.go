@@ -108,8 +108,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 
 		// === universal =====================================================
 
-		// custom not implemented yet
-		XEntry(nil, &filterTE{
+		Entry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(any scope): custom filter",
 				relative:     "RETRO-WAVE",
@@ -124,8 +123,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			scope:       enums.ScopeFile,
 		}),
 
-		// negate tot implemented yet
-		XEntry(nil, &filterTE{
+		Entry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(any scope): custom filter (negate)",
 				relative:     "RETRO-WAVE",
@@ -141,8 +139,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			negate:      true,
 		}),
 
-		// custom not implemented yet
-		XEntry(nil, &filterTE{
+		Entry(nil, &filterTE{
 			naviTE: naviTE{
 				given:        "universal(undefined scope): custom filter",
 				relative:     "RETRO-WAVE",

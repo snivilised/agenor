@@ -12,7 +12,7 @@ import (
 )
 
 func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
-	if o.Filter.IsFilteringActive() || o.Filter.IsCustomFilteringActive() {
+	if o.Filter.IsFilteringActive() {
 		return &Plugin{
 			BasePlugin: kernel.BasePlugin{
 				O:             o,

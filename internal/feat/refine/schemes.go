@@ -83,17 +83,7 @@ func (f *nativeScheme) create() error {
 }
 
 func (f *nativeScheme) next(node *core.Node, _ core.Inspection) (bool, error) {
-	matched := f.filter.IsMatch(node)
-
-	if !matched {
-		filteredOutMetric := lo.Ternary(node.IsFolder(),
-			enums.MetricNoFoldersFilteredOut,
-			enums.MetricNoFilesFilteredOut,
-		)
-		f.crate.Mums[filteredOutMetric].Tick()
-	}
-
-	return matched, nil
+	return matchNext(f.filter, node, f.crate)
 }
 
 type childScheme struct {
@@ -214,15 +204,31 @@ type customScheme struct {
 }
 
 func (f *customScheme) create() error {
-	return f.o.Filter.Custom.Validate()
-}
+	f.filter = f.o.Filter.Custom
 
-func (f *customScheme) next(_ *core.Node, _ core.Inspection) (bool, error) {
 	if f.o.Filter.Sink != nil {
 		f.o.Filter.Sink(pref.FilterReply{
 			Node: f.filter,
 		})
 	}
 
-	return false, nil
+	return f.filter.Validate()
+}
+
+func (f *customScheme) next(node *core.Node, _ core.Inspection) (bool, error) {
+	return matchNext(f.filter, node, f.crate)
+}
+
+func matchNext(filter core.TraverseFilter, node *core.Node, crate *measure.Crate) (bool, error) {
+	matched := filter.IsMatch(node)
+
+	if !matched {
+		filteredOutMetric := lo.Ternary(node.IsFolder(),
+			enums.MetricNoFoldersFilteredOut,
+			enums.MetricNoFilesFilteredOut,
+		)
+		crate.Mums[filteredOutMetric].Tick()
+	}
+
+	return matched, nil
 }
