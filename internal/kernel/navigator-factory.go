@@ -6,23 +6,17 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-type facilities struct {
-}
-
-func (f *facilities) Inject(pref.ActiveState) {}
-
 func New(using *pref.Using, o *pref.Options,
 	sealer types.GuardianSealer,
 	resources *types.Resources,
 ) *Artefacts {
 	impl := newImpl(using, o, resources)
-	controller := &NavigationController{
-		Med: newMediator(using, o, impl, sealer, resources),
-	}
+	med := newMediator(using, o, impl, sealer, resources)
+	controller := newNavigationController(med)
 
 	return &Artefacts{
 		Kontroller: controller,
-		Mediator:   controller.Med,
+		Mediator:   med,
 		Resources:  resources,
 	}
 }

@@ -8,7 +8,13 @@ import (
 )
 
 type NavigationController struct {
-	Med *mediator
+	med *mediator
+}
+
+func newNavigationController(med *mediator) *NavigationController {
+	return &NavigationController{
+		med: med,
+	}
 }
 
 func (nc *NavigationController) Register(types.Plugin) error {
@@ -16,28 +22,28 @@ func (nc *NavigationController) Register(types.Plugin) error {
 }
 
 func (nc *NavigationController) Ignite(ignition *types.Ignition) {
-	nc.Med.Ignite(ignition)
+	nc.med.Ignite(ignition)
 }
 
 func (nc *NavigationController) Conclude(result core.TraverseResult) {
-	nc.Med.Conclude(result)
+	nc.med.Conclude(result)
 }
 
 func (nc *NavigationController) Impl() NavigatorImpl {
-	return nc.Med.impl
+	return nc.med.impl
 }
 
 func (nc *NavigationController) Navigate(ctx context.Context,
 ) (core.TraverseResult, error) {
-	return nc.Med.Navigate(ctx)
+	return nc.med.Navigate(ctx)
 }
 
 func (nc *NavigationController) Result(ctx context.Context,
 	err error,
 ) *types.KernelResult {
-	return nc.Med.impl.Result(ctx, err)
+	return nc.med.impl.Result(ctx, err)
 }
 
 func (nc *NavigationController) Mediator() types.Mediator {
-	return nc.Med
+	return nc.med
 }

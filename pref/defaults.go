@@ -42,9 +42,9 @@ func CaseSensitiveSortHook(entries []fs.DirEntry, _ ...any) {
 	})
 }
 
-// CaseInSensitiveSortHook hook function for case insensitive directory traversal. A
+// DefaultCaseInSensitiveSortHook hook function for case insensitive directory traversal. A
 // directory of "a" will be visited before a sibling directory "B".
-func CaseInSensitiveSortHook(entries []fs.DirEntry, _ ...any) {
+func DefaultCaseInSensitiveSortHook(entries []fs.DirEntry, _ ...any) {
 	sort.Slice(entries, func(i, j int) bool {
 		return strings.ToLower(entries[i].Name()) < strings.ToLower(entries[j].Name())
 	})
@@ -75,8 +75,8 @@ func RootItemSubPathHook(info *core.SubPathInfo) string {
 	return difference(info.Root, info.Node.Path)
 }
 
-// RootParentSubPathHook
-func RootParentSubPathHook(info *core.SubPathInfo) string {
+// DefaultSubPathHook
+func DefaultSubPathHook(info *core.SubPathInfo) string {
 	if info.Node.Extension.Scope == enums.ScopeTop {
 		return lo.Ternary(info.KeepTrailingSep, string(filepath.Separator), "")
 	}

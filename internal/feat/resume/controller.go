@@ -7,7 +7,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/types"
-	i18n "github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -65,7 +65,7 @@ func newStrategy(was *pref.Was, kc types.KernelController) (strategy resumeStrat
 	driver, ok := kc.(kernel.NavigatorDriver)
 
 	if !ok {
-		return nil, i18n.ErrInternalFailedToGetNavigatorDriver
+		return nil, locale.ErrInternalFailedToGetNavigatorDriver
 	}
 
 	base := baseStrategy{

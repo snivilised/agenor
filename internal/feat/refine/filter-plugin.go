@@ -31,7 +31,7 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 type Plugin struct {
 	kernel.BasePlugin
 	sink   pref.FilteringSink
-	owner  measure.Owned
+	crate  measure.Crate
 	scheme scheme
 }
 
@@ -49,14 +49,14 @@ func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error)
 }
 
 func (p *Plugin) Init(pi *types.PluginInit) error {
-	p.owner.Mums = p.Mediator.Supervisor().Many(
+	p.crate.Mums = p.Mediator.Supervisor().Many(
 		enums.MetricNoFoldersFilteredOut,
 		enums.MetricNoFilesFilteredOut,
 		enums.MetricNoChildFilesFound,
 		enums.MetricNoChildFilesFilteredOut,
 	)
 
-	p.scheme.init(pi, &p.owner)
+	p.scheme.init(pi, &p.crate)
 
 	return p.Mediator.Decorate(p)
 }

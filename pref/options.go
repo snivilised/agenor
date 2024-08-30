@@ -188,7 +188,7 @@ func newHooks() tapable.Hooks {
 		FileSubPath: tapable.NewHookCtrl[
 			core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
 		](
-			RootParentSubPathHook,
+			DefaultSubPathHook,
 			tapable.GetSubPathBroadcaster,
 			tapable.SubPathAttacher,
 		),
@@ -196,7 +196,7 @@ func newHooks() tapable.Hooks {
 		FolderSubPath: tapable.NewHookCtrl[
 			core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
 		](
-			RootParentSubPathHook,
+			DefaultSubPathHook,
 			tapable.GetSubPathBroadcaster,
 			tapable.SubPathAttacher,
 		),
@@ -220,7 +220,7 @@ func newHooks() tapable.Hooks {
 		Sort: tapable.NewHookCtrl[
 			core.SortHook, core.ChainSortHook, tapable.SortBroadcaster,
 		](
-			CaseInSensitiveSortHook,
+			DefaultCaseInSensitiveSortHook,
 			tapable.GetSortBroadcaster,
 			tapable.SortAttacher,
 		),
