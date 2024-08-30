@@ -6,6 +6,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"
 )
@@ -19,7 +20,7 @@ func newContents(behaviour *pref.SortBehaviour,
 		hook:      hook,
 	}
 
-	contents.arrange(entries)
+	contents.files, contents.folders = nfs.Separate(entries)
 
 	return &contents
 }
@@ -87,23 +88,6 @@ func (c *Contents) Sort(et enums.EntryType) {
 func (c *Contents) clear() {
 	c.files = []fs.DirEntry{}
 	c.folders = []fs.DirEntry{}
-}
-
-func (c *Contents) arrange(entries []fs.DirEntry) {
-	grouped := lo.GroupBy(entries, func(entry fs.DirEntry) bool {
-		return entry.IsDir()
-	})
-
-	c.folders = grouped[true]
-	c.files = grouped[false]
-
-	if c.folders == nil {
-		c.folders = []fs.DirEntry{}
-	}
-
-	if c.files == nil {
-		c.files = []fs.DirEntry{}
-	}
 }
 
 func newEmptyContents(prealloc ...*pref.EntryQuantities) *Contents {

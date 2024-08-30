@@ -18,13 +18,13 @@ type (
 // last in the chain and contains the original client's handler.
 type anchor struct {
 	client core.Client
-	owner  measure.Owned
+	crate  measure.Crate
 }
 
 func (t *anchor) Next(node *core.Node, _ core.Inspection) (bool, error) {
 	if metric := lo.Ternary(node.IsFolder(),
-		t.owner.Mums[enums.MetricNoFoldersInvoked],
-		t.owner.Mums[enums.MetricNoFilesInvoked],
+		t.crate.Mums[enums.MetricNoFoldersInvoked],
+		t.crate.Mums[enums.MetricNoFilesInvoked],
 	); metric != nil {
 		metric.Tick()
 	}
@@ -55,7 +55,7 @@ func newGuardian(client core.Client,
 ) *guardian {
 	anchor := &anchor{
 		client: client,
-		owner: measure.Owned{
+		crate: measure.Crate{
 			Mums: mums,
 		},
 	}

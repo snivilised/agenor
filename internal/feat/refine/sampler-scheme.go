@@ -15,7 +15,7 @@ import (
 type (
 	scheme interface {
 		create() error
-		init(pi *types.PluginInit, owner *measure.Owned)
+		init(pi *types.PluginInit, crate *measure.Crate)
 		next(node *core.Node, inspection core.Inspection) (bool, error)
 	}
 )
@@ -53,11 +53,11 @@ func newScheme(o *pref.Options) scheme {
 
 type common struct {
 	o     *pref.Options
-	owner *measure.Owned
+	crate *measure.Crate
 }
 
-func (f *common) init(_ *types.PluginInit, owned *measure.Owned) {
-	f.owner = owned
+func (f *common) init(_ *types.PluginInit, crate *measure.Crate) {
+	f.crate = crate
 }
 
 type nativeScheme struct {
@@ -90,7 +90,7 @@ func (f *nativeScheme) next(node *core.Node, _ core.Inspection) (bool, error) {
 			enums.MetricNoFoldersFilteredOut,
 			enums.MetricNoFilesFilteredOut,
 		)
-		f.owner.Mums[filteredOutMetric].Tick()
+		f.crate.Mums[filteredOutMetric].Tick()
 	}
 
 	return matched, nil
@@ -118,8 +118,8 @@ func (f *childScheme) create() error {
 	return nil
 }
 
-func (f *childScheme) init(pi *types.PluginInit, owner *measure.Owned) {
-	f.common.init(pi, owner)
+func (f *childScheme) init(pi *types.PluginInit, crate *measure.Crate) {
+	f.common.init(pi, crate)
 
 	// [KEEP-FILTER-IN-SYNC] keep this in sync with the default
 	// behaviour in builders.override.Actions
@@ -133,7 +133,7 @@ func (f *childScheme) init(pi *types.PluginInit, owner *measure.Owned) {
 			mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))
 
 			filteredOut := len(files) - len(matching)
-			f.owner.Mums[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut))
+			f.crate.Mums[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut))
 		},
 	)
 }
@@ -174,8 +174,8 @@ func (f *samplerScheme) create() error {
 	return nil
 }
 
-func (f *samplerScheme) init(pi *types.PluginInit, owner *measure.Owned) {
-	f.common.init(pi, owner)
+func (f *samplerScheme) init(pi *types.PluginInit, crate *measure.Crate) {
+	f.common.init(pi, crate)
 
 	// [KEEP-FILTER-IN-SYNC] keep this in sync with the default
 	// behaviour in builders.override.Actions
@@ -198,8 +198,8 @@ func (f *samplerScheme) next(node *core.Node, inspection core.Inspection) (bool,
 		result := len(matching) > 0
 
 		lo.Ternary(result,
-			f.owner.Mums[enums.MetricNoChildFilesFound],
-			f.owner.Mums[enums.MetricNoChildFilesFilteredOut],
+			f.crate.Mums[enums.MetricNoChildFilesFound],
+			f.crate.Mums[enums.MetricNoChildFilesFilteredOut],
 		).Times(uint(len(inspection.Contents().Files())))
 
 		return result, nil

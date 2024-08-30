@@ -13,7 +13,7 @@ type (
 		metrics Metrics
 	}
 
-	Owned struct {
+	Crate struct {
 		Mums MutableMetrics
 	}
 )
