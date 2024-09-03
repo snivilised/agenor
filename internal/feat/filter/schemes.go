@@ -1,10 +1,11 @@
-package refine
+package filter
 
 import (
 	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
@@ -66,7 +67,7 @@ type nativeScheme struct {
 }
 
 func (f *nativeScheme) create() error {
-	filter, err := newNodeFilter(f.o.Filter.Node, &f.o.Filter)
+	filter, err := filtering.NewNodeFilter(f.o.Filter.Node, &f.o.Filter)
 	if err != nil {
 		return err
 	}
@@ -92,7 +93,7 @@ type childScheme struct {
 }
 
 func (f *childScheme) create() error {
-	filter, err := newChildFilter(f.o.Filter.Child)
+	filter, err := filtering.NewChildFilter(f.o.Filter.Child)
 
 	if err != nil {
 		return err
@@ -138,7 +139,7 @@ type samplerScheme struct {
 }
 
 func (f *samplerScheme) create() error {
-	filter, err := newSampleFilter(f.o.Filter.Sample, &f.o.Sampling)
+	filter, err := filtering.NewSampleFilter(f.o.Filter.Sample, &f.o.Sampling)
 
 	if err != nil {
 		return err

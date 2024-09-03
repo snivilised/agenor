@@ -23,8 +23,8 @@ func createExtendedGlobFilter(def *core.FilterDef,
 
 	base, exclusion := splitGlob(segments[0])
 
-	filter := &ExtendedGlobFilter{
-		Filter: Filter{
+	filter := &ExtendedGlob{
+		Base: Base{
 			name:            def.Description,
 			scope:           def.Scope,
 			pattern:         def.Pattern,
@@ -42,8 +42,8 @@ func createExtendedGlobFilter(def *core.FilterDef,
 	return filter, nil
 }
 
-type ExtendedGlobFilter struct {
-	Filter
+type ExtendedGlob struct {
+	Base
 	baseGlob     string
 	suffixes     []string
 	anyExtension bool
@@ -51,7 +51,7 @@ type ExtendedGlobFilter struct {
 }
 
 // IsMatch does this node match the filter
-func (f *ExtendedGlobFilter) IsMatch(node *core.Node) bool {
+func (f *ExtendedGlob) IsMatch(node *core.Node) bool {
 	if f.IsApplicable(node) {
 		result := lo.TernaryF(node.IsFolder(),
 			func() bool {
@@ -75,7 +75,7 @@ func (f *ExtendedGlobFilter) IsMatch(node *core.Node) bool {
 // ChildExtendedGlobFilter ==========================================================
 
 type ChildExtendedGlobFilter struct {
-	ChildFilter
+	Child
 	baseGlob     string
 	exclusion    string
 	suffixes     []string

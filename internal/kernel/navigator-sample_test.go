@@ -672,9 +672,9 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{ // 🍒
 				typ: enums.FilterTypeCustom,
 				sample: &customSamplingFilter{
-					SampleFilter: tv.NewSampleFilter(enums.ScopeFile),
-					description:  "custom(glob): items with cover prefix",
-					pattern:      "cover*",
+					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
+					description: "custom(glob): items with cover prefix",
+					pattern:     "cover*",
 				},
 			},
 			sampleType: enums.SampleTypeCustom,
@@ -698,9 +698,9 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{ // 🍒
 				typ: enums.FilterTypeCustom,
 				sample: &customSamplingFilter{
-					SampleFilter: tv.NewSampleFilter(enums.ScopeFolder),
-					description:  "custom(glob): items with A prefix",
-					pattern:      "A*",
+					Sample:      tv.NewCustomSampleFilter(enums.ScopeFolder),
+					description: "custom(glob): items with A prefix",
+					pattern:     "A*",
 				},
 			},
 			sampleType: enums.SampleTypeCustom,
@@ -724,9 +724,9 @@ var _ = Describe("Sampling", Ordered, func() {
 			filter: &filterTE{ // 🍒
 				typ: enums.FilterTypeCustom,
 				sample: &customSamplingFilter{
-					SampleFilter: tv.NewSampleFilter(enums.ScopeFile),
-					description:  "custom(glob): items with .flac suffix",
-					pattern:      "*.flac",
+					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
+					description: "custom(glob): items with .flac suffix",
+					pattern:     "*.flac",
 				},
 			},
 			sampleType: enums.SampleTypeCustom,

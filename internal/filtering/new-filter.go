@@ -31,8 +31,8 @@ func NewNodeFilter(def *core.FilterDef,
 	case enums.FilterTypeGlob:
 		filter = createGlobFilter(def, ifNotApplicable)
 
-	// TODO: the way we access FilterOptions needs to be tidied up/improved
-	// Just feels way too fishy for custom and poly...
+	// TODO: issue #156: the way we access FilterOptions needs to be
+	// tidied up/improved. Just feels way too fishy for custom and poly...
 	// perhaps we have extra NewCustomFilter/NewPolyFilter funcs
 	//
 	// TODO: createCustomFilter
@@ -118,7 +118,7 @@ func NewChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		base, exclusion := splitGlob(segments[0])
 
 		filter = &ChildExtendedGlobFilter{
-			ChildFilter: ChildFilter{
+			Child: Child{
 				Name:    def.Description,
 				Pattern: def.Pattern,
 				Negate:  def.Negate,
@@ -132,8 +132,8 @@ func NewChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		}
 
 	case enums.FilterTypeRegex:
-		filter = &ChildRegexFilter{
-			ChildFilter: ChildFilter{
+		filter = &ChildRegex{
+			Child: Child{
 				Name:    def.Description,
 				Pattern: def.Pattern,
 				Negate:  def.Negate,
@@ -141,8 +141,8 @@ func NewChildFilter(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) 
 		}
 
 	case enums.FilterTypeGlob:
-		filter = &ChildGlobFilter{
-			ChildFilter: ChildFilter{
+		filter = &ChildGlob{
+			Child: Child{
 				Name:    def.Description,
 				Pattern: def.Pattern,
 				Negate:  def.Negate,
@@ -194,8 +194,8 @@ func newSampleFilter(def *core.SampleFilterDef,
 		return nil, locale.ErrFilterIsNil
 	}
 
-	base := SampleFilter{
-		Filter: Filter{
+	base := Sample{
+		Base: Base{
 			name:    def.Description,
 			scope:   def.Scope.Scrub(),
 			pattern: def.Pattern,
@@ -214,12 +214,12 @@ func newSampleFilter(def *core.SampleFilterDef,
 	switch def.Type {
 	case enums.FilterTypeExtendedGlob:
 	case enums.FilterTypeRegex:
-		filter = &SampleRegexFilter{
-			SampleFilter: base,
+		filter = &SampleRegex{
+			Sample: base,
 		}
 	case enums.FilterTypeGlob:
-		filter = &SampleGlobFilter{
-			SampleFilter: base,
+		filter = &SampleGlob{
+			Sample: base,
 		}
 
 	case enums.FilterTypeCustom:

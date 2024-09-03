@@ -5,19 +5,19 @@ import (
 
 	. "github.com/onsi/gomega/types" //nolint:revive // ok
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/feat/refine"
+	"github.com/snivilised/traverse/internal/filtering"
 )
 
 // === MatchCurrentRegexFilter ===
 //
 
 type IsCurrentRegexMatchMatcher struct {
-	filter interface{}
+	rxFilter interface{}
 }
 
 func MatchCurrentRegexFilter(expected interface{}) GomegaMatcher {
 	return &IsCurrentRegexMatchMatcher{
-		filter: expected,
+		rxFilter: expected,
 	}
 }
 
@@ -27,38 +27,42 @@ func (m *IsCurrentRegexMatchMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("matcher expected a *TraverseItem (%T)", item)
 	}
 
-	filter, filterOk := m.filter.(*refine.RegexFilter)
+	rxFilter, filterOk := m.rxFilter.(*filtering.RegExpr)
 	if !filterOk {
-		return false, fmt.Errorf("matcher expected a *RegexFilter (%T)", filter)
+		return false, fmt.Errorf("matcher expected a *RegexFilter (%T)", rxFilter)
 	}
 
-	return filter.IsMatch(item), nil
+	return rxFilter.IsMatch(item), nil
 }
 
 func (m *IsCurrentRegexMatchMatcher) FailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.RegexFilter)
+	rxFilter, _ := m.rxFilter.(*filtering.RegExpr)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nto match regex\n\t%v\n", item.Extension.Name, filter.Source())
+	return fmt.Sprintf("🔥 Expected\n\t%v\nto match regex\n\t%v\n",
+		item.Extension.Name, rxFilter.Source(),
+	)
 }
 
 func (m *IsCurrentRegexMatchMatcher) NegatedFailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.RegexFilter)
+	rxFilter, _ := m.rxFilter.(*filtering.RegExpr)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match regex\n\t%v\n", item.Extension.Name, filter.Source())
+	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match regex\n\t%v\n",
+		item.Extension.Name, rxFilter.Source(),
+	)
 }
 
 // === MatchCurrentGlobFilter ===
 //
 
 type IsCurrentGlobMatchMatcher struct {
-	filter interface{}
+	gbFilter interface{}
 }
 
 func MatchCurrentGlobFilter(expected interface{}) GomegaMatcher {
 	return &IsCurrentGlobMatchMatcher{
-		filter: expected,
+		gbFilter: expected,
 	}
 }
 
@@ -68,38 +72,42 @@ func (m *IsCurrentGlobMatchMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("matcher expected a *TraverseItem (%T)", item)
 	}
 
-	filter, filterOk := m.filter.(*refine.GlobFilter)
+	gbFilter, filterOk := m.gbFilter.(*filtering.Glob)
 	if !filterOk {
-		return false, fmt.Errorf("matcher expected a *GlobFilter (%T)", filter)
+		return false, fmt.Errorf("matcher expected a *GlobFilter (%T)", gbFilter)
 	}
 
-	return filter.IsMatch(item), nil
+	return gbFilter.IsMatch(item), nil
 }
 
 func (m *IsCurrentGlobMatchMatcher) FailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.GlobFilter)
+	gbFilter, _ := m.gbFilter.(*filtering.Glob)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nto match glob\n\t%v\n", item.Extension.Name, filter.Source())
+	return fmt.Sprintf("🔥 Expected\n\t%v\nto match glob\n\t%v\n",
+		item.Extension.Name, gbFilter.Source(),
+	)
 }
 
 func (m *IsCurrentGlobMatchMatcher) NegatedFailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.GlobFilter)
+	gbFilter, _ := m.gbFilter.(*filtering.Glob)
 
-	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match glob\n\t%v\n", item.Extension.Name, filter.Source())
+	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match glob\n\t%v\n",
+		item.Extension.Name, gbFilter.Source(),
+	)
 }
 
 // === MatchCurrentExtendedGlobFilter ===
 //
 
 type IsCurrentExtendedGlobMatchMatcher struct {
-	filter interface{}
+	egbFilter interface{}
 }
 
 func MatchCurrentExtendedFilter(expected interface{}) GomegaMatcher {
 	return &IsCurrentExtendedGlobMatchMatcher{
-		filter: expected,
+		egbFilter: expected,
 	}
 }
 
@@ -109,29 +117,29 @@ func (m *IsCurrentExtendedGlobMatchMatcher) Match(actual interface{}) (bool, err
 		return false, fmt.Errorf("matcher expected a *TraverseItem (%T)", item)
 	}
 
-	filter, filterOk := m.filter.(*refine.ExtendedGlobFilter)
+	egbFilter, filterOk := m.egbFilter.(*filtering.ExtendedGlob)
 	if !filterOk {
-		return false, fmt.Errorf("matcher expected a *IncaseFilter (%T)", filter)
+		return false, fmt.Errorf("matcher expected a *IncaseFilter (%T)", egbFilter)
 	}
 
-	return filter.IsMatch(item), nil
+	return egbFilter.IsMatch(item), nil
 }
 
 func (m *IsCurrentExtendedGlobMatchMatcher) FailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.ExtendedGlobFilter)
+	egbFilter, _ := m.egbFilter.(*filtering.ExtendedGlob)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nto match incase\n\t%v\n",
-		item.Extension.Name, filter.Source(),
+		item.Extension.Name, egbFilter.Source(),
 	)
 }
 
 func (m *IsCurrentExtendedGlobMatchMatcher) NegatedFailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(*refine.ExtendedGlobFilter)
+	egbFilter, _ := m.egbFilter.(*filtering.ExtendedGlob)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match incase\n\t%v\n",
-		item.Extension.Name, filter.Source(),
+		item.Extension.Name, egbFilter.Source(),
 	)
 }
 
@@ -139,12 +147,12 @@ func (m *IsCurrentExtendedGlobMatchMatcher) NegatedFailureMessage(actual interfa
 //
 
 type IsCurrentCustomMatchMatcher struct {
-	filter interface{}
+	tvFilter interface{}
 }
 
 func MatchCurrentCustomFilter(expected interface{}) GomegaMatcher {
 	return &IsCurrentCustomMatchMatcher{
-		filter: expected,
+		tvFilter: expected,
 	}
 }
 
@@ -154,28 +162,28 @@ func (m *IsCurrentCustomMatchMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("matcher expected a *TraverseItem (%T)", item)
 	}
 
-	filter, filterOk := m.filter.(core.TraverseFilter)
+	tvFilter, filterOk := m.tvFilter.(core.TraverseFilter)
 	if !filterOk {
-		return false, fmt.Errorf("matcher expected a core.TraverseFilter (%T)", filter)
+		return false, fmt.Errorf("matcher expected a core.TraverseFilter (%T)", tvFilter)
 	}
 
-	return filter.IsMatch(item), nil
+	return tvFilter.IsMatch(item), nil
 }
 
 func (m *IsCurrentCustomMatchMatcher) FailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(core.TraverseFilter)
+	tvFilter, _ := m.tvFilter.(core.TraverseFilter)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nto match custom filter\n\t%v\n",
-		item.Extension.Name, filter.Source(),
+		item.Extension.Name, tvFilter.Source(),
 	)
 }
 
 func (m *IsCurrentCustomMatchMatcher) NegatedFailureMessage(actual interface{}) string {
 	item, _ := actual.(*core.Node)
-	filter, _ := m.filter.(core.TraverseFilter)
+	tvFilter, _ := m.tvFilter.(core.TraverseFilter)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match custom filter\n\t%v\n",
-		item.Extension.Name, filter.Source(),
+		item.Extension.Name, tvFilter.Source(),
 	)
 }

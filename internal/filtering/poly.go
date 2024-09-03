@@ -29,7 +29,7 @@ func createPolyFilter(polyDef *core.PolyFilterDef) (core.TraverseFilter, error) 
 		return nil, err
 	}
 
-	filter := &PolyFilter{
+	filter := &Poly{
 		File:   file,
 		Folder: folder,
 	}
@@ -37,7 +37,7 @@ func createPolyFilter(polyDef *core.PolyFilterDef) (core.TraverseFilter, error) 
 	return filter, nil
 }
 
-// PolyFilter is a dual filter that allows files and folders to be filtered
+// Poly is a dual filter that allows files and folders to be filtered
 // independently. The Folder filter only applies when the current node
 // is a file. This is because, filtering doesn't affect navigation, it only
 // controls wether the client callback is invoked or not. That is to say, if
@@ -47,7 +47,7 @@ func createPolyFilter(polyDef *core.PolyFilterDef) (core.TraverseFilter, error) 
 // the current node is a filter as the client callback will only be invoked
 // for the file if its parent folder passes the poly folder filter and
 // the file passes the poly file filter.
-type PolyFilter struct {
+type Poly struct {
 	// File is the filter that applies to a file. Note that the client does
 	// not have to set the File scope as this is enforced automatically as
 	// well as ensuring that the Folder scope has not been set. The client is
@@ -62,14 +62,14 @@ type PolyFilter struct {
 }
 
 // Description
-func (f *PolyFilter) Description() string {
+func (f *Poly) Description() string {
 	return fmt.Sprintf("Poly - FILE: '%v', FOLDER: '%v'",
 		f.File.Description(), f.Folder.Description(),
 	)
 }
 
 // Validate ensures that both filters definition are valid, panics when invalid
-func (f *PolyFilter) Validate() error {
+func (f *Poly) Validate() error {
 	if err := f.File.Validate(); err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (f *PolyFilter) Validate() error {
 
 // Source returns the Sources of both the File and Folder filters separated
 // by a '##'
-func (f *PolyFilter) Source() string {
+func (f *Poly) Source() string {
 	return fmt.Sprintf("%v##%v",
 		f.File.Source(), f.Folder.Source(),
 	)
@@ -88,7 +88,7 @@ func (f *PolyFilter) Source() string {
 // IsMatch returns true if the current node is a file and both the current
 // file matches the poly file filter and the file's parent folder matches
 // the poly folder filter. Returns true of the current node is a folder.
-func (f *PolyFilter) IsMatch(node *core.Node) bool {
+func (f *Poly) IsMatch(node *core.Node) bool {
 	if !node.IsFolder() {
 		return f.Folder.IsMatch(node.Parent) && f.File.IsMatch(node)
 	}
@@ -99,7 +99,7 @@ func (f *PolyFilter) IsMatch(node *core.Node) bool {
 // IsApplicable returns the result of applying IsApplicable to
 // the poly Filter filter if the current node is a file, returns false
 // for folders.
-func (f *PolyFilter) IsApplicable(node *core.Node) bool {
+func (f *Poly) IsApplicable(node *core.Node) bool {
 	if !node.IsFolder() {
 		return f.File.IsApplicable(node)
 	}
@@ -108,6 +108,6 @@ func (f *PolyFilter) IsApplicable(node *core.Node) bool {
 }
 
 // Scope is a bitwise OR combination of both filters
-func (f *PolyFilter) Scope() enums.FilterScope {
+func (f *Poly) Scope() enums.FilterScope {
 	return f.File.Scope() | f.Folder.Scope()
 }
