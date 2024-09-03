@@ -1,4 +1,4 @@
-package kernel_test
+package filtering_test
 
 import (
 	"fmt"
@@ -19,16 +19,16 @@ import (
 
 var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 	var (
-		vfs  fstest.MapFS
+		FS   fstest.MapFS
 		root string
 	)
 
 	BeforeAll(func() {
 		const (
-			verbose = true
+			verbose = false
 		)
 
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -39,16 +39,16 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 	})
 
 	DescribeTable("custom-filter (glob)",
-		func(ctx SpecContext, entry *filterTE) {
-			recording := make(recordingMap)
+		func(ctx SpecContext, entry *helpers.FilterTE) {
+			recording := make(helpers.RecordingMap)
 			customFilter := &customFilter{
-				name:    entry.description,
-				pattern: entry.pattern,
-				scope:   entry.scope,
-				negate:  entry.negate,
+				name:    entry.Description,
+				pattern: entry.Pattern,
+				scope:   entry.Scope,
+				negate:  entry.Negate,
 			}
 
-			path := helpers.Path(root, entry.relative)
+			path := helpers.Path(root, entry.Relative)
 			callback := func(item *core.Node) error {
 				indicator := lo.Ternary(item.IsFolder(), "📁", "💠")
 				GinkgoWriter.Printf(
@@ -60,7 +60,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					item.Extension.Scope,
 					customFilter.Scope(),
 				)
-				if lo.Contains(entry.mandatory, item.Extension.Name) {
+				if lo.Contains(entry.Mandatory, item.Extension.Name) {
 					Expect(item).Should(MatchCurrentCustomFilter(customFilter))
 				}
 
@@ -70,13 +70,13 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Root:         path,
-					Subscription: entry.subscription,
+					Subscription: entry.Subscription,
 					Handler:      callback,
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 				tv.WithFilter(&pref.FilterOptions{
@@ -94,63 +94,63 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertNavigation(&entry.naviTE, &testOptions{
-				vfs:       vfs,
-				recording: recording,
-				path:      path,
-				result:    result,
-				err:       err,
+			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+				FS:        FS,
+				Recording: recording,
+				Path:      path,
+				Result:    result,
+				Err:       err,
 			})
 		},
-		func(entry *filterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.given)
+		func(entry *helpers.FilterTE) string {
+			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
 		// === universal =====================================================
 
-		Entry(nil, &filterTE{
-			naviTE: naviTE{
-				given:        "universal(any scope): custom filter",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   8,
-					folders: 0,
+		Entry(nil, &helpers.FilterTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(any scope): custom filter",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   8,
+					Folders: 0,
 				},
 			},
-			description: "items with '.flac' suffix",
-			pattern:     "*.flac",
-			scope:       enums.ScopeFile,
+			Description: "items with '.flac' suffix",
+			Pattern:     "*.flac",
+			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &filterTE{
-			naviTE: naviTE{
-				given:        "universal(any scope): custom filter (negate)",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   6,
-					folders: 8,
+		Entry(nil, &helpers.FilterTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(any scope): custom filter (negate)",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   6,
+					Folders: 8,
 				},
 			},
-			description: "items without .flac suffix",
-			pattern:     "*.flac",
-			scope:       enums.ScopeAll,
-			negate:      true,
+			Description: "items without .flac suffix",
+			Pattern:     "*.flac",
+			Scope:       enums.ScopeAll,
+			Negate:      true,
 		}),
 
-		Entry(nil, &filterTE{
-			naviTE: naviTE{
-				given:        "universal(undefined scope): custom filter",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   8,
-					folders: 0,
+		Entry(nil, &helpers.FilterTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(undefined scope): custom filter",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   8,
+					Folders: 0,
 				},
 			},
-			description: "items with '.flac' suffix",
-			pattern:     "*.flac",
+			Description: "items with '.flac' suffix",
+			Pattern:     "*.flac",
 		}),
 	)
 })

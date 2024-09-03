@@ -20,22 +20,20 @@ import (
 
 var _ = Describe("Sampling", Ordered, func() {
 	var (
-		vfs  fstest.MapFS
+		FS   fstest.MapFS
 		root string
 	)
 
 	BeforeAll(func() {
 		const (
-			verbose = true
+			verbose = false
 		)
 
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 			filepath.Join("MUSICO", "edm"),
 		)
 		Expect(root).NotTo(BeEmpty())
-
-		_ = vfs
 	})
 
 	BeforeEach(func() {
@@ -43,8 +41,8 @@ var _ = Describe("Sampling", Ordered, func() {
 	})
 
 	DescribeTable("sample",
-		func(ctx SpecContext, entry *sampleTE) {
-			recording := make(recordingMap)
+		func(ctx SpecContext, entry *helpers.SampleTE) {
+			recording := make(helpers.RecordingMap)
 			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
 				_, found := recording[node.Extension.Name]
 				Expect(found).To(BeFalse())
@@ -55,9 +53,9 @@ var _ = Describe("Sampling", Ordered, func() {
 
 			path := helpers.Path(
 				root,
-				lo.Ternary(entry.naviTE.relative == "",
+				lo.Ternary(entry.NaviTE.Relative == "",
 					"RETRO-WAVE",
-					entry.naviTE.relative,
+					entry.NaviTE.Relative,
 				),
 			)
 
@@ -68,7 +66,7 @@ var _ = Describe("Sampling", Ordered, func() {
 				prohibited := fmt.Sprintf("%v, was invoked, but does not satisfy sample criteria",
 					helpers.Reason(node.Extension.Name),
 				)
-				Expect(entry.prohibited).ToNot(ContainElement(node.Extension.Name), prohibited)
+				Expect(entry.Prohibited).ToNot(ContainElement(node.Extension.Name), prohibited)
 
 				return once(node)
 			}
@@ -76,27 +74,27 @@ var _ = Describe("Sampling", Ordered, func() {
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Root:         path,
-					Subscription: entry.subscription,
+					Subscription: entry.Subscription,
 					Handler:      callback,
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 				tv.WithSampling(&pref.SamplingOptions{
-					SampleType:      entry.sampleType,
-					SampleInReverse: entry.reverse,
+					SampleType:      entry.SampleType,
+					SampleInReverse: entry.Reverse,
 					NoOf: pref.EntryQuantities{
-						Files:   entry.noOf.Files,
-						Folders: entry.noOf.Folders,
+						Files:   entry.NoOf.Files,
+						Folders: entry.NoOf.Folders,
 					},
-					Iteration: lo.TernaryF(entry.each != nil,
+					Iteration: lo.TernaryF(entry.Each != nil,
 						func() pref.SamplingIterationOptions {
 							return pref.SamplingIterationOptions{
-								Each:  entry.each,
-								While: entry.while,
+								Each:  entry.Each,
+								While: entry.While,
 							}
 						},
 						func() pref.SamplingIterationOptions {
@@ -104,19 +102,19 @@ var _ = Describe("Sampling", Ordered, func() {
 						},
 					),
 				}),
-				tv.IfOptionF(entry.filter != nil, func() pref.Option {
+				tv.IfOptionF(entry.Filter != nil, func() pref.Option {
 					return tv.WithFilter(&pref.FilterOptions{
 						Sample: &core.SampleFilterDef{
-							Type:        entry.filter.typ,
-							Description: entry.filter.description,
-							Scope:       entry.filter.scope,
-							Pattern:     entry.filter.pattern,
-							Custom:      entry.filter.sample,
+							Type:        entry.Filter.Type,
+							Description: entry.Filter.Description,
+							Scope:       entry.Filter.Scope,
+							Pattern:     entry.Filter.Pattern,
+							Custom:      entry.Filter.Sample,
 						},
-						Custom: entry.filter.custom,
+						Custom: entry.Filter.Custom,
 					})
 				}),
-				tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
+				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 						return qsys.Stat(helpers.TrimRoot(path))
@@ -129,169 +127,169 @@ var _ = Describe("Sampling", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertNavigation(&entry.naviTE, &testOptions{
-				vfs:         vfs,
-				recording:   recording,
-				path:        path,
-				result:      result,
-				err:         err,
-				expectedErr: entry.expectedErr,
+			AssertNavigation(&entry.NaviTE, &TestOptions{
+				FS:          FS,
+				Recording:   recording,
+				Path:        path,
+				Result:      result,
+				Err:         err,
+				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *sampleTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.given, entry.should)
+		func(entry *helpers.SampleTE) string {
+			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
 		},
 		// === universal =====================================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(slice): first, with 2 files",
-				should:       "invoke for at most 2 files per directory",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"cover.night-drive.jpg"},
-				expectedNoOf: quantities{
-					files:   8,
-					folders: 8,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(slice): first, with 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"cover.night-drive.jpg"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   8,
+					Folders: 8,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(slice): first, with 2 folders",
-				should:       "invoke for at most 2 folders per directory",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"Electric Youth"},
-				expectedNoOf: quantities{
-					files:   11,
-					folders: 6,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(slice): first, with 2 folders",
+				Should:       "invoke for at most 2 folders per directory",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"Electric Youth"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   11,
+					Folders: 6,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(slice): first, with 2 files and 2 folders",
-				should:       "invoke for at most 2 files and 2 folders per directory",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"cover.night-drive.jpg", "Electric Youth"},
-				expectedNoOf: quantities{
-					files:   6,
-					folders: 6,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(slice): first, with 2 files and 2 folders",
+				Should:       "invoke for at most 2 files and 2 folders per directory",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"cover.night-drive.jpg", "Electric Youth"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   6,
+					Folders: 6,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Files:   2,
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(filter): first, single file, first 2 folders",
-				should:       "invoke for at most single file per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"02 - Swab.flac"},
-				expectedNoOf: quantities{
-					files:   7,
-					folders: 14,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(filter): first, single file, first 2 folders",
+				Should:       "invoke for at most single file per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"02 - Swab.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   7,
+					Folders: 14,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Files:   1,
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(filter): first, single file, first 2 folders",
-				should:       "invoke for at most single file per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"02 - Swab.flac"},
-				expectedNoOf: quantities{
-					files:   7,
-					folders: 14,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(filter): first, single file, first 2 folders",
+				Should:       "invoke for at most single file per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"02 - Swab.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   7,
+					Folders: 14,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with .flac suffix",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "\\.flac$",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with .flac suffix",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "\\.flac$",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Files:   1,
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(filter): last, last single files, last 2 folders",
-				should:       "invoke for at most single file per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"01 - Dre.flac"},
-				expectedNoOf: quantities{
-					files:   8,
-					folders: 15,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(filter): last, last single files, last 2 folders",
+				Should:       "invoke for at most single file per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"01 - Dre.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   8,
+					Folders: 15,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Files:   1,
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(filter): last, last single files, last 2 folders",
-				should:       "invoke for at most single file per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"01 - Dre.flac"},
-				expectedNoOf: quantities{
-					files:   8,
-					folders: 15,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(filter): last, last single files, last 2 folders",
+				Should:       "invoke for at most single file per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"01 - Dre.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   8,
+					Folders: 15,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with .flac suffix",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "\\.flac$",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with .flac suffix",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "\\.flac$",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Files:   1,
 				Folders: 2,
 			},
@@ -299,259 +297,259 @@ var _ = Describe("Sampling", Ordered, func() {
 
 		// === folders =======================================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "folders(slice): first, with 2 folders",
-				should:       "invoke for at most 2 folders per directory",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Electric Youth"},
-				expectedNoOf: quantities{
-					folders: 6,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "folders(slice): first, with 2 folders",
+				Should:       "invoke for at most 2 folders per directory",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Electric Youth"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 6,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "folders(slice): last, with last single folder",
-				should:       "invoke for only last folder per directory",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Chromatics"},
-				expectedNoOf: quantities{
-					folders: 3,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "folders(slice): last, with last single folder",
+				Should:       "invoke for only last folder per directory",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Chromatics"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 3,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders(filter): first, with 2 folders that start with A",
-				should:       "invoke for at most 2 folders per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Tales Of Ephidrina"},
-				expectedNoOf: quantities{
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders(filter): first, with 2 folders that start with A",
+				Should:       "invoke for at most 2 folders per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Tales Of Ephidrina"},
+				ExpectedNoOf: helpers.Quantities{
 					// AMBIENT-TECHNO, Amorphous Androgynous, Aphex Twin
-					folders: 3,
+					Folders: 3,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with that start with A",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "A*",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with that start with A",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "A*",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders(filter): first, with 2 folders that start with A",
-				should:       "invoke for at most 2 folders per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Tales Of Ephidrina"},
-				expectedNoOf: quantities{
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders(filter): first, with 2 folders that start with A",
+				Should:       "invoke for at most 2 folders per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Tales Of Ephidrina"},
+				ExpectedNoOf: helpers.Quantities{
 					// AMBIENT-TECHNO, Amorphous Androgynous, Aphex Twin
-					folders: 3,
+					Folders: 3,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with that start with A",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "^A",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with that start with A",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "^A",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders(filter): last, with single folder that start with A",
-				should:       "invoke for at most a single folder per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Amorphous Androgynous"},
-				expectedNoOf: quantities{
-					folders: 2,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders(filter): last, with single folder that start with A",
+				Should:       "invoke for at most a single folder per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Amorphous Androgynous"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 2,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with that start with A",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "A*",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with that start with A",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "A*",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders(filter): last, with single folder that start with A",
-				should:       "invoke for at most a single folder per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Amorphous Androgynous"},
-				expectedNoOf: quantities{
-					folders: 2,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders(filter): last, with single folder that start with A",
+				Should:       "invoke for at most a single folder per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Amorphous Androgynous"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 2,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with that start with A",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "^A",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with that start with A",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "^A",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
 		// === folders with files ============================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "folders with files(slice): first, with 2 folders",
-				should:       "invoke for at most 2 folders per directory",
-				subscription: enums.SubscribeFoldersWithFiles,
-				prohibited:   []string{"Electric Youth"},
-				expectedNoOf: quantities{
-					folders: 6,
-					children: map[string]int{
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "folders with files(slice): first, with 2 folders",
+				Should:       "invoke for at most 2 folders per directory",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				Prohibited:   []string{"Electric Youth"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 6,
+					Children: map[string]int{
 						"Night Drive":      4,
 						"Northern Council": 4,
 						"Teenage Color":    3,
 					},
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "folders with files(slice): last, with last single folder",
-				should:       "invoke for only last folder per directory",
-				subscription: enums.SubscribeFoldersWithFiles,
-				prohibited:   []string{"Chromatics"},
-				expectedNoOf: quantities{
-					folders: 3,
-					children: map[string]int{
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "folders with files(slice): last, with last single folder",
+				Should:       "invoke for only last folder per directory",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				Prohibited:   []string{"Chromatics"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 3,
+					Children: map[string]int{
 						"Innerworld": 3,
 					},
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders with files(filter): last, with single folder that start with A",
-				should:       "invoke for at most a single folder per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFoldersWithFiles,
-				prohibited:   []string{"Amorphous Androgynous"},
-				expectedNoOf: quantities{
-					folders:  2,
-					children: map[string]int{},
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders with files(filter): last, with single folder that start with A",
+				Should:       "invoke for at most a single folder per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				Prohibited:   []string{"Amorphous Androgynous"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders:  2,
+					Children: map[string]int{},
 				},
 			},
-			filter: &filterTE{ // 🧄 this is folder filter, not child filter
-				description: "glob: items that start with A",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "A*",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🧄 this is folder filter, not child filter
+				Description: "glob: items that start with A",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "A*",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders with files(filter): last, with single folder that start with A",
-				should:       "invoke for at most a single folder per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFoldersWithFiles,
-				prohibited:   []string{"Amorphous Androgynous"},
-				expectedNoOf: quantities{
-					folders:  2,
-					children: map[string]int{},
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders with files(filter): last, with single folder that start with A",
+				Should:       "invoke for at most a single folder per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				Prohibited:   []string{"Amorphous Androgynous"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders:  2,
+					Children: map[string]int{},
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items that start with A",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "^A",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items that start with A",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "^A",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
 		}),
 
 		// === files =========================================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "files(slice): first, with 2 files",
-				should:       "invoke for at most 2 files per directory",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"cover.night-drive.jpg"},
-				expectedNoOf: quantities{
-					files: 8,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "files(slice): first, with 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"cover.night-drive.jpg"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 8,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "files(slice): last, with last single file",
-				should:       "invoke for only last file per directory",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"A1 - The Telephone Call.flac"},
-				expectedNoOf: quantities{
-					files: 4,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "files(slice): last, with last single file",
+				Should:       "invoke for only last file per directory",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"A1 - The Telephone Call.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 4,
 				},
 			},
-			sampleType: enums.SampleTypeSlice,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeSlice,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Files: 1,
 			},
 		}),
@@ -561,227 +559,227 @@ var _ = Describe("Sampling", Ordered, func() {
 		// a directory's contents are read, but sampling filter is
 		// applied at the point the contents are read. Any scopes other
 		// than file/folder are ignored.
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered files(filter): first, 2 files",
-				should:       "invoke for at most 2 files per directory",
-				relative:     "edm/ELECTRONICA",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"03 - Mountain Goat.flac"},
-				expectedNoOf: quantities{
-					files: 24,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered files(filter): first, 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Relative:     "edm/ELECTRONICA",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"03 - Mountain Goat.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 24,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered files(filter): first, 2 files",
-				should:       "invoke for at most 2 files per directory",
-				relative:     "edm/ELECTRONICA",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"03 - Mountain Goat.flac"},
-				expectedNoOf: quantities{
-					files: 24,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered files(filter): first, 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Relative:     "edm/ELECTRONICA",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"03 - Mountain Goat.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 24,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with .flac suffix",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "\\.flac$",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with .flac suffix",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "\\.flac$",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered files(filter): last, last 2 files",
-				should:       "invoke for at most 2 files per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"01 - Liquid Insects.flac"},
-				expectedNoOf: quantities{
-					files: 42,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered files(filter): last, last 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"01 - Liquid Insects.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 42,
 				},
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered files(filter): last, last 2 files",
-				should:       "invoke for at most 2 files per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"01 - Liquid Insects.flac"},
-				expectedNoOf: quantities{
-					files: 42,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered files(filter): last, last 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"01 - Liquid Insects.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 42,
 				},
 			},
-			filter: &filterTE{ // 🚀
-				description: "regex: items with .flac suffix",
-				typ:         enums.FilterTypeRegex,
-				pattern:     "\\.flac$",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🚀
+				Description: "regex: items with .flac suffix",
+				Type:        enums.FilterTypeRegex,
+				Pattern:     "\\.flac$",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			reverse:    true,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			Reverse:    true,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
 		// === custom ========================================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "universal(custom): first, single file, 2 folders",
-				should:       "invoke for at most single file per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeUniversal,
-				prohibited:   []string{"02 - Swab.flac"},
-				expectedNoOf: quantities{
-					files:   7,
-					folders: 14,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "universal(custom): first, single file, 2 folders",
+				Should:       "invoke for at most single file per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				Prohibited:   []string{"02 - Swab.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files:   7,
+					Folders: 14,
 				},
 			},
-			filter: &filterTE{ // 🍒
-				typ: enums.FilterTypeCustom,
-				sample: &customSamplingFilter{
+			Filter: &helpers.FilterTE{ // 🍒
+				Type: enums.FilterTypeCustom,
+				Sample: &customSamplingFilter{
 					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
 					description: "custom(glob): items with cover prefix",
 					pattern:     "cover*",
 				},
 			},
-			sampleType: enums.SampleTypeCustom,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeCustom,
+			NoOf: pref.EntryQuantities{
 				Files:   1,
 				Folders: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered folders(custom): last, single folder that starts with A",
-				should:       "invoke for at most a single folder per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFolders,
-				prohibited:   []string{"Amorphous Androgynous"},
-				expectedNoOf: quantities{
-					folders: 2,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered folders(custom): last, single folder that starts with A",
+				Should:       "invoke for at most a single folder per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFolders,
+				Prohibited:   []string{"Amorphous Androgynous"},
+				ExpectedNoOf: helpers.Quantities{
+					Folders: 2,
 				},
 			},
-			filter: &filterTE{ // 🍒
-				typ: enums.FilterTypeCustom,
-				sample: &customSamplingFilter{
+			Filter: &helpers.FilterTE{ // 🍒
+				Type: enums.FilterTypeCustom,
+				Sample: &customSamplingFilter{
 					Sample:      tv.NewCustomSampleFilter(enums.ScopeFolder),
 					description: "custom(glob): items with A prefix",
 					pattern:     "A*",
 				},
 			},
-			sampleType: enums.SampleTypeCustom,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeCustom,
+			NoOf: pref.EntryQuantities{
 				Folders: 1,
 			},
-			reverse: true,
+			Reverse: true,
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "filtered files(custom): last, last 2 files",
-				should:       "invoke for at most 2 files per directory",
-				relative:     "edm",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"01 - Liquid Insects.flac"},
-				expectedNoOf: quantities{
-					files: 42,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "filtered files(custom): last, last 2 files",
+				Should:       "invoke for at most 2 files per directory",
+				Relative:     "edm",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"01 - Liquid Insects.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 42,
 				},
 			},
-			filter: &filterTE{ // 🍒
-				typ: enums.FilterTypeCustom,
-				sample: &customSamplingFilter{
+			Filter: &helpers.FilterTE{ // 🍒
+				Type: enums.FilterTypeCustom,
+				Sample: &customSamplingFilter{
 					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
 					description: "custom(glob): items with .flac suffix",
 					pattern:     "*.flac",
 				},
 			},
-			sampleType: enums.SampleTypeCustom,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeCustom,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
-			reverse: true,
+			Reverse: true,
 		}),
 
 		// === errors ========================================================
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "folder spec, without no of folders",
-				should:       "return invalid folder spec error",
-				relative:     "edm/ELECTRONICA",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"03 - Mountain Goat.flac"},
-				expectedNoOf: quantities{
-					files: 24,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "folder spec, without no of folders",
+				Should:       "return invalid folder spec error",
+				Relative:     "edm/ELECTRONICA",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"03 - Mountain Goat.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 24,
 				},
-				expectedErr: locale.ErrInvalidFolderSamplingSpecMissingFolders,
+				ExpectedErr: locale.ErrInvalidFolderSamplingSpecMissingFolders,
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFolder,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFolder,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Files: 2,
 			},
 		}),
 
-		Entry(nil, &sampleTE{
-			naviTE: naviTE{
-				given:        "file spec, without no of files",
-				should:       "return invalid file spec error",
-				relative:     "edm/ELECTRONICA",
-				subscription: enums.SubscribeFiles,
-				prohibited:   []string{"03 - Mountain Goat.flac"},
-				expectedNoOf: quantities{
-					files: 24,
+		Entry(nil, &helpers.SampleTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "file spec, without no of files",
+				Should:       "return invalid file spec error",
+				Relative:     "edm/ELECTRONICA",
+				Subscription: enums.SubscribeFiles,
+				Prohibited:   []string{"03 - Mountain Goat.flac"},
+				ExpectedNoOf: helpers.Quantities{
+					Files: 24,
 				},
-				expectedErr: locale.ErrInvalidFileSamplingSpecMissingFiles,
+				ExpectedErr: locale.ErrInvalidFileSamplingSpecMissingFiles,
 			},
-			filter: &filterTE{ // 🧄
-				description: "glob: items with .flac suffix",
-				typ:         enums.FilterTypeGlob,
-				pattern:     "*.flac",
-				scope:       enums.ScopeFile,
+			Filter: &helpers.FilterTE{ // 🧄
+				Description: "glob: items with .flac suffix",
+				Type:        enums.FilterTypeGlob,
+				Pattern:     "*.flac",
+				Scope:       enums.ScopeFile,
 			},
-			sampleType: enums.SampleTypeFilter,
-			noOf: pref.EntryQuantities{
+			SampleType: enums.SampleTypeFilter,
+			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
 		}),

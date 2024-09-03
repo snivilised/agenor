@@ -3,6 +3,7 @@ package helpers
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/pref"
 )
 
 type (
@@ -19,6 +20,35 @@ type (
 		Prohibited    []string
 		ExpectedNoOf  Quantities
 		ExpectedErr   error
+	}
+
+	FilterTE struct {
+		NaviTE
+		Description     string
+		Pattern         string
+		Scope           enums.FilterScope
+		Negate          bool
+		ErrorContains   string
+		IfNotApplicable enums.TriStateBool
+		Custom          core.TraverseFilter
+		Type            enums.FilterType
+		Sample          core.SampleTraverseFilter
+	}
+
+	PolyTE struct {
+		NaviTE
+		File   core.FilterDef
+		Folder core.FilterDef
+	}
+
+	SampleTE struct {
+		NaviTE
+		SampleType enums.SampleType
+		Reverse    bool
+		Filter     *FilterTE
+		NoOf       pref.EntryQuantities
+		Each       pref.EachDirectoryEntryPredicate
+		While      pref.WhileDirectoryPredicate
 	}
 
 	Quantities struct {
