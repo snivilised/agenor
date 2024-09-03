@@ -1,4 +1,4 @@
-package kernel_test
+package filtering_test
 
 import (
 	"fmt"
@@ -20,16 +20,16 @@ import (
 
 var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 	var (
-		vfs  fstest.MapFS
+		FS   fstest.MapFS
 		root string
 	)
 
 	BeforeAll(func() {
 		const (
-			verbose = true
+			verbose = false
 		)
 
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -40,18 +40,18 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 	})
 
 	DescribeTable("poly-filter",
-		func(ctx SpecContext, entry *polyTE) {
+		func(ctx SpecContext, entry *helpers.PolyTE) {
 			var (
 				traverseFilter core.TraverseFilter
 			)
 
-			recording := make(recordingMap)
+			recording := make(helpers.RecordingMap)
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type: enums.FilterTypePoly,
 					Poly: &core.PolyFilterDef{
-						File:   entry.file,
-						Folder: entry.folder,
+						File:   entry.File,
+						Folder: entry.Folder,
 					},
 				},
 				Sink: func(reply pref.FilterReply) {
@@ -59,7 +59,7 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 				},
 			}
 
-			path := helpers.Path(root, entry.relative)
+			path := helpers.Path(root, entry.Relative)
 
 			callback := func(node *core.Node) error {
 				indicator := lo.Ternary(node.IsFolder(), "📁", "💠")
@@ -72,7 +72,7 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 					node.Extension.Scope,
 					traverseFilter.Scope(),
 				)
-				if lo.Contains(entry.mandatory, node.Extension.Name) {
+				if lo.Contains(entry.Mandatory, node.Extension.Name) {
 					Expect(node).Should(MatchCurrentGlobFilter(traverseFilter))
 				}
 
@@ -82,13 +82,13 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Root:         path,
-					Subscription: entry.subscription,
+					Subscription: entry.Subscription,
 					Handler:      callback,
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 				tv.WithFilter(filterDefs),
@@ -104,40 +104,40 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			assertNavigation(&entry.naviTE, &testOptions{
-				vfs:       vfs,
-				recording: recording,
-				path:      path,
-				result:    result,
-				err:       err,
+			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+				FS:        FS,
+				Recording: recording,
+				Path:      path,
+				Result:    result,
+				Err:       err,
 			})
 		},
-		func(entry *polyTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.given)
+		func(entry *helpers.PolyTE) string {
+			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
 		// === universal(file:regex; folder:glob) ============================
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly - files:regex; folders:glob",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly - files:regex; folders:glob",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
 					// file is 2 not 3 because *i* is case sensitive so Innerworld is not a match
 					// The next(not this one) regex test case, fixes this because folder regex has better
 					// control over case sensitivity
-					files:   2,
-					folders: 8,
+					Files:   2,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
 				Scope:       enums.ScopeFile,
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
 				Description: "folders: contains i (case sensitive)",
 				Pattern:     "*i*",
@@ -147,23 +147,23 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 
 		// === universal(file:regex; folder:regex) ===========================
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly - files:regex; folders:regex",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   3,
-					folders: 8,
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly - files:regex; folders:regex",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   3,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
 				Scope:       enums.ScopeFile,
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "folders: contains i (case insensitive)",
 				Pattern:     "[iI]",
@@ -173,27 +173,27 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 
 		// === universal(file:extended-glob; folder:glob) ====================
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly - files:extended-glob; folders:glob",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly - files:extended-glob; folders:glob",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
 					// file is 2 not 3 because *i* is case sensitive so Innerworld is not a match
 					// The next 2 tests regex/extended-glob test case, fixes this because they
 					// have better control over case sensitivity
 					//
-					files:   2,
-					folders: 8,
+					Files:   2,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
 				Description: "folders: contains i (case sensitive)",
 				Pattern:     "*i*",
@@ -201,23 +201,23 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly - files:extended-glob; folders:regex",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   3,
-					folders: 8,
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly - files:extended-glob; folders:regex",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   3,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "folders: contains i (case sensitive)",
 				Pattern:     "[iI]",
@@ -225,23 +225,23 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly - files:extended-glob; folders:extended-glob",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   3,
-					folders: 8,
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly - files:extended-glob; folders:extended-glob",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   3,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
 				Description: "folders: contains i (case sensitive)",
 				Pattern:     "*i*|",
@@ -253,23 +253,23 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 		// they can be set automatically, the client is not forced to set them. This test
 		// checks that when the file/folder scopes are not set, then poly filtering still works
 		// properly.
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly(scopes omitted) - files:regex; folders:regex",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeUniversal,
-				expectedNoOf: quantities{
-					files:   3,
-					folders: 8,
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly(scopes omitted) - files:regex; folders:regex",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   3,
+					Folders: 8,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
 				// file scope omitted
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "folders: contains i (case insensitive)",
 				Pattern:     "[iI]",
@@ -279,22 +279,22 @@ var _ = Describe("NavigatorFilterPoly", Ordered, func() {
 
 		// === files (file:regex; folder:regex) ==============================
 
-		Entry(nil, &polyTE{
-			naviTE: naviTE{
-				given:        "poly(subscribe:files)",
-				relative:     "RETRO-WAVE",
-				subscription: enums.SubscribeFiles,
-				expectedNoOf: quantities{
-					files:   3,
-					folders: 0,
+		Entry(nil, &helpers.PolyTE{
+			NaviTE: helpers.NaviTE{
+				Given:        "poly(subscribe:files)",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFiles,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   3,
+					Folders: 0,
 				},
 			},
-			file: core.FilterDef{
+			File: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
 			},
-			folder: core.FilterDef{
+			Folder: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
 				Description: "folders: contains i",
 				Pattern:     "[iI]",

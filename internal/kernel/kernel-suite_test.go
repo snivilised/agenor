@@ -11,12 +11,10 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
 )
 
 func TestKernel(t *testing.T) {
@@ -29,123 +27,7 @@ const (
 	RestorePath = "/from-restore-path"
 )
 
-type recordingMap map[string]int
-type recordingScopeMap map[string]enums.FilterScope
-type recordingOrderMap map[string]int
-
-type quantities struct {
-	files    uint
-	folders  uint
-	children map[string]int
-}
-
-type naviTE struct {
-	given         string
-	should        string
-	relative      string
-	once          bool
-	visit         bool
-	caseSensitive bool
-	subscription  enums.Subscription
-	callback      core.Client
-	mandatory     []string
-	prohibited    []string
-	expectedNoOf  quantities
-	expectedErr   error
-}
-
-type filterTE struct {
-	naviTE
-	description     string
-	pattern         string
-	scope           enums.FilterScope
-	negate          bool
-	errorContains   string
-	ifNotApplicable enums.TriStateBool
-	custom          core.TraverseFilter
-	typ             enums.FilterType
-	sample          core.SampleTraverseFilter
-}
-
-type polyTE struct {
-	naviTE
-	file   core.FilterDef
-	folder core.FilterDef
-}
-
-type sampleTE struct {
-	naviTE
-	sampleType enums.SampleType
-	reverse    bool
-	filter     *filterTE
-	noOf       pref.EntryQuantities
-	each       pref.EachDirectoryEntryPredicate
-	while      pref.WhileDirectoryPredicate
-}
-
-type customFilter struct {
-	name            string
-	pattern         string
-	scope           enums.FilterScope
-	negate          bool
-	ifNotApplicable bool
-}
-
-// Description describes filter
-func (f *customFilter) Description() string {
-	return f.name
-}
-
-func (f *customFilter) Validate() error {
-	if f.scope == enums.ScopeUndefined {
-		f.scope = enums.ScopeAll
-	}
-
-	return nil
-}
-
-func (f *customFilter) Source() string {
-	return f.pattern
-}
-
-func (f *customFilter) invert(result bool) bool {
-	return lo.Ternary(f.negate, !result, result)
-}
-
-func (f *customFilter) IsMatch(node *core.Node) bool {
-	if f.IsApplicable(node) {
-		matched, _ := filepath.Match(f.pattern, node.Extension.Name)
-		return f.invert(matched)
-	}
-
-	return f.ifNotApplicable
-}
-
-func (f *customFilter) IsApplicable(node *core.Node) bool {
-	return (f.scope & node.Extension.Scope) > 0
-}
-
-func (f *customFilter) Scope() enums.FilterScope {
-	return f.scope
-}
-
-func begin(em string) cycle.BeginHandler {
-	return func(state *cycle.BeginState) {
-		GinkgoWriter.Printf(
-			"---> %v [traverse-navigator-test:BEGIN], root: '%v'\n", em, state.Root,
-		)
-	}
-}
-
-func end(em string) cycle.EndHandler {
-	return func(result core.TraverseResult) {
-		GinkgoWriter.Printf(
-			"---> %v [traverse-navigator-test:END], err: '%v'\n", em, result.Error(),
-		)
-	}
-}
-
-func universalCallback(name string) core.Client {
+func UniversalCallback(name string) core.Client {
 	return func(node *core.Node) error {
 		depth := node.Extension.Depth
 		GinkgoWriter.Printf(
@@ -157,7 +39,7 @@ func universalCallback(name string) core.Client {
 	}
 }
 
-func foldersCallback(name string) core.Client {
+func FoldersCallback(name string) core.Client {
 	return func(node *core.Node) error {
 		depth := node.Extension.Depth
 		actualNoChildren := len(node.Children)
@@ -174,7 +56,7 @@ func foldersCallback(name string) core.Client {
 	}
 }
 
-func filesCallback(name string) core.Client {
+func FilesCallback(name string) core.Client {
 	return func(node *core.Node) error {
 		GinkgoWriter.Printf("---> 🌙 FILES//%v-CALLBACK: '%v'\n", name, node.Path)
 		Expect(node.IsFolder()).To(BeFalse(),
@@ -186,8 +68,8 @@ func filesCallback(name string) core.Client {
 	}
 }
 
-func foldersCaseSensitiveCallback(first, second string) core.Client {
-	recording := make(recordingMap)
+func FoldersCaseSensitiveCallback(first, second string) core.Client {
+	recording := make(helpers.RecordingMap)
 
 	return func(node *core.Node) error {
 		recording[node.Path] = len(node.Children)
@@ -219,35 +101,35 @@ func subscribes(subscription enums.Subscription, de fs.DirEntry) bool {
 	return isAnySubscription || files || folders
 }
 
-type testOptions struct {
-	vfs         fstest.MapFS
-	recording   recordingMap
-	path        string
-	result      core.TraverseResult
-	err         error
-	expectedErr error
-	every       func(p string) bool
+type TestOptions struct {
+	FS          fstest.MapFS
+	Recording   helpers.RecordingMap
+	Path        string
+	Result      core.TraverseResult
+	Err         error
+	ExpectedErr error
+	Every       func(p string) bool
 }
 
-func assertNavigation(entry *naviTE, to *testOptions) {
-	if to.expectedErr != nil {
-		Expect(to.err).To(MatchError(to.expectedErr))
+func AssertNavigation(entry *helpers.NaviTE, to *TestOptions) {
+	if to.ExpectedErr != nil {
+		Expect(to.Err).To(MatchError(to.ExpectedErr))
 		return
 	}
 
-	Expect(to.err).To(Succeed())
+	Expect(to.Err).To(Succeed())
 
 	visited := []string{}
-	_ = to.result.Session().StartedAt()
-	_ = to.result.Session().Elapsed()
+	_ = to.Result.Session().StartedAt()
+	_ = to.Result.Session().Elapsed()
 
-	if entry.visit {
-		_ = fs.WalkDir(to.vfs, to.path, func(path string, de fs.DirEntry, _ error) error {
+	if entry.Visit {
+		_ = fs.WalkDir(to.FS, to.Path, func(path string, de fs.DirEntry, _ error) error {
 			if strings.HasSuffix(path, ".DS_Store") {
 				return nil
 			}
 
-			if subscribes(entry.subscription, de) {
+			if subscribes(entry.Subscription, de) {
 				visited = append(visited, path)
 			}
 
@@ -255,12 +137,12 @@ func assertNavigation(entry *naviTE, to *testOptions) {
 		})
 
 		every := lo.EveryBy(visited,
-			lo.Ternary(to.every != nil, to.every, func(p string) bool {
+			lo.Ternary(to.Every != nil, to.Every, func(p string) bool {
 				segments := strings.Split(p, string(filepath.Separator))
 				name, err := lo.Last(segments)
 
 				if err == nil {
-					_, found := to.recording[name]
+					_, found := to.Recording[name]
 					return found
 				}
 
@@ -271,9 +153,9 @@ func assertNavigation(entry *naviTE, to *testOptions) {
 		Expect(every).To(BeTrue())
 	}
 
-	for n, actualNoChildren := range entry.expectedNoOf.children {
-		expected := to.recording[n]
-		Expect(to.recording[n]).To(Equal(actualNoChildren),
+	for n, actualNoChildren := range entry.ExpectedNoOf.Children {
+		expected := to.Recording[n]
+		Expect(to.Recording[n]).To(Equal(actualNoChildren),
 			helpers.BecauseQuantity(fmt.Sprintf("folder: '%v'", n),
 				expected,
 				actualNoChildren,
@@ -281,16 +163,16 @@ func assertNavigation(entry *naviTE, to *testOptions) {
 		)
 	}
 
-	if entry.mandatory != nil {
-		for _, name := range entry.mandatory {
-			_, found := to.recording[name]
+	if entry.Mandatory != nil {
+		for _, name := range entry.Mandatory {
+			_, found := to.Recording[name]
 			Expect(found).To(BeTrue(), helpers.Reason(name))
 		}
 	}
 
-	if entry.prohibited != nil {
-		for _, name := range entry.prohibited {
-			_, found := to.recording[name]
+	if entry.Prohibited != nil {
+		for _, name := range entry.Prohibited {
+			_, found := to.Recording[name]
 			Expect(found).To(BeFalse(), helpers.Reason(name))
 		}
 	}
@@ -298,30 +180,30 @@ func assertNavigation(entry *naviTE, to *testOptions) {
 	assertMetrics(entry, to)
 }
 
-func assertMetrics(entry *naviTE, to *testOptions) {
-	Expect(to.result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
-		Equal(entry.expectedNoOf.files),
+func assertMetrics(entry *helpers.NaviTE, to *TestOptions) {
+	Expect(to.Result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
+		Equal(entry.ExpectedNoOf.Files),
 		helpers.BecauseQuantity("Incorrect no of files",
-			int(entry.expectedNoOf.files),                              //nolint:gosec // ok
-			int(to.result.Metrics().Count(enums.MetricNoFilesInvoked)), //nolint:gosec // ok
+			int(entry.ExpectedNoOf.Files),                              //nolint:gosec // ok
+			int(to.Result.Metrics().Count(enums.MetricNoFilesInvoked)), //nolint:gosec // ok
 		),
 	)
 
-	Expect(to.result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
-		Equal(entry.expectedNoOf.folders),
+	Expect(to.Result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
+		Equal(entry.ExpectedNoOf.Folders),
 		helpers.BecauseQuantity("Incorrect no of folders",
-			int(entry.expectedNoOf.folders),                              //nolint:gosec // ok
-			int(to.result.Metrics().Count(enums.MetricNoFoldersInvoked)), //nolint:gosec // ok
+			int(entry.ExpectedNoOf.Folders),                              //nolint:gosec // ok
+			int(to.Result.Metrics().Count(enums.MetricNoFoldersInvoked)), //nolint:gosec // ok
 		),
 	)
 
-	sum := lo.Sum(lo.Values(entry.expectedNoOf.children))
+	sum := lo.Sum(lo.Values(entry.ExpectedNoOf.Children))
 
-	Expect(to.result.Metrics().Count(enums.MetricNoChildFilesFound)).To(
+	Expect(to.Result.Metrics().Count(enums.MetricNoChildFilesFound)).To(
 		Equal(uint(sum)),
 		helpers.BecauseQuantity("Incorrect total no of child files",
 			sum,
-			int(to.result.Metrics().Count(enums.MetricNoChildFilesFound)), //nolint:gosec // ok
+			int(to.Result.Metrics().Count(enums.MetricNoChildFilesFound)), //nolint:gosec // ok
 		),
 	)
 }

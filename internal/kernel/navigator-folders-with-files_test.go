@@ -17,16 +17,16 @@ import (
 
 var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 	var (
-		vfs  fstest.MapFS
+		FS   fstest.MapFS
 		root string
 	)
 
 	BeforeAll(func() {
 		const (
-			verbose = true
+			verbose = false
 		)
 
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -38,29 +38,29 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 	Context("glob", func() {
 		DescribeTable("Filter Children (glob)",
-			func(ctx SpecContext, entry *naviTE) {
-				recording := make(recordingMap)
+			func(ctx SpecContext, entry *helpers.NaviTE) {
+				recording := make(helpers.RecordingMap)
 				once := func(node *tv.Node) error {
 					_, found := recording[node.Extension.Name]
 					Expect(found).To(BeFalse())
 					recording[node.Extension.Name] = len(node.Children)
 
-					return entry.callback(node)
+					return entry.Callback(node)
 				}
-				path := helpers.Path(root, entry.relative)
+				path := helpers.Path(root, entry.Relative)
 				result, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
 						Root:         path,
-						Subscription: entry.subscription,
+						Subscription: entry.Subscription,
 						Handler:      once,
 						GetReadDirFS: func() fs.ReadDirFS {
-							return vfs
+							return FS
 						},
 						GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-							return vfs
+							return FS
 						},
 					},
-					tv.IfOption(entry.caseSensitive, tv.WithHookCaseSensitiveSort()),
+					tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
 					tv.WithHookQueryStatus(
 						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 							return qsys.Stat(helpers.TrimRoot(path))
@@ -73,50 +73,50 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					),
 				)).Navigate(ctx)
 
-				assertNavigation(entry, &testOptions{
-					recording: recording,
-					path:      path,
-					result:    result,
-					err:       err,
+				AssertNavigation(entry, &TestOptions{
+					Recording: recording,
+					Path:      path,
+					Result:    result,
+					Err:       err,
 				})
 			},
 
-			func(entry *naviTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v'", entry.given)
+			func(entry *helpers.NaviTE) string {
+				return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 			},
 
 			// === folders (with files) ==========================================
 
-			Entry(nil, &naviTE{
-				given:        "folders(with files): Path is leaf",
-				relative:     "RETRO-WAVE/Chromatics/Night Drive",
-				subscription: enums.SubscribeFoldersWithFiles,
-				callback:     foldersCallback("LEAF-PATH"),
-				expectedNoOf: quantities{
-					files:   0,
-					folders: 1,
-					children: map[string]int{
+			Entry(nil, &helpers.NaviTE{
+				Given:        "folders(with files): Path is leaf",
+				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				Callback:     FoldersCallback("LEAF-PATH"),
+				ExpectedNoOf: helpers.Quantities{
+					Files:   0,
+					Folders: 1,
+					Children: map[string]int{
 						"Night Drive": 4,
 					},
 				},
 			}),
 
-			Entry(nil, &naviTE{
-				given:        "folders(with files): Path contains folders (check all invoked)",
-				relative:     "RETRO-WAVE",
-				visit:        true,
-				subscription: enums.SubscribeFoldersWithFiles,
-				expectedNoOf: quantities{
-					files:   0,
-					folders: 8,
-					children: map[string]int{
+			Entry(nil, &helpers.NaviTE{
+				Given:        "folders(with files): Path contains folders (check all invoked)",
+				Relative:     "RETRO-WAVE",
+				Visit:        true,
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedNoOf: helpers.Quantities{
+					Files:   0,
+					Folders: 8,
+					Children: map[string]int{
 						"Night Drive":      4,
 						"Northern Council": 4,
 						"Teenage Color":    3,
 						"Innerworld":       3,
 					},
 				},
-				callback: foldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+				Callback: FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 			}),
 		)
 	})
