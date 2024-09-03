@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/level"
 	"github.com/snivilised/traverse/internal/measure"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -111,7 +112,7 @@ func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult,
 	})
 }
 
-func (m *mediator) Invoke(node *core.Node, inspection core.Inspection) error {
+func (m *mediator) Invoke(node *core.Node, inspection override.Inspection) error {
 	return m.guardian.Invoke(node, inspection)
 }
 

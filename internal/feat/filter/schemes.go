@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/measure"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/nfs"
@@ -17,7 +18,7 @@ type (
 	scheme interface {
 		create() error
 		init(pi *types.PluginInit, crate *measure.Crate)
-		next(node *core.Node, inspection core.Inspection) (bool, error)
+		next(node *core.Node, inspection override.Inspection) (bool, error)
 	}
 )
 
@@ -83,7 +84,7 @@ func (f *nativeScheme) create() error {
 	return nil
 }
 
-func (f *nativeScheme) next(node *core.Node, _ core.Inspection) (bool, error) {
+func (f *nativeScheme) next(node *core.Node, _ override.Inspection) (bool, error) {
 	return matchNext(f.filter, node, f.crate)
 }
 
@@ -116,7 +117,7 @@ func (f *childScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	// behaviour in builders.override.Actions
 	//
 	pi.Actions.HandleChildren.Intercept(
-		func(inspection core.Inspection, mums measure.MutableMetrics) {
+		func(inspection override.Inspection, mums measure.MutableMetrics) {
 			files := inspection.Sort(enums.EntryTypeFile)
 			matching := f.filter.Matching(files)
 
@@ -129,7 +130,7 @@ func (f *childScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	)
 }
 
-func (f *childScheme) next(_ *core.Node, _ core.Inspection) (bool, error) {
+func (f *childScheme) next(_ *core.Node, _ override.Inspection) (bool, error) {
 	return false, nil
 }
 
@@ -172,7 +173,7 @@ func (f *samplerScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	// behaviour in builders.override.Actions
 	//
 	pi.Actions.HandleChildren.Intercept(
-		func(inspection core.Inspection, _ measure.MutableMetrics) {
+		func(inspection override.Inspection, _ measure.MutableMetrics) {
 			files := inspection.Sort(enums.EntryTypeFile)
 			matching := f.filter.Matching(files)
 
@@ -181,7 +182,7 @@ func (f *samplerScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	)
 }
 
-func (f *samplerScheme) next(node *core.Node, inspection core.Inspection) (bool, error) {
+func (f *samplerScheme) next(node *core.Node, inspection override.Inspection) (bool, error) {
 	if node.Extension.Scope.IsRoot() {
 		matching := f.filter.Matching(
 			[]fs.DirEntry{nfs.FromFileInfo(node.Info)},
@@ -216,7 +217,7 @@ func (f *customScheme) create() error {
 	return f.filter.Validate()
 }
 
-func (f *customScheme) next(node *core.Node, _ core.Inspection) (bool, error) {
+func (f *customScheme) next(node *core.Node, _ override.Inspection) (bool, error) {
 	return matchNext(f.filter, node, f.crate)
 }
 

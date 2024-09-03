@@ -5,6 +5,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 )
@@ -21,7 +22,7 @@ type anchor struct {
 	crate  measure.Crate
 }
 
-func (t *anchor) Next(node *core.Node, _ core.Inspection) (bool, error) {
+func (t *anchor) Next(node *core.Node, _ override.Inspection) (bool, error) {
 	if metric := lo.Ternary(node.IsFolder(),
 		t.crate.Mums[enums.MetricNoFoldersInvoked],
 		t.crate.Mums[enums.MetricNoFilesInvoked],
@@ -73,7 +74,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	g.container.chain[enums.RoleAnchor] = g.anchor
 
 	if len(active) == 0 {
-		g.container.invoker = NodeInvoker(func(node *core.Node, inspection core.Inspection) error {
+		g.container.invoker = NodeInvoker(func(node *core.Node, inspection override.Inspection) error {
 			_, err := g.anchor.Next(node, inspection)
 			return err
 		})
@@ -82,7 +83,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	}
 
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
-	g.container.invoker = NodeInvoker(func(node *core.Node, inspection core.Inspection) error {
+	g.container.invoker = NodeInvoker(func(node *core.Node, inspection override.Inspection) error {
 		return g.iterate(node, inspection)
 	})
 }
@@ -121,11 +122,11 @@ func (g *guardian) Unwind(role enums.Role) error {
 // Invoke executes the chain which may or may not end up resulting in
 // the invocation of the client's callback, depending on the contents
 // of the chain.
-func (g *guardian) Invoke(node *core.Node, inspection core.Inspection) error {
+func (g *guardian) Invoke(node *core.Node, inspection override.Inspection) error {
 	return g.container.invoker.Invoke(node, inspection)
 }
 
-func (g *guardian) iterate(node *core.Node, inspection core.Inspection) error {
+func (g *guardian) iterate(node *core.Node, inspection override.Inspection) error {
 	for _, role := range g.container.positions.Items() {
 		link := g.container.chain[role]
 

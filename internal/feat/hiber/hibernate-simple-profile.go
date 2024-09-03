@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/locale"
 )
 
@@ -64,14 +65,14 @@ func (p *simple) transition(en enums.Hibernation) {
 	p.current = p.states[en]
 }
 
-func (p *simple) next(node *core.Node, inspection core.Inspection) (bool, error) {
+func (p *simple) next(node *core.Node, inspection override.Inspection) (bool, error) {
 	return p.current.next(node, inspection)
 }
 
 func (p *simple) create() hibernateStates {
 	return hibernateStates{
 		enums.HibernationPending: state{
-			next: func(node *core.Node, _ core.Inspection) (bool, error) {
+			next: func(node *core.Node, _ override.Inspection) (bool, error) {
 				if p.common.triggers.wake.IsMatch(node) {
 					p.controls.Start.Dispatch()(p.common.triggers.wake.Description())
 					p.transition(enums.HibernationActive)
@@ -86,7 +87,7 @@ func (p *simple) create() hibernateStates {
 		},
 
 		enums.HibernationActive: state{
-			next: func(node *core.Node, _ core.Inspection) (bool, error) {
+			next: func(node *core.Node, _ override.Inspection) (bool, error) {
 				if p.common.triggers.sleep.IsMatch(node) {
 					p.controls.Stop.Dispatch()(p.common.triggers.sleep.Description())
 					p.transition(enums.HibernationRetired)
@@ -102,7 +103,7 @@ func (p *simple) create() hibernateStates {
 		},
 
 		enums.HibernationRetired: state{
-			next: func(_ *core.Node, _ core.Inspection) (bool, error) {
+			next: func(_ *core.Node, _ override.Inspection) (bool, error) {
 				return false, fs.SkipAll
 			},
 		},

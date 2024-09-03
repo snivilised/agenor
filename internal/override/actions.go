@@ -1,7 +1,10 @@
 package override
 
 import (
+	"io/fs"
+
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/tapable"
 )
@@ -17,6 +20,17 @@ import (
 // circular dependencies;...
 
 type (
+
+	// Inspection
+	Inspection interface {
+		Current() *core.Node
+		Contents() core.DirectoryContents
+		Entries() []fs.DirEntry
+		Sort(et enums.EntryType) []fs.DirEntry
+		Pick(et enums.EntryType)
+		AssignChildren(children []fs.DirEntry)
+	}
+
 	Action[F any] interface {
 		tapable.Invokable[F]
 		// Intercept overrides the default tap-able core function
@@ -37,7 +51,7 @@ type (
 	// HandleChildrenInterceptor used for folders with files subscription
 	// type.
 	HandleChildrenInterceptor func(
-		inspection core.Inspection,
+		inspection Inspection,
 		mums measure.MutableMetrics,
 	)
 )

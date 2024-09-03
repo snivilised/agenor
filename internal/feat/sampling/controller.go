@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
@@ -19,7 +20,7 @@ func (p *controller) Role() enums.Role {
 	return enums.RoleSampler
 }
 
-func (p *controller) Next(_ *core.Node, _ core.Inspection) (bool, error) {
+func (p *controller) Next(_ *core.Node, _ override.Inspection) (bool, error) {
 	return true, nil
 }
 
