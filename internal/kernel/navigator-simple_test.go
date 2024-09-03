@@ -85,7 +85,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			AssertNavigation(entry, &TestOptions{
+			helpers.AssertNavigation(entry, &helpers.TestOptions{
 				FS:        FS,
 				Recording: recording,
 				Path:      path,
@@ -107,7 +107,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "universal: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeUniversal,
-			Callback:     UniversalCallback("LEAF-PATH"),
+			Callback:     helpers.UniversalCallback("LEAF-PATH"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   4,
 				Folders: 1,
@@ -118,7 +118,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "universal: Path contains folders",
 			Relative:     "RETRO-WAVE",
 			Subscription: enums.SubscribeUniversal,
-			Callback:     UniversalCallback("CONTAINS-FOLDERS"),
+			Callback:     helpers.UniversalCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   14,
 				Folders: 8,
@@ -130,7 +130,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Relative:     "RETRO-WAVE",
 			Visit:        true,
 			Subscription: enums.SubscribeUniversal,
-			Callback:     UniversalCallback("VISIT-CONTAINS-FOLDERS"),
+			Callback:     helpers.UniversalCallback("VISIT-CONTAINS-FOLDERS"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   14,
 				Folders: 8,
@@ -143,7 +143,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "folders: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeFolders,
-			Callback:     FoldersCallback("LEAF-PATH"),
+			Callback:     helpers.FoldersCallback("LEAF-PATH"),
 			ExpectedNoOf: helpers.Quantities{
 				Folders: 1,
 			},
@@ -153,7 +153,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "folders: Path contains folders",
 			Relative:     "RETRO-WAVE",
 			Subscription: enums.SubscribeFolders,
-			Callback:     FoldersCallback("CONTAINS-FOLDERS"),
+			Callback:     helpers.FoldersCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: helpers.Quantities{
 				Folders: 8,
 			},
@@ -164,7 +164,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Relative:     "RETRO-WAVE",
 			Visit:        true,
 			Subscription: enums.SubscribeFolders,
-			Callback:     FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+			Callback:     helpers.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 			ExpectedNoOf: helpers.Quantities{
 				Folders: 8,
 			},
@@ -175,7 +175,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Relative:      "rock/metal",
 			Subscription:  enums.SubscribeFolders,
 			CaseSensitive: true,
-			Callback: FoldersCaseSensitiveCallback(
+			Callback: helpers.FoldersCaseSensitiveCallback(
 				"rock/metal/HARD-METAL", "rock/metal/dark",
 			),
 			ExpectedNoOf: helpers.Quantities{
@@ -190,7 +190,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "files: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeFiles,
-			Callback:     FilesCallback("LEAF-PATH"),
+			Callback:     helpers.FilesCallback("LEAF-PATH"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   4,
 				Folders: 0,
@@ -201,7 +201,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Given:        "files: Path contains folders",
 			Relative:     "RETRO-WAVE",
 			Subscription: enums.SubscribeFiles,
-			Callback:     FilesCallback("CONTAINS-FOLDERS"),
+			Callback:     helpers.FilesCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   14,
 				Folders: 0,
@@ -213,7 +213,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			Relative:     "RETRO-WAVE",
 			Visit:        true,
 			Subscription: enums.SubscribeFiles,
-			Callback:     FilesCallback("VISIT-CONTAINS-FOLDERS"),
+			Callback:     helpers.FilesCallback("VISIT-CONTAINS-FOLDERS"),
 			ExpectedNoOf: helpers.Quantities{
 				Files:   14,
 				Folders: 0,

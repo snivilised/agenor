@@ -73,7 +73,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					),
 				)).Navigate(ctx)
 
-				AssertNavigation(entry, &TestOptions{
+				helpers.AssertNavigation(entry, &helpers.TestOptions{
 					Recording: recording,
 					Path:      path,
 					Result:    result,
@@ -91,7 +91,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				Given:        "folders(with files): Path is leaf",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeFoldersWithFiles,
-				Callback:     FoldersCallback("LEAF-PATH"),
+				Callback:     helpers.FoldersCallback("LEAF-PATH"),
 				ExpectedNoOf: helpers.Quantities{
 					Files:   0,
 					Folders: 1,
@@ -116,7 +116,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 						"Innerworld":       3,
 					},
 				},
-				Callback: FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+				Callback: helpers.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 			}),
 		)
 	})
