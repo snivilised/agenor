@@ -1,4 +1,4 @@
-package kernel_test
+package sampling_test
 
 import (
 	"fmt"
@@ -127,7 +127,7 @@ var _ = Describe("Sampling", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			AssertNavigation(&entry.NaviTE, &TestOptions{
+			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
 				FS:          FS,
 				Recording:   recording,
 				Path:        path,
