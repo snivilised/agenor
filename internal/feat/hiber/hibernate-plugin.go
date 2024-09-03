@@ -4,6 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -41,7 +42,7 @@ func (p *Plugin) Register(kc types.KernelController) error {
 	return nil
 }
 
-func (p *Plugin) Next(node *core.Node, inspection core.Inspection) (bool, error) {
+func (p *Plugin) Next(node *core.Node, inspection override.Inspection) (bool, error) {
 	return p.profile.next(node, inspection)
 }
 

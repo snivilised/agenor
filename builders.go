@@ -1,7 +1,6 @@
 package tv
 
 import (
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/measure"
@@ -51,7 +50,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	//
 	actions := &override.Actions{
 		HandleChildren: override.NewActionCtrl[override.HandleChildrenInterceptor](
-			func(inspection core.Inspection, mums measure.MutableMetrics) {
+			func(inspection override.Inspection, mums measure.MutableMetrics) {
 				// [KEEP-FILTER-IN-SYNC] keep this in sync with filter-plugin/childScheme.init
 				files := inspection.Sort(enums.EntryTypeFile)
 				inspection.AssignChildren(files)
