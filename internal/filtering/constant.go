@@ -7,7 +7,7 @@ import (
 
 func NewPermissiveTraverseFilter(def *core.FilterDef) core.TraverseFilter {
 	return &permissiveTraverseFilter{
-		Filter: Filter{
+		Base: Base{
 			name:  def.Description,
 			scope: enums.ScopeTop,
 		},
@@ -15,7 +15,7 @@ func NewPermissiveTraverseFilter(def *core.FilterDef) core.TraverseFilter {
 }
 
 type permissiveTraverseFilter struct {
-	Filter
+	Base
 	match bool
 }
 
@@ -29,7 +29,7 @@ func (f *permissiveTraverseFilter) IsMatch(_ *core.Node) bool {
 
 func NewProhibitiveTraverseFilter(def *core.FilterDef) core.TraverseFilter {
 	return &prohibitiveTraverseFilter{
-		Filter: Filter{
+		Base: Base{
 			name:  def.Description,
 			scope: enums.ScopeTop,
 		},
@@ -37,7 +37,7 @@ func NewProhibitiveTraverseFilter(def *core.FilterDef) core.TraverseFilter {
 }
 
 type prohibitiveTraverseFilter struct {
-	Filter
+	Base
 	match bool
 }
 

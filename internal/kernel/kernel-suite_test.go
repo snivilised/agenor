@@ -13,7 +13,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/feat/refine"
+	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
@@ -328,9 +328,9 @@ func assertMetrics(entry *naviTE, to *testOptions) {
 
 // customSamplingFilter is a custom sampling filter that just happens
 // to use a glob as part of its implementation. The client can of course
-// define their own custom implementation using refine.SampleFilter.
+// define their own custom implementation using filter.SampleFilter.
 type customSamplingFilter struct {
-	refine.SampleFilter
+	filtering.Sample
 	description string
 	pattern     string
 }
@@ -340,11 +340,11 @@ func (f *customSamplingFilter) Description() string {
 }
 
 func (f *customSamplingFilter) Scope() enums.FilterScope {
-	return f.SampleFilter.Scope()
+	return f.Sample.Scope()
 }
 
 func (f *customSamplingFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
-	return f.SampleFilter.Matching(children,
+	return f.Sample.Matching(children,
 		func(entry fs.DirEntry, _ int) bool {
 			matched, _ := filepath.Match(f.pattern, entry.Name())
 			return matched

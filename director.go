@@ -3,8 +3,8 @@ package tv
 import (
 	"io/fs"
 
+	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
-	"github.com/snivilised/traverse/internal/feat/refine"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/feat/sampling"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -29,7 +29,7 @@ func features(o *pref.Options, mediator types.Mediator,
 			// order. How can we decouple ourselves from this
 			// requirement? => the cure is worse than the disease
 			//
-			hiber.IfActive, refine.IfActive, sampling.IfActive,
+			hiber.IfActive, filter.IfActive, sampling.IfActive,
 		}
 	)
 

@@ -17,7 +17,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-var _ = Describe("NavigatorFilterRegex", Ordered, func() {
+var _ = Describe("filter", Ordered, func() {
 	var (
 		vfs  fstest.MapFS
 		root string
@@ -25,7 +25,7 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 
 	BeforeAll(func() {
 		const (
-			verbose = true
+			verbose = false
 		)
 
 		vfs, root = helpers.Musico(verbose,
@@ -39,7 +39,7 @@ var _ = Describe("NavigatorFilterRegex", Ordered, func() {
 		services.Reset()
 	})
 
-	DescribeTable("regex-filter",
+	DescribeTable("regex",
 		func(ctx SpecContext, entry *filterTE) {
 			var (
 				traverseFilter core.TraverseFilter
