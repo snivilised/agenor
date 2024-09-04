@@ -155,7 +155,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Handler:      noOpHandler,
 						},
 						tv.WithFilter(&pref.FilterOptions{}),
-						tv.WithOnStart(func(_ string) {}),
+						tv.WithOnWake(func(_ string) {}),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -180,7 +180,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
-						tv.WithOnStop(func(_ string) {}),
+						tv.WithOnSleep(func(_ string) {}),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -205,7 +205,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
-						tv.WithOnStop(func(_ string) {}),
+						tv.WithOnSleep(func(_ string) {}),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())

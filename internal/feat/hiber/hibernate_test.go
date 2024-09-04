@@ -65,11 +65,11 @@ var _ = Describe("feature", Ordered, func() {
 							},
 						},
 
-						tv.WithOnStart(func(description string) {
+						tv.WithOnWake(func(description string) {
 							GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
 						}),
 
-						tv.WithOnStop(func(description string) {
+						tv.WithOnSleep(func(description string) {
 							GinkgoWriter.Printf("===> 🔇 Sleep: '%v'\n", description)
 						}),
 
@@ -154,11 +154,11 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				},
 
-				tv.WithOnStart(func(description string) {
+				tv.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
 				}),
 
-				tv.WithOnStop(func(description string) {
+				tv.WithOnSleep(func(description string) {
 					GinkgoWriter.Printf("===> 🔇 Sleep: '%v'\n", description)
 				}),
 
@@ -202,7 +202,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: helpers.NaviTE{
-				Given:        "start and stop (folders, inclusive:default)",
+				Given:        "wake and sleep (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"Night Drive", "College",
@@ -235,7 +235,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: helpers.NaviTE{
-				Given:        "start and stop (folders, excl:start, inc:stop, mute)",
+				Given:        "wake and sleep (folders, excl:wake, inc:sleep, mute)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"College", "Northern Council",
@@ -269,7 +269,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: helpers.NaviTE{
-				Given:        "start only (folders, inclusive:default)",
+				Given:        "wake only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
@@ -295,7 +295,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: helpers.NaviTE{
-				Given:        "stop only (folders, inclusive:default)",
+				Given:        "sleep only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"RETRO-WAVE", "Chromatics", "Night Drive", "College",
@@ -322,7 +322,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: helpers.NaviTE{
-				Given:        "stop only (folders, inclusive:default)",
+				Given:        "sleep only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
 				Mandatory:    []string{"RETRO-WAVE", "Chromatics"},

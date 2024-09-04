@@ -23,8 +23,8 @@ type (
 
 	// HibernationBehaviour
 	HibernationBehaviour struct {
-		InclusiveStart bool
-		InclusiveStop  bool
+		InclusiveWake  bool
+		InclusiveSleep bool
 	}
 
 	CascadeBehaviour struct {

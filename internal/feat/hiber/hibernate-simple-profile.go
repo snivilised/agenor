@@ -74,7 +74,7 @@ func (p *simple) create() hibernateStates {
 		enums.HibernationPending: state{
 			next: func(node *core.Node, _ override.Inspection) (bool, error) {
 				if p.common.triggers.wake.IsMatch(node) {
-					p.controls.Start.Dispatch()(p.common.triggers.wake.Description())
+					p.controls.Wake.Dispatch()(p.common.triggers.wake.Description())
 					p.transition(enums.HibernationActive)
 
 					if p.common.ho.Behaviour.InclusiveWake {
@@ -89,7 +89,7 @@ func (p *simple) create() hibernateStates {
 		enums.HibernationActive: state{
 			next: func(node *core.Node, _ override.Inspection) (bool, error) {
 				if p.common.triggers.sleep.IsMatch(node) {
-					p.controls.Stop.Dispatch()(p.common.triggers.sleep.Description())
+					p.controls.Sleep.Dispatch()(p.common.triggers.sleep.Description())
 					p.transition(enums.HibernationRetired)
 
 					if p.common.ho.Behaviour.InclusiveSleep {

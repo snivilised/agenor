@@ -10,17 +10,17 @@ import (
 var _ = Describe("event", func() {
 	var description string
 
-	Context("stop", func() {
+	Context("sleep", func() {
 		Context("single", func() {
 			When("listener", func() {
 				It("🧪 should: invoke client's handler", func() {
 					invoked := false
 					o, _ := pref.Get()
 
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						invoked = true
 					})
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Dispatch()(description)
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -31,16 +31,16 @@ var _ = Describe("event", func() {
 					invoked := false
 					o, _ := pref.Get()
 
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						invoked = true
 					})
-					o.Binder.Controls.Stop.Mute()
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Mute()
+					o.Binder.Controls.Sleep.Dispatch()(description)
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
-					o.Binder.Controls.Stop.Unmute()
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Unmute()
+					o.Binder.Controls.Sleep.Dispatch()(description)
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -52,21 +52,21 @@ var _ = Describe("event", func() {
 					count := 0
 					o, _ := pref.Get()
 
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						count++
 					})
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						count++
 					})
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Dispatch()(description)
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						count++
 					})
 
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Dispatch()(description)
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -76,15 +76,15 @@ var _ = Describe("event", func() {
 					count := 0
 					o, _ := pref.Get()
 
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						count++
 					})
-					o.Events.Stop.On(func(_ string) {
+					o.Events.Sleep.On(func(_ string) {
 						count++
 					})
 
-					o.Binder.Controls.Stop.Mute()
-					o.Binder.Controls.Stop.Dispatch()(description)
+					o.Binder.Controls.Sleep.Mute()
+					o.Binder.Controls.Sleep.Dispatch()(description)
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -95,7 +95,7 @@ var _ = Describe("event", func() {
 			It("🧪 should: invoke no-op", func() {
 				o, _ := pref.Get()
 
-				o.Binder.Controls.Stop.Dispatch()(description)
+				o.Binder.Controls.Sleep.Dispatch()(description)
 			})
 		})
 	})

@@ -111,8 +111,8 @@ var (
 	WithOnBegin                            = pref.WithOnBegin
 	WithOnDescend                          = pref.WithOnDescend
 	WithOnEnd                              = pref.WithOnEnd
-	WithOnStart                            = pref.WithOnStart
-	WithOnStop                             = pref.WithOnStop
+	WithOnSleep                            = pref.WithOnSleep
+	WithOnWake                             = pref.WithOnWake
 	WithPanicHandler                       = pref.WithPanicHandler
 	WithNoRecurse                          = pref.WithNoRecurse
 	WithNoW                                = pref.WithNoW

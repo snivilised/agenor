@@ -14,7 +14,7 @@ const (
 	NotificationEnd                                          // end-notification
 	NotificationDescend                                      // descend-notification
 	NotificationAscend                                       // ascend-notification
-	NotificationStart                                        // start-notification
-	NotificationStop                                         // stop-notification
+	NotificationWake                                         // wake-notification
+	NotificationSleep                                        // sleep-notification
 	NotificationAll       = math.MaxUint32                   // all-notification
 )

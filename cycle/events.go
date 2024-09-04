@@ -21,8 +21,8 @@ type (
 		Begin   Event[BeginHandler]
 		Descend Event[NodeHandler]
 		End     Event[EndHandler]
-		Start   Event[HibernateHandler]
-		Stop    Event[HibernateHandler]
+		Wake    Event[HibernateHandler]
+		Sleep   Event[HibernateHandler]
 	}
 
 	// since the Controls are only required internally as they are used
@@ -35,8 +35,8 @@ type (
 		Begin   NotificationCtrl[BeginHandler]
 		Descend NotificationCtrl[NodeHandler]
 		End     NotificationCtrl[EndHandler]
-		Start   NotificationCtrl[HibernateHandler]
-		Stop    NotificationCtrl[HibernateHandler]
+		Wake    NotificationCtrl[HibernateHandler]
+		Sleep   NotificationCtrl[HibernateHandler]
 	}
 )
 
@@ -58,8 +58,8 @@ func NewControls() Controls {
 		Begin:   *NewNotificationCtrl[BeginHandler](nopBegin, broadcastBegin),
 		Descend: *NewNotificationCtrl[NodeHandler](nopNode, broadcastNode),
 		End:     *NewNotificationCtrl[EndHandler](nopEnd, broadcastEnd),
-		Start:   *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
-		Stop:    *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
+		Wake:    *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
+		Sleep:   *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
 	}
 }
 
@@ -70,8 +70,8 @@ func (e *Events) Bind(cs *Controls) {
 	e.Begin = &cs.Begin
 	e.Descend = &cs.Descend
 	e.End = &cs.End
-	e.Start = &cs.Start
-	e.Stop = &cs.Stop
+	e.Wake = &cs.Wake
+	e.Sleep = &cs.Sleep
 }
 
 // On subscribes to a life cycle event

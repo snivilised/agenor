@@ -105,10 +105,10 @@ var _ = Describe("feature", Ordered, func() {
 						return rsys.ReadDir(helpers.TrimRoot(dirname))
 					},
 				),
-				tv.WithOnStart(func(description string) {
+				tv.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔆 Waking: '%v'\n", description)
 				}),
-				tv.WithOnStop(func(description string) {
+				tv.WithOnSleep(func(description string) {
 					GinkgoWriter.Printf("===> 🌙 Sleeping: '%v'\n", description)
 				}),
 			)).Navigate(ctx)
