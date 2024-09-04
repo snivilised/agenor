@@ -44,13 +44,14 @@ func newScheme(o *pref.Options) scheme {
 		}
 	}
 
-	if o.Filter.IsCustomFilteringActive() {
-		return &customScheme{
-			common: c,
-		}
+	// If none of the other schemes active, then according to
+	// FilterOptions.IsFilteringActive, the only other possibility
+	// is that the client has defined a custom filter, so we don't
+	// need to check again.
+	//
+	return &customScheme{
+		common: c,
 	}
-
-	return nil
 }
 
 type common struct {
@@ -68,7 +69,7 @@ type nativeScheme struct {
 }
 
 func (f *nativeScheme) create() error {
-	filter, err := filtering.NewNodeFilter(f.o.Filter.Node, &f.o.Filter)
+	filter, err := filtering.New(f.o.Filter.Node, &f.o.Filter)
 	if err != nil {
 		return err
 	}
@@ -94,7 +95,7 @@ type childScheme struct {
 }
 
 func (f *childScheme) create() error {
-	filter, err := filtering.NewChildFilter(f.o.Filter.Child)
+	filter, err := filtering.NewChild(f.o.Filter.Child)
 
 	if err != nil {
 		return err
@@ -140,7 +141,7 @@ type samplerScheme struct {
 }
 
 func (f *samplerScheme) create() error {
-	filter, err := filtering.NewSampleFilter(f.o.Filter.Sample, &f.o.Sampling)
+	filter, err := filtering.NewSample(f.o.Filter.Sample, &f.o.Sampling)
 
 	if err != nil {
 		return err
@@ -163,7 +164,7 @@ func (f *samplerScheme) create() error {
 		})
 	}
 
-	return nil
+	return filter.Validate()
 }
 
 func (f *samplerScheme) init(pi *types.PluginInit, crate *measure.Crate) {

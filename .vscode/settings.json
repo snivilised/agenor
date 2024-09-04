@@ -111,6 +111,7 @@
     "unconvert",
     "unlambda",
     "unparam",
+    "vals",
     "varcheck",
     "verr",
     "watchv",

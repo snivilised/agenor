@@ -1,5 +1,10 @@
 package filtering
 
+import (
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/pref"
+)
+
 // 📦 pkg: filtering - this package is required because filters are required
 // not just but the filter plugin, but others too like hibernation. The filter
 // required by hibernation could have been implemented by the filter plugin,
@@ -12,3 +17,31 @@ package filtering
 // simply responsible for the plugin aspects of filtering, not implementation
 // or creation.
 //
+
+// OrFuncE returns the first func that returns a value that is not equal to the
+// zero value and does not return an error. If no argument is non-zero, it returns
+// the zero value. All functions, must return an error value
+func OrFuncE[T comparable](funcs ...func() (T, error)) (T, error) {
+	var zero T
+	for _, fn := range funcs {
+		result, err := fn()
+		if result != zero && err == nil {
+			return result, err
+		}
+	}
+
+	return zero, nil
+}
+
+type (
+	// filterNativeFunc implies that the filter has to be constructed from the
+	// filter definition only.
+	filterNativeFunc func(definition *core.FilterDef) (core.TraverseFilter, error)
+
+	// filterUsingOptionsFunc implies that the filter options object is required
+	// to obtain the filter. The filter may be created or just retrieved
+	// if custom.
+	filterUsingOptionsFunc func(definition *core.FilterDef,
+		fo *pref.FilterOptions,
+	) (core.TraverseFilter, error)
+)

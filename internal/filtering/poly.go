@@ -7,36 +7,6 @@ import (
 	"github.com/snivilised/traverse/enums"
 )
 
-func createPolyFilter(polyDef *core.PolyFilterDef) (core.TraverseFilter, error) {
-	// enforce the correct filter scopes
-	//
-	polyDef.File.Scope.Set(enums.ScopeFile)
-	polyDef.File.Scope.Clear(enums.ScopeFolder)
-
-	polyDef.Folder.Scope.Set(enums.ScopeFolder)
-	polyDef.Folder.Scope.Clear(enums.ScopeFile)
-
-	var (
-		file, folder core.TraverseFilter
-		err          error
-	)
-
-	if file, err = NewNodeFilter(&polyDef.File, nil); err != nil {
-		return nil, err
-	}
-
-	if folder, err = NewNodeFilter(&polyDef.Folder, nil); err != nil {
-		return nil, err
-	}
-
-	filter := &Poly{
-		File:   file,
-		Folder: folder,
-	}
-
-	return filter, nil
-}
-
 // Poly is a dual filter that allows files and folders to be filtered
 // independently. The Folder filter only applies when the current node
 // is a file. This is because, filtering doesn't affect navigation, it only

@@ -1,8 +1,86 @@
 package filtering
 
 import (
+	"slices"
+	"strings"
+
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/locale"
 )
+
+func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
+	var (
+		filter core.ChildTraverseFilter
+	)
+
+	if def == nil {
+		return nil, locale.ErrFilterIsNil
+	}
+
+	switch def.Type {
+	case enums.FilterTypeExtendedGlob:
+		var (
+			err                error
+			segments, suffixes []string
+		)
+
+		if segments, suffixes, err = splitExtendedGlobPattern(def.Pattern); err != nil {
+			return nil, locale.NewInvalidIncaseFilterDefError(def.Pattern)
+		}
+
+		base, exclusion := splitGlob(segments[0])
+
+		filter = &ChildExtendedGlobFilter{
+			Child: Child{
+				Name:    def.Description,
+				Pattern: def.Pattern,
+				Negate:  def.Negate,
+			},
+			baseGlob: base,
+			suffixes: lo.Map(suffixes, func(s string, _ int) string {
+				return strings.ToLower(strings.TrimPrefix(strings.TrimSpace(s), "."))
+			}),
+			anyExtension: slices.Contains(suffixes, "*"),
+			exclusion:    exclusion,
+		}
+
+	case enums.FilterTypeRegex:
+		filter = &ChildRegex{
+			Child: Child{
+				Name:    def.Description,
+				Pattern: def.Pattern,
+				Negate:  def.Negate,
+			},
+		}
+
+	case enums.FilterTypeGlob:
+		filter = &ChildGlob{
+			Child: Child{
+				Name:    def.Description,
+				Pattern: def.Pattern,
+				Negate:  def.Negate,
+			},
+		}
+
+	case enums.FilterTypeCustom:
+		return nil, locale.ErrFilterCustomNotSupported
+
+	case enums.FilterTypeUndefined:
+		return nil, locale.ErrFilterUndefined
+
+	case enums.FilterTypePoly:
+	}
+
+	if filter != nil {
+		if err := filter.Validate(); err != nil {
+			return nil, err
+		}
+	}
+
+	return filter, nil
+}
 
 // ChildFilter ================================================================
 
