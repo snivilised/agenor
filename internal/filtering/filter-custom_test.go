@@ -8,6 +8,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -32,6 +33,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
+		Expect(li18ngo.Use()).To(Succeed())
 	})
 
 	BeforeEach(func() {

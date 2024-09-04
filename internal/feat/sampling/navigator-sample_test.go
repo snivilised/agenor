@@ -8,6 +8,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -18,7 +19,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-var _ = Describe("Sampling", Ordered, func() {
+var _ = Describe("feature", Ordered, func() {
 	var (
 		FS   fstest.MapFS
 		root string
@@ -34,10 +35,59 @@ var _ = Describe("Sampling", Ordered, func() {
 			filepath.Join("MUSICO", "edm"),
 		)
 		Expect(root).NotTo(BeEmpty())
+		Expect(li18ngo.Use()).To(Succeed())
 	})
 
 	BeforeEach(func() {
 		services.Reset()
+	})
+
+	Context("comprehension", func() {
+		When("universal: slice sample", func() {
+			It("🧪 should: foo", Label("example"), func(ctx SpecContext) {
+				path := helpers.Path(root, "RETRO-WAVE")
+				result, _ := tv.Walk().Configure().Extent(tv.Prime(
+					&tv.Using{
+						Root:         path,
+						Subscription: enums.SubscribeUniversal,
+						Handler: func(node *core.Node) error {
+							GinkgoWriter.Printf(
+								"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
+							)
+							return nil
+						},
+						GetReadDirFS: func() fs.ReadDirFS {
+							return FS
+						},
+						GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+							return FS
+						},
+					},
+					tv.WithSampling(&pref.SamplingOptions{
+						SampleType: enums.SampleTypeSlice,
+						NoOf: pref.EntryQuantities{
+							Files:   2,
+							Folders: 2,
+						},
+					}),
+					tv.WithHookQueryStatus(
+						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+							return qsys.Stat(helpers.TrimRoot(path))
+						},
+					),
+					tv.WithHookReadDirectory(
+						func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+							return rsys.ReadDir(helpers.TrimRoot(dirname))
+						},
+					),
+				)).Navigate(ctx)
+
+				GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
+					result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					result.Metrics().Count(enums.MetricNoFilesInvoked),
+				)
+			})
+		})
 	})
 
 	DescribeTable("sample",

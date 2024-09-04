@@ -4,11 +4,16 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 )
 
-var _ = Describe("controls", func() {
+var _ = Describe("controls", Ordered, func() {
+	BeforeAll(func() {
+		Expect(li18ngo.Use()).To(Succeed())
+	})
+
 	When("bind", func() {
 		It("🧪 should: dispatch notification to event handler", func() {
 			const path = "/traversal-root"

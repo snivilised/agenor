@@ -9,11 +9,13 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -32,6 +34,13 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
+		Expect(li18ngo.Use(
+			func(o *li18ngo.UseOptions) {
+				o.From.Sources = li18ngo.TranslationFiles{
+					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+				}
+			},
+		)).To(Succeed())
 	})
 
 	BeforeEach(func() {
