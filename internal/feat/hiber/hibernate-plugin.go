@@ -19,6 +19,7 @@ func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
 			profile: &simple{
 				common: common{
 					ho: &o.Hibernate,
+					fo: &o.Filter,
 				},
 			},
 		}

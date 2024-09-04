@@ -5,6 +5,7 @@ import (
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/override"
+	"github.com/snivilised/traverse/pref"
 )
 
 const (
@@ -47,6 +48,7 @@ type (
 
 	common struct {
 		ho       *core.HibernateOptions
+		fo       *pref.FilterOptions
 		triggers triggers
 		controls *cycle.Controls
 	}

@@ -23,7 +23,7 @@ func (p *simple) init(controls *cycle.Controls) error {
 	p.controls = controls
 
 	if p.common.ho.WakeAt != nil {
-		filter, err := filtering.NewNodeFilter(p.common.ho.WakeAt, nil)
+		filter, err := filtering.New(p.common.ho.WakeAt, p.common.fo)
 		if err != nil {
 			return err
 		}
@@ -40,7 +40,7 @@ func (p *simple) init(controls *cycle.Controls) error {
 	}
 
 	if p.common.ho.SleepAt != nil {
-		filter, err := filtering.NewNodeFilter(p.common.ho.SleepAt, nil)
+		filter, err := filtering.New(p.common.ho.SleepAt, p.common.fo)
 		if err != nil {
 			return err
 		}

@@ -21,7 +21,7 @@ type Sample struct {
 	Base
 }
 
-func NewSampleFilter(def *core.SampleFilterDef,
+func NewSample(def *core.SampleFilterDef,
 	so *pref.SamplingOptions,
 ) (core.SampleTraverseFilter, error) {
 	var (
