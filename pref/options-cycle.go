@@ -45,23 +45,23 @@ func WithOnEnd(handler cycle.EndHandler) Option {
 	}
 }
 
-// WithOnStart sets the start handler, when hibernation is active
+// WithOnWake sets the wake handler, when hibernation is active
 // and the wake condition has occurred, ie when a file system
 // node is encountered that matches the hibernation's wake filter.
-func WithOnStart(handler cycle.HibernateHandler) Option {
+func WithOnWake(handler cycle.HibernateHandler) Option {
 	return func(o *Options) error {
-		o.Events.Start.On(handler)
+		o.Events.Wake.On(handler)
 
 		return nil
 	}
 }
 
-// WithOnStop sets the stop handler, when hibernation is active
+// WithOnSleep sets the sleep handler, when hibernation is active
 // and the sleep condition has occurred, ie when a file system
 // node is encountered that matches the hibernation's sleep filter.
-func WithOnStop(handler cycle.HibernateHandler) Option {
+func WithOnSleep(handler cycle.HibernateHandler) Option {
 	return func(o *Options) error {
-		o.Events.Stop.On(handler)
+		o.Events.Sleep.On(handler)
 
 		return nil
 	}
