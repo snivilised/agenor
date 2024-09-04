@@ -8,10 +8,22 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/nfs"
 )
 
-var _ = Describe("ResolvePath", func() {
+var _ = Describe("ResolvePath", Ordered, func() {
+	BeforeAll(func() {
+		Expect(li18ngo.Use(
+			func(o *li18ngo.UseOptions) {
+				o.From.Sources = li18ngo.TranslationFiles{
+					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+				}
+			},
+		)).To(Succeed())
+	})
+
 	DescribeTable("Overrides provided",
 		func(entry *RPEntry) {
 			mocks := nfs.ResolveMocks{

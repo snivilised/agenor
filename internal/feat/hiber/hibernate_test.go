@@ -17,12 +17,11 @@ import (
 	"github.com/snivilised/traverse/internal/helpers"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
 )
 
 var _ = Describe("feature", Ordered, func() {
 	var (
-		vfs  fstest.MapFS
+		FS   fstest.MapFS
 		root string
 	)
 
@@ -31,22 +30,88 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 			filepath.Join("MUSICO", "edm"),
 		)
 		Expect(root).NotTo(BeEmpty())
-		Expect(li18ngo.Use(
-			func(o *li18ngo.UseOptions) {
-				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
-				}
-			},
-		)).To(Succeed())
+		Expect(li18ngo.Use()).To(Succeed())
 	})
 
 	BeforeEach(func() {
 		services.Reset()
+	})
+
+	Context("comprehension", func() {
+		When("folders: wake and sleep", func() {
+			It("🧪 should: invoke inside hibernation range", Label("example"),
+				func(ctx SpecContext) {
+					path := helpers.Path(root, "RETRO-WAVE")
+					result, _ := tv.Walk().Configure().Extent(tv.Prime(
+						&tv.Using{
+							Root:         path,
+							Subscription: enums.SubscribeFolders,
+							Handler: func(node *core.Node) error {
+								GinkgoWriter.Printf(
+									"---> 🍯 EXAMPLE-HIBERNATE-CALLBACK: '%v'\n", node.Path,
+								)
+								return nil
+							},
+							GetReadDirFS: func() fs.ReadDirFS {
+								return FS
+							},
+							GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+								return FS
+							},
+						},
+
+						tv.WithOnStart(func(description string) {
+							GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
+						}),
+
+						tv.WithOnStop(func(description string) {
+							GinkgoWriter.Printf("===> 🔇 Sleep: '%v'\n", description)
+						}),
+
+						tv.WithHibernationOptions(
+							&core.HibernateOptions{
+								WakeAt: &core.FilterDef{
+									Type:        enums.FilterTypeGlob,
+									Description: "Wake At: Night Drive",
+									Pattern:     "Night Drive",
+								},
+								SleepAt: &core.FilterDef{
+									Type:        enums.FilterTypeGlob,
+									Description: "Sleep At: Electric Youth",
+									Pattern:     "Electric Youth",
+								},
+							},
+						),
+
+						tv.WithHookQueryStatus(
+							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+								return qsys.Stat(helpers.TrimRoot(path))
+							},
+						),
+
+						tv.WithHookReadDirectory(
+							func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+								// This is only required because fstest.MapFS strangely
+								// can't resolve paths with a leading /. Any other program
+								// using a different file system should not need to use
+								// this hook for this purpose.
+								//
+								return rsys.ReadDir(helpers.TrimRoot(dirname))
+							},
+						),
+					)).Navigate(ctx)
+
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders\n",
+						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					)
+				},
+			)
+		})
 	})
 
 	DescribeTable("simple hibernate",
@@ -82,10 +147,10 @@ var _ = Describe("feature", Ordered, func() {
 					Subscription: entry.Subscription,
 					Handler:      client,
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 
@@ -120,7 +185,7 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
-				FS:          vfs,
+				FS:          FS,
 				Recording:   recording,
 				Path:        path,
 				Result:      result,
@@ -298,10 +363,10 @@ var _ = Describe("feature", Ordered, func() {
 					Subscription: entry.Subscription,
 					Handler:      entry.Callback,
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 
@@ -330,7 +395,7 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
-				FS:     vfs,
+				FS:     FS,
 				Path:   path,
 				Result: result,
 				Err:    err,
@@ -406,10 +471,10 @@ var _ = Describe("feature", Ordered, func() {
 					Subscription: entry.Subscription,
 					Handler:      helpers.FoldersCallback("EARLY-EXIT-😴"),
 					GetReadDirFS: func() fs.ReadDirFS {
-						return vfs
+						return FS
 					},
 					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
-						return vfs
+						return FS
 					},
 				},
 
@@ -438,7 +503,7 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
-				FS:     vfs,
+				FS:     FS,
 				Path:   path,
 				Result: result,
 				Err:    err,

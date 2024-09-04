@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -33,10 +34,63 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
+		Expect(li18ngo.Use()).To(Succeed())
 	})
 
 	BeforeEach(func() {
 		services.Reset()
+	})
+
+	Context("comprehension", func() {
+		When("universal: filtering with glob", func() {
+			It("should: invoke for filtered nodes only", Label("example"),
+				func(ctx SpecContext) {
+					path := helpers.Path(root, "RETRO-WAVE")
+					filterDefs := &pref.FilterOptions{
+						Node: &core.FilterDef{
+							Type:        enums.FilterTypeGlob,
+							Description: "items with '.flac' suffix",
+							Pattern:     "*.flac",
+							Scope:       enums.ScopeAll,
+						},
+					}
+					result, _ := tv.Walk().Configure().Extent(tv.Prime(
+						&tv.Using{
+							Root:         path,
+							Subscription: enums.SubscribeUniversal,
+							Handler: func(node *core.Node) error {
+								GinkgoWriter.Printf(
+									"---> 🍯 EXAMPLE-GLOB-FILTER-CALLBACK: '%v'\n", node.Path,
+								)
+								return nil
+							},
+							GetReadDirFS: func() fs.ReadDirFS {
+								return FS
+							},
+							GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+								return FS
+							},
+						},
+						tv.WithFilter(filterDefs),
+						tv.WithHookQueryStatus(
+							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
+								return qsys.Stat(helpers.TrimRoot(path))
+							},
+						),
+						tv.WithHookReadDirectory(
+							func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
+								return rfs.ReadDir(helpers.TrimRoot(dirname))
+							},
+						),
+					)).Navigate(ctx)
+
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
+						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+						result.Metrics().Count(enums.MetricNoFilesInvoked),
+					)
+				},
+			)
+		})
 	})
 
 	DescribeTable("glob-filter",

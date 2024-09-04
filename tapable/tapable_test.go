@@ -35,12 +35,12 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
-		vfs     fstest.MapFS // don't forget to use TrimRoot
+		FS      fstest.MapFS // don't forget to use TrimRoot
 		root    string
 	)
 
 	BeforeAll(func() {
-		vfs, root = helpers.Musico(verbose,
+		FS, root = helpers.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -161,7 +161,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, err := o.Hooks.ReadDirectory.Invoke()(vfs, helpers.TrimRoot(path))
+						result, err := o.Hooks.ReadDirectory.Invoke()(FS, helpers.TrimRoot(path))
 						Expect(err).To(Succeed())
 						Expect(result).To(
 							helpers.HaveDirectoryContents(
@@ -190,7 +190,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, e := o.Hooks.ReadDirectory.Invoke()(vfs, helpers.TrimRoot(path))
+						result, e := o.Hooks.ReadDirectory.Invoke()(FS, helpers.TrimRoot(path))
 						Expect(e).To(Succeed())
 						Expect(result).To(
 							helpers.HaveDirectoryContents(
@@ -233,7 +233,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, err := o.Hooks.QueryStatus.Invoke()(vfs, helpers.TrimRoot(path))
+						_, err := o.Hooks.QueryStatus.Invoke()(FS, helpers.TrimRoot(path))
 
 						Expect(err).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
@@ -258,7 +258,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, e := o.Hooks.QueryStatus.Invoke()(vfs, helpers.TrimRoot(path))
+						_, e := o.Hooks.QueryStatus.Invoke()(FS, helpers.TrimRoot(path))
 
 						Expect(e).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not broadcasted")
@@ -274,8 +274,8 @@ var _ = Describe("Tapable", Ordered, func() {
 							return nil, nil
 						},
 					)
-					_, _ = o.Hooks.QueryStatus.Default()(vfs, root)
-					_, _ = o.Hooks.QueryStatus.Invoke()(vfs, root)
+					_, _ = o.Hooks.QueryStatus.Default()(FS, root)
+					_, _ = o.Hooks.QueryStatus.Invoke()(FS, root)
 
 					Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
 				})
