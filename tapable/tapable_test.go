@@ -18,7 +18,7 @@ const (
 	root      = "/traversal-root-path"
 	spoofed   = "spoofed"
 	respoofed = "re-spoofed"
-	verbose   = true
+	verbose   = false
 )
 
 var (

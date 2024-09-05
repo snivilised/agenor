@@ -512,7 +512,7 @@ var _ = Describe("Iterators", func() {
 					for current := forwardIt.Start(); ; {
 						song := current.song()
 						actual = append(actual, song)
-						fmt.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
+						GinkgoWriter.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
 
 						current = forwardIt.Next()
 						if !forwardIt.Valid() {
@@ -592,7 +592,7 @@ var _ = Describe("Iterators", func() {
 					for current := reverseIt.Start(); ; {
 						song := current.song()
 						actual = append(actual, song)
-						fmt.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
+						GinkgoWriter.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
 
 						current = reverseIt.Next()
 						if !reverseIt.Valid() {
