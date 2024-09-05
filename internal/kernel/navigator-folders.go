@@ -71,12 +71,6 @@ func (n *navigatorFolders) inspect(ns *navigationStatic,
 	vapour.Sort(enums.EntryTypeFolder)
 	vapour.Pick(enums.EntryTypeFolder)
 
-	if n.using.Subscription == enums.SubscribeFoldersWithFiles {
-		ns.mediator.resources.Actions.HandleChildren.Invoke()(
-			vapour, ns.mediator.mums,
-		)
-	}
-
 	extend(ns, vapour)
 
 	return vapour, err

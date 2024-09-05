@@ -1,4 +1,4 @@
-package kernel_test
+package filtering_test
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
+var _ = Describe("feature", Ordered, func() {
 	var (
 		FS   fstest.MapFS
 		root string
@@ -48,30 +48,26 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 	})
 
 	DescribeTable("folders with files filtered",
-		func(ctx SpecContext, entry *helpers.FilterTE) {
+		func(ctx SpecContext, entry *helpers.HybridFilterTE) {
 			var (
 				childFilter core.ChildTraverseFilter
 			)
 
 			recording := make(helpers.RecordingMap)
 			filterDefs := &pref.FilterOptions{
-				Child: &core.ChildFilterDef{
-					Type:        enums.FilterTypeGlob,
-					Description: entry.Description,
-					Pattern:     entry.Pattern,
-					Negate:      entry.Negate,
-				},
+				Node:  &entry.NodeDef,
+				Child: &entry.ChildDef,
 				Sink: func(reply pref.FilterReply) {
 					childFilter = reply.Child
 				},
 			}
 
 			path := helpers.Path(root, entry.Relative)
-
 			callback := func(item *core.Node) error {
 				actualNoChildren := len(item.Children)
 				GinkgoWriter.Printf(
-					"===> 💠 Compound Glob Filter(%v, children: %v) source: '%v', node-name: '%v', node-scope: '%v', depth: '%v'\n",
+					"===> 💠 Child Glob Filter(%v, children: %v)"+
+						"source: '%v', node-name: '%v', node-scope: '%v', depth: '%v'\n",
 					childFilter.Description(),
 					actualNoChildren,
 					childFilter.Source(),
@@ -96,6 +92,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 						return FS
 					},
 				},
+				tv.WithOnBegin(helpers.Begin("🛡️")),
+				tv.WithOnEnd(helpers.End("🏁")),
 				tv.WithFilter(filterDefs),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
@@ -109,94 +107,70 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				),
 			)).Navigate(ctx)
 
-			Expect(err).To(Succeed())
-
-			if entry.Mandatory != nil {
-				for _, name := range entry.Mandatory {
-					_, found := recording[name]
-					Expect(found).To(BeTrue(), helpers.Reason(name))
-				}
-			}
-
-			if entry.Prohibited != nil {
-				for _, name := range entry.Prohibited {
-					_, found := recording[name]
-					Expect(found).To(BeFalse(), helpers.Reason(name))
-				}
-			}
-
-			for n, actualNoChildren := range entry.ExpectedNoOf.Children {
-				expected := recording[n]
-
-				Expect(expected).To(Equal(actualNoChildren),
-					helpers.BecauseQuantity("Incorrect no of children",
-						expected,
-						actualNoChildren,
-					),
-				)
-			}
-
-			Expect(result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
-				Equal(entry.ExpectedNoOf.Files),
-				helpers.BecauseQuantity("Incorrect no of files",
-					int(entry.ExpectedNoOf.Files),
-					int(result.Metrics().Count(enums.MetricNoFilesInvoked)),
-				),
-			)
-
-			Expect(result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
-				Equal(entry.ExpectedNoOf.Folders),
-				helpers.BecauseQuantity("Incorrect no of folders",
-					int(entry.ExpectedNoOf.Folders),
-					int(result.Metrics().Count(enums.MetricNoFoldersInvoked)),
-				),
-			)
+			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+				FS:        FS,
+				Recording: recording,
+				Path:      path,
+				Result:    result,
+				Err:       err,
+			})
 		},
-		func(entry *helpers.FilterTE) string {
+		func(entry *helpers.HybridFilterTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
-		// folders with files not implemented yet
-		XEntry(nil, &helpers.FilterTE{
+		Entry(nil, &helpers.HybridFilterTE{
 			NaviTE: helpers.NaviTE{
 				Given:        "folder(with files): glob filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFoldersWithFiles,
 				ExpectedNoOf: helpers.Quantities{
-					Files:   0,
-					Folders: 8,
+					Folders: 6,
 					Children: map[string]int{
-						"Night Drive":      2,
 						"Northern Council": 2,
 						"Teenage Color":    2,
 						"Innerworld":       2,
 					},
 				},
 			},
-			Description: "items with '.flac' suffix",
-			Pattern:     "*.flac",
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders contains o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "items with '.flac' suffix",
+				Pattern:     "*.flac",
+			},
 		}),
 
-		// folders with files not implemented yet
-		XEntry(nil, &helpers.FilterTE{
+		Entry(nil, &helpers.HybridFilterTE{
 			NaviTE: helpers.NaviTE{
 				Given:        "folder(with files): glob filter (negate)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFoldersWithFiles,
 				ExpectedNoOf: helpers.Quantities{
-					Files:   0,
-					Folders: 8,
+					Folders: 2,
 					Children: map[string]int{
-						"Night Drive":      3,
-						"Northern Council": 3,
-						"Teenage Color":    2,
-						"Innerworld":       2,
+						"Night Drive": 3,
 					},
 				},
 			},
-			Description: "items without '.txt' suffix",
-			Pattern:     "*.txt",
-			Negate:      true,
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders don't contain o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+				Negate:      true,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "items without '.txt' suffix",
+				Pattern:     "*.txt",
+				Negate:      true,
+			},
 		}),
 	)
 })

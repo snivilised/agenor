@@ -171,3 +171,67 @@ func (m *NotInvokeNodeMatcher) NegatedFailureMessage(_ interface{}) string {
 		mandatory,
 	)
 }
+
+type ExpectedCount struct {
+	Name  string
+	Count int
+}
+
+type ChildCountMatcher struct {
+	expected interface{}
+}
+
+func HaveChildCountOf(expected interface{}) GomegaMatcher {
+	return &ChildCountMatcher{
+		expected: expected,
+	}
+}
+
+func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
+	recording, ok := actual.(RecordingMap)
+	if !ok {
+		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
+	}
+
+	expected, ok := m.expected.(ExpectedCount)
+	if !ok {
+		return false, fmt.Errorf("matcher expected ExpectedCount (%T)", actual)
+	}
+
+	count, ok := recording[expected.Name]
+	if !ok {
+		return false, fmt.Errorf("🔥 not found: '%v'", expected.Name)
+	}
+
+	if count != expected.Count {
+		return false, fmt.Errorf(
+			"❌ incorrect child count for: '%v', actual: '%v', expected: '%v'",
+			expected.Name,
+			count, expected.Count,
+		)
+	}
+
+	return true, nil
+}
+
+func (m *ChildCountMatcher) FailureMessage(_ interface{}) string {
+	expected, ok := m.expected.(ExpectedCount)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected ExpectedCount (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
+		expected,
+	)
+}
+
+func (m *ChildCountMatcher) NegatedFailureMessage(_ interface{}) string {
+	expected, ok := m.expected.(ExpectedCount)
+	if !ok {
+		return fmt.Sprintf("🔥 matcher expected ExpectedCount (%T)", m.expected)
+	}
+
+	return fmt.Sprintf("❌ Expected\n\t%v\nnode NOT to be invoked\n",
+		expected,
+	)
+}

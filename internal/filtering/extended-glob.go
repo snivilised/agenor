@@ -1,6 +1,7 @@
 package filtering
 
 import (
+	"cmp"
 	"io/fs"
 	"path/filepath"
 	"slices"
@@ -106,21 +107,17 @@ func filterFileByExtendedGlob(name, base, exclusion string,
 		return false
 	}
 
-	return lo.TernaryF(anyExtension,
+	return cmp.Or(
 		func() bool {
-			return true
-		},
+			return anyExtension
+		}(),
 		func() bool {
-			return lo.TernaryF(extension == "",
-				func() bool {
-					return len(suffixes) == 0
-				},
-				func() bool {
-					return lo.Contains(
-						suffixes, strings.ToLower(strings.TrimPrefix(extension, ".")),
-					)
-				},
+			return extension == "" && len(suffixes) == 0
+		}(),
+		func() bool {
+			return lo.Contains(
+				suffixes, strings.ToLower(strings.TrimPrefix(extension, ".")),
 			)
-		},
+		}(),
 	)
 }

@@ -16,3 +16,9 @@ type BasePlugin struct {
 func (p *BasePlugin) Role() enums.Role {
 	return p.ActivatedRole
 }
+
+func (p *BasePlugin) Register(kc types.KernelController) error {
+	p.Kontroller = kc
+
+	return nil
+}

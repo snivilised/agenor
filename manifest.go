@@ -15,8 +15,10 @@ type (
 var (
 	manifestOrder = []enums.Role{
 		enums.RoleHibernate,
+		enums.RoleNanny,
 		enums.RoleClientFilter,
 		enums.RoleSampler,
+		// anchor goes at this end
 	}
 )
 
@@ -36,10 +38,18 @@ func manifest(active []enums.Role) []enums.Role {
 			}
 			return true
 		},
+		"nanny-defers-to-filter": func(current enums.Role, active, _ []enums.Role) bool {
+			if current == enums.RoleNanny &&
+				slices.Contains(active, enums.RoleClientFilter) {
+				return false
+			}
+			return true
+		},
 	}
 
 	// only roles that satisfy all rules are returned
 	//
+	initial := make([]enums.Role, 0, len(active)+1)
 	return lo.Reduce(active,
 		func(acc []enums.Role, role enums.Role, _ int) []enums.Role {
 			if lo.EveryBy(lo.Keys(rules), func(name string) bool {
@@ -49,6 +59,6 @@ func manifest(active []enums.Role) []enums.Role {
 			}
 			return acc
 		},
-		make([]enums.Role, 0, len(active)+1),
+		initial,
 	)
 }

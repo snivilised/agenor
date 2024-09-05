@@ -7,9 +7,9 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, mediator types.Mediator) types.Plugin {
+func IfActive(o *pref.Options, _ *pref.Using, mediator types.Mediator) types.Plugin {
 	if o.Sampling.IsSamplingActive() {
-		return &Plugin{
+		return &plugin{
 			BasePlugin: kernel.BasePlugin{
 				O:             o,
 				Mediator:      mediator,
@@ -28,22 +28,16 @@ type samplingOptions struct {
 	sampling *pref.SamplingOptions
 }
 
-type Plugin struct {
+type plugin struct {
 	kernel.BasePlugin
 	ctrl controller
 }
 
-func (p *Plugin) Name() string {
+func (p *plugin) Name() string {
 	return "sampling"
 }
 
-func (p *Plugin) Register(kc types.KernelController) error {
-	p.Kontroller = kc
-
-	return nil
-}
-
-func (p *Plugin) Init(_ *types.PluginInit) error {
+func (p *plugin) Init(_ *types.PluginInit) error {
 	p.O.Hooks.ReadDirectory.Chain(
 		p.ctrl.sample,
 	)

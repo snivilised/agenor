@@ -4,7 +4,6 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -18,6 +17,7 @@ type buildArtefacts struct {
 }
 
 type Builders struct {
+	using     *pref.Using
 	readerFS  pref.ReadDirFileSystemBuilder
 	queryFS   pref.QueryStatusFileSystemBuilder
 	options   optionsBuilder
@@ -48,22 +48,6 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
-	actions := &override.Actions{
-		HandleChildren: override.NewActionCtrl[override.HandleChildrenInterceptor](
-			func(inspection override.Inspection, mums measure.MutableMetrics) {
-				// [KEEP-FILTER-IN-SYNC] keep this in sync with filter-plugin/childScheme.init
-				files := inspection.Sort(enums.EntryTypeFile)
-				inspection.AssignChildren(files)
-
-				// The behaviour of this default child handler is to assign
-				// the children and tick the metrics. However, when filtering is
-				// active, then this handler should be overridden by the filter
-				// to only tick the child metric, if their parent is filtered in.
-				//
-				mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))
-			},
-		),
-	}
 
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
 		FS: FileSystems{
@@ -72,7 +56,6 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 			R: ext.resFS(),
 		},
 		Supervisor: measure.New(),
-		Actions:    actions,
 	})
 
 	if navErr != nil {
@@ -86,6 +69,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD PLUGINS
 	//
 	plugins, pluginsErr := bs.plugins.build(o,
+		bs.using,
 		artefacts.Mediator,
 		artefacts.Kontroller,
 		ext.plugin(artefacts),
@@ -109,7 +93,6 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	order := manifest(active)
 	artefacts.Mediator.Arrange(active, order)
 	pi := &types.PluginInit{
-		Actions:  actions,
 		O:        o,
 		Controls: artefacts.Mediator.Controls(),
 	}

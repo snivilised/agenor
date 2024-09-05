@@ -10,4 +10,5 @@ const (
 	RoleClientFilter             // client-filter-role
 	RoleHibernate                // hibernate-role
 	RoleSampler                  // sampler-role
+	RoleNanny                    // nanny-role
 )

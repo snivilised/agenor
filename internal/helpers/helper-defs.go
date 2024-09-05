@@ -35,6 +35,12 @@ type (
 		Sample          core.SampleTraverseFilter
 	}
 
+	HybridFilterTE struct {
+		NaviTE
+		NodeDef  core.FilterDef
+		ChildDef core.ChildFilterDef
+	}
+
 	PolyTE struct {
 		NaviTE
 		File   core.FilterDef
