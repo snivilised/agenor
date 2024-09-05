@@ -80,7 +80,7 @@ tasks:
     cmds:
       - go test ./core
 
-  tf-filter:
+  tf:
     cmds:
       - go test ./internal/filtering
 
@@ -191,7 +191,6 @@ tasks:
       - mkdir -p ./internal/kernel/coverage
       - mkdir -p ./internal/level/coverage
       - mkdir -p ./internal/measure/coverage
-      - mkdir -p ./internal/override/coverage
       - mkdir -p ./internal/services/coverage
       - mkdir -p ./internal/level/coverage
       - mkdir -p ./internal/third/bus/coverage

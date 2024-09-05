@@ -7,9 +7,11 @@ type Metric uint
 // if new metrics are added, ensure that navigationMetricsFactory.new is kept
 // in sync.
 const (
+	_ Metric = iota
+
 	// MetricNoFilesInvoked represents the no of files invoked for during traversal
 	//
-	MetricNoFilesInvoked Metric = iota // metric-no-of-files
+	MetricNoFilesInvoked // metric-no-of-files
 
 	// MetricNoFilesFilteredOut represents the no of files filtered out
 	//

@@ -6,7 +6,6 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/types"
 )
 
@@ -90,7 +89,7 @@ type (
 
 	// Invokable
 	Invokable interface {
-		Invoke(node *core.Node, inspection override.Inspection) error
+		Invoke(node *core.Node, inspection types.Inspection) error
 	}
 
 	// Mutant represents the mutable interface to the Guardian
@@ -120,7 +119,7 @@ type (
 	}
 
 	inspection interface { // after content has been read
-		override.Inspection
+		types.Inspection
 		static() *navigationStatic
 		clear()
 	}
@@ -186,8 +185,8 @@ func (v *navigationVapour) AssignChildren(children []fs.DirEntry) {
 	v.present.Children = children
 }
 
-type NodeInvoker func(node *core.Node, inspection override.Inspection) error
+type NodeInvoker func(node *core.Node, inspection types.Inspection) error
 
-func (fn NodeInvoker) Invoke(node *core.Node, inspection override.Inspection) error {
+func (fn NodeInvoker) Invoke(node *core.Node, inspection types.Inspection) error {
 	return fn(node, inspection)
 }

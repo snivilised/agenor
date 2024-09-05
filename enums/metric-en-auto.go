@@ -8,12 +8,12 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[MetricNoFilesInvoked-0]
-	_ = x[MetricNoFilesFilteredOut-1]
-	_ = x[MetricNoFoldersInvoked-2]
-	_ = x[MetricNoFoldersFilteredOut-3]
-	_ = x[MetricNoChildFilesFound-4]
-	_ = x[MetricNoChildFilesFilteredOut-5]
+	_ = x[MetricNoFilesInvoked-1]
+	_ = x[MetricNoFilesFilteredOut-2]
+	_ = x[MetricNoFoldersInvoked-3]
+	_ = x[MetricNoFoldersFilteredOut-4]
+	_ = x[MetricNoChildFilesFound-5]
+	_ = x[MetricNoChildFilesFilteredOut-6]
 }
 
 const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no-of-foldersmetric-no-of-folders-filtered-outmetric-no-of-child-files-foundmetric-no-of-child-files-found"
@@ -21,8 +21,9 @@ const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no
 var _Metric_index = [...]uint8{0, 18, 49, 69, 102, 132, 162}
 
 func (i Metric) String() string {
+	i -= 1
 	if i >= Metric(len(_Metric_index)-1) {
-		return "Metric(" + strconv.FormatInt(int64(i), 10) + ")"
+		return "Metric(" + strconv.FormatInt(int64(i+1), 10) + ")"
 	}
 	return _Metric_name[_Metric_index[i]:_Metric_index[i+1]]
 }

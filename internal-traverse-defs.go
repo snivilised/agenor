@@ -21,6 +21,7 @@ func (fn optionals) build(ext extent) (*pref.Options, error) {
 // pluginsBuilder
 type pluginsBuilder interface {
 	build(o *pref.Options,
+		using *pref.Using,
 		mediator types.Mediator,
 		kc types.KernelController,
 		others ...types.Plugin,
@@ -28,17 +29,19 @@ type pluginsBuilder interface {
 }
 
 type activated func(*pref.Options,
+	*pref.Using,
 	types.Mediator,
 	types.KernelController,
 	...types.Plugin,
 ) ([]types.Plugin, error)
 
 func (fn activated) build(o *pref.Options,
+	using *pref.Using,
 	mediator types.Mediator,
 	kc types.KernelController,
 	others ...types.Plugin,
 ) ([]types.Plugin, error) {
-	return fn(o, mediator, kc, others...)
+	return fn(o, using, mediator, kc, others...)
 }
 
 type fsBuilder interface {

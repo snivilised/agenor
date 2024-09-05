@@ -8,7 +8,6 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/level"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -45,11 +44,16 @@ func newMediator(using *pref.Using,
 		subscription: using.Subscription,
 		using:        using,
 		impl:         impl,
-		guardian:     newGuardian(using.Handler, sealer, mums),
-		periscope:    level.New(),
-		o:            o,
-		resources:    resources,
-		mums:         mums,
+		guardian: newGuardian(&guardianInfo{
+			subscription: using.Subscription,
+			client:       using.Handler,
+			master:       sealer,
+			mums:         mums,
+		}),
+		periscope: level.New(),
+		o:         o,
+		resources: resources,
+		mums:      mums,
 	}
 }
 
@@ -112,7 +116,7 @@ func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult,
 	})
 }
 
-func (m *mediator) Invoke(node *core.Node, inspection override.Inspection) error {
+func (m *mediator) Invoke(node *core.Node, inspection types.Inspection) error {
 	return m.guardian.Invoke(node, inspection)
 }
 

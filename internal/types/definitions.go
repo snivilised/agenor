@@ -8,7 +8,6 @@ import (
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
@@ -21,7 +20,7 @@ type (
 		// Next invokes this decorator which returns true if
 		// next link in the chain can be run or false to stop
 		// execution of subsequent links.
-		Next(node *core.Node, inspection override.Inspection) (bool, error)
+		Next(node *core.Node, inspection Inspection) (bool, error)
 
 		// Role indicates the identity of the link
 		Role() enums.Role
@@ -50,7 +49,6 @@ type (
 
 	// PluginInit
 	PluginInit struct {
-		Actions  *override.Actions
 		O        *pref.Options
 		Controls *cycle.Controls
 	}
@@ -70,7 +68,6 @@ type (
 	Resources struct {
 		FS         nfs.FileSystems
 		Supervisor *measure.Supervisor
-		Actions    *override.Actions
 	}
 
 	// Plugin used to define interaction with supplementary features
@@ -105,6 +102,16 @@ type (
 		Result(ctx context.Context, err error) *KernelResult
 		Mediator() Mediator
 		Conclude(result core.TraverseResult)
+	}
+
+	// Inspection
+	Inspection interface {
+		Current() *core.Node
+		Contents() core.DirectoryContents
+		Entries() []fs.DirEntry
+		Sort(et enums.EntryType) []fs.DirEntry
+		Pick(et enums.EntryType)
+		AssignChildren(children []fs.DirEntry)
 	}
 )
 

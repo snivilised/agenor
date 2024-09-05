@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/override"
+	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -29,7 +29,7 @@ func RestoreOptions() {
 }
 
 type (
-	nextFn func(node *core.Node, inspection override.Inspection) (bool, error)
+	nextFn func(node *core.Node, inspection types.Inspection) (bool, error)
 
 	state struct {
 		next nextFn
@@ -43,7 +43,7 @@ type (
 
 	profile interface {
 		init(controls *cycle.Controls) error
-		next(node *core.Node, inspection override.Inspection) (bool, error)
+		next(node *core.Node, inspection types.Inspection) (bool, error)
 	}
 
 	common struct {

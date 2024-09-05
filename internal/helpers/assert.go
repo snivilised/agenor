@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -65,14 +64,11 @@ func AssertNavigation(entry *NaviTE, to *TestOptions) {
 		Expect(every).To(BeTrue())
 	}
 
-	for n, actualNoChildren := range entry.ExpectedNoOf.Children {
-		expected := to.Recording[n]
-		Expect(to.Recording[n]).To(Equal(actualNoChildren),
-			BecauseQuantity(fmt.Sprintf("folder: '%v'", n),
-				expected,
-				actualNoChildren,
-			),
-		)
+	for name, expected := range entry.ExpectedNoOf.Children {
+		Expect(to.Recording).To(HaveChildCountOf(ExpectedCount{
+			Name:  name,
+			Count: expected,
+		}))
 	}
 
 	if entry.Mandatory != nil {

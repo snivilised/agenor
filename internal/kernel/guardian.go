@@ -5,7 +5,6 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/override"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 )
@@ -18,22 +17,23 @@ type (
 // anchor is a specialised link that should always be the
 // last in the chain and contains the original client's handler.
 type anchor struct {
-	client core.Client
-	crate  measure.Crate
+	subscription enums.Subscription
+	client       core.Client
+	crate        measure.Crate
 }
 
-func (t *anchor) Next(node *core.Node, _ override.Inspection) (bool, error) {
+func (a *anchor) Next(node *core.Node, _ types.Inspection) (bool, error) {
 	if metric := lo.Ternary(node.IsFolder(),
-		t.crate.Mums[enums.MetricNoFoldersInvoked],
-		t.crate.Mums[enums.MetricNoFilesInvoked],
+		a.crate.Mums[enums.MetricNoFoldersInvoked],
+		a.crate.Mums[enums.MetricNoFilesInvoked],
 	); metric != nil {
 		metric.Tick()
 	}
 
-	return false, t.client(node)
+	return false, a.client(node)
 }
 
-func (t *anchor) Role() enums.Role {
+func (a *anchor) Role() enums.Role {
 	return enums.RoleAnchor
 }
 
@@ -50,23 +50,26 @@ type guardian struct {
 	anchor    *anchor
 }
 
-func newGuardian(client core.Client,
-	master types.GuardianSealer,
-	mums measure.MutableMetrics,
-) *guardian {
-	anchor := &anchor{
-		client: client,
-		crate: measure.Crate{
-			Mums: mums,
-		},
-	}
+type guardianInfo struct {
+	subscription enums.Subscription
+	client       core.Client
+	master       types.GuardianSealer
+	mums         measure.MutableMetrics
+}
 
+func newGuardian(info *guardianInfo) *guardian {
 	return &guardian{
 		container: iterationContainer{
 			chain: make(invocationChain),
 		},
-		master: master,
-		anchor: anchor,
+		master: info.master,
+		anchor: &anchor{
+			subscription: info.subscription,
+			client:       info.client,
+			crate: measure.Crate{
+				Mums: info.mums,
+			},
+		},
 	}
 }
 
@@ -74,7 +77,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	g.container.chain[enums.RoleAnchor] = g.anchor
 
 	if len(active) == 0 {
-		g.container.invoker = NodeInvoker(func(node *core.Node, inspection override.Inspection) error {
+		g.container.invoker = NodeInvoker(func(node *core.Node, inspection types.Inspection) error {
 			_, err := g.anchor.Next(node, inspection)
 			return err
 		})
@@ -83,7 +86,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	}
 
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
-	g.container.invoker = NodeInvoker(func(node *core.Node, inspection override.Inspection) error {
+	g.container.invoker = NodeInvoker(func(node *core.Node, inspection types.Inspection) error {
 		return g.iterate(node, inspection)
 	})
 }
@@ -122,11 +125,11 @@ func (g *guardian) Unwind(role enums.Role) error {
 // Invoke executes the chain which may or may not end up resulting in
 // the invocation of the client's callback, depending on the contents
 // of the chain.
-func (g *guardian) Invoke(node *core.Node, inspection override.Inspection) error {
+func (g *guardian) Invoke(node *core.Node, inspection types.Inspection) error {
 	return g.container.invoker.Invoke(node, inspection)
 }
 
-func (g *guardian) iterate(node *core.Node, inspection override.Inspection) error {
+func (g *guardian) iterate(node *core.Node, inspection types.Inspection) error {
 	for _, role := range g.container.positions.Items() {
 		link := g.container.chain[role]
 

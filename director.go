@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
+	"github.com/snivilised/traverse/internal/feat/nanny"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/feat/sampling"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -13,12 +14,12 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-type ifActive func(o *pref.Options, mediator types.Mediator) types.Plugin
+type ifActive func(o *pref.Options, using *pref.Using, mediator types.Mediator) types.Plugin
 
 // features interrogates options and invokes requests on behalf of the user
 // to activate features according to option selections. other plugins will
 // be initialised after primary plugins
-func features(o *pref.Options, mediator types.Mediator,
+func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 	kc types.KernelController,
 	others ...types.Plugin,
 ) (plugins []types.Plugin, err error) {
@@ -29,7 +30,7 @@ func features(o *pref.Options, mediator types.Mediator,
 			// order. How can we decouple ourselves from this
 			// requirement? => the cure is worse than the disease
 			//
-			hiber.IfActive, filter.IfActive, sampling.IfActive,
+			hiber.IfActive, nanny.IfActive, filter.IfActive, sampling.IfActive,
 		}
 	)
 
@@ -44,7 +45,7 @@ func features(o *pref.Options, mediator types.Mediator,
 		},
 		lo.Reduce(all,
 			func(acc []types.Plugin, query ifActive, _ int) []types.Plugin {
-				if plugin := query(o, mediator); plugin != nil {
+				if plugin := query(o, using, mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
 				return acc
@@ -73,6 +74,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	// by a panic.
 	//
 	return &Builders{
+		using: using,
 		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
 			if using.GetReadDirFS != nil {
 				return using.GetReadDirFS()
@@ -129,6 +131,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 	// path was.
 	//
 	return &Builders{
+		using: &was.Using,
 		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
 			if was.Using.GetReadDirFS != nil {
 				return was.Using.GetReadDirFS()
