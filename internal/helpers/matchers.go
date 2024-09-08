@@ -7,11 +7,15 @@ import (
 	"strings"
 
 	. "github.com/onsi/gomega/types" //nolint:stylecheck,revive // ok
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 type DirectoryContentsMatcher struct {
-	expected interface{}
+	expected      interface{}
+	expectedNames []string
+	actualNames   []string
 }
 
 func HaveDirectoryContents(expected interface{}) GomegaMatcher {
@@ -23,53 +27,39 @@ func HaveDirectoryContents(expected interface{}) GomegaMatcher {
 func (m *DirectoryContentsMatcher) Match(actual interface{}) (bool, error) {
 	entries, entriesOk := actual.([]fs.DirEntry)
 	if !entriesOk {
-		return false, fmt.Errorf("matcher expected []fs.DirEntry (%T)", entries)
+		return false, fmt.Errorf("🔥 matcher expected []fs.DirEntry (%T)", entries)
 	}
 
-	names := lo.Map(entries, func(entry fs.DirEntry, _ int) string {
+	m.actualNames = lo.Map(entries, func(entry fs.DirEntry, _ int) string {
 		return entry.Name()
 	})
 
 	expected, expectedOk := m.expected.([]string)
 	if !expectedOk {
-		return false, fmt.Errorf("matcher expected []string (%T)", expected)
+		return false, fmt.Errorf("🔥 matcher expected []string (%T)", expected)
 	}
+	m.expectedNames = expected
 
-	return slices.Compare(names, expected) == 0, nil
+	return slices.Compare(m.actualNames, m.expectedNames) == 0, nil
 }
 
-func (m *DirectoryContentsMatcher) FailureMessage(actual interface{}) string {
-	entries, _ := actual.([]fs.DirEntry)
-	names := lo.Map(entries, func(entry fs.DirEntry, _ int) string {
-		return entry.Name()
-	})
-	slices.Sort(names)
-
-	expected, _ := m.expected.([]string)
-	slices.Sort(expected)
-
-	return fmt.Sprintf("❌ Expected\n\t%v\nto match contents\n\t%v\n",
-		strings.Join(names, ", "), strings.Join(expected, ", "),
+func (m *DirectoryContentsMatcher) FailureMessage(_ interface{}) string {
+	return fmt.Sprintf(
+		"❌ DirectoryContentsMatcher Expected\n\t%v\nto match contents\n\t%v\n",
+		strings.Join(m.expectedNames, ", "), strings.Join(m.actualNames, ", "),
 	)
 }
 
-func (m *DirectoryContentsMatcher) NegatedFailureMessage(actual interface{}) string {
-	entries, _ := actual.([]fs.DirEntry)
-	names := lo.Map(entries, func(entry fs.DirEntry, _ int) string {
-		return entry.Name()
-	})
-	slices.Sort(names)
-
-	expected, _ := m.expected.([]string)
-	slices.Sort(expected)
-
-	return fmt.Sprintf("❌ Expected\n\t%v\nNOT to match contents\n\t%v\n",
-		strings.Join(names, ", "), strings.Join(expected, ", "),
+func (m *DirectoryContentsMatcher) NegatedFailureMessage(_ interface{}) string {
+	return fmt.Sprintf(
+		"❌ DirectoryContentsMatcher Expected\n\t%v\nNOT to match contents\n\t%v\n",
+		strings.Join(m.expectedNames, ", "), strings.Join(m.actualNames, ", "),
 	)
 }
 
 type InvokeNodeMatcher struct {
-	expected interface{}
+	expected  interface{}
+	mandatory string
 }
 
 func HaveInvokedNode(expected interface{}) GomegaMatcher {
@@ -81,47 +71,38 @@ func HaveInvokedNode(expected interface{}) GomegaMatcher {
 func (m *InvokeNodeMatcher) Match(actual interface{}) (bool, error) {
 	recording, ok := actual.(RecordingMap)
 	if !ok {
-		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
+		return false, fmt.Errorf(
+			"InvokeNodeMatcher expected actual to be a RecordingMap (%T)",
+			actual,
+		)
 	}
 
 	mandatory, ok := m.expected.(string)
 	if !ok {
-		return false, fmt.Errorf("matcher expected string (%T)", actual)
+		return false, fmt.Errorf("InvokeNodeMatcher expected string (%T)", actual)
 	}
+	m.mandatory = mandatory
 
-	_, found := recording[mandatory]
+	_, found := recording[m.mandatory]
 
-	if !found {
-		return false, fmt.Errorf("❌ missing invoke for node: '%v'", mandatory)
-	}
-
-	return true, nil
+	return found, nil
 }
 
 func (m *InvokeNodeMatcher) FailureMessage(_ interface{}) string {
-	mandatory, ok := m.expected.(string)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
-	}
-
 	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
-		mandatory,
+		m.mandatory,
 	)
 }
 
 func (m *InvokeNodeMatcher) NegatedFailureMessage(_ interface{}) string {
-	mandatory, ok := m.expected.(string)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
-	}
-
 	return fmt.Sprintf("❌ Expected\n\t%v\nnode NOT to be invoked\n",
-		mandatory,
+		m.mandatory,
 	)
 }
 
 type NotInvokeNodeMatcher struct {
-	expected interface{}
+	expected  interface{}
+	mandatory string
 }
 
 func HaveNotInvokedNode(expected interface{}) GomegaMatcher {
@@ -140,46 +121,37 @@ func (m *NotInvokeNodeMatcher) Match(actual interface{}) (bool, error) {
 	if !ok {
 		return false, fmt.Errorf("matcher expected string (%T)", actual)
 	}
+	m.mandatory = mandatory
 
-	_, found := recording[mandatory]
+	_, found := recording[m.mandatory]
 
-	if found {
-		return false, fmt.Errorf("❌ prohibited invoke occurred for node: '%v'", mandatory)
-	}
-
-	return true, nil
+	return !found, nil
 }
 
 func (m *NotInvokeNodeMatcher) FailureMessage(_ interface{}) string {
-	mandatory, ok := m.expected.(string)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
-	}
-
 	return fmt.Sprintf("❌ Expected\n\t%v\nnode to NOT be invoked\n",
-		mandatory,
+		m.mandatory,
 	)
 }
 
 func (m *NotInvokeNodeMatcher) NegatedFailureMessage(_ interface{}) string {
-	mandatory, ok := m.expected.(string)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected string (%T)", m.expected)
-	}
-
 	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
-		mandatory,
+		m.mandatory,
 	)
 }
 
-type ExpectedCount struct {
-	Name  string
-	Count int
-}
+type (
+	ExpectedCount struct {
+		Name  string
+		Count int
+	}
 
-type ChildCountMatcher struct {
-	expected interface{}
-}
+	ChildCountMatcher struct {
+		expected    interface{}
+		expectation MatcherExpectation[uint]
+		name        string
+	}
+)
 
 func HaveChildCountOf(expected interface{}) GomegaMatcher {
 	return &ChildCountMatcher{
@@ -190,12 +162,12 @@ func HaveChildCountOf(expected interface{}) GomegaMatcher {
 func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
 	recording, ok := actual.(RecordingMap)
 	if !ok {
-		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
+		return false, fmt.Errorf("ChildCountMatcher expected actual to be a RecordingMap (%T)", actual)
 	}
 
 	expected, ok := m.expected.(ExpectedCount)
 	if !ok {
-		return false, fmt.Errorf("matcher expected ExpectedCount (%T)", actual)
+		return false, fmt.Errorf("ChildCountMatcher expected ExpectedCount (%T)", actual)
 	}
 
 	count, ok := recording[expected.Name]
@@ -203,35 +175,81 @@ func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("🔥 not found: '%v'", expected.Name)
 	}
 
-	if count != expected.Count {
-		return false, fmt.Errorf(
-			"❌ incorrect child count for: '%v', actual: '%v', expected: '%v'",
-			expected.Name,
-			count, expected.Count,
-		)
+	m.expectation = MatcherExpectation[uint]{
+		Expected: uint(expected.Count),
+		Actual:   uint(count),
 	}
+	m.name = expected.Name
 
-	return true, nil
+	return m.expectation.IsEqual(), nil
 }
 
 func (m *ChildCountMatcher) FailureMessage(_ interface{}) string {
-	expected, ok := m.expected.(ExpectedCount)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected ExpectedCount (%T)", m.expected)
-	}
-
-	return fmt.Sprintf("❌ Expected\n\t%v\nnode to be invoked\n",
-		expected,
+	return fmt.Sprintf(
+		"❌ Expected child count for node: '%v' to be equal; expected: '%v', actual: '%v'\n",
+		m.name, m.expectation.Expected, m.expectation.Actual,
 	)
 }
 
 func (m *ChildCountMatcher) NegatedFailureMessage(_ interface{}) string {
-	expected, ok := m.expected.(ExpectedCount)
-	if !ok {
-		return fmt.Sprintf("🔥 matcher expected ExpectedCount (%T)", m.expected)
+	return fmt.Sprintf(
+		"❌ Expected child count for node: '%v' NOT to be equal; expected: '%v', actual: '%v'\n",
+		m.name, m.expectation.Expected, m.expectation.Actual,
+	)
+}
+
+type (
+	ExpectedMetric struct {
+		Type  enums.Metric
+		Count uint
 	}
 
-	return fmt.Sprintf("❌ Expected\n\t%v\nnode NOT to be invoked\n",
-		expected,
+	MetricMatcher struct {
+		expected    interface{}
+		expectation MatcherExpectation[uint]
+		typ         enums.Metric
+	}
+)
+
+func HaveMetricCountOf(expected interface{}) GomegaMatcher {
+	return &MetricMatcher{
+		expected: expected,
+	}
+}
+
+func (m *MetricMatcher) Match(actual interface{}) (bool, error) {
+	result, ok := actual.(core.TraverseResult)
+	if !ok {
+		return false, fmt.Errorf(
+			"🔥 MetricMatcher expected actual to be a core.TraverseResult (%T)",
+			actual,
+		)
+	}
+
+	expected, ok := m.expected.(ExpectedMetric)
+	if !ok {
+		return false, fmt.Errorf("🔥 MetricMatcher expected ExpectedMetric (%T)", actual)
+	}
+
+	m.expectation = MatcherExpectation[uint]{
+		Expected: expected.Count,
+		Actual:   result.Metrics().Count(expected.Type),
+	}
+	m.typ = expected.Type
+
+	return m.expectation.IsEqual(), nil
+}
+
+func (m *MetricMatcher) FailureMessage(_ interface{}) string {
+	return fmt.Sprintf(
+		"❌ Expected metric '%v' to be equal; expected:'%v', actual: '%v'\n",
+		m.typ.String(), m.expectation.Expected, m.expectation.Actual,
+	)
+}
+
+func (m *MetricMatcher) NegatedFailureMessage(_ interface{}) string {
+	return fmt.Sprintf(
+		"❌ Expected metric '%v' NOT to be equal; expected:'%v', actual: '%v'\n",
+		m.typ.String(), m.expectation.Expected, m.expectation.Actual,
 	)
 }

@@ -63,7 +63,16 @@ type (
 		Children map[string]int
 	}
 
+	MatcherExpectation[T comparable] struct {
+		Expected T
+		Actual   T
+	}
+
 	RecordingMap      map[string]int
 	RecordingScopeMap map[string]enums.FilterScope
 	RecordingOrderMap map[string]int
 )
+
+func (x MatcherExpectation[T]) IsEqual() bool {
+	return x.Actual == x.Expected
+}
