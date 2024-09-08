@@ -2,6 +2,8 @@ package kernel
 
 import (
 	"context"
+	"errors"
+	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
@@ -104,6 +106,10 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 		root:     m.root,
 	})
 
+	if !IsBenignError(err) {
+		m.o.Monitor.Log.Error(err.Error())
+	}
+
 	return result, err
 }
 
@@ -126,4 +132,12 @@ func (m *mediator) Supervisor() *measure.Supervisor {
 
 func (m *mediator) Controls() *cycle.Controls {
 	return &m.o.Binder.Controls
+}
+
+func IsBenignError(err error) bool {
+	if err == nil {
+		return true
+	}
+
+	return errors.Is(err, fs.SkipDir) || errors.Is(err, fs.SkipAll)
 }
