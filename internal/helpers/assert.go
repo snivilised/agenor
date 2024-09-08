@@ -87,29 +87,20 @@ func AssertNavigation(entry *NaviTE, to *TestOptions) {
 }
 
 func assertMetrics(entry *NaviTE, to *TestOptions) {
-	Expect(to.Result.Metrics().Count(enums.MetricNoFilesInvoked)).To(
-		Equal(entry.ExpectedNoOf.Files),
-		BecauseQuantity("Incorrect no of files",
-			int(entry.ExpectedNoOf.Files),                              //nolint:gosec // ok
-			int(to.Result.Metrics().Count(enums.MetricNoFilesInvoked)), //nolint:gosec // ok
-		),
-	)
-
-	Expect(to.Result.Metrics().Count(enums.MetricNoFoldersInvoked)).To(
-		Equal(entry.ExpectedNoOf.Folders),
-		BecauseQuantity("Incorrect no of folders",
-			int(entry.ExpectedNoOf.Folders),                              //nolint:gosec // ok
-			int(to.Result.Metrics().Count(enums.MetricNoFoldersInvoked)), //nolint:gosec // ok
-		),
-	)
-
-	sum := lo.Sum(lo.Values(entry.ExpectedNoOf.Children))
-
-	Expect(to.Result.Metrics().Count(enums.MetricNoChildFilesFound)).To(
-		Equal(uint(sum)),
-		BecauseQuantity("Incorrect total no of child files",
-			sum,
-			int(to.Result.Metrics().Count(enums.MetricNoChildFilesFound)), //nolint:gosec // ok
+	Expect(to.Result).To(
+		And(
+			HaveMetricCountOf(ExpectedMetric{
+				Type:  enums.MetricNoFilesInvoked,
+				Count: entry.ExpectedNoOf.Files,
+			}),
+			HaveMetricCountOf(ExpectedMetric{
+				Type:  enums.MetricNoFoldersInvoked,
+				Count: entry.ExpectedNoOf.Folders,
+			}),
+			HaveMetricCountOf(ExpectedMetric{
+				Type:  enums.MetricNoChildFilesFound,
+				Count: uint(lo.Sum(lo.Values(entry.ExpectedNoOf.Children))),
+			}),
 		),
 	)
 }
