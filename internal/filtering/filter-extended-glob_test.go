@@ -12,7 +12,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
@@ -29,7 +29,7 @@ var _ = Describe("filtering", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "rock"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -44,7 +44,7 @@ var _ = Describe("filtering", Ordered, func() {
 		When("universal: filtering with extended glob", func() {
 			It("should: invoke for filtered nodes only", Label("example"),
 				func(ctx SpecContext) {
-					path := helpers.Path(root, "RETRO-WAVE")
+					path := lab.Path(root, "RETRO-WAVE")
 					filterDefs := &pref.FilterOptions{
 						Node: &core.FilterDef{
 							Type:        enums.FilterTypeExtendedGlob,
@@ -73,12 +73,12 @@ var _ = Describe("filtering", Ordered, func() {
 						tv.WithFilter(filterDefs),
 						tv.WithHookQueryStatus(
 							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-								return qsys.Stat(helpers.TrimRoot(path))
+								return qsys.Stat(lab.TrimRoot(path))
 							},
 						),
 						tv.WithHookReadDirectory(
 							func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-								return rfs.ReadDir(helpers.TrimRoot(dirname))
+								return rfs.ReadDir(lab.TrimRoot(dirname))
 							},
 						),
 					)).Navigate(ctx)
@@ -93,12 +93,12 @@ var _ = Describe("filtering", Ordered, func() {
 	})
 
 	DescribeTable("folders with files",
-		func(ctx SpecContext, entry *helpers.FilterTE) {
+		func(ctx SpecContext, entry *lab.FilterTE) {
 			var (
 				traverseFilter core.TraverseFilter
 			)
 
-			recording := make(helpers.RecordingMap)
+			recording := make(lab.RecordingMap)
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeExtendedGlob,
@@ -113,7 +113,7 @@ var _ = Describe("filtering", Ordered, func() {
 				},
 			}
 
-			path := helpers.Path(root, entry.Relative)
+			path := lab.Path(root, entry.Relative)
 
 			callback := func(node *core.Node) error {
 				indicator := lo.Ternary(node.IsFolder(), "📁", "💠")
@@ -148,17 +148,17 @@ var _ = Describe("filtering", Ordered, func() {
 				tv.WithFilter(filterDefs),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(helpers.TrimRoot(path))
+						return qsys.Stat(lab.TrimRoot(path))
 					},
 				),
 				tv.WithHookReadDirectory(
 					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(helpers.TrimRoot(dirname))
+						return rfs.ReadDir(lab.TrimRoot(dirname))
 					},
 				),
 			)).Navigate(ctx)
 
-			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:        FS,
 				Recording: recording,
 				Path:      path,
@@ -167,18 +167,18 @@ var _ = Describe("filtering", Ordered, func() {
 			})
 		},
 
-		func(entry *helpers.FilterTE) string {
+		func(entry *lab.FilterTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
 		// === universal =====================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 5,
 				},
@@ -189,12 +189,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter, with dot extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 5,
 				},
@@ -205,12 +205,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter, with multiple extensions",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   19,
 					Folders: 5,
 				},
@@ -222,12 +222,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter, without extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   3,
 					Folders: 5,
 				},
@@ -239,12 +239,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(file scope): extended glob filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   7,
 					Folders: 5,
 				},
@@ -256,12 +256,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(undefined scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 5,
 				},
@@ -271,12 +271,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter, any extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   4,
 					Folders: 1,
 				},
@@ -290,12 +290,12 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === folders =======================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(any scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 2,
 				},
@@ -307,12 +307,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFolder,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(folder scope): extended glob filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 3,
 				},
@@ -325,12 +325,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(undefined scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 2,
 				},
@@ -343,12 +343,12 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === files =========================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(file scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 0,
 				},
@@ -360,12 +360,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(any scope): extended glob filter, with dot extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 0,
 				},
@@ -377,12 +377,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(file scope): extended glob filter, with multiple extensions",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   19,
 					Folders: 0,
 				},
@@ -394,12 +394,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "file(file scope): extended glob filter, without extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   3,
 					Folders: 0,
 				},
@@ -411,12 +411,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "file(file scope): extended glob filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   7,
 					Folders: 0,
 				},
@@ -429,12 +429,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "file(undefined scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 0,
 				},
@@ -445,12 +445,12 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "file(any scope): extended glob filter, any extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   4,
 					Folders: 0,
 				},
@@ -464,12 +464,12 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === ifNotApplicable ===============================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(leaf scope): extended glob filter (ifNotApplicable=true)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 5,
 				},
@@ -482,12 +482,12 @@ var _ = Describe("filtering", Ordered, func() {
 			IfNotApplicable: enums.TriStateBoolTrue,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(leaf scope): extended glob filter (ifNotApplicable=false)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   16,
 					Folders: 4,
 				},
@@ -501,12 +501,12 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === with-exclusion ================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): extended glob filter with exclusion",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   12,
 					Folders: 0,
 				},

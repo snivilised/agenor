@@ -13,7 +13,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
@@ -30,7 +30,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -48,12 +48,12 @@ var _ = Describe("feature", Ordered, func() {
 	})
 
 	DescribeTable("folders with files filtered",
-		func(ctx SpecContext, entry *helpers.HybridFilterTE) {
+		func(ctx SpecContext, entry *lab.HybridFilterTE) {
 			var (
 				childFilter core.ChildTraverseFilter
 			)
 
-			recording := make(helpers.RecordingMap)
+			recording := make(lab.RecordingMap)
 			filterDefs := &pref.FilterOptions{
 				Node:  &entry.NodeDef,
 				Child: &entry.ChildDef,
@@ -62,7 +62,7 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			}
 
-			path := helpers.Path(root, entry.Relative)
+			path := lab.Path(root, entry.Relative)
 			callback := func(item *core.Node) error {
 				actualNoChildren := len(item.Children)
 				GinkgoWriter.Printf(
@@ -92,22 +92,22 @@ var _ = Describe("feature", Ordered, func() {
 						return FS
 					},
 				},
-				tv.WithOnBegin(helpers.Begin("🛡️")),
-				tv.WithOnEnd(helpers.End("🏁")),
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
 				tv.WithFilter(filterDefs),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(helpers.TrimRoot(path))
+						return qsys.Stat(lab.TrimRoot(path))
 					},
 				),
 				tv.WithHookReadDirectory(
 					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(helpers.TrimRoot(dirname))
+						return rfs.ReadDir(lab.TrimRoot(dirname))
 					},
 				),
 			)).Navigate(ctx)
 
-			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:        FS,
 				Recording: recording,
 				Path:      path,
@@ -115,16 +115,16 @@ var _ = Describe("feature", Ordered, func() {
 				Err:       err,
 			})
 		},
-		func(entry *helpers.HybridFilterTE) string {
+		func(entry *lab.HybridFilterTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
-		Entry(nil, &helpers.HybridFilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folder(with files): glob filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFoldersWithFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 6,
 					Children: map[string]int{
 						"Northern Council": 2,
@@ -146,12 +146,12 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &helpers.HybridFilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folder(with files): glob filter (negate)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFoldersWithFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 2,
 					Children: map[string]int{
 						"Night Drive": 3,

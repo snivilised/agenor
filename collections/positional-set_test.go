@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse/collections"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 )
 
 var (
@@ -20,7 +20,7 @@ func assertColoursAreInOrder(set *collections.PositionalSet[string]) {
 
 	for _, colour := range rainbow {
 		pos, _ := set.Position(colour)
-		Expect(pos < anchor).To(BeTrue(), helpers.Reason(
+		Expect(pos < anchor).To(BeTrue(), lab.Reason(
 			fmt.Sprintf("position(%v) of colour: %v should be less than anchor's(%v)",
 				pos, colour, anchor),
 		))
@@ -47,7 +47,7 @@ var _ = Describe("PositionalSet", func() {
 	Context("Count", func() {
 		When("no items added", func() {
 			It("🧪 should: contain just the anchor", func() {
-				Expect(set.Count()).To(Equal(1), helpers.Reason("only anchor should be present"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("only anchor should be present"))
 			})
 		})
 	})
@@ -55,30 +55,30 @@ var _ = Describe("PositionalSet", func() {
 	Context("Insert", func() {
 		When("requested item is the anchor", func() {
 			It("🧪 should: not insert", func() {
-				Expect(set.Insert("ANCHOR")).To(BeFalse(), helpers.Reason("inserting anchor is invalid"))
-				Expect(set.Count()).To(Equal(1), helpers.Reason("only anchor should be present"))
+				Expect(set.Insert("ANCHOR")).To(BeFalse(), lab.Reason("inserting anchor is invalid"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("only anchor should be present"))
 			})
 		})
 
 		When("valid item requested", func() {
 			It("🧪 should: insert", func() {
-				Expect(set.Insert("richard")).To(BeTrue(), helpers.Reason("richard is in order list"))
-				Expect(set.Count()).To(Equal(2), helpers.Reason("richard, anchor"))
+				Expect(set.Insert("richard")).To(BeTrue(), lab.Reason("richard is in order list"))
+				Expect(set.Count()).To(Equal(2), lab.Reason("richard, anchor"))
 			})
 		})
 
 		When("valid item already present", func() {
 			It("🧪 should: not insert", func() {
 				set.Insert("richard")
-				Expect(set.Insert("richard")).To(BeFalse(), helpers.Reason("richard already in order list"))
-				Expect(set.Count()).To(Equal(2), helpers.Reason("richard, anchor"))
+				Expect(set.Insert("richard")).To(BeFalse(), lab.Reason("richard already in order list"))
+				Expect(set.Count()).To(Equal(2), lab.Reason("richard, anchor"))
 			})
 		})
 
 		When("invalid item requested", func() {
 			It("🧪 should: not insert", func() {
-				Expect(set.Insert("gold")).To(BeFalse(), helpers.Reason("gold not in order list"))
-				Expect(set.Count()).To(Equal(1), helpers.Reason("only anchor should be present"))
+				Expect(set.Insert("gold")).To(BeFalse(), lab.Reason("gold not in order list"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("only anchor should be present"))
 			})
 		})
 	})
@@ -88,8 +88,8 @@ var _ = Describe("PositionalSet", func() {
 			It("🧪 should: insert all", func() {
 				Expect(set.All(
 					"richard", "of", "york", "gave", "battle", "in", "vain",
-				)).To(BeTrue(), helpers.Reason("all items are valid"))
-				Expect(set.Count()).To(Equal(8), helpers.Reason("should contain all items"))
+				)).To(BeTrue(), lab.Reason("all items are valid"))
+				Expect(set.Count()).To(Equal(8), lab.Reason("should contain all items"))
 			})
 		})
 
@@ -97,8 +97,8 @@ var _ = Describe("PositionalSet", func() {
 			It("🧪 should: insert only valid", func() {
 				Expect(set.All(
 					"richard", "gold", "of", "silver", "york", "bronze",
-				)).To(BeFalse(), helpers.Reason("all items are valid"))
-				Expect(set.Count()).To(Equal(4), helpers.Reason("should contain valid items"))
+				)).To(BeFalse(), lab.Reason("all items are valid"))
+				Expect(set.Count()).To(Equal(4), lab.Reason("should contain valid items"))
 			})
 		})
 	})
@@ -107,7 +107,7 @@ var _ = Describe("PositionalSet", func() {
 		When("requested item is the anchor", func() {
 			It("🧪 should: not delete", func() {
 				set.Delete("ANCHOR")
-				Expect(set.Count()).To(Equal(1), helpers.Reason("anchor should still be present"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("anchor should still be present"))
 			})
 		})
 
@@ -115,21 +115,21 @@ var _ = Describe("PositionalSet", func() {
 			It("🧪 should: delete", func() {
 				set.Insert("york")
 				set.Delete("york")
-				Expect(set.Count()).To(Equal(1), helpers.Reason("york should deleted"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("york should deleted"))
 			})
 		})
 
 		When("requested valid item is not present", func() {
 			It("🧪 should: not delete", func() {
 				set.Delete("york")
-				Expect(set.Count()).To(Equal(1), helpers.Reason("only anchor should be present"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("only anchor should be present"))
 			})
 		})
 
 		When("requested valid item is not valid", func() {
 			It("🧪 should: not delete", func() {
 				set.Delete("silver")
-				Expect(set.Count()).To(Equal(1), helpers.Reason("only anchor should be present"))
+				Expect(set.Count()).To(Equal(1), lab.Reason("only anchor should be present"))
 			})
 		})
 	})

@@ -10,7 +10,7 @@ import (
 
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -40,7 +40,7 @@ var _ = Describe("Tapable", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -152,7 +152,7 @@ var _ = Describe("Tapable", Ordered, func() {
 			Context("Chain", func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
-						path := helpers.Path(root, "RETRO-WAVE")
+						path := lab.Path(root, "RETRO-WAVE")
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -161,10 +161,10 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, err := o.Hooks.ReadDirectory.Invoke()(FS, helpers.TrimRoot(path))
+						result, err := o.Hooks.ReadDirectory.Invoke()(FS, lab.TrimRoot(path))
 						Expect(err).To(Succeed())
 						Expect(result).To(
-							helpers.HaveDirectoryContents(
+							lab.HaveDirectoryContents(
 								[]string{"Chromatics", "College", "Electric Youth"},
 							),
 							"ReadDirectory hook not invoked",
@@ -174,7 +174,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
-						path := helpers.Path(root, "RETRO-WAVE")
+						path := lab.Path(root, "RETRO-WAVE")
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -190,10 +190,10 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, e := o.Hooks.ReadDirectory.Invoke()(FS, helpers.TrimRoot(path))
+						result, e := o.Hooks.ReadDirectory.Invoke()(FS, lab.TrimRoot(path))
 						Expect(e).To(Succeed())
 						Expect(result).To(
-							helpers.HaveDirectoryContents(
+							lab.HaveDirectoryContents(
 								[]string{"Chromatics"},
 							),
 							"ReadDirectory hook not broadcasted",
@@ -224,7 +224,7 @@ var _ = Describe("Tapable", Ordered, func() {
 			Context("Chain", func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
-						path := helpers.Path(root, "RETRO-WAVE")
+						path := lab.Path(root, "RETRO-WAVE")
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,
@@ -233,7 +233,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, err := o.Hooks.QueryStatus.Invoke()(FS, helpers.TrimRoot(path))
+						_, err := o.Hooks.QueryStatus.Invoke()(FS, lab.TrimRoot(path))
 
 						Expect(err).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
@@ -242,7 +242,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
-						path := helpers.Path(root, "RETRO-WAVE")
+						path := lab.Path(root, "RETRO-WAVE")
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,
@@ -258,7 +258,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, e := o.Hooks.QueryStatus.Invoke()(FS, helpers.TrimRoot(path))
+						_, e := o.Hooks.QueryStatus.Invoke()(FS, lab.TrimRoot(path))
 
 						Expect(e).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not broadcasted")

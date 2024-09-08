@@ -12,7 +12,7 @@ import (
 	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 )
@@ -28,7 +28,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -47,8 +47,8 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 	Context("glob", func() {
 		DescribeTable("Filter Children (glob)",
-			func(ctx SpecContext, entry *helpers.NaviTE) {
-				recording := make(helpers.RecordingMap)
+			func(ctx SpecContext, entry *lab.NaviTE) {
+				recording := make(lab.RecordingMap)
 				once := func(node *tv.Node) error {
 					_, found := recording[node.Extension.Name]
 					Expect(found).To(BeFalse())
@@ -56,7 +56,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 					return entry.Callback(node)
 				}
-				path := helpers.Path(root, entry.Relative)
+				path := lab.Path(root, entry.Relative)
 				result, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
 						Root:         path,
@@ -72,17 +72,17 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
 					tv.WithHookQueryStatus(
 						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-							return qsys.Stat(helpers.TrimRoot(path))
+							return qsys.Stat(lab.TrimRoot(path))
 						},
 					),
 					tv.WithHookReadDirectory(
 						func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-							return rfs.ReadDir(helpers.TrimRoot(dirname))
+							return rfs.ReadDir(lab.TrimRoot(dirname))
 						},
 					),
 				)).Navigate(ctx)
 
-				helpers.AssertNavigation(entry, &helpers.TestOptions{
+				lab.AssertNavigation(entry, &lab.TestOptions{
 					Recording: recording,
 					Path:      path,
 					Result:    result,
@@ -90,18 +90,18 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				})
 			},
 
-			func(entry *helpers.NaviTE) string {
+			func(entry *lab.NaviTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 			},
 
 			// === folders (with files) ==========================================
 
-			Entry(nil, &helpers.NaviTE{
+			Entry(nil, &lab.NaviTE{
 				Given:        "folders(with files): Path is leaf",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeFoldersWithFiles,
-				Callback:     helpers.FoldersCallback("LEAF-PATH"),
-				ExpectedNoOf: helpers.Quantities{
+				Callback:     lab.FoldersCallback("LEAF-PATH"),
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 1,
 					Children: map[string]int{
@@ -110,12 +110,12 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				},
 			}),
 
-			Entry(nil, &helpers.NaviTE{
+			Entry(nil, &lab.NaviTE{
 				Given:        "folders(with files): Path contains folders (check all invoked)",
 				Relative:     "RETRO-WAVE",
 				Visit:        true,
 				Subscription: enums.SubscribeFoldersWithFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 8,
 					Children: map[string]int{
@@ -125,7 +125,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 						"Innerworld":       3,
 					},
 				},
-				Callback: helpers.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+				Callback: lab.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 			}),
 		)
 	})
