@@ -12,7 +12,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
@@ -29,7 +29,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 			filepath.Join("MUSICO", "PROGRESSIVE-HOUSE"),
 		)
@@ -45,7 +45,7 @@ var _ = Describe("feature", Ordered, func() {
 		When("files: filtering with regex", func() {
 			It("should: invoke for filtered nodes only", Label("example"),
 				func(ctx SpecContext) {
-					path := helpers.Path(root, "RETRO-WAVE")
+					path := lab.Path(root, "RETRO-WAVE")
 					filterDefs := &pref.FilterOptions{
 						Node: &core.FilterDef{
 							Type:        enums.FilterTypeRegex,
@@ -74,12 +74,12 @@ var _ = Describe("feature", Ordered, func() {
 						tv.WithFilter(filterDefs),
 						tv.WithHookQueryStatus(
 							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-								return qsys.Stat(helpers.TrimRoot(path))
+								return qsys.Stat(lab.TrimRoot(path))
 							},
 						),
 						tv.WithHookReadDirectory(
 							func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-								return rfs.ReadDir(helpers.TrimRoot(dirname))
+								return rfs.ReadDir(lab.TrimRoot(dirname))
 							},
 						),
 					)).Navigate(ctx)
@@ -94,12 +94,12 @@ var _ = Describe("feature", Ordered, func() {
 	})
 
 	DescribeTable("regex",
-		func(ctx SpecContext, entry *helpers.FilterTE) {
+		func(ctx SpecContext, entry *lab.FilterTE) {
 			var (
 				traverseFilter core.TraverseFilter
 			)
 
-			recording := make(helpers.RecordingMap)
+			recording := make(lab.RecordingMap)
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeRegex,
@@ -114,7 +114,7 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			}
 
-			path := helpers.Path(root, entry.Relative)
+			path := lab.Path(root, entry.Relative)
 
 			callback := func(item *core.Node) error {
 				indicator := lo.Ternary(item.IsFolder(), "📁", "💠")
@@ -149,17 +149,17 @@ var _ = Describe("feature", Ordered, func() {
 				tv.WithFilter(filterDefs),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(helpers.TrimRoot(path))
+						return qsys.Stat(lab.TrimRoot(path))
 					},
 				),
 				tv.WithHookReadDirectory(
 					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(helpers.TrimRoot(dirname))
+						return rfs.ReadDir(lab.TrimRoot(dirname))
 					},
 				),
 			)).Navigate(ctx)
 
-			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:        FS,
 				Recording: recording,
 				Path:      path,
@@ -167,18 +167,18 @@ var _ = Describe("feature", Ordered, func() {
 				Err:       err,
 			})
 		},
-		func(entry *helpers.FilterTE) string {
+		func(entry *lab.FilterTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
 		// === files =========================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(any scope): regex filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   4,
 					Folders: 0,
 				},
@@ -188,12 +188,12 @@ var _ = Describe("feature", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(any scope): regex filter (negate)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   10,
 					Folders: 0,
 				},
@@ -204,12 +204,12 @@ var _ = Describe("feature", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "files(default to any scope): regex filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   4,
 					Folders: 0,
 				},
@@ -220,12 +220,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		// === folders =======================================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(any scope): regex filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 2,
 				},
@@ -235,12 +235,12 @@ var _ = Describe("feature", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(any scope): regex filter (negate)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 6,
 				},
@@ -251,12 +251,12 @@ var _ = Describe("feature", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(undefined scope): regex filter",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 2,
 				},
@@ -267,12 +267,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		// === ifNotApplicable ===============================================
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(top): regex filter (ifNotApplicable=true)",
 				Relative:     "PROGRESSIVE-HOUSE",
 				Subscription: enums.SubscribeFolders,
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 10,
 				},
@@ -284,13 +284,13 @@ var _ = Describe("feature", Ordered, func() {
 			IfNotApplicable: enums.TriStateBoolTrue,
 		}),
 
-		Entry(nil, &helpers.FilterTE{
-			NaviTE: helpers.NaviTE{
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
 				Given:        "folders(top): regex filter (ifNotApplicable=false)",
 				Relative:     "",
 				Subscription: enums.SubscribeFolders,
 				Mandatory:    []string{"PROGRESSIVE-HOUSE"},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 1,
 				},

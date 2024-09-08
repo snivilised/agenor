@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/nfs"
 )
@@ -54,7 +54,7 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 	DescribeTable("with mapFS",
 		func(entry *ensureTE) {
 			home, _ := mocks.HomeFunc()
-			location := helpers.TrimRoot(filepath.Join(home, entry.relative))
+			location := lab.TrimRoot(filepath.Join(home, entry.relative))
 
 			if entry.directory {
 				location += string(filepath.Separator)
@@ -63,11 +63,11 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 			actual, err := nfs.EnsurePathAt(location, "default-test.log", perm, mfs)
 			directory, _ := filepath.Split(actual)
 			directory = filepath.Clean(directory)
-			expected := helpers.TrimRoot(helpers.Path(home, entry.expected))
+			expected := lab.TrimRoot(lab.Path(home, entry.expected))
 
 			Expect(err).Error().To(BeNil())
 			Expect(actual).To(Equal(expected))
-			Expect(AsDirectory(helpers.TrimRoot(directory))).To(ExistInFS(mfs))
+			Expect(AsDirectory(lab.TrimRoot(directory))).To(ExistInFS(mfs))
 		},
 		func(entry *ensureTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.given, entry.should)

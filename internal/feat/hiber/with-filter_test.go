@@ -14,7 +14,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/pref"
 )
@@ -30,7 +30,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 			filepath.Join("MUSICO", "edm"),
 		)
@@ -44,7 +44,7 @@ var _ = Describe("feature", Ordered, func() {
 
 	DescribeTable("filter and listen both active",
 		func(ctx SpecContext, entry *hibernateTE) {
-			path := helpers.Path(root, "RETRO-WAVE")
+			path := lab.Path(root, "RETRO-WAVE")
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Root:         path,
@@ -58,8 +58,8 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				},
 
-				tv.WithOnBegin(helpers.Begin("🛡️")),
-				tv.WithOnEnd(helpers.End("🏁")),
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
 
 				tv.WithFilter(&pref.FilterOptions{
 					Node: &core.FilterDef{
@@ -96,13 +96,13 @@ var _ = Describe("feature", Ordered, func() {
 
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(helpers.TrimRoot(path))
+						return qsys.Stat(lab.TrimRoot(path))
 					},
 				),
 
 				tv.WithHookReadDirectory(
 					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rsys.ReadDir(helpers.TrimRoot(dirname))
+						return rsys.ReadDir(lab.TrimRoot(dirname))
 					},
 				),
 				tv.WithOnWake(func(description string) {
@@ -113,7 +113,7 @@ var _ = Describe("feature", Ordered, func() {
 				}),
 			)).Navigate(ctx)
 
-			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:     FS,
 				Path:   path,
 				Result: result,
@@ -132,7 +132,7 @@ var _ = Describe("feature", Ordered, func() {
 		},
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "File Subscription",
 				Should:       "wake, then apply filter until the end",
 				Subscription: enums.SubscribeFiles,
@@ -141,7 +141,7 @@ var _ = Describe("feature", Ordered, func() {
 
 					return nil
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files: 6,
 				},
 			},
@@ -156,7 +156,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "File Subscription",
 				Should:       "apply filter until sleep",
 				Subscription: enums.SubscribeFiles,
@@ -165,7 +165,7 @@ var _ = Describe("feature", Ordered, func() {
 
 					return nil
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files: 2,
 				},
 			},
@@ -180,7 +180,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "File Subscription",
 				Should:       "apply filter within hibernation range",
 				Subscription: enums.SubscribeFiles,
@@ -189,7 +189,7 @@ var _ = Describe("feature", Ordered, func() {
 
 					return nil
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Files: 4,
 				},
 			},

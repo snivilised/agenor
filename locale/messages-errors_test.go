@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/locale"
 )
 
@@ -21,8 +21,8 @@ var _ = Describe("error messages", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		repo = helpers.Repo("")
-		l10nPath = helpers.Path(repo, "test/data/l10n")
+		repo = lab.Repo("")
+		l10nPath = lab.Path(repo, "test/data/l10n")
 
 		_, err := os.Stat(l10nPath)
 		Expect(err).To(Succeed(),

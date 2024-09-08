@@ -14,7 +14,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
@@ -30,7 +30,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = helpers.Musico(verbose,
+		FS, root = lab.Musico(verbose,
 			filepath.Join("MUSICO", "RETRO-WAVE"),
 			filepath.Join("MUSICO", "edm"),
 		)
@@ -46,7 +46,7 @@ var _ = Describe("feature", Ordered, func() {
 		When("folders: wake and sleep", func() {
 			It("🧪 should: invoke inside hibernation range", Label("example"),
 				func(ctx SpecContext) {
-					path := helpers.Path(root, "RETRO-WAVE")
+					path := lab.Path(root, "RETRO-WAVE")
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
 							Root:         path,
@@ -90,7 +90,7 @@ var _ = Describe("feature", Ordered, func() {
 
 						tv.WithHookQueryStatus(
 							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-								return qsys.Stat(helpers.TrimRoot(path))
+								return qsys.Stat(lab.TrimRoot(path))
 							},
 						),
 
@@ -101,7 +101,7 @@ var _ = Describe("feature", Ordered, func() {
 								// using a different file system should not need to use
 								// this hook for this purpose.
 								//
-								return rsys.ReadDir(helpers.TrimRoot(dirname))
+								return rsys.ReadDir(lab.TrimRoot(dirname))
 							},
 						),
 					)).Navigate(ctx)
@@ -116,7 +116,7 @@ var _ = Describe("feature", Ordered, func() {
 
 	DescribeTable("simple hibernate",
 		func(ctx SpecContext, entry *hibernateTE) {
-			recording := make(helpers.RecordingMap)
+			recording := make(lab.RecordingMap)
 			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
 				_, found := recording[node.Extension.Name]
 				Expect(found).To(BeFalse())
@@ -125,7 +125,7 @@ var _ = Describe("feature", Ordered, func() {
 				return nil
 			}
 
-			path := helpers.Path(
+			path := lab.Path(
 				root,
 				lo.Ternary(entry.NaviTE.Relative == "",
 					"RETRO-WAVE",
@@ -173,18 +173,18 @@ var _ = Describe("feature", Ordered, func() {
 				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
 				tv.WithHookQueryStatus(
 					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(helpers.TrimRoot(path))
+						return qsys.Stat(lab.TrimRoot(path))
 					},
 				),
 
 				tv.WithHookReadDirectory(
 					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rsys.ReadDir(helpers.TrimRoot(dirname))
+						return rsys.ReadDir(lab.TrimRoot(dirname))
 					},
 				),
 			)).Navigate(ctx)
 
-			helpers.AssertNavigation(&entry.NaviTE, &helpers.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:          FS,
 				Recording:   recording,
 				Path:        path,
@@ -201,7 +201,7 @@ var _ = Describe("feature", Ordered, func() {
 		// === folders =======================================================
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "wake and sleep (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
@@ -211,7 +211,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited: []string{"RETRO-WAVE", "Chromatics",
 					"Electric Youth", "Innerworld",
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 4,
 				},
 			},
@@ -234,7 +234,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "wake and sleep (folders, excl:wake, inc:sleep, mute)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
@@ -244,7 +244,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited: []string{"Night Drive", "RETRO-WAVE",
 					"Chromatics", "Innerworld",
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 4,
 				},
 			},
@@ -268,7 +268,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "wake only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
@@ -276,7 +276,7 @@ var _ = Describe("feature", Ordered, func() {
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
 				Prohibited: []string{"RETRO-WAVE", "Chromatics"},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 6,
 				},
 			},
@@ -294,7 +294,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "sleep only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
@@ -302,7 +302,7 @@ var _ = Describe("feature", Ordered, func() {
 					"Northern Council", "Teenage Color",
 				},
 				Prohibited: []string{"Electric Youth", "Innerworld"},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 6,
 				},
 			},
@@ -321,7 +321,7 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &hibernateTE{
-			NaviTE: helpers.NaviTE{
+			NaviTE: lab.NaviTE{
 				Given:        "sleep only (folders, inclusive:default)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFolders,
@@ -329,7 +329,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
-				ExpectedNoOf: helpers.Quantities{
+				ExpectedNoOf: lab.Quantities{
 					Folders: 2,
 				},
 			},

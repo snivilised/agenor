@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/helpers"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
@@ -18,7 +18,7 @@ func TestFilter(t *testing.T) {
 }
 
 type FilterTE struct {
-	helpers.NaviTE
+	lab.NaviTE
 	Description     string
 	Pattern         string
 	Scope           enums.FilterScope
@@ -31,7 +31,7 @@ type FilterTE struct {
 }
 
 type PolyTE struct {
-	helpers.NaviTE
+	lab.NaviTE
 	File   core.FilterDef
 	Folder core.FilterDef
 }
