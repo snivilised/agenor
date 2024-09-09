@@ -1,9 +1,5 @@
 package pref
 
-import (
-	"github.com/snivilised/traverse/enums"
-)
-
 type (
 	// SubPathBehaviour
 	SubPathBehaviour struct {
@@ -15,10 +11,10 @@ type (
 		//
 		IsCaseSensitive bool
 
-		// DirectoryEntryOrder defines whether a folder's files or directories
+		// SortFilesFirst defines whether a folder's files or directories
 		// should be navigated first.
 		//
-		DirectoryEntryOrder enums.DirectoryContentsOrder
+		SortFilesFirst bool
 	}
 
 	// HibernationBehaviour

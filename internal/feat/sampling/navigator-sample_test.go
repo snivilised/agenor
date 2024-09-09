@@ -70,6 +70,7 @@ var _ = Describe("feature", Ordered, func() {
 							Folders: 2,
 						},
 					}),
+
 					tv.WithHookQueryStatus(
 						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 							return qsys.Stat(lab.TrimRoot(path))

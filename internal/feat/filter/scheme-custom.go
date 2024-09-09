@@ -6,7 +6,6 @@ import (
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/pref"
 )
 
 type customScheme struct {
@@ -16,12 +15,6 @@ type customScheme struct {
 
 func (s *customScheme) create() error {
 	s.filter = s.o.Filter.Custom
-
-	if s.o.Filter.Sink != nil {
-		s.o.Filter.Sink(pref.FilterReply{
-			Node: s.filter,
-		})
-	}
 
 	return s.filter.Validate()
 }

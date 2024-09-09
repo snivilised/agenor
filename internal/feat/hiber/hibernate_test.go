@@ -88,6 +88,14 @@ var _ = Describe("feature", Ordered, func() {
 							},
 						),
 
+						// This is only required to change the default inclusivity
+						// of the wake condition; by default is inclusive.
+						tv.WithHibernationBehaviourExclusiveWake(),
+
+						// This is only required to change the default inclusivity
+						// of the sleep condition; by default is exclusive.
+						tv.WithHibernationBehaviourInclusiveSleep(),
+
 						tv.WithHookQueryStatus(
 							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
 								return qsys.Stat(lab.TrimRoot(path))

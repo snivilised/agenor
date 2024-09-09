@@ -15,10 +15,6 @@ type Plugin struct {
 	IfResult core.ResultCompletion
 }
 
-func (p *Plugin) Name() string {
-	return "resume"
-}
-
 func (p *Plugin) Next(node *core.Node, inspection types.Inspection) (bool, error) {
 	_, _ = node, inspection
 	// apply the wake filter

@@ -47,16 +47,15 @@ func (c *Contents) Files() []fs.DirEntry {
 // All returns the contents of a directory respecting the directory sorting
 // order defined in the traversal options.
 func (c *Contents) All() []fs.DirEntry {
+	//nolint:ineffassign,staticcheck // prealloc
 	result := make([]fs.DirEntry, 0, len(c.files)+len(c.folders))
 
-	switch c.behaviour.DirectoryEntryOrder {
-	case enums.DirectoryContentsOrderFoldersFirst:
-		result = c.folders
-		result = append(result, c.files...)
-
-	case enums.DirectoryContentsOrderFilesFirst:
+	if c.behaviour.SortFilesFirst {
 		result = c.files
 		result = append(result, c.folders...)
+	} else {
+		result = c.folders
+		result = append(result, c.files...)
 	}
 
 	return result

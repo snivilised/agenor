@@ -22,13 +22,13 @@ func TernaryF[T any](condition bool, ifFunc, elseFunc func() T) T {
 
 // TernaryE is the same as TernaryF except the functions defined
 // must return an error
-func TernaryE[T any](condition bool, ifFunc, elseFunc func() (T, error)) (T, error) {
-	if condition {
-		return ifFunc()
-	}
+// func TernaryE[T any](condition bool, ifFunc, elseFunc func() (T, error)) (T, error) {
+// 	if condition {
+// 		return ifFunc()
+// 	}
 
-	return elseFunc()
-}
+// 	return elseFunc()
+// }
 
 // type IfElse[T any] struct {
 // 	result T

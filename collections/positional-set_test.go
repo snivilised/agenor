@@ -190,4 +190,24 @@ var _ = Describe("PositionalSet", func() {
 			})
 		})
 	})
+
+	Context("Contains", func() {
+		When("item is present", func() {
+			It("🧪 should: return true", func() {
+				set.All(rainbow...)
+				Expect(set.Contains("richard")).To(BeTrue(),
+					lab.Reason("richard IS contained in set"),
+				)
+			})
+		})
+
+		When("item is NOT present", func() {
+			It("🧪 should: return false", func() {
+				set.All(rainbow...)
+				Expect(set.Contains("james")).To(BeFalse(),
+					lab.Reason("james is NOT contained in set"),
+				)
+			})
+		})
+	})
 })

@@ -1,11 +1,28 @@
-package tapable
+# 💩 Temporary Notes
 
-import (
-	"fmt"
+This is just a place to put some garbage notes.
 
-	"golang.org/x/exp/constraints"
-)
+<!-- MD013/Line Length -->
+<!-- MarkDownLint-disable MD013 -->
 
+<!-- MD014/commands-show-output: Dollar signs used before commands without showing output mark down lint -->
+<!-- MarkDownLint-disable MD014 -->
+
+<!-- MD033/no-inline-html: Inline HTML -->
+<!-- MarkDownLint-disable MD033 -->
+
+<!-- MD040/fenced-code-language: Fenced code blocks should have a language specified -->
+<!-- MarkDownLint-disable MD040 -->
+
+<!-- MD028/no-blanks-blockquote: Blank line inside blockquote -->
+<!-- MarkDownLint-disable MD028 -->
+
+<!-- MD010/no-hard-tabs: Hard tabs -->
+<!-- MarkDownLint-disable MD010 -->
+
+## legacy defs
+
+```go
 type (
 	// ActivityL represents an entity that performs an action that is tapable. The type
 	// F should be a function signature, defined by the tapable, so F is not really
@@ -113,55 +130,63 @@ func (r *Receiver) When(from *Component) {
 		return widget, nil
 	})
 }
+```
 
-// The above is still confused. Let's start again we have these scenarios:
-//
-// --> internal (during bootstrap): ==> actually, this is di, not tap
-// * 1 component needs to custom another
-//
-// --> external (via options):
-// * notification of life-cycle events (broadcast) | [On/Notify] (eg, OnBegin/On(enums.cycle.begin))
-// * customise core behaviour, by role (targeted) | [Tap/Role] (eg, ReadDirectory, role=directory-reader)
-// *
+The above is still confused. Let's start again we have these scenarios:
 
-// Since we now have finer grain control; ie there are more but smaller packages
-// organised as features, each feature can expose its own set of hooks. Having
-// said this, I can still only think of nav as needing to expose hooks, but others
-// may emerge.
-//
-// For a component, we have the following situations
-// - broadcast, multiple callbacks
-// - targeted, single callback
-//
-// - may expose multiple hooks with different signatures
-// the problem this poses is that we can't have a collection of different
-// items. This means we need to define a hook container struct that contains the hooks.
-// The component aggregates this hook container with a member called hooks.
-// For example, in extendio, the options contains a hooks struct TraverseHooks:
-//
-// type TraverseHooks struct {
-// 	QueryStatus   QueryStatusHookFn
-// 	ReadDirectory ReadDirectoryHookFn
-// 	FolderSubPath SubPathHookFn
-// 	FileSubPath   SubPathHookFn
-// 	InitFilters   FilterInitHookFn
-// 	Sort          SortEntriesHookFn
-// 	Extend        ExtendHookFn
-// }
-//
-// But we need to ba able to tap these,
-//
-// if hooks is of type TraverseHooks, in object Component
-// component.hooks.ReadDirectory.tap("name", hookFn)
-// therefore ReadDirectoryHookFn, can't be the function, there must be a
-// level of indirection in-between,
-//
-// in TraverseHooks, ReadDirectory must be of type ReadDirectoryHook,
-// which is an instantiation of a generic type:
-// HookFunc[F any], where HookFunc contains the Tap function
-//
-// type ReadDirectoryHook tapable.HookFunc[ReadDirectoryHookFn]
-//
-// type TraverseHooks struct {
-// 	ReadDirectory ReadDirectoryHook
-// }
+--> internal (during bootstrap): ==> actually, this is di, not tap
+
+* 1 component needs to custom another
+
+--> external (via options):
+
+* notification of life-cycle events (broadcast) | [On/Notify] (eg, OnBegin/On(enums.cycle.begin))
+* customise core behaviour, by role (targeted) | [Tap/Role] (eg, ReadDirectory, role=directory-reader)
+*
+
+Since we now have finer grain control; ie there are more but smaller packages
+organised as features, each feature can expose its own set of hooks. Having
+said this, I can still only think of nav as needing to expose hooks, but others
+may emerge.
+
+For a component, we have the following situations
+
+* broadcast, multiple callbacks
+* targeted, single callback
+* may expose multiple hooks with different signatures
+the problem this poses is that we can't have a collection of different
+items. This means we need to define a hook container struct that contains the hooks.
+The component aggregates this hook container with a member called hooks.
+For example, in extendio, the options contains a hooks struct TraverseHooks:
+
+```go
+type TraverseHooks struct {
+	QueryStatus   QueryStatusHookFn
+	ReadDirectory ReadDirectoryHookFn
+	FolderSubPath SubPathHookFn
+	FileSubPath   SubPathHookFn
+	InitFilters   FilterInitHookFn
+	Sort          SortEntriesHookFn
+	Extend        ExtendHookFn
+}
+```
+
+But we need to ba able to tap these,
+
+if hooks is of type TraverseHooks, in object Component
+component.hooks.ReadDirectory.tap("name", hookFn)
+therefore ReadDirectoryHookFn, can't be the function, there must be a
+level of indirection in-between,
+
+in TraverseHooks, ReadDirectory must be of type ReadDirectoryHook,
+which is an instantiation of a generic type:
+
+```go
+HookFunc[F any], where HookFunc contains the Tap function
+
+type ReadDirectoryHook tapable.HookFunc[ReadDirectoryHookFn]
+
+type TraverseHooks struct {
+	ReadDirectory ReadDirectoryHook
+}
+```

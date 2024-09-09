@@ -1,13 +1,13 @@
 package pref
 
 import (
+	"io"
 	"io/fs"
 	"log/slog"
 	"runtime"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
-	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/tapable"
 )
 
@@ -75,7 +75,7 @@ func Get(settings ...Option) (o *Options, err error) {
 	err = apply(o, settings...)
 	o.Binder = binder
 
-	return
+	return o, err
 }
 
 type ActiveState struct {
@@ -149,7 +149,7 @@ func IfOptionF(condition bool, option ConditionalOption) Option {
 
 // DefaultOptions
 func DefaultOptions() *Options {
-	nopLogger := &slog.Logger{}
+	nopLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	o := &Options{
 		Hibernate: core.HibernateOptions{
@@ -163,8 +163,8 @@ func DefaultOptions() *Options {
 				KeepTrailingSep: true,
 			},
 			Sort: SortBehaviour{
-				IsCaseSensitive:     false,
-				DirectoryEntryOrder: enums.DirectoryContentsOrderFoldersFirst,
+				IsCaseSensitive: false,
+				SortFilesFirst:  false,
 			},
 		},
 		Concurrency: ConcurrencyOptions{

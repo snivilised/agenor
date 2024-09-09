@@ -5,15 +5,18 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/pref"
 )
 
-func HadesNav(err error) types.KernelController {
+func HadesNav(o *pref.Options, err error) types.KernelController {
 	return &navigatorHades{
+		o:   o,
 		err: err,
 	}
 }
 
 type navigatorHades struct {
+	o   *pref.Options
 	err error
 }
 
@@ -28,6 +31,10 @@ func (n *navigatorHades) Navigate(ctx context.Context) (core.TraverseResult, err
 }
 
 func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
+	if !IsBenignError(err) && n.o != nil {
+		n.o.Monitor.Log.Error(err.Error())
+	}
+
 	return types.NewFailed(err)
 }
 

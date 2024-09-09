@@ -16,8 +16,6 @@ import (
 func DefaultReadEntriesHook(sys fs.ReadDirFS,
 	dirname string,
 ) ([]fs.DirEntry, error) {
-	const all = -1
-
 	contents, err := fs.ReadDir(sys, dirname)
 	if err != nil {
 		return nil, err

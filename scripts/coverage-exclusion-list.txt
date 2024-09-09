@@ -1,0 +1,3 @@
+github.com/snivilised/traverse/enums
+github.com/snivilised/traverse/internal/third
+github.com/snivilised/traverse/internal/laboratory/

@@ -33,10 +33,6 @@ type plugin struct {
 	crate measure.Crate
 }
 
-func (p *plugin) Name() string {
-	return "nanny"
-}
-
 func (p *plugin) Next(node *core.Node,
 	inspection types.Inspection,
 ) (bool, error) {
