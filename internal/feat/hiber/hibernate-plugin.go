@@ -32,10 +32,6 @@ type plugin struct {
 	profile profile
 }
 
-func (p *plugin) Name() string {
-	return "hibernation"
-}
-
 func (p *plugin) Next(node *core.Node, inspection types.Inspection) (bool, error) {
 	return p.profile.next(node, inspection)
 }

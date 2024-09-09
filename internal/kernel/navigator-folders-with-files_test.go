@@ -47,7 +47,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 	Context("glob", func() {
 		DescribeTable("Filter Children (glob)",
-			func(ctx SpecContext, entry *lab.NaviTE) {
+			func(ctx SpecContext, entry *lab.FilterTE) {
 				recording := make(lab.RecordingMap)
 				once := func(node *tv.Node) error {
 					_, found := recording[node.Extension.Name]
@@ -82,7 +82,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 					),
 				)).Navigate(ctx)
 
-				lab.AssertNavigation(entry, &lab.TestOptions{
+				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 					Recording: recording,
 					Path:      path,
 					Result:    result,
@@ -90,42 +90,46 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				})
 			},
 
-			func(entry *lab.NaviTE) string {
+			func(entry *lab.FilterTE) string {
 				return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 			},
 
 			// === folders (with files) ==========================================
 
-			Entry(nil, &lab.NaviTE{
-				Given:        "folders(with files): Path is leaf",
-				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
-				Subscription: enums.SubscribeFoldersWithFiles,
-				Callback:     lab.FoldersCallback("LEAF-PATH"),
-				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 1,
-					Children: map[string]int{
-						"Night Drive": 4,
+			Entry(nil, &lab.FilterTE{
+				NaviTE: lab.NaviTE{
+					Given:        "folders(with files): Path is leaf",
+					Relative:     "RETRO-WAVE/Chromatics/Night Drive",
+					Subscription: enums.SubscribeFoldersWithFiles,
+					Callback:     lab.FoldersCallback("LEAF-PATH"),
+					ExpectedNoOf: lab.Quantities{
+						Files:   0,
+						Folders: 1,
+						Children: map[string]int{
+							"Night Drive": 4,
+						},
 					},
 				},
 			}),
 
-			Entry(nil, &lab.NaviTE{
-				Given:        "folders(with files): Path contains folders (check all invoked)",
-				Relative:     "RETRO-WAVE",
-				Visit:        true,
-				Subscription: enums.SubscribeFoldersWithFiles,
-				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 8,
-					Children: map[string]int{
-						"Night Drive":      4,
-						"Northern Council": 4,
-						"Teenage Color":    3,
-						"Innerworld":       3,
+			Entry(nil, &lab.FilterTE{
+				NaviTE: lab.NaviTE{
+					Given:        "folders(with files): Path contains folders (check all invoked)",
+					Relative:     "RETRO-WAVE",
+					Visit:        true,
+					Subscription: enums.SubscribeFoldersWithFiles,
+					ExpectedNoOf: lab.Quantities{
+						Files:   0,
+						Folders: 8,
+						Children: map[string]int{
+							"Night Drive":      4,
+							"Northern Council": 4,
+							"Teenage Color":    3,
+							"Innerworld":       3,
+						},
 					},
+					Callback: lab.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 				},
-				Callback: lab.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
 			}),
 		)
 	})

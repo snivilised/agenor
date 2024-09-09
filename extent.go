@@ -97,7 +97,7 @@ func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, error) 
 	loaded, err := resume.Load(ex.fileSys.res, ex.w.From, settings...)
 	ex.loaded = loaded
 
-	// get the resume point from the resume persistence file
+	// TODO: get the resume point from the resume persistence file
 	// then set up hibernation with this defined as a hibernation
 	// filter.
 	//

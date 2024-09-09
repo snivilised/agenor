@@ -18,6 +18,8 @@
 coverage
 coverage.out
 ginkgo.report
+report.json
+coverage.html
 
 .task/
 

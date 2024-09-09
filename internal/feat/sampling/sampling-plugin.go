@@ -33,10 +33,6 @@ type plugin struct {
 	ctrl controller
 }
 
-func (p *plugin) Name() string {
-	return "sampling"
-}
-
 func (p *plugin) Init(_ *types.PluginInit) error {
 	p.O.Hooks.ReadDirectory.Chain(
 		p.ctrl.sample,

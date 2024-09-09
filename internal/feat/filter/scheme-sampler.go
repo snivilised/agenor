@@ -9,7 +9,6 @@ import (
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/nfs"
-	"github.com/snivilised/traverse/pref"
 )
 
 type samplerScheme struct {
@@ -33,13 +32,8 @@ func (s *samplerScheme) create() error {
 			_ fs.ReadDirFS, _ string,
 		) ([]fs.DirEntry, error) {
 			return s.filter.Matching(result), err
-		})
-
-	if s.o.Filter.Sink != nil {
-		s.o.Filter.Sink(pref.FilterReply{
-			Sampler: s.filter,
-		})
-	}
+		},
+	)
 
 	return filter.Validate()
 }

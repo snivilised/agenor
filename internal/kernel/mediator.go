@@ -106,7 +106,7 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 		root:     m.root,
 	})
 
-	if !IsBenignError(err) {
+	if !IsBenignError(err) && m.o != nil {
 		m.o.Monitor.Log.Error(err.Error())
 	}
 

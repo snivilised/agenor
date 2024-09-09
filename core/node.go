@@ -65,21 +65,9 @@ func Root(root string, info fs.FileInfo) *Node {
 	return node
 }
 
-// Clone makes shallow copy of Node (excluding the error).
-func (n *Node) Clone() *Node {
-	c := *n
-	c.Error = nil
-
-	return &c
-}
-
 // IsFolder indicates wether this node is a folder.
 func (n *Node) IsFolder() bool {
 	return n.dir
-}
-
-func (n *Node) key() string {
-	return n.Extension.SubPath
 }
 
 func isDir(n *Node) bool {

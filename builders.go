@@ -41,14 +41,13 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	if optionsErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			kc:  kernel.HadesNav(optionsErr),
+			kc:  kernel.HadesNav(o, optionsErr),
 			ext: ext,
 		}, optionsErr
 	}
 
 	// BUILD NAVIGATOR
 	//
-
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
 		FS: FileSystems{
 			N: ext.navFS(),
@@ -61,7 +60,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	if navErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			kc:  kernel.HadesNav(navErr),
+			kc:  kernel.HadesNav(o, navErr),
 			ext: ext,
 		}, navErr
 	}
@@ -78,7 +77,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	if pluginsErr != nil {
 		return &buildArtefacts{
 			o:   o,
-			kc:  kernel.HadesNav(pluginsErr),
+			kc:  kernel.HadesNav(o, pluginsErr),
 			ext: ext,
 		}, pluginsErr
 	}

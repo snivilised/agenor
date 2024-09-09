@@ -48,6 +48,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Handler:      noOpHandler,
 						},
 						tv.WithOnAscend(func(_ *core.Node) {}),
+						tv.WithNoRecurse(),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -105,6 +106,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Handler:      noOpHandler,
 						},
 						tv.WithOnBegin(func(_ *cycle.BeginState) {}),
+						tv.WithCPU(),
 					)).Navigate(ctx)
 
 					wg.Wait()

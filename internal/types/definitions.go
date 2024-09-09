@@ -72,7 +72,6 @@ type (
 
 	// Plugin used to define interaction with supplementary features
 	Plugin interface {
-		Name() string
 		Register(kc KernelController) error
 		Role() enums.Role
 		Init(pi *PluginInit) error

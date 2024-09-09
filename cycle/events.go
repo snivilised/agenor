@@ -148,11 +148,3 @@ func broadcastHibernate(listeners []HibernateHandler) HibernateHandler {
 }
 
 func nopHibernate(_ string) {}
-
-func broadcastSimple(listeners []SimpleHandler) SimpleHandler {
-	return func() {
-		for _, listener := range listeners {
-			listener()
-		}
-	}
-}

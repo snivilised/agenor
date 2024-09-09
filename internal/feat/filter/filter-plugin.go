@@ -35,10 +35,6 @@ type plugin struct {
 	scheme scheme
 }
 
-func (p *plugin) Name() string {
-	return "filtering"
-}
-
 func (p *plugin) Register(kc types.KernelController) error {
 	if err := p.BasePlugin.Register(kc); err != nil {
 		return err
