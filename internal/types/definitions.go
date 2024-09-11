@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
@@ -61,13 +62,13 @@ type (
 		Navigate(ctx context.Context) (core.TraverseResult, error)
 		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
 		Supervisor() *measure.Supervisor
-		Controls() *cycle.Controls
 	}
 
 	// Resources are dependencies required for navigation
 	Resources struct {
 		FS         nfs.FileSystems
 		Supervisor *measure.Supervisor
+		Binder     *opts.Binder
 	}
 
 	// Plugin used to define interaction with supplementary features
@@ -79,7 +80,7 @@ type (
 
 	// Restoration; tbd...
 	Restoration interface {
-		Inject(state pref.ActiveState)
+		Inject(state opts.ActiveState)
 	}
 
 	// Facilities is the interface provided to plugins to enable them

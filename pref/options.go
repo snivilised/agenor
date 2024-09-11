@@ -2,7 +2,6 @@ package pref
 
 import (
 	"io"
-	"io/fs"
 	"log/slog"
 	"runtime"
 
@@ -59,55 +58,11 @@ type (
 		// Defects contains error handling options
 		//
 		Defects DefectOptions
-
-		Binder *Binder
 	}
 
 	// Option functional traverse options
 	Option func(o *Options) error
 )
-
-func Get(settings ...Option) (o *Options, err error) {
-	o = DefaultOptions()
-	binder := NewBinder()
-	o.Events.Bind(&binder.Controls)
-
-	err = apply(o, settings...)
-	o.Binder = binder
-
-	return o, err
-}
-
-type ActiveState struct {
-}
-
-type LoadInfo struct {
-	O      *Options
-	State  *ActiveState
-	WakeAt string
-}
-
-func Load(_ fs.FS, from string, settings ...Option) (*LoadInfo, error) {
-	o := DefaultOptions()
-	// do load
-	_ = from
-	binder := NewBinder()
-	o.Events.Bind(&binder.Controls)
-	o.Binder = binder
-
-	// TODO: save any active state on the binder, eg the wake point
-
-	err := apply(o, settings...)
-	o.Binder.Loaded = &LoadInfo{
-		// O:      o,
-		WakeAt: "tbd",
-	}
-
-	return &LoadInfo{
-		O:      o,
-		WakeAt: "tbd",
-	}, err
-}
 
 func apply(o *Options, settings ...Option) (err error) {
 	for _, option := range settings {

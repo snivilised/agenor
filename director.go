@@ -9,6 +9,7 @@ import (
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/feat/sampling"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -67,7 +68,7 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
-func Prime(using *pref.Using, opts ...pref.Option) *Builders {
+func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	// TODO: we need to create an aux file system, which is bound
 	// to a pre-defined location, that will be called upon if
 	// the navigation session is terminated either by a ctrl-c or
@@ -100,22 +101,22 @@ func Prime(using *pref.Using, opts ...pref.Option) *Builders {
 				u: using,
 			}
 		}),
-		options: optionals(func(ext extent) (*pref.Options, error) {
+		options: optionals(func(ext extent) (*pref.Options, *opts.Binder, error) {
 			ve := using.Validate()
 
 			if using.O != nil {
-				return using.O, ve
+				return using.O, opts.GetWith(using.O), ve
 			}
 
-			o, err := ext.options(opts...)
+			o, binder, err := ext.options(settings...)
 
 			if ve != nil {
-				return o, ve
+				return o, binder, ve
 			}
 
-			return o, err
+			return o, binder, err
 		}),
-		navigator: kernel.Builder(func(o *pref.Options,
+		navigator: kernel.Builder(func(o *pref.Options, // pass in controls here, or put on resources
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
 			return kernel.New(using, o, &kernel.Benign{}, resources), nil
@@ -163,12 +164,16 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
-		options: optionals(func(ext extent) (*pref.Options, error) {
-			if err := was.Validate(); err != nil {
-				return nil, err
+		options: optionals(func(ext extent) (*pref.Options, *opts.Binder, error) {
+			ve := was.Validate()
+
+			o, binder, err := ext.options(settings...)
+
+			if ve != nil {
+				return o, binder, ve
 			}
 
-			return ext.options(settings...)
+			return o, binder, err
 		}),
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,

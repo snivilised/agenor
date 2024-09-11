@@ -37,7 +37,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD OPTIONS
 	//
-	o, optionsErr := bs.options.build(ext)
+	o, binder, optionsErr := bs.options.build(ext)
 	if optionsErr != nil {
 		return &buildArtefacts{
 			o:   o,
@@ -55,6 +55,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 			R: ext.resFS(),
 		},
 		Supervisor: measure.New(),
+		Binder:     binder,
 	})
 
 	if navErr != nil {
@@ -93,7 +94,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	artefacts.Mediator.Arrange(active, order)
 	pi := &types.PluginInit{
 		O:        o,
-		Controls: artefacts.Mediator.Controls(),
+		Controls: &binder.Controls,
 	}
 
 	for _, p := range plugins {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -13,7 +14,7 @@ type extent interface {
 	using() *pref.Using
 	was() *pref.Was
 	plugin(*kernel.Artefacts) types.Plugin
-	options(...pref.Option) (*pref.Options, error)
+	options(...pref.Option) (*pref.Options, *opts.Binder, error)
 	navFS() fs.ReadDirFS
 	queryFS() fs.StatFS
 	resFS() fs.FS
@@ -59,8 +60,8 @@ func (ex *primeExtent) plugin(*kernel.Artefacts) types.Plugin {
 	return nil
 }
 
-func (ex *primeExtent) options(settings ...pref.Option) (*pref.Options, error) {
-	return pref.Get(settings...)
+func (ex *primeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
+	return opts.Get(settings...)
 }
 
 func (ex *primeExtent) complete() bool {
@@ -70,7 +71,7 @@ func (ex *primeExtent) complete() bool {
 type resumeExtent struct {
 	baseExtent
 	w      *pref.Was
-	loaded *pref.LoadInfo
+	loaded *opts.LoadInfo
 	rp     *resume.Plugin
 }
 
@@ -93,15 +94,15 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 	return ex.rp
 }
 
-func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, error) {
-	loaded, err := resume.Load(ex.fileSys.res, ex.w.From, settings...)
+func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
+	loaded, binder, err := resume.Load(ex.fileSys.res, ex.w.From, settings...)
 	ex.loaded = loaded
 
 	// TODO: get the resume point from the resume persistence file
 	// then set up hibernation with this defined as a hibernation
 	// filter.
 	//
-	return loaded.O, err
+	return loaded.O, binder, err
 }
 
 func (ex *resumeExtent) complete() bool {

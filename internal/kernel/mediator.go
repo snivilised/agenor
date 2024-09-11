@@ -29,32 +29,35 @@ type mediator struct {
 	order        []enums.Role
 }
 
-func newMediator(using *pref.Using,
-	o *pref.Options,
-	impl NavigatorImpl,
-	sealer types.GuardianSealer,
-	resources *types.Resources,
-) *mediator {
-	mums := resources.Supervisor.Many(
+type mediatorInfo struct {
+	using     *pref.Using
+	o         *pref.Options
+	impl      NavigatorImpl
+	sealer    types.GuardianSealer
+	resources *types.Resources
+}
+
+func newMediator(info *mediatorInfo) *mediator {
+	mums := info.resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
 		enums.MetricNoFoldersInvoked,
 		enums.MetricNoChildFilesFound,
 	)
 
 	return &mediator{
-		root:         using.Root,
-		subscription: using.Subscription,
-		using:        using,
-		impl:         impl,
+		root:         info.using.Root,
+		subscription: info.using.Subscription,
+		using:        info.using,
+		impl:         info.impl,
 		guardian: newGuardian(&guardianInfo{
-			subscription: using.Subscription,
-			client:       using.Handler,
-			master:       sealer,
+			subscription: info.using.Subscription,
+			client:       info.using.Handler,
+			master:       info.sealer,
 			mums:         mums,
 		}),
 		periscope: level.New(),
-		o:         o,
-		resources: resources,
+		o:         info.o,
+		resources: info.resources,
 		mums:      mums,
 	}
 }
@@ -64,7 +67,7 @@ func (m *mediator) descend(node *core.Node) bool {
 		return false
 	}
 
-	m.o.Binder.Controls.Descend.Dispatch()(node)
+	m.resources.Binder.Controls.Descend.Dispatch()(node)
 
 	return true
 }
@@ -72,7 +75,7 @@ func (m *mediator) descend(node *core.Node) bool {
 func (m *mediator) ascend(node *core.Node, permit bool) {
 	if permit {
 		m.periscope.Ascend()
-		m.o.Binder.Controls.Ascend.Dispatch()(node)
+		m.resources.Binder.Controls.Ascend.Dispatch()(node)
 	}
 }
 
@@ -91,13 +94,13 @@ func (m *mediator) Arrange(active, order []enums.Role) {
 
 func (m *mediator) Ignite(ignition *types.Ignition) {
 	m.impl.Ignite(ignition)
-	m.o.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
+	m.resources.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
 		Root: m.root,
 	})
 }
 
 func (m *mediator) Conclude(result core.TraverseResult) {
-	m.o.Binder.Controls.End.Dispatch()(result)
+	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
@@ -128,10 +131,6 @@ func (m *mediator) Invoke(node *core.Node, inspection types.Inspection) error {
 
 func (m *mediator) Supervisor() *measure.Supervisor {
 	return m.resources.Supervisor
-}
-
-func (m *mediator) Controls() *cycle.Controls {
-	return &m.o.Binder.Controls
 }
 
 func IsBenignError(err error) bool {

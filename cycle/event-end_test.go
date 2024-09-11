@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("event", func() {
@@ -17,12 +17,12 @@ var _ = Describe("event", func() {
 			When("listener", func() {
 				It("🧪 should: invoke client's handler", func() {
 					invoked := false
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.End.On(func(_ core.TraverseResult) {
 						invoked = true
 					})
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Dispatch()(&result)
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -31,18 +31,18 @@ var _ = Describe("event", func() {
 			When("muted then unmuted", func() {
 				It("🧪 should: invoke client's handler only when not muted", func() {
 					invoked := false
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.End.On(func(_ core.TraverseResult) {
 						invoked = true
 					})
-					o.Binder.Controls.End.Mute()
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Mute()
+					binder.Controls.End.Dispatch()(&result)
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
-					o.Binder.Controls.End.Unmute()
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Unmute()
+					binder.Controls.End.Dispatch()(&result)
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -52,7 +52,7 @@ var _ = Describe("event", func() {
 			When("listener", func() {
 				It("🧪 should: broadcast", func() {
 					count := 0
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
@@ -60,7 +60,7 @@ var _ = Describe("event", func() {
 					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Dispatch()(&result)
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
@@ -68,7 +68,7 @@ var _ = Describe("event", func() {
 						count++
 					})
 
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Dispatch()(&result)
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -76,7 +76,7 @@ var _ = Describe("event", func() {
 			When("muted", func() {
 				It("🧪 should: not broadcast", func() {
 					count := 0
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
@@ -85,8 +85,8 @@ var _ = Describe("event", func() {
 						count++
 					})
 
-					o.Binder.Controls.End.Mute()
-					o.Binder.Controls.End.Dispatch()(&result)
+					binder.Controls.End.Mute()
+					binder.Controls.End.Dispatch()(&result)
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -95,9 +95,9 @@ var _ = Describe("event", func() {
 
 		Context("no listeners", func() {
 			It("🧪 should: invoke no-op", func() {
-				o, _ := pref.Get()
+				_, binder, _ := opts.Get()
 
-				o.Binder.Controls.End.Dispatch()(&result)
+				binder.Controls.End.Dispatch()(&result)
 			})
 		})
 	})

@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -48,7 +49,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 	BeforeEach(func() {
 		invoked = false
-		o, err = pref.Get()
+		o, _, err = opts.Get()
 		Expect(err).To(Succeed())
 	})
 

@@ -12,6 +12,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
@@ -55,14 +56,14 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 				})
 			})
 
-			When("Pushed Options", func() {
+			When("Push Options", func() {
 				It("🧪 should: walk primary navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
 					ctx, cancel := context.WithCancel(specCtx)
 					defer cancel()
 
-					o, _ := pref.Get()
+					o, _, _ := opts.Get()
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
 							Root:         RootPath,
@@ -114,7 +115,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 				})
 			})
 
-			When("Options Pushed", func() {
+			When("Push Options", func() {
 				It("🧪 should: run primary navigation successfully", func(specCtx SpecContext) {
 					defer leaktest.Check(GinkgoT())()
 
@@ -123,7 +124,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					var wg sync.WaitGroup
 
-					o, _ := pref.Get()
+					o, _, _ := opts.Get()
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						&tv.Using{
 							Root:         RootPath,
