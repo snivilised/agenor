@@ -106,6 +106,7 @@ var (
 	WithHookCaseSensitiveSort              = pref.WithHookCaseSensitiveSort
 	WithHookFileSubPath                    = pref.WithHookFileSubPath
 	WithHookFolderSubPath                  = pref.WithHookFolderSubPath
+	WithLogger                             = pref.WithLogger
 	WithNavigationBehaviours               = pref.WithNavigationBehaviours
 	WithOnAscend                           = pref.WithOnAscend
 	WithOnBegin                            = pref.WithOnBegin

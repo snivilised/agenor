@@ -3,6 +3,7 @@ package tv_test
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/fortytw2/leaktest"
@@ -173,6 +174,32 @@ var _ = Describe("director error", Ordered, func() {
 
 			wg.Wait()
 			Expect(err).NotTo(Succeed())
+		})
+
+		It("🧪 should: log error", func(specCtx SpecContext) {
+			defer leaktest.Check(GinkgoT())()
+
+			ctx, cancel := context.WithCancel(specCtx)
+			defer cancel()
+
+			invoked := false
+			_, _ = tv.Walk().Configure().Extent(tv.Prime(
+				&tv.Using{
+					Root: RootPath,
+					Handler: func(_ *tv.Node) error {
+						return nil
+					},
+				},
+				tv.WithLogger(
+					slog.New(slog.NewTextHandler(&TestWriter{
+						assertFn: func() {
+							invoked = true
+						},
+					}, nil)),
+				),
+			)).Navigate(ctx)
+
+			Expect(invoked).To(BeTrue(), "validation error not logged")
 		})
 	})
 })
