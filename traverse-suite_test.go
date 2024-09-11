@@ -28,3 +28,12 @@ const (
 var noOpHandler = func(_ *tv.Node) error {
 	return nil
 }
+
+type TestWriter struct {
+	assertFn func()
+}
+
+func (tw *TestWriter) Write([]byte) (int, error) {
+	tw.assertFn()
+	return 0, nil
+}

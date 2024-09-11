@@ -67,7 +67,7 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
-func Prime(using *pref.Using, settings ...pref.Option) *Builders {
+func Prime(using *pref.Using, opts ...pref.Option) *Builders {
 	// TODO: we need to create an aux file system, which is bound
 	// to a pre-defined location, that will be called upon if
 	// the navigation session is terminated either by a ctrl-c or
@@ -101,15 +101,19 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 			}
 		}),
 		options: optionals(func(ext extent) (*pref.Options, error) {
-			if err := using.Validate(); err != nil {
-				return nil, err
-			}
+			ve := using.Validate()
 
 			if using.O != nil {
-				return using.O, nil
+				return using.O, ve
 			}
 
-			return ext.options(settings...)
+			o, err := ext.options(opts...)
+
+			if ve != nil {
+				return o, ve
+			}
+
+			return o, err
 		}),
 		navigator: kernel.Builder(func(o *pref.Options,
 			resources *types.Resources,

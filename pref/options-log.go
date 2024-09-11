@@ -21,3 +21,11 @@ type (
 		MaxAgeInDays int
 	}
 )
+
+func WithLogger(logger *slog.Logger) Option {
+	return func(o *Options) error {
+		o.Monitor.Log = logger
+
+		return nil
+	}
+}
