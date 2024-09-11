@@ -3,18 +3,19 @@ package tv
 import (
 	"io/fs"
 
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 // optionsBuilder
 type optionsBuilder interface {
-	build(ext extent) (*pref.Options, error)
+	build(ext extent) (*pref.Options, *opts.Binder, error)
 }
 
-type optionals func(ext extent) (*pref.Options, error)
+type optionals func(ext extent) (*pref.Options, *opts.Binder, error)
 
-func (fn optionals) build(ext extent) (*pref.Options, error) {
+func (fn optionals) build(ext extent) (*pref.Options, *opts.Binder, error) {
 	return fn(ext)
 }
 

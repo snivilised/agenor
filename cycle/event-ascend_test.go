@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/internal/opts"
 )
 
 var _ = Describe("event", func() {
@@ -16,12 +16,12 @@ var _ = Describe("event", func() {
 			When("listener", func() {
 				It("🧪 should: invoke client's handler", func() {
 					invoked := false
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.Ascend.On(func(_ *core.Node) {
 						invoked = true
 					})
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Dispatch()(&node)
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -30,18 +30,18 @@ var _ = Describe("event", func() {
 			When("muted then unmuted", func() {
 				It("🧪 should: invoke client's handler only when not muted", func() {
 					invoked := false
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.Ascend.On(func(_ *core.Node) {
 						invoked = true
 					})
-					o.Binder.Controls.Ascend.Mute()
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Mute()
+					binder.Controls.Ascend.Dispatch()(&node)
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
-					o.Binder.Controls.Ascend.Unmute()
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Unmute()
+					binder.Controls.Ascend.Dispatch()(&node)
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -51,7 +51,7 @@ var _ = Describe("event", func() {
 			When("listener", func() {
 				It("🧪 should: broadcast", func() {
 					count := 0
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.Ascend.On(func(_ *core.Node) {
 						count++
@@ -59,7 +59,7 @@ var _ = Describe("event", func() {
 					o.Events.Ascend.On(func(_ *core.Node) {
 						count++
 					})
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Dispatch()(&node)
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
@@ -67,7 +67,7 @@ var _ = Describe("event", func() {
 						count++
 					})
 
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Dispatch()(&node)
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -75,7 +75,7 @@ var _ = Describe("event", func() {
 			When("muted", func() {
 				It("🧪 should: not broadcast", func() {
 					count := 0
-					o, _ := pref.Get()
+					o, binder, _ := opts.Get()
 
 					o.Events.Ascend.On(func(_ *core.Node) {
 						count++
@@ -84,8 +84,8 @@ var _ = Describe("event", func() {
 						count++
 					})
 
-					o.Binder.Controls.Ascend.Mute()
-					o.Binder.Controls.Ascend.Dispatch()(&node)
+					binder.Controls.Ascend.Mute()
+					binder.Controls.Ascend.Dispatch()(&node)
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -94,9 +94,9 @@ var _ = Describe("event", func() {
 
 		Context("no listeners", func() {
 			It("🧪 should: invoke no-op", func() {
-				o, _ := pref.Get()
+				_, binder, _ := opts.Get()
 
-				o.Binder.Controls.Ascend.Dispatch()(&node)
+				binder.Controls.Ascend.Dispatch()(&node)
 			})
 		})
 	})

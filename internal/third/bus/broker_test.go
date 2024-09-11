@@ -73,7 +73,7 @@ var _ = Describe("Bus", func() {
 			tearDown(b, topicCommentCreated, topicCommentDeleted)
 		})
 
-		Context("no opts", func() {
+		Context("no options", func() {
 			When("tbd", func() {
 				It("🧪 should: correctly assigns fields", func() {
 					ctx := context.Background()
@@ -120,7 +120,7 @@ var _ = Describe("Bus", func() {
 			})
 		})
 
-		Context("with opts", func() {
+		Context("with options", func() {
 			When("tbd", func() {
 				It("🧪 should: correctly assigns fields", func() {
 					ctx := context.Background()

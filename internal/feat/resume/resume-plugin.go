@@ -6,6 +6,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -42,6 +43,6 @@ func GetSealer(was *pref.Was) types.GuardianSealer {
 	return &kernel.Benign{}
 }
 
-func Load(res fs.FS, from string, settings ...pref.Option) (*pref.LoadInfo, error) {
-	return pref.Load(res, from, settings...)
+func Load(res fs.FS, from string, settings ...pref.Option) (*opts.LoadInfo, *opts.Binder, error) {
+	return opts.Load(res, from, settings...)
 }

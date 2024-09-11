@@ -157,7 +157,7 @@ func (b *Broker) Emit(ctx context.Context,
 // EmitWithOpts inits a new message and delivers to the interested in handlers
 // with sync safety and options
 func (b *Broker) EmitWithOpts(ctx context.Context,
-	topic string, data interface{}, opts ...MessageOption,
+	topic string, data interface{}, options ...MessageOption,
 ) error {
 	handlers, ok := b.topics[topic]
 
@@ -166,7 +166,7 @@ func (b *Broker) EmitWithOpts(ctx context.Context,
 	}
 
 	e := Message{Topic: topic, Data: data}
-	for _, o := range opts {
+	for _, o := range options {
 		e = o(e)
 	}
 

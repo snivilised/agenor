@@ -1,4 +1,4 @@
-package pref
+package opts
 
 import (
 	"github.com/snivilised/traverse/cycle"
@@ -8,7 +8,6 @@ type (
 	// Binder contains items derived from Options
 	Binder struct {
 		Controls cycle.Controls
-		// Loaded   *LoadInfo
 	}
 )
 
