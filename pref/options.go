@@ -64,20 +64,6 @@ type (
 	Option func(o *Options) error
 )
 
-func apply(o *Options, settings ...Option) (err error) {
-	for _, option := range settings {
-		if option != nil {
-			err = option(o)
-
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return
-}
-
 // IfOption enables options to be conditional. IfOption condition evaluates to true
 // then the option is returned, otherwise nil.
 func IfOption(condition bool, option Option) Option {
