@@ -22,6 +22,7 @@ type (
 	}
 )
 
+// WithLogger defines a structure logger
 func WithLogger(logger *slog.Logger) Option {
 	return func(o *Options) error {
 		o.Monitor.Log = logger

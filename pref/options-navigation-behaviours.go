@@ -54,6 +54,7 @@ type (
 	}
 )
 
+// WithNavigationBehaviours defines all navigation behaviours
 func WithNavigationBehaviours(nb *NavigationBehaviours) Option {
 	return func(o *Options) error {
 		o.Behaviours = *nb
@@ -62,6 +63,7 @@ func WithNavigationBehaviours(nb *NavigationBehaviours) Option {
 	}
 }
 
+// WithSubPathBehaviour defines all sub-path behaviours.
 func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 	return func(o *Options) error {
 		o.Behaviours.SubPath = *sb
@@ -70,6 +72,7 @@ func WithSubPathBehaviour(sb *SubPathBehaviour) Option {
 	}
 }
 
+// WithSortBehaviour enabling setting of all sorting behaviours.
 func WithSortBehaviour(sb *SortBehaviour) Option {
 	return func(o *Options) error {
 		o.Behaviours.Sort = *sb
@@ -78,6 +81,8 @@ func WithSortBehaviour(sb *SortBehaviour) Option {
 	}
 }
 
+// WithDepth sets the maximum number of folders deep the navigator
+// will traverse to.
 func WithDepth(depth uint) Option {
 	return func(o *Options) error {
 		o.Behaviours.Cascade.Depth = depth
@@ -86,6 +91,7 @@ func WithDepth(depth uint) Option {
 	}
 }
 
+// WithNoRecurse sets the navigator to not descend sub-directories.
 func WithNoRecurse() Option {
 	return func(o *Options) error {
 		o.Behaviours.Cascade.NoRecurse = true

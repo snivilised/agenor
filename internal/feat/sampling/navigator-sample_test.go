@@ -63,7 +63,7 @@ var _ = Describe("feature", Ordered, func() {
 							return FS
 						},
 					},
-					tv.WithSampling(&pref.SamplingOptions{
+					tv.WithSamplingOptions(&pref.SamplingOptions{
 						SampleType: enums.SampleTypeSlice,
 						NoOf: pref.EntryQuantities{
 							Files:   2,
@@ -134,7 +134,7 @@ var _ = Describe("feature", Ordered, func() {
 						return FS
 					},
 				},
-				tv.WithSampling(&pref.SamplingOptions{
+				tv.WithSamplingOptions(&pref.SamplingOptions{
 					SampleType:      entry.SampleType,
 					SampleInReverse: entry.Reverse,
 					NoOf: pref.EntryQuantities{

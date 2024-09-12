@@ -22,7 +22,10 @@ type (
 
 	Rescuer func()
 
-	// FaultHandler
+	// FaultHandler is called to handle an error that occurs when Stating
+	// the root folder. When an error occurs, traversal terminates
+	// immediately. The handler specified allows custom functionality
+	// when an error occurs here.
 	FaultHandler interface {
 		Accept(fault *NavigationFault) error
 	}
@@ -42,6 +45,7 @@ type (
 		err error,
 	) (enums.SkipTraversal, error)
 
+	// DefectOptions
 	DefectOptions struct {
 		Fault FaultHandler
 		Panic PanicHandler
@@ -61,6 +65,10 @@ func (fn Asker) Ask(current *core.Node, contents core.DirectoryContents, err err
 	return fn(current, contents, err)
 }
 
+// WithFaultHandler defines a custom handler to handle an error that occurs
+// when Stating the root folder. When an error occurs, traversal terminates
+// immediately. The handler specified allows custom functionality to be invoked
+// when an error occurs here.
 func WithFaultHandler(handler FaultHandler) Option {
 	return func(o *Options) error {
 		o.Defects.Fault = handler
@@ -69,6 +77,7 @@ func WithFaultHandler(handler FaultHandler) Option {
 	}
 }
 
+// WithPanicHandler defines a custom handler to handle a panic.
 func WithPanicHandler(handler PanicHandler) Option {
 	return func(o *Options) error {
 		o.Defects.Panic = handler
@@ -77,6 +86,10 @@ func WithPanicHandler(handler PanicHandler) Option {
 	}
 }
 
+// WithSkipHandler defines a handler that will be invoked if the
+// client callback returns an error during traversal. The client
+// can control if traversal is either terminated early (fs.SkipAll)
+// or the remaining items in a directory are skipped (fs.SkipDir).
 func WithSkipHandler(handler SkipHandler) Option {
 	return func(o *Options) error {
 		o.Defects.Skip = handler

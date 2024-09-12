@@ -42,6 +42,9 @@ type (
 	}
 )
 
+// WithFilter used to determine which file system nodes (files or folders)
+// the client defined handler is invoked for. Note that the filter does not
+// determine navigation, it only determines wether the callback is invoked.
 func WithFilter(filter *FilterOptions) Option {
 	return func(o *Options) error {
 		o.Filter = *filter

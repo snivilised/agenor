@@ -81,46 +81,166 @@ const (
 
 var (
 	// 🌀 nfs
-	NewNativeFS      = nfs.NewNativeFS
+
+	// NewNativeFS creates a native file system.
+	NewNativeFS = nfs.NewNativeFS
+
+	// NewQueryStatusFS defines a file system that has a Stat
+	// method to determine the existence of a path.
 	NewQueryStatusFS = nfs.NewQueryStatusFS
 
 	// 🌀 filtering
+
+	// NewCustomSampleFilter only needs to be called explicitly when defining
+	// a custom sample filter.
 	NewCustomSampleFilter = filtering.NewCustomSampleFilter
 
 	// 🌀 pref
-	IfOption                               = pref.IfOption
-	IfOptionF                              = pref.IfOptionF
-	WithCPU                                = pref.WithCPU
-	WithDepth                              = pref.WithDepth
-	WithFaultHandler                       = pref.WithFaultHandler
-	WithFilter                             = pref.WithFilter
-	WithHibernationBehaviourExclusiveWake  = pref.WithHibernationBehaviourExclusiveWake
+
+	// IfOption enables options to be conditional. IfOption condition evaluates to true
+	// then the option is returned, otherwise nil.
+	IfOption = pref.IfOption
+
+	// IfOptionF allows the delaying of creation of the option until the condition
+	// is known to be true. This is in contrast to IfOption where the Option is
+	// pre-created, regardless of the condition.
+	IfOptionF = pref.IfOptionF
+
+	// WithCPU configures the worker pool used for concurrent traversal sessions
+	// in the Run function to utilise a number of go-routines equal to the available
+	// CPU count, optimising performance based on the system's processing capabilities.
+	WithCPU = pref.WithCPU
+
+	// WithDepth sets the maximum number of folders deep the navigator
+	// will traverse to.
+	WithDepth = pref.WithDepth
+
+	// WithFaultHandler defines a custom handler to handle an error that occurs
+	// when Stating the root folder. When an error occurs, traversal terminates
+	// immediately. The handler specified allows custom functionality to be invoked
+	// when an error occurs here.
+	WithFaultHandler = pref.WithFaultHandler
+
+	// WithFilter used to determine which file system nodes (files or folders)
+	// the client defined handler is invoked for. Note that the filter does not
+	// determine navigation, it only determines wether the callback is invoked.
+	WithFilter = pref.WithFilter
+
+	// WithHibernationBehaviourExclusiveWake activates hibernation
+	// with a wake condition. The wake condition should be defined
+	// using WithHibernationFilterWake.
+	WithHibernationBehaviourExclusiveWake = pref.WithHibernationBehaviourExclusiveWake
+
+	// WithHibernationBehaviourInclusiveSleep activates hibernation
+	// with a sleep condition. The sleep condition should be defined
+	// using WithHibernationFilterSleep.
 	WithHibernationBehaviourInclusiveSleep = pref.WithHibernationBehaviourInclusiveSleep
-	WithHibernationFilterSleep             = pref.WithHibernationFilterSleep
-	WithHibernationFilterWake              = pref.WithHibernationFilterWake
-	WithHibernationOptions                 = pref.WithHibernationOptions
-	WithHibernationBehaviour               = pref.WithHibernationOptions
-	WithHookQueryStatus                    = pref.WithHookQueryStatus
-	WithHookReadDirectory                  = pref.WithHookReadDirectory
-	WithHookSort                           = pref.WithHookSort
-	WithHookCaseSensitiveSort              = pref.WithHookCaseSensitiveSort
-	WithHookFileSubPath                    = pref.WithHookFileSubPath
-	WithHookFolderSubPath                  = pref.WithHookFolderSubPath
-	WithLogger                             = pref.WithLogger
-	WithNavigationBehaviours               = pref.WithNavigationBehaviours
-	WithOnAscend                           = pref.WithOnAscend
-	WithOnBegin                            = pref.WithOnBegin
-	WithOnDescend                          = pref.WithOnDescend
-	WithOnEnd                              = pref.WithOnEnd
-	WithOnSleep                            = pref.WithOnSleep
-	WithOnWake                             = pref.WithOnWake
-	WithPanicHandler                       = pref.WithPanicHandler
-	WithNoRecurse                          = pref.WithNoRecurse
-	WithNoW                                = pref.WithNoW
-	WithSampling                           = pref.WithSampling
-	WithSkipHandler                        = pref.WithSkipHandler
-	WithSortBehaviour                      = pref.WithSortBehaviour
-	WithSubPathBehaviour                   = pref.WithSubPathBehaviour
+
+	// WithHibernationFilterSleep defines the sleep condition
+	// for hibernation based traversal sessions.
+	WithHibernationFilterSleep = pref.WithHibernationFilterSleep
+
+	// WithHibernationFilterWake defines the wake condition
+	// for hibernation based traversal sessions.
+	WithHibernationFilterWake = pref.WithHibernationFilterWake
+
+	// WithHibernationOptions defines options for a hibernation traversal
+	// session.
+	WithHibernationOptions = pref.WithHibernationOptions
+
+	// WithHookCaseSensitiveSort specifies that a folder's contents
+	// should be sorted with case sensitivity.
+	WithHookCaseSensitiveSort = pref.WithHookCaseSensitiveSort
+
+	// WithHookFolderSubPath defines an custom hook to override the
+	// default behaviour for obtaining the sub-path of a folder.
+	WithHookFolderSubPath = pref.WithHookFolderSubPath
+
+	// WithHookFileSubPath defines an custom hook to override the
+	// default behaviour for obtaining the sub-path of a file.
+	WithHookFileSubPath = pref.WithHookFileSubPath
+
+	// WithHookQueryStatus defines an custom hook to override the
+	// default behaviour for Stating a folder.
+	WithHookQueryStatus = pref.WithHookQueryStatus
+
+	// WithHookReadDirectory defines an custom hook to override the
+	// default behaviour for reading a folder's contents.
+	WithHookReadDirectory = pref.WithHookReadDirectory
+
+	// WithHookSort defines an custom hook to override the
+	// default behaviour for sorting a folder's contents.
+	WithHookSort = pref.WithHookSort
+
+	// WithLogger defines a structure logger
+	WithLogger = pref.WithLogger
+
+	// WithNavigationBehaviours defines all navigation behaviours
+	WithNavigationBehaviours = pref.WithNavigationBehaviours
+
+	// WithOnAscend sets ascend handler, invoked when navigator
+	// traverses up a directory, ie after all children have been
+	// visited.
+	WithOnAscend = pref.WithOnAscend
+
+	// WithOnBegin sets the begin handler, invoked before the start
+	// of a traversal session.
+	WithOnBegin = pref.WithOnBegin
+
+	// WithOnDescend sets the descend handler, invoked when navigator
+	// traverses down into a child directory.
+	WithOnDescend = pref.WithOnDescend
+
+	// WithOnEnd sets the end handler, invoked at the end of a traversal
+	// session.
+	WithOnEnd = pref.WithOnEnd
+
+	// WithOnSleep sets the sleep handler, when hibernation is active
+	// and the sleep condition has occurred, ie when a file system
+	// node is encountered that matches the hibernation's sleep filter.
+	WithOnSleep = pref.WithOnSleep
+
+	// WithOnWake sets the wake handler, when hibernation is active
+	// and the wake condition has occurred, ie when a file system
+	// node is encountered that matches the hibernation's wake filter.
+	WithOnWake = pref.WithOnWake
+
+	// WithPanicHandler defines a custom handler to handle a panic.
+	WithPanicHandler = pref.WithPanicHandler
+
+	// WithNoRecurse sets the navigator to not descend sub-directories.
+	WithNoRecurse = pref.WithNoRecurse
+
+	// WithNoW sets the number of go-routines to use in the worker
+	// pool used for concurrent traversal sessions requested by using
+	// the Run function.
+	WithNoW = pref.WithNoW
+
+	// WithSamplingOptions specifies the sampling options.
+	// SampleType: the type of sampling to use
+	// SampleInReverse: determines the direction of iteration for the sampling
+	// operation
+	// NoOf: specifies number of items required in each sample (only applies
+	// when not using Custom iterator options)
+	// Iteration: allows the client to customise how a directory's contents are sampled.
+	// The default way to sample is either by slicing the directory's contents or
+	// by using the filter to select either the first/last n entries (using the
+	// SamplingOptions). If the client requires an alternative way of creating a
+	// sample, eg to take all files greater than a certain size, then this
+	// can be achieved by specifying Each and While inside Iteration.
+	WithSamplingOptions = pref.WithSamplingOptions
+
+	// WithSkipHandler defines a handler that will be invoked if the
+	// client callback returns an error during traversal. The client
+	// can control if traversal is either terminated early (fs.SkipAll)
+	// or the remaining items in a directory are skipped (fs.SkipDir).
+	WithSkipHandler = pref.WithSkipHandler
+
+	// WithSortBehaviour enabling setting of all sorting behaviours.
+	WithSortBehaviour = pref.WithSortBehaviour
+
+	// WithSubPathBehaviour defines all sub-path behaviours.
+	WithSubPathBehaviour = pref.WithSubPathBehaviour
 )
 
 // sub package description:
@@ -144,6 +264,7 @@ var (
 // 🔆 central layer
 // kernel: []
 // types: [measure, pref, override]
+// opts: [pref]
 // override: [tapable], !("types")
 // ---
 //
