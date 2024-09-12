@@ -108,11 +108,12 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-				FS:        FS,
-				Recording: recording,
-				Path:      path,
-				Result:    result,
-				Err:       err,
+				FS:          FS,
+				Recording:   recording,
+				Path:        path,
+				Result:      result,
+				Err:         err,
+				ExpectedErr: entry.ExpectedErr,
 			})
 		},
 		func(entry *lab.HybridFilterTE) string {
@@ -173,9 +174,7 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		// =====
-
-		XEntry(nil, &lab.HybridFilterTE{
+		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folder(with files): regex child filter",
 				Relative:     "RETRO-WAVE",
@@ -196,13 +195,13 @@ var _ = Describe("feature", Ordered, func() {
 				Scope:       enums.ScopeFolder,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeGlob,
+				Type:        enums.FilterTypeRegex,
 				Description: "items with '.flac' suffix",
-				Pattern:     `\.flac*`,
+				Pattern:     `\.flac`,
 			},
 		}),
 
-		XEntry(nil, &lab.HybridFilterTE{
+		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folder(with files): regex child filter (negate)",
 				Relative:     "RETRO-WAVE",
@@ -222,9 +221,118 @@ var _ = Describe("feature", Ordered, func() {
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeGlob,
+				Type:        enums.FilterTypeRegex,
 				Description: "items without '.txt' suffix",
 				Pattern:     `\.txt$`,
+				Negate:      true,
+			},
+		}),
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "folder(with files): glob child filter",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedNoOf: lab.Quantities{
+					Folders: 6,
+					Children: map[string]int{
+						"Northern Council": 2,
+						"Teenage Color":    2,
+						"Innerworld":       2,
+					},
+				},
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders contains o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeExtendedGlob,
+				Description: "items with '.flac' suffix",
+				Pattern:     "*|flac",
+			},
+		}),
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "folder(with files): glob child filter (negate)",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedNoOf: lab.Quantities{
+					Folders: 2,
+					Children: map[string]int{
+						"Night Drive": 3,
+					},
+				},
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders don't contain o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+				Negate:      true,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeExtendedGlob,
+				Description: "items without '.txt' suffix",
+				Pattern:     "*|txt",
+				Negate:      true,
+			},
+		}),
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "folder(with files): glob child filter",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedNoOf: lab.Quantities{
+					Folders: 6,
+					Children: map[string]int{
+						"Northern Council": 2,
+						"Teenage Color":    2,
+						"Innerworld":       2,
+					},
+				},
+				ExpectedErr: locale.ErrFilterCustomNotSupported,
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders contains o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeCustom,
+				Description: "items with '.flac' suffix",
+				Pattern:     "*|flac",
+			},
+		}),
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "folder(with files): glob child filter (negate)",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedNoOf: lab.Quantities{
+					Folders: 2,
+					Children: map[string]int{
+						"Night Drive": 3,
+					},
+				},
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders don't contain o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+				Negate:      true,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeExtendedGlob,
+				Description: "items without '.txt' suffix",
+				Pattern:     "*|txt",
 				Negate:      true,
 			},
 		}),
