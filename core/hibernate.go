@@ -12,6 +12,7 @@ type (
 		InclusiveSleep bool
 	}
 
+	// HibernateOptions
 	HibernateOptions struct {
 		// WakeAt defines a filter for hibernation wake condition
 		WakeAt *FilterDef

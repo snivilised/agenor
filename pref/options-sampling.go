@@ -35,6 +35,7 @@ type (
 		Folders uint
 	}
 
+	// SamplingIterationOptions
 	SamplingIterationOptions struct {
 		// Each enables customisation of the sampling functionality, instead of using
 		// the defined filter. A directory's contents is sampled according to this
@@ -73,23 +74,25 @@ type (
 		Counts EntryQuantities
 		Enough EnoughAlready
 	}
-
-	// SamplerOptions struct {
-	// 	// Iteration allows the client to customise how a directory's contents are sampled.
-	// 	// The default way to sample is either by slicing the directory's contents or
-	// 	// by using the filter to select either the first/last n entries (using the
-	// 	// SamplingOptions). If the client requires an alternative way of creating a
-	// 	// sample, eg to take all files greater than a certain size, then this
-	// 	// can be achieved by specifying Each and While inside Iteration.
-	// 	Iteration SamplingIterationOptions
-	// }
 )
 
 func (o SamplingOptions) IsSamplingActive() bool {
 	return o.SampleType != enums.SampleTypeUndefined
 }
 
-func WithSampling(so *SamplingOptions) Option {
+// WithSamplingOptions specifies the sampling options.
+// SampleType: the type of sampling to use
+// SampleInReverse: determines the direction of iteration for the sampling
+// operation
+// NoOf: specifies number of items required in each sample (only applies
+// when not using Custom iterator options)
+// Iteration: allows the client to customise how a directory's contents are sampled.
+// The default way to sample is either by slicing the directory's contents or
+// by using the filter to select either the first/last n entries (using the
+// SamplingOptions). If the client requires an alternative way of creating a
+// sample, eg to take all files greater than a certain size, then this
+// can be achieved by specifying Each and While inside Iteration.
+func WithSamplingOptions(so *SamplingOptions) Option {
 	return func(o *Options) error {
 		o.Sampling = *so
 

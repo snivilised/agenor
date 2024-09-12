@@ -192,7 +192,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							From:     RestorePath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
-						tv.WithSampling(&pref.SamplingOptions{
+						tv.WithSamplingOptions(&pref.SamplingOptions{
 							NoOf: pref.EntryQuantities{
 								Files:   files,
 								Folders: folders,
