@@ -81,7 +81,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				return using.GetReadDirFS()
 			}
 
-			return NewNativeFS(using.Root)
+			return NewLocalFS(using.Root)
 		}),
 		queryFS: pref.CreateQueryStatusFS(func(qsys fs.FS) fs.StatFS {
 			if using.GetQueryStatusFS != nil {
@@ -141,7 +141,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 			if was.Using.GetReadDirFS != nil {
 				return was.Using.GetReadDirFS()
 			}
-			return NewNativeFS(was.Root)
+			return NewLocalFS(was.Root)
 		}),
 		queryFS: pref.CreateQueryStatusFS(func(fsys fs.FS) fs.StatFS {
 			if was.Using.GetQueryStatusFS != nil {

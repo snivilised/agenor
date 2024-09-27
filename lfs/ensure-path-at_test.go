@@ -1,4 +1,4 @@
-package nfs_test
+package lfs_test
 
 import (
 	"errors"
@@ -12,13 +12,13 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	lab "github.com/snivilised/traverse/internal/laboratory"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/nfs"
 )
 
 var _ = Describe("EnsurePathAt", Ordered, func() {
 	var (
-		mocks *nfs.ResolveMocks
+		mocks *lfs.ResolveMocks
 		mfs   *mkDirAllMapFS
 	)
 
@@ -33,7 +33,7 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		mocks = &nfs.ResolveMocks{
+		mocks = &lfs.ResolveMocks{
 			HomeFunc: func() (string, error) {
 				return filepath.Join(string(filepath.Separator), "home", "prodigy"), nil
 			},
@@ -60,7 +60,7 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 				location += string(filepath.Separator)
 			}
 
-			actual, err := nfs.EnsurePathAt(location, "default-test.log", perm, mfs)
+			actual, err := lfs.EnsurePathAt(location, "default-test.log", perm, mfs)
 			directory, _ := filepath.Split(actual)
 			directory = filepath.Clean(directory)
 			expected := lab.TrimRoot(lab.Path(home, entry.expected))

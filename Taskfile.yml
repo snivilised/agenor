@@ -64,6 +64,10 @@ tasks:
     cmds:
       - go test ./cycle
 
+  tfs:
+    cmds:
+      - go test ./lfs
+
   tk:
     cmds:
       - go test ./internal/kernel
@@ -75,10 +79,6 @@ tasks:
   tl:
     cmds:
       - go test ./locale
-
-  tn:
-    cmds:
-      - go test ./nfs
 
   tcore:
     cmds:

@@ -212,7 +212,7 @@ var _ = Describe("Tapable", Ordered, func() {
 						},
 					)
 
-					sys := tv.NewNativeFS(root)
+					sys := tv.NewLocalFS(root)
 					_, _ = o.Hooks.ReadDirectory.Default()(sys, root)
 					_, _ = o.Hooks.ReadDirectory.Invoke()(sys, root)
 

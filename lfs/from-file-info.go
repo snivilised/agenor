@@ -1,4 +1,4 @@
-package nfs
+package lfs
 
 import (
 	"io/fs"

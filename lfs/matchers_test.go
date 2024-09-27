@@ -1,10 +1,10 @@
-package nfs_test
+package lfs_test
 
 import (
 	"fmt"
 
 	"github.com/onsi/gomega/types"
-	"github.com/snivilised/traverse/nfs"
+	"github.com/snivilised/traverse/lfs"
 )
 
 type PathExistsMatcher struct {
@@ -21,7 +21,7 @@ func ExistInFS(fs interface{}) types.GomegaMatcher {
 }
 
 func (m *PathExistsMatcher) Match(actual interface{}) (bool, error) {
-	FS, fileSystemOK := m.FS.(nfs.MkDirAllFS)
+	FS, fileSystemOK := m.FS.(lfs.MkDirAllFS)
 	if !fileSystemOK {
 		return false, fmt.Errorf("❌ matcher expected a VirtualFS instance (%T)", FS)
 	}

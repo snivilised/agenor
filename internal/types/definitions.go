@@ -9,7 +9,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/nfs"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -66,7 +66,7 @@ type (
 
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS         nfs.FileSystems
+		FS         lfs.FileSystems
 		Supervisor *measure.Supervisor
 		Binder     *opts.Binder
 	}

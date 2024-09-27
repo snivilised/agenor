@@ -8,7 +8,7 @@ import (
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/nfs"
+	"github.com/snivilised/traverse/lfs"
 )
 
 type samplerScheme struct {
@@ -43,7 +43,7 @@ func (s *samplerScheme) next(node *core.Node,
 ) (bool, error) {
 	if node.Extension.Scope.IsRoot() {
 		matching := s.filter.Matching(
-			[]fs.DirEntry{nfs.FromFileInfo(node.Info)},
+			[]fs.DirEntry{lfs.FromFileInfo(node.Info)},
 		)
 		result := len(matching) > 0
 

@@ -6,8 +6,8 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/nfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -80,12 +80,12 @@ func NewSample(def *core.SampleFilterDef,
 }
 
 func (f *Sample) files(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	wanted, others = nfs.Separate(entries)
+	wanted, others = lfs.Separate(entries)
 	return wanted, others
 }
 
 func (f *Sample) folders(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	others, wanted = nfs.Separate(entries)
+	others, wanted = lfs.Separate(entries)
 	return wanted, others
 }
 
