@@ -1,12 +1,12 @@
-package nfs
+package lfs
 
 import (
 	"io/fs"
 	"os"
 )
 
-// 📦 pkg: nfs - contains file system abstractions for navigation. Since
-// there are no standard write-able file system interfaces,
+// 📦 pkg: lfs - contains local file system abstractions for navigation.
+// Since there are no standard write-able file system interfaces,
 // we need to define proprietary ones here in this package.
 // This is a low level package that should not use anything else in
 // traverse.

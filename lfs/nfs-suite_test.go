@@ -1,4 +1,4 @@
-package nfs_test
+package lfs_test
 
 import (
 	"io/fs"

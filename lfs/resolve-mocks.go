@@ -1,4 +1,4 @@
-package nfs
+package lfs
 
 // AbsFunc signature of function used to obtain the absolute representation of
 // a path.

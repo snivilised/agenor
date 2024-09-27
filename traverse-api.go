@@ -6,7 +6,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/nfs"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -53,8 +53,8 @@ type (
 	Subscription   = enums.Subscription
 	ResumeStrategy = enums.ResumeStrategy
 
-	// 🌀 nfs
-	FileSystems = nfs.FileSystems
+	// 🌀 lfs
+	FileSystems = lfs.FileSystems
 
 	// 🌀 pref
 	Option  = pref.Option
@@ -80,14 +80,14 @@ const (
 )
 
 var (
-	// 🌀 nfs
+	// 🌀 lfs
 
-	// NewNativeFS creates a native file system.
-	NewNativeFS = nfs.NewNativeFS
+	// NewLocalFS creates a native file system.
+	NewLocalFS = lfs.NewLocalFS
 
 	// NewQueryStatusFS defines a file system that has a Stat
 	// method to determine the existence of a path.
-	NewQueryStatusFS = nfs.NewQueryStatusFS
+	NewQueryStatusFS = lfs.NewQueryStatusFS
 
 	// 🌀 filtering
 
@@ -283,7 +283,7 @@ var (
 // core: []
 // enums: [none]
 // measure: []
-// nfs:
+// lfs:
 // ---
 // ============================================================================
 //
