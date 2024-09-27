@@ -2,15 +2,30 @@ package lab
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
+// Path creates a path from the parent combined with the relative path. The relative
+// path is a file system path so should only contain forward slashes, not the standard
+// file path separator as denoted by filepath.Separator, typically used when interacting
+// with the local file system. Do not use trailing "/".
 func Path(parent, relative string) string {
-	segments := strings.Split(relative, "/")
-	return filepath.Join(append([]string{parent}, segments...)...)
+	if relative == "" {
+		return parent
+	}
+
+	return parent + "/" + relative
+}
+
+// Repo gets the path of the repo with relative joined on
+func Repo(relative string) string {
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	output, _ := cmd.Output()
+	repo := strings.TrimSpace(string(output))
+
+	return Path(repo, relative)
 }
 
 func Normalise(p string) string {
@@ -25,49 +40,6 @@ func Reason(name string) string {
 	return fmt.Sprintf("❌ for item named: '%v'", name)
 }
 
-func BecauseQuantity(name string, expected, actual int) string {
-	return fmt.Sprintf("❌ incorrect no of items for: '%v', expected: '%v', actual: '%v'",
-		name, expected, actual,
-	)
-}
-
-func JoinCwd(segments ...string) string {
-	if current, err := os.Getwd(); err == nil {
-		parent, _ := filepath.Split(current)
-		grand := filepath.Dir(parent)
-		great := filepath.Dir(grand)
-		all := append([]string{great}, segments...)
-
-		return filepath.Join(all...)
-	}
-
-	panic("could not get root path")
-}
-
-func Root() string {
-	if current, err := os.Getwd(); err == nil {
-		return current
-	}
-
-	panic("could not get root path")
-}
-
-func Repo(relative string) string {
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	output, _ := cmd.Output()
-	repo := strings.TrimSpace(string(output))
-
-	return Path(repo, relative)
-}
-
 func Log() string {
-	if current, err := os.Getwd(); err == nil {
-		parent, _ := filepath.Split(current)
-		grand := filepath.Dir(parent)
-		great := filepath.Dir(grand)
-
-		return filepath.Join(great, "Test", "test.log")
-	}
-
-	panic("could not get root path")
+	return Repo("Test/test.log")
 }

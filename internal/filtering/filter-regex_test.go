@@ -290,11 +290,11 @@ var _ = Describe("feature", Ordered, func() {
 				Relative:     "",
 				Subscription: enums.SubscribeFolders,
 				Mandatory:    []string{"PROGRESSIVE-HOUSE"},
+				Prohibited:   []string{"Blue Amazon", "The Javelin"},
 				ExpectedNoOf: lab.Quantities{
 					Files:   0,
 					Folders: 1,
 				},
-				Prohibited: []string{"Blue Amazon", "The Javelin"},
 			},
 			Description:     "top items that contain 'HOUSE'",
 			Pattern:         "HOUSE",
