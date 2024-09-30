@@ -12,9 +12,9 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 )
 
-func TestNfs(t *testing.T) {
+func TestLfs(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Nfs Suite")
+	RunSpecs(t, "Lfs Suite")
 }
 
 type (

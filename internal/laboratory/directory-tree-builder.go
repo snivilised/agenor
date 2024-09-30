@@ -21,15 +21,17 @@ const (
 	doWrite = true
 )
 
-func Musico(verbose bool, portions ...string) (msys fstest.MapFS, root string) {
-	msys = fstest.MapFS{
-		".": &fstest.MapFile{
-			Mode: os.ModeDir,
+func Musico(verbose bool, portions ...string) (tsys *TestTraverseFS, root string) {
+	tsys = &TestTraverseFS{
+		fstest.MapFS{
+			".": &fstest.MapFile{
+				Mode: os.ModeDir,
+			},
 		},
 	}
 
-	return msys, Provision(
-		NewMemWriteProvider(msys, os.ReadFile, portions...),
+	return tsys, Provision(
+		NewMemWriteProvider(tsys, os.ReadFile, portions...),
 		verbose,
 		portions...,
 	)
@@ -90,8 +92,7 @@ func TrimRoot(root string) string {
 	return re.ReplaceAllString(root, "")
 }
 
-// NewMemWriteProvider
-func NewMemWriteProvider(store fstest.MapFS,
+func NewMemWriteProvider(store *TestTraverseFS,
 	indexReader readFile,
 	portions ...string,
 ) *IOProvider {
@@ -124,12 +125,12 @@ func NewMemWriteProvider(store fstest.MapFS,
 
 				if filter(name) {
 					trimmed := TrimRoot(name)
-					store[trimmed] = &fstest.MapFile{
+					store.MapFS[trimmed] = &fstest.MapFile{
 						Data: data,
 						Mode: mode,
 					}
 					show(trimmed, func(path string) bool {
-						entry, ok := store[path]
+						entry, ok := store.MapFS[path]
 						return ok && !entry.Mode.IsDir()
 					})
 				}
@@ -145,11 +146,11 @@ func NewMemWriteProvider(store fstest.MapFS,
 
 				if isRoot || filter(path) {
 					trimmed := TrimRoot(path)
-					store[trimmed] = &fstest.MapFile{
+					store.MapFS[trimmed] = &fstest.MapFile{
 						Mode: mode | os.ModeDir,
 					}
 					show(trimmed, func(path string) bool {
-						entry, ok := store[path]
+						entry, ok := store.MapFS[path]
 						return ok && entry.Mode.IsDir()
 					})
 				}

@@ -1,12 +1,11 @@
 package tv
 
 import (
-	"io/fs"
-
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -15,32 +14,20 @@ type extent interface {
 	was() *pref.Was
 	plugin(*kernel.Artefacts) types.Plugin
 	options(...pref.Option) (*pref.Options, *opts.Binder, error)
-	navFS() fs.ReadDirFS
-	queryFS() fs.StatFS
-	resFS() fs.FS
+	traverseFS() lfs.TraverseFS
 	complete() bool
 }
 
 type fileSystems struct {
-	nas fs.ReadDirFS
-	qus fs.StatFS
-	res fs.FS
+	tsys lfs.TraverseFS
 }
 
 type baseExtent struct {
 	fileSys fileSystems
 }
 
-func (ex *baseExtent) navFS() fs.ReadDirFS {
-	return ex.fileSys.nas
-}
-
-func (ex *baseExtent) queryFS() fs.StatFS {
-	return ex.fileSys.qus
-}
-
-func (ex *baseExtent) resFS() fs.FS {
-	return ex.fileSys.nas
+func (ex *baseExtent) traverseFS() lfs.TraverseFS {
+	return ex.fileSys.tsys
 }
 
 type primeExtent struct {
@@ -95,7 +82,7 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
-	loaded, binder, err := resume.Load(ex.fileSys.res, ex.w.From, settings...)
+	loaded, binder, err := resume.Load(ex.fileSys.tsys, ex.w.From, settings...)
 	ex.loaded = loaded
 
 	// TODO: get the resume point from the resume persistence file

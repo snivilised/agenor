@@ -4,6 +4,7 @@
     "--fast"
   ],
   "cSpell.words": [
+    "afero",
     "alloc",
     "Aphex",
     "argh",
@@ -107,11 +108,13 @@
     "toplevel",
     "tparallel",
     "trimprefix",
+    "tsys",
     "Turan",
     "typecheck",
     "unconvert",
     "unlambda",
     "unparam",
+    "usys",
     "vals",
     "varcheck",
     "verr",

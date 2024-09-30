@@ -69,7 +69,7 @@ func (n *navigatorFiles) inspect(ns *navigationStatic,
 	)
 
 	if vapour.present.IsFolder() {
-		vapour.cargo, err = read(ns.mediator.resources.FS.N,
+		vapour.cargo, err = read(ns.mediator.resources.FS.T,
 			n.ro,
 			current.Path,
 		)

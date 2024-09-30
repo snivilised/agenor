@@ -47,7 +47,7 @@ func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
 	info, ie := n.ao.hooks.QueryStatus.Invoke()(
-		ns.mediator.resources.FS.Q, ns.root,
+		ns.mediator.resources.FS.T, ns.root,
 	)
 
 	err := lo.TernaryF(ie != nil,

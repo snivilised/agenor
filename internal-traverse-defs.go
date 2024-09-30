@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -56,13 +57,13 @@ func (fn filesystem) build(path string) fs.FS {
 }
 
 type extentBuilder interface {
-	build(rsys fs.ReadDirFS, qsys fs.StatFS) extent
+	build(tsys lfs.TraverseFS) extent
 }
 
-type extension func(rsys fs.ReadDirFS, qsys fs.StatFS) extent
+type extension func(tsys lfs.TraverseFS) extent
 
-func (fn extension) build(rsys fs.ReadDirFS, qsys fs.StatFS) extent {
-	return fn(rsys, qsys)
+func (fn extension) build(tsys lfs.TraverseFS) extent {
+	return fn(tsys)
 }
 
 // We need an entity that manages the decoration of the client handler. The

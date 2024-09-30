@@ -1,8 +1,6 @@
 package tv
 
 import (
-	"io/fs"
-
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/feat/nanny"
@@ -12,10 +10,19 @@ import (
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
-type ifActive func(o *pref.Options, using *pref.Using, mediator types.Mediator) types.Plugin
+const (
+	noOverwrite = true
+)
+
+type (
+	ifActive func(o *pref.Options,
+		using *pref.Using, mediator types.Mediator,
+	) types.Plugin
+)
 
 // features interrogates options and invokes requests on behalf of the user
 // to activate features according to option selections. other plugins will
@@ -69,33 +76,20 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
-	// TODO: we need to create an aux file system, which is bound
-	// to a pre-defined location, that will be called upon if
-	// the navigation session is terminated either by a ctrl-c or
-	// by a panic.
-	//
 	return &Builders{
 		using: using,
-		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
-			if using.GetReadDirFS != nil {
-				return using.GetReadDirFS()
+		universalFS: pref.CreateTraverseFS(func(root string) lfs.TraverseFS {
+			if using.GetTraverseFS != nil {
+				return using.GetTraverseFS(root)
 			}
 
-			return NewLocalFS(using.Root)
+			return lfs.NewTraverseFS(root, noOverwrite)
 		}),
-		queryFS: pref.CreateQueryStatusFS(func(qsys fs.FS) fs.StatFS {
-			if using.GetQueryStatusFS != nil {
-				return using.GetQueryStatusFS(qsys)
-			}
-
-			return NewQueryStatusFS(qsys)
-		}),
-		extent: extension(func(rsys fs.ReadDirFS, qsys fs.StatFS) extent {
+		extent: extension(func(tsys lfs.TraverseFS) extent {
 			return &primeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{
-						nas: rsys,
-						qus: qsys,
+						tsys: tsys,
 					},
 				},
 				u: using,
@@ -130,32 +124,20 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
 func Resume(was *Was, settings ...pref.Option) *Builders {
-	// TODO: the navigation file system, baseExtent.sys, will be set for
-	// resume, only once the resume file has been loaded, as
-	// its only at this point, we know where the original root
-	// path was.
-	//
 	return &Builders{
 		using: &was.Using,
-		readerFS: pref.CreateReadDirFS(func() fs.ReadDirFS {
-			if was.Using.GetReadDirFS != nil {
-				return was.Using.GetReadDirFS()
-			}
-			return NewLocalFS(was.Root)
-		}),
-		queryFS: pref.CreateQueryStatusFS(func(fsys fs.FS) fs.StatFS {
-			if was.Using.GetQueryStatusFS != nil {
-				return was.Using.GetQueryStatusFS(fsys)
+		universalFS: pref.CreateTraverseFS(func(root string) lfs.TraverseFS {
+			if was.Using.GetTraverseFS != nil {
+				return was.Using.GetTraverseFS(root)
 			}
 
-			return NewQueryStatusFS(fsys)
+			return lfs.NewTraverseFS(root, noOverwrite)
 		}),
-		extent: extension(func(rsys fs.ReadDirFS, qsys fs.StatFS) extent {
+		extent: extension(func(tsys lfs.TraverseFS) extent {
 			return &resumeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{
-						nas: rsys,
-						qus: qsys,
+						tsys: tsys,
 					},
 				},
 				w: was,

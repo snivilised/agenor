@@ -83,11 +83,14 @@ var (
 	// 🌀 lfs
 
 	// NewLocalFS creates a native file system.
-	NewLocalFS = lfs.NewLocalFS
+	NewLocalFS = lfs.NewReadDirFS // TODO: check this name
 
 	// NewQueryStatusFS defines a file system that has a Stat
 	// method to determine the existence of a path.
 	NewQueryStatusFS = lfs.NewQueryStatusFS
+
+	// QueryStatusFromFS
+	QueryStatusFromFS = lfs.QueryStatusFromFS
 
 	// 🌀 filtering
 

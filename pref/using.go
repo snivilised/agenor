@@ -1,10 +1,9 @@
 package pref
 
 import (
-	"io/fs"
-
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 )
 
@@ -32,15 +31,9 @@ type Using struct {
 	// property.
 	O *Options
 
-	// GetReadDirFS is optional and enables the client to specify how the
+	// GetTraverseFS is optional and enables the client to specify how the
 	// file system for a path is created
-	GetReadDirFS CreateReadDirFS
-
-	// GetQueryStatusFS is optional and enables the client to specify how the
-	// file system for a path is created. When specified can probably use
-	// the same instance used to create the ReadDi fs, that is because
-	// fstest.MapFS implements the required method Stat.
-	GetQueryStatusFS CreateQueryStatusFS
+	GetTraverseFS CreateTraverseFS
 }
 
 // Validate checks that the properties on Using are all valid.
@@ -67,7 +60,7 @@ type Was struct {
 }
 
 // Validate checks that the properties on Using and Was are all valid.
-func (a Was) Validate() error { //nolint:gocritic // heavy, so what, low frequency
+func (a Was) Validate() error {
 	if a.From == "" {
 		return locale.ErrUsageMissingRestorePath
 	}
@@ -92,25 +85,13 @@ func validate(using *Using) error {
 }
 
 type (
-	ReadDirFileSystemBuilder interface {
-		Build() fs.ReadDirFS
+	TraverseFileSystemBuilder interface {
+		Build(root string) lfs.TraverseFS
 	}
 
-	CreateReadDirFS func() fs.ReadDirFS
+	CreateTraverseFS func(root string) lfs.TraverseFS
 )
 
-func (fn CreateReadDirFS) Build() fs.ReadDirFS {
-	return fn()
-}
-
-type (
-	QueryStatusFileSystemBuilder interface {
-		Build(fsys fs.FS) fs.StatFS
-	}
-
-	CreateQueryStatusFS func(fsys fs.FS) fs.StatFS
-)
-
-func (fn CreateQueryStatusFS) Build(fsys fs.FS) fs.StatFS {
-	return fn(fsys)
+func (fn CreateTraverseFS) Build(root string) lfs.TraverseFS {
+	return fn(root)
 }

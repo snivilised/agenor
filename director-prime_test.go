@@ -12,6 +12,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
@@ -19,6 +20,10 @@ import (
 )
 
 var _ = Describe("Director(Prime)", Ordered, func() {
+	var (
+		root string
+	)
+
 	BeforeAll(func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
@@ -27,6 +32,8 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 				}
 			},
 		)).To(Succeed())
+
+		root = lab.Repo("test")
 	})
 
 	BeforeEach(func() {
@@ -44,7 +51,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
-							Root:         RootPath,
+							Root:         root,
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
