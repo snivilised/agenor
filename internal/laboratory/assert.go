@@ -13,7 +13,7 @@ import (
 )
 
 type TestOptions struct {
-	FS          fstest.MapFS
+	FS          *TestTraverseFS
 	Recording   RecordingMap
 	Path        string
 	Result      core.TraverseResult
@@ -34,18 +34,14 @@ func AssertNavigation(entry *NaviTE, to *TestOptions) {
 	_ = to.Result.Session().StartedAt()
 	_ = to.Result.Session().Elapsed()
 
-	if entry.Visit {
-		_ = fs.WalkDir(to.FS, to.Path, func(path string, de fs.DirEntry, _ error) error {
-			if strings.HasSuffix(path, ".DS_Store") {
-				return nil
+	if entry.Visit && to.FS != nil {
+		for path, file := range to.FS.MapFS {
+			if strings.HasPrefix(path, to.Path) {
+				if subscribes(entry.Subscription, file) {
+					visited = append(visited, path)
+				}
 			}
-
-			if subscribes(entry.Subscription, de) {
-				visited = append(visited, path)
-			}
-
-			return nil
-		})
+		}
 
 		every := lo.EveryBy(visited,
 			lo.Ternary(to.Every != nil, to.Every, func(p string) bool {
@@ -61,7 +57,7 @@ func AssertNavigation(entry *NaviTE, to *TestOptions) {
 			}),
 		)
 
-		Expect(every).To(BeTrue())
+		Expect(every).To(BeTrue(), "Not all expected items were invoked")
 	}
 
 	for name, expected := range entry.ExpectedNoOf.Children {
@@ -105,11 +101,11 @@ func assertMetrics(entry *NaviTE, to *TestOptions) {
 	)
 }
 
-func subscribes(subscription enums.Subscription, de fs.DirEntry) bool {
+func subscribes(subscription enums.Subscription, mapFile *fstest.MapFile) bool {
 	isUniversalSubscription := (subscription == enums.SubscribeUniversal)
-	files := de != nil && (subscription == enums.SubscribeFiles) && (!de.IsDir())
-	folders := de != nil && ((subscription == enums.SubscribeFolders) ||
-		subscription == enums.SubscribeFoldersWithFiles) && (de.IsDir())
+	files := mapFile != nil && (subscription == enums.SubscribeFiles) && ((mapFile.Mode | fs.ModeDir) == 0)
+	folders := mapFile != nil && ((subscription == enums.SubscribeFolders) ||
+		subscription == enums.SubscribeFoldersWithFiles) && ((mapFile.Mode | fs.ModeDir) > 0)
 
 	return isUniversalSubscription || files || folders
 }

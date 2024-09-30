@@ -63,7 +63,7 @@ func (n *navigatorFolders) inspect(ns *navigationStatic,
 	// interested in folders and therefore forced to use
 	// enums.DirectoryEntryOrderFoldersFirst instead.
 	//
-	vapour.cargo, err = read(ns.mediator.resources.FS.N,
+	vapour.cargo, err = read(ns.mediator.resources.FS.T,
 		n.ro,
 		current.Path,
 	)

@@ -2,7 +2,6 @@ package tv_test
 
 import (
 	"context"
-	"io/fs"
 	"os"
 	"sync"
 	"testing/fstest"
@@ -16,14 +15,16 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("Director(Resume)", Ordered, func() {
 	var (
-		emptyFS fstest.MapFS
+		emptyFS *lab.TestTraverseFS
 		restore pref.Option
 	)
 
@@ -33,9 +34,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 			return nil
 		}
-		emptyFS = fstest.MapFS{
-			".": &fstest.MapFile{
-				Mode: os.ModeDir,
+		emptyFS = &lab.TestTraverseFS{
+			MapFS: fstest.MapFS{
+				".": &fstest.MapFile{
+					Mode: os.ModeDir,
+				},
 			},
 		}
 
@@ -67,10 +70,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						Using: tv.Using{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
-							GetReadDirFS: func() fs.ReadDirFS {
-								return emptyFS
-							},
-							GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+							GetTraverseFS: func(_ string) lfs.TraverseFS {
 								return emptyFS
 							},
 						},

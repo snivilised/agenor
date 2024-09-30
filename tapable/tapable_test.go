@@ -3,7 +3,6 @@ package tapable_test
 import (
 	"io/fs"
 	"path/filepath"
-	"testing/fstest"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -36,7 +35,7 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
-		FS      fstest.MapFS // don't forget to use TrimRoot
+		FS      *lab.TestTraverseFS // don't forget to use TrimRoot
 		root    string
 	)
 

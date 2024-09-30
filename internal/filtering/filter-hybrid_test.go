@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	"testing/fstest"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -15,13 +14,14 @@ import (
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("feature", Ordered, func() {
 	var (
-		FS   fstest.MapFS
+		FS   *lab.TestTraverseFS
 		root string
 	)
 
@@ -85,10 +85,7 @@ var _ = Describe("feature", Ordered, func() {
 					Root:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetReadDirFS: func() fs.ReadDirFS {
-						return FS
-					},
-					GetQueryStatusFS: func(_ fs.FS) fs.StatFS {
+					GetTraverseFS: func(_ string) lfs.TraverseFS {
 						return FS
 					},
 				},

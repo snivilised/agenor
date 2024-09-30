@@ -16,23 +16,24 @@ type buildArtefacts struct {
 	ext     extent
 }
 
+// Builders performs build orchestration via its buildAll method. Builders
+// is instructed by the factories (via Configure) of which there are 2; one
+// for Walk and one for Run. The Prime/Resume extents create the Builders
+// instance.
 type Builders struct {
-	using     *pref.Using
-	readerFS  pref.ReadDirFileSystemBuilder
-	queryFS   pref.QueryStatusFileSystemBuilder
-	options   optionsBuilder
-	navigator kernel.NavigatorBuilder
-	plugins   pluginsBuilder
-	extent    extentBuilder
+	using       *pref.Using
+	universalFS pref.TraverseFileSystemBuilder
+	options     optionsBuilder
+	navigator   kernel.NavigatorBuilder
+	plugins     pluginsBuilder
+	extent      extentBuilder
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD FILE SYSTEM & EXTENT
 	//
-	reader := bs.readerFS.Build()
 	ext := bs.extent.build(
-		reader,
-		bs.queryFS.Build(reader),
+		bs.universalFS.Build(bs.using.Root),
 	)
 
 	// BUILD OPTIONS
@@ -50,9 +51,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	//
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
 		FS: FileSystems{
-			N: ext.navFS(),
-			Q: ext.queryFS(),
-			R: ext.resFS(),
+			T: ext.traverseFS(),
 		},
 		Supervisor: measure.New(),
 		Binder:     binder,
