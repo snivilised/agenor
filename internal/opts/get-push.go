@@ -29,7 +29,7 @@ func apply(o *pref.Options, settings ...pref.Option) (err error) {
 	return err
 }
 
-func GetWith(o *pref.Options) *Binder {
+func Push(o *pref.Options) *Binder {
 	binder := NewBinder()
 	o.Events.Bind(&binder.Controls)
 

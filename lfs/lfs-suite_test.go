@@ -35,7 +35,7 @@ type (
 )
 
 const (
-	perm = 0o766
+	permFile = 0o666
 )
 
 var (

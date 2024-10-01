@@ -43,7 +43,7 @@ jobs:
         run: go install github.com/mattn/goveralls@latest
 
       - name: Install ginkgo
-        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.20.0
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.20.2
 
       - name: Checkout code
         uses: actions/checkout@v4

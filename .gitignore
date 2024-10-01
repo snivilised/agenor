@@ -22,6 +22,7 @@ report.json
 coverage.html
 
 .task/
+test/json/marshal/
 
 i18n/out/en-US/active.en-GB.json
 

@@ -100,9 +100,13 @@ tasks:
     cmds:
       - go test ./collections
 
-  tp:
+  tpref:
     cmds:
       - go test ./pref
+
+  tpers:
+    cmds:
+      - go test ./internal/persist
 
   tt:
     cmds:

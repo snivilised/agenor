@@ -3,6 +3,9 @@ package lfs
 import (
 	"io/fs"
 	"os"
+	"path/filepath"
+
+	"github.com/snivilised/traverse/locale"
 )
 
 // 🔥 An important note about using standard golang file systems (io.fs/fs.FS)
@@ -31,27 +34,32 @@ import (
 // filepath.Separator with a virtual file system is not valid.
 //
 
+// 🧩 ---> open
+
 // 🎯 openFS
 type openFS struct {
 	fsys fs.FS
+	root string
 }
 
-func (f *openFS) Open(path string) (fs.File, error) {
-	return f.fsys.Open(path)
+func (f *openFS) Open(name string) (fs.File, error) {
+	return f.fsys.Open(name)
 }
+
+// 🧩 ---> stat
 
 // 🎯 statFS
 type statFS struct {
 	openFS
 }
 
-func NewStatFS(path string) fs.StatFS {
-	ents := compose(path)
+func NewStatFS(root string) fs.StatFS {
+	ents := compose(root)
 	return &ents.stat
 }
 
-func (f *statFS) Stat(path string) (fs.FileInfo, error) {
-	return fs.Stat(f.fsys, path)
+func (f *statFS) Stat(name string) (fs.FileInfo, error) {
+	return fs.Stat(f.fsys, name)
 }
 
 // 🧩 ---> file system query
@@ -62,12 +70,10 @@ type readDirFS struct {
 }
 
 // NewReadDirFS creates a native file system.
-func NewReadDirFS(path string) fs.ReadDirFS {
-	ents := compose(path)
+func NewReadDirFS(root string) fs.ReadDirFS {
+	ents := compose(root)
 
-	return &readDirFS{
-		openFS: ents.open,
-	}
+	return &ents.exists
 }
 
 // Open opens the named file.
@@ -79,8 +85,8 @@ func NewReadDirFS(path string) fs.ReadDirFS {
 // Open should reject attempts to open names that do not satisfy
 // ValidPath(name), returning a *PathError with Err set to
 // ErrInvalid or ErrNotExist.
-func (n *readDirFS) Open(path string) (fs.File, error) {
-	return n.fsys.Open(path)
+func (n *readDirFS) Open(name string) (fs.File, error) {
+	return n.fsys.Open(name)
 }
 
 // ReadDir reads the named directory
@@ -99,12 +105,10 @@ type queryStatusFS struct {
 	readDirFS
 }
 
-func NewQueryStatusFS(path string) fs.StatFS {
-	ents := compose(path)
+func NewQueryStatusFS(root string) fs.StatFS {
+	ents := compose(root)
 
-	return &queryStatusFS{
-		readDirFS: ents.read,
-	}
+	return &ents.exists
 }
 
 // QueryStatusFromFS defines a file system that has a Stat
@@ -135,15 +139,15 @@ type existsInFS struct {
 }
 
 // ExistsInFS
-func NewExistsInFS(path string) ExistsInFS {
-	ents := compose(path)
+func NewExistsInFS(root string) ExistsInFS {
+	ents := compose(root)
 
 	return &ents.exists
 }
 
 // FileExists does file exist at the path specified
-func (f *existsInFS) FileExists(path string) bool {
-	info, err := f.Stat(path)
+func (f *existsInFS) FileExists(name string) bool {
+	info, err := f.Stat(name)
 	if err != nil {
 		return false
 	}
@@ -156,8 +160,8 @@ func (f *existsInFS) FileExists(path string) bool {
 }
 
 // DirectoryExists does directory exist at the path specified
-func (f *existsInFS) DirectoryExists(path string) bool {
-	info, err := f.Stat(path)
+func (f *existsInFS) DirectoryExists(name string) bool {
+	info, err := f.Stat(name)
 	if err != nil {
 		return false
 	}
@@ -174,12 +178,10 @@ type readFileFS struct {
 	queryStatusFS
 }
 
-func NewReadFileFS(path string) ReadFileFS {
-	ents := compose(path)
+func NewReadFileFS(root string) ReadFileFS {
+	ents := compose(root)
 
-	return &readFileFS{
-		queryStatusFS: ents.query,
-	}
+	return &ents.reader
 }
 
 // ReadFile reads the named file from the file system fs and returns its contents.
@@ -190,8 +192,8 @@ func NewReadFileFS(path string) ReadFileFS {
 // If fs implements [ReadFileFS], ReadFile calls fs.ReadFile.
 // Otherwise ReadFile calls fs.Open and uses Read and Close
 // on the returned [File].
-func (f *readFileFS) ReadFile(path string) ([]byte, error) {
-	return fs.ReadFile(f.queryStatusFS.statFS.fsys, path)
+func (f *readFileFS) ReadFile(name string) ([]byte, error) {
+	return fs.ReadFile(f.queryStatusFS.statFS.fsys, name)
 }
 
 // 🧩 ---> file system mutation
@@ -209,7 +211,7 @@ type mkDirAllFS struct {
 
 // NewMkDirAllFS
 func NewMkDirAllFS() MkDirAllFS {
-	return &mkDirAllFS{}
+	panic("NOT-IMPL: NewMkDirAllFS")
 }
 
 // MkdirAll creates a directory named path,
@@ -219,8 +221,10 @@ func NewMkDirAllFS() MkDirAllFS {
 // directories that MkdirAll creates.
 // If path is already a directory, MkdirAll does nothing
 // and returns nil.
-func (*mkDirAllFS) MkDirAll(path string, perm os.FileMode) error {
-	return os.MkdirAll(path, perm) // !!! WRONG use the correct fs
+func (f *mkDirAllFS) MkDirAll(name string, perm os.FileMode) error {
+	// TODO: check path is valid using fs.ValidPath
+	//
+	return os.MkdirAll(name, perm)
 }
 
 // 🎯 writeFileFS
@@ -228,15 +232,10 @@ type writeFileFS struct {
 	baseWriterFS
 }
 
-func NewWriteFileFS(path string, overwrite bool) WriteFileFS {
-	ents := compose(path)
+func NewWriteFileFS(root string, overwrite bool) WriteFileFS {
+	ents := compose(root).attach(overwrite)
 
-	return &writeFileFS{
-		baseWriterFS: baseWriterFS{
-			openFS:    ents.open,
-			overwrite: overwrite,
-		},
-	}
+	return &ents.writer
 }
 
 // Create creates or truncates the named file. If the file already exists,
@@ -254,7 +253,12 @@ func NewWriteFileFS(path string, overwrite bool) WriteFileFS {
 // has to be made at the point of creating the file system. This is less
 // flexible and just results in friction, but this is out of our power.
 func (f *writeFileFS) Create(name string) (*os.File, error) {
-	return os.Create(name)
+	if !fs.ValidPath(name) {
+		return nil, locale.NewInvalidPathError(name)
+	}
+
+	path := filepath.Join(f.root, name)
+	return os.Create(path)
 }
 
 // WriteFile writes data to the named file, creating it if necessary.
@@ -263,7 +267,12 @@ func (f *writeFileFS) Create(name string) (*os.File, error) {
 // Since WriteFile requires multiple system calls to complete, a failure mid-operation
 // can leave the file in a partially written state.
 func (f *writeFileFS) WriteFile(name string, data []byte, perm os.FileMode) error {
-	return os.WriteFile(name, data, perm)
+	if !fs.ValidPath(name) {
+		return locale.NewInvalidPathError(name)
+	}
+
+	path := filepath.Join(f.root, name)
+	return os.WriteFile(path, data, perm)
 }
 
 // 🧩 ---> file system aggregators
@@ -277,17 +286,10 @@ type readerFS struct {
 }
 
 // NewReaderFS
-func NewReaderFS(path string) ReaderFS {
-	ents := compose(path)
+func NewReaderFS(root string) ReaderFS {
+	ents := compose(root)
 
-	return &readerFS{
-		readDirFS: ents.read,
-		readFileFS: readFileFS{
-			queryStatusFS: ents.query,
-		},
-		existsInFS: ents.exists,
-		statFS:     ents.stat,
-	}
+	return &ents.reader
 }
 
 // 🎯 writerFS
@@ -296,17 +298,10 @@ type writerFS struct {
 	writeFileFS
 }
 
-func NewWriterFS(path string, overwrite bool) WriterFS {
-	ents := compose(path)
+func NewWriterFS(root string, overwrite bool) WriterFS {
+	ents := compose(root).attach(overwrite)
 
-	return &writerFS{
-		writeFileFS: writeFileFS{
-			baseWriterFS: baseWriterFS{
-				openFS:    ents.open,
-				overwrite: overwrite,
-			},
-		},
-	}
+	return &ents.writer
 }
 
 // 🎯 traverseFS
@@ -315,43 +310,49 @@ type traverseFS struct {
 	writerFS
 }
 
-func NewTraverseFS(path string, overwrite bool) TraverseFS {
-	ents := compose(path)
+func NewTraverseFS(root string, overwrite bool) TraverseFS {
+	ents := compose(root).attach(overwrite)
 
 	return &traverseFS{
-		readerFS: readerFS{
-			readDirFS: ents.read,
-			readFileFS: readFileFS{
-				queryStatusFS: ents.query,
-			},
-			existsInFS: ents.exists,
-			statFS:     ents.stat,
-		},
-		writerFS: writerFS{
-			mkDirAllFS: mkDirAllFS{
-				existsInFS: ents.exists,
-			},
-			writeFileFS: writeFileFS{
-				baseWriterFS: baseWriterFS{
-					openFS:    ents.open,
-					overwrite: overwrite,
-				},
-			},
-		},
+		readerFS: ents.reader,
+		writerFS: ents.writer,
 	}
 }
 
-type entities struct {
-	open   openFS
-	read   readDirFS
-	stat   statFS
-	query  queryStatusFS
-	exists existsInFS
+// 🧩 ---> construction
+
+type (
+	entities struct {
+		open   openFS
+		read   readDirFS
+		stat   statFS
+		query  queryStatusFS
+		exists existsInFS
+		reader readerFS
+		writer writerFS
+	}
+)
+
+func (e *entities) attach(overwrite bool) *entities {
+	e.writer = writerFS{
+		mkDirAllFS: mkDirAllFS{
+			existsInFS: e.exists,
+		},
+		writeFileFS: writeFileFS{
+			baseWriterFS: baseWriterFS{
+				openFS:    e.open,
+				overwrite: overwrite,
+			},
+		},
+	}
+
+	return e
 }
 
 func compose(root string) *entities {
 	open := openFS{
 		fsys: os.DirFS(root),
+		root: root,
 	}
 	read := readDirFS{
 		openFS: open,
@@ -369,11 +370,21 @@ func compose(root string) *entities {
 		queryStatusFS: query,
 	}
 
+	reader := readerFS{
+		readDirFS: read,
+		readFileFS: readFileFS{
+			queryStatusFS: query,
+		},
+		existsInFS: exists,
+		statFS:     stat,
+	}
+
 	return &entities{
 		open:   open,
 		read:   read,
 		stat:   stat,
 		query:  query,
 		exists: exists,
+		reader: reader,
 	}
 }

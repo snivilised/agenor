@@ -113,6 +113,25 @@ type (
 		Pick(et enums.EntryType)
 		AssignChildren(children []fs.DirEntry)
 	}
+
+	// ActiveState
+	ActiveState struct {
+		Root        string
+		Hibernation enums.Hibernation
+		NodePath    string
+		Depth       int
+		// metrics
+	}
+
+	SaveState struct {
+		Path string
+	}
+
+	// RestoreState
+	RestoreState struct {
+		Path   string
+		Resume enums.ResumeStrategy
+	}
 )
 
 // KernelResult is the internal representation of core.TraverseResult
