@@ -475,3 +475,75 @@ var ErrIDGeneratorFuncCantBeNil = IDGeneratorFuncCantBeNilError{
 		Data: IDGeneratorFuncCantBeNilErrorTemplData{},
 	},
 }
+
+// ❌ UnEqualJSONConversion
+
+// UnEqualConversionTemplData
+type UnEqualJSONConversionErrorTemplData struct {
+	traverseTemplData
+}
+
+// Message
+func (td UnEqualJSONConversionErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "un-equal-conversion.error",
+		Description: "JSON options conversion error",
+		Other:       "unequal JSON conversion",
+	}
+}
+
+type UnEqualConversionError struct {
+	li18ngo.LocalisableError
+}
+
+var ErrUnEqualConversion = UnEqualConversionError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: UnEqualJSONConversionErrorTemplData{},
+	},
+}
+
+// ❌ InvalidPath
+
+// InvalidPathErrorTemplData invalid file system path; path must be relative
+// relative to the root already defined for this file system so should not
+// start or end with a /. Also, only a / should be used to denote a separator
+// which applies to all platforms.
+type InvalidPathErrorTemplData struct {
+	traverseTemplData
+	Path string
+}
+
+// IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
+// if the err's error tree contains the core error:
+// InvalidExtGlobFilterMissingSeparatorError
+func IsInvalidPathError(err error) bool {
+	return errors.Is(err, errInvalidPath)
+}
+
+func NewInvalidPathError(path string) error {
+	return errors.Wrap(
+		errInvalidPath,
+		li18ngo.Text(InvalidPathErrorTemplData{
+			Path: path,
+		}),
+	)
+}
+
+// Message
+func (td InvalidPathErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-path.error",
+		Description: "Invalid file system path",
+		Other:       "invalid path {{.Path}}",
+	}
+}
+
+type InvalidPathError struct {
+	li18ngo.LocalisableError
+}
+
+var errInvalidPath = InvalidPathError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: InvalidPathErrorTemplData{},
+	},
+}

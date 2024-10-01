@@ -23,17 +23,17 @@ type (
 	// ExistsInFS contains methods that check the existence of file system items.
 	ExistsInFS interface {
 		// FileExists does file exist at the path specified
-		FileExists(path string) bool
+		FileExists(name string) bool
 
 		// DirectoryExists does directory exist at the path specified
-		DirectoryExists(path string) bool
+		DirectoryExists(name string) bool
 	}
 
 	// ReadFileFS file system non streaming reader
 	ReadFileFS interface {
 		fs.FS
 		// Read reads file at path, from file system specified
-		ReadFile(path string) ([]byte, error)
+		ReadFile(name string) ([]byte, error)
 	}
 
 	// ReaderFS
@@ -47,7 +47,7 @@ type (
 	// MkDirAllFS is a file system with a MkDirAll method.
 	MkDirAllFS interface {
 		ExistsInFS
-		MkDirAll(path string, perm os.FileMode) error
+		MkDirAll(name string, perm os.FileMode) error
 	}
 
 	// CopyFS

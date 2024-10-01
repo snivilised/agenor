@@ -60,7 +60,7 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 				location += string(filepath.Separator)
 			}
 
-			actual, err := lfs.EnsurePathAt(location, "default-test.log", perm, mfs)
+			actual, err := lfs.EnsurePathAt(location, "default-test.log", permFile, mfs)
 			directory, _ := filepath.Split(actual)
 			directory = filepath.Clean(directory)
 			expected := lab.TrimRoot(lab.Path(home, entry.expected))

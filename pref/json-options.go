@@ -29,11 +29,3 @@ type JSONOptions struct {
 	//
 	Concurrency ConcurrencyOptions
 }
-
-func ToJSON(*Options) *JSONOptions {
-	return &JSONOptions{}
-}
-
-func FromJSON(*JSONOptions) *Options {
-	return &Options{}
-}

@@ -99,7 +99,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 			ve := using.Validate()
 
 			if using.O != nil {
-				return using.O, opts.GetWith(using.O), ve
+				return using.O, opts.Push(using.O), ve
 			}
 
 			o, binder, err := ext.options(settings...)

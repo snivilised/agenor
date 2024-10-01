@@ -1,24 +1,37 @@
 package lab
 
 import (
+	"io/fs"
 	"os"
+	"strings"
 	"testing/fstest"
+
+	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/locale"
 )
+
+const (
+	permFile = 0o666
+)
+
+type testMapFile struct {
+	f fstest.MapFile
+}
 
 type TestTraverseFS struct {
 	fstest.MapFS
 }
 
-func (f *TestTraverseFS) FileExists(path string) bool {
-	if mapFile, found := f.MapFS[path]; found && !mapFile.Mode.IsDir() {
+func (f *TestTraverseFS) FileExists(name string) bool {
+	if mapFile, found := f.MapFS[name]; found && !mapFile.Mode.IsDir() {
 		return true
 	}
 
 	return false
 }
 
-func (f *TestTraverseFS) DirectoryExists(path string) bool {
-	if mapFile, found := f.MapFS[path]; found && mapFile.Mode.IsDir() {
+func (f *TestTraverseFS) DirectoryExists(name string) bool {
+	if mapFile, found := f.MapFS[name]; found && mapFile.Mode.IsDir() {
 		return true
 	}
 
@@ -26,20 +39,49 @@ func (f *TestTraverseFS) DirectoryExists(path string) bool {
 }
 
 func (f *TestTraverseFS) Create(name string) (*os.File, error) {
-	_ = name
-	panic("NOT-IMPL: TestTraverseFS.Create")
+	if _, err := f.Stat(name); err == nil {
+		return nil, fs.ErrExist
+	}
+
+	file := &fstest.MapFile{
+		Mode: permFile,
+	}
+
+	f.MapFS[name] = file
+	dummy := &os.File{}
+	return dummy, nil
 }
 
-func (f *TestTraverseFS) MkDirAll(path string, perm os.FileMode) error {
-	_ = path
-	_ = perm
-	panic("NOT-IMPL: TestTraverseFS.MkDirAll")
+func (f *TestTraverseFS) MkDirAll(name string, perm os.FileMode) error {
+	if !fs.ValidPath(name) {
+		return locale.NewInvalidPathError(name)
+	}
+
+	segments := strings.Split(name, "/")
+
+	_ = lo.Reduce(segments,
+		func(acc []string, s string, _ int) []string {
+			acc = append(acc, s)
+			path := strings.Join(acc, "/")
+			f.MapFS[path] = &fstest.MapFile{
+				Mode: perm | os.ModeDir,
+			}
+			return acc
+		}, []string{},
+	)
+
+	return nil
 }
 
 func (f *TestTraverseFS) WriteFile(name string, data []byte, perm os.FileMode) error {
-	_ = name
-	_ = data
-	_ = perm
+	if _, err := f.Stat(name); err == nil {
+		return fs.ErrExist
+	}
 
-	panic("NOT-IMPL: TestTraverseFS.WriteFile")
+	f.MapFS[name] = &fstest.MapFile{
+		Data: data,
+		Mode: perm,
+	}
+
+	return nil
 }
