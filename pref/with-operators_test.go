@@ -151,8 +151,8 @@ var _ = Describe("With Operators", Ordered, func() {
 		It("🧪 should: create option", func() {
 			Expect(tv.WithSamplingOptions(
 				&pref.SamplingOptions{
-					SampleType:      enums.SampleTypeFilter,
-					SampleInReverse: true,
+					Type:      enums.SampleTypeFilter,
+					InReverse: true,
 					NoOf: pref.EntryQuantities{
 						Files:   2,
 						Folders: 3,

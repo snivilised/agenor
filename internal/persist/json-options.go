@@ -32,8 +32,8 @@ func ToJSON(o *pref.Options) *json.Options {
 			},
 		},
 		Sampling: json.SamplingOptions{
-			SampleType:      o.Sampling.SampleType,
-			SampleInReverse: o.Sampling.SampleInReverse,
+			Type:      o.Sampling.Type,
+			InReverse: o.Sampling.InReverse,
 			NoOf: json.EntryQuantities{
 				Files:   o.Sampling.NoOf.Files,
 				Folders: o.Sampling.NoOf.Folders,
@@ -93,10 +93,22 @@ func NodeFilterDefToJSON(def *core.FilterDef) *json.FilterDef {
 				Negate:          def.Negate,
 				Scope:           def.Scope,
 				IfNotApplicable: def.IfNotApplicable,
+				Poly:            NodePolyDefToJSON(def.Poly),
 			}
 		},
 		func() *json.FilterDef { return nil },
 	)
+}
+
+func NodePolyDefToJSON(poly *core.PolyFilterDef) *json.PolyFilterDef {
+	if poly == nil {
+		return nil
+	}
+
+	return &json.PolyFilterDef{
+		File:   *NodeFilterDefToJSON(&poly.File),
+		Folder: *NodeFilterDefToJSON(&poly.Folder),
+	}
 }
 
 func FromJSON(o *json.Options) *pref.Options {
@@ -115,8 +127,8 @@ func FromJSON(o *json.Options) *pref.Options {
 			},
 		},
 		Sampling: pref.SamplingOptions{
-			SampleType:      o.Sampling.SampleType,
-			SampleInReverse: o.Sampling.SampleInReverse,
+			Type:      o.Sampling.Type,
+			InReverse: o.Sampling.InReverse,
 			NoOf: pref.EntryQuantities{
 				Files:   o.Sampling.NoOf.Files,
 				Folders: o.Sampling.NoOf.Folders,

@@ -197,7 +197,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								Files:   files,
 								Folders: folders,
 							},
-							SampleType: enums.SampleTypeSlice,
+							Type: enums.SampleTypeSlice,
 							Iteration: pref.SamplingIterationOptions{
 								Each:  func(_ *core.Node) bool { return false },
 								While: func(_ *pref.FilteredInfo) bool { return false },
