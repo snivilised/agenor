@@ -14,12 +14,12 @@ type (
 
 	// SamplingOptions
 	SamplingOptions struct {
-		// SampleType the type of sampling to use
-		SampleType enums.SampleType `json:"sample-type"`
+		// Type the type of sampling to use
+		Type enums.SampleType `json:"sample-type"`
 
-		// SampleInReverse determines the direction of iteration for the sampling
+		// InReverse determines the direction of iteration for the sampling
 		// operation
-		SampleInReverse bool `json:"sample-in-reverse"`
+		InReverse bool `json:"sample-in-reverse"`
 
 		// NoOf specifies number of items required in each sample (only applies
 		// when not using Custom iterator options)

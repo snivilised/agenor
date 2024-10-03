@@ -8,12 +8,12 @@ import (
 type (
 	// SamplingOptions
 	SamplingOptions struct {
-		// SampleType the type of sampling to use
-		SampleType enums.SampleType
+		// Type the type of sampling to use
+		Type enums.SampleType
 
-		// SampleInReverse determines the direction of iteration for the sampling
+		// InReverse determines the direction of iteration for the sampling
 		// operation
-		SampleInReverse bool
+		InReverse bool
 
 		// NoOf specifies number of items required in each sample (only applies
 		// when not using Custom iterator options)
@@ -77,7 +77,7 @@ type (
 )
 
 func (o SamplingOptions) IsSamplingActive() bool {
-	return o.SampleType != enums.SampleTypeUndefined
+	return o.Type != enums.SampleTypeUndefined
 }
 
 // WithSamplingOptions specifies the sampling options.

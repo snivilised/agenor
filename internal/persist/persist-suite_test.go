@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -24,16 +25,20 @@ const (
 )
 
 type (
+	persistTE struct {
+		given string
+	}
 	marshalTE struct {
-		given  string
+		persistTE
+		// option defines a single option to be defined for the unit test. When
+		// a test case wants to test an optional option in pref.Options (ie it
+		// is a pointer), then that test case will not define this option. Instead
+		// it will define the tweak function to contain the corresponding member
+		// on the json instance, such that the pref.member is nil and json.member
+		// is noy til, thereby triggering an unequal error.
 		option func() pref.Option
-	}
 
-	errorTE struct {
-		marshalTE
-	}
-
-	conversionTE struct {
-		marshalTE
+		// tweak allows a test case to change json.Options to provoke unequal error
+		tweak func(jo *json.Options)
 	}
 )

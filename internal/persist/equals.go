@@ -153,19 +153,19 @@ func equalBehaviours(o *pref.NavigationBehaviours, jo *json.NavigationBehaviours
 }
 
 func equalSampling(o *pref.SamplingOptions, jo *json.SamplingOptions) (bool, error) {
-	if o.SampleType != jo.SampleType {
+	if o.Type != jo.Type {
 		return false, fmt.Errorf("sampling %w", UnequalValueError[enums.SampleType]{
 			Field: "SampleType",
-			Value: o.SampleType,
-			Other: jo.SampleType,
+			Value: o.Type,
+			Other: jo.Type,
 		})
 	}
 
-	if o.SampleInReverse != jo.SampleInReverse {
+	if o.InReverse != jo.InReverse {
 		return false, fmt.Errorf("sampling %w", UnequalValueError[bool]{
 			Field: "SampleInReverse",
-			Value: o.SampleInReverse,
-			Other: jo.SampleInReverse,
+			Value: o.InReverse,
+			Other: jo.InReverse,
 		})
 	}
 
@@ -222,7 +222,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def != nil && jdef == nil {
-		return false, fmt.Errorf("filter-def %w",
+		return false, fmt.Errorf("json-filter-def %w",
 			UnequalPtrError[core.FilterDef, json.FilterDef]{
 				Field: "[nil jdef]",
 				Value: def,
@@ -291,7 +291,7 @@ func equalFilterDef(filterName string,
 		)
 	}
 
-	if def.Poly != nil {
+	if def.Poly != nil && jdef.Poly != nil {
 		if equal, err := equalFilterDef("poly", &def.Poly.File, &jdef.Poly.File); !equal {
 			return equal, err
 		}

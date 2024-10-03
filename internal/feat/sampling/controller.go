@@ -52,14 +52,14 @@ func union(r *readResult) []fs.DirEntry {
 	)
 
 	both := lo.Ternary(
-		r.o.SampleInReverse, last, first,
+		r.o.InReverse, last, first,
 	)(noOfFiles, r.files)
 
 	noOfFolders := lo.Ternary(r.o.NoOf.Folders == 0,
 		uint(len(r.folders)), r.o.NoOf.Folders,
 	)
 	both = append(both, lo.Ternary(
-		r.o.SampleInReverse, last, first,
+		r.o.InReverse, last, first,
 	)(noOfFolders, r.folders)...)
 
 	return both
