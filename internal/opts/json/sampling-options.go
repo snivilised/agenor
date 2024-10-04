@@ -19,7 +19,7 @@ type (
 
 		// InReverse determines the direction of iteration for the sampling
 		// operation
-		InReverse bool `json:"sample-in-reverse"`
+		InReverse bool `json:"in-reverse"`
 
 		// NoOf specifies number of items required in each sample (only applies
 		// when not using Custom iterator options)

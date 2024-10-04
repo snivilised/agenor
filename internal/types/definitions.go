@@ -118,7 +118,7 @@ type (
 	ActiveState struct {
 		Root        string
 		Hibernation enums.Hibernation
-		NodePath    string
+		CurrentPath string
 		Depth       int
 		// metrics
 	}
@@ -130,6 +130,7 @@ type (
 	// RestoreState
 	RestoreState struct {
 		Path   string
+		FS     lfs.ReadFileFS
 		Resume enums.ResumeStrategy
 	}
 )

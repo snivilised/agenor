@@ -32,7 +32,7 @@ var _ = Describe("Convert Options via JSON", Ordered, func() {
 			},
 		}
 
-		_ = FS.MkDirAll(to, permDir|os.ModeDir)
+		_ = FS.MkDirAll(destination, perms.Dir|os.ModeDir)
 	})
 
 	Context("ToJSON", func() {

@@ -11,27 +11,32 @@ import (
 )
 
 type (
-	stateMarshaler interface {
-		Marshal(path string) error
-		Unmarshal(path string) error
-	}
+	// TamperFunc provides a way for unit tests to modify the JSON before
+	// it is un-marshaled. The unit tests marshal a default JSON object
+	// instance, so a TamperFunc is used to allow modification of that
+	// default. Typically a single test will focus on a single field,
+	// so that the TamperFunc is expected to only update 1 of the members at a
+	// time.
+	TamperFunc func(jo *json.Options)
 
 	MarshalState struct {
 		O      *pref.Options
 		Active *types.ActiveState
+		JO     *json.Options
+		Path   string
+		Perm   fs.FileMode
+		FS     lfs.WriteFileFS
 	}
 
-	jsonState struct {
+	JSONState struct {
 		JO     *json.Options
 		Active *types.ActiveState
 	}
 )
 
-func Marshal(ms *MarshalState, path string, perm fs.FileMode,
-	wfs lfs.WriteFileFS,
-) (*json.Options, error) {
+func Marshal(ms *MarshalState) (*json.Options, error) {
 	jo := ToJSON(ms.O)
-	state := &jsonState{
+	state := &JSONState{
 		JO:     jo,
 		Active: ms.Active,
 	}
@@ -45,18 +50,37 @@ func Marshal(ms *MarshalState, path string, perm fs.FileMode,
 		return nil, err
 	}
 
-	if equal, err := Equals(ms.O, jo); !equal {
+	if err := Equals(ms.O, jo); err != nil {
 		return jo, err
 	}
 
-	return jo, wfs.WriteFile(path, data, perm)
+	return jo, ms.FS.WriteFile(ms.Path, data, ms.Perm)
 }
 
-func Unmarshal(_ *types.RestoreState, path string,
-	reader lfs.ReadFileFS,
-) (*MarshalState, error) {
-	_ = path
-	_ = reader
+func Unmarshal(rs *types.RestoreState, tampers ...TamperFunc) (*MarshalState, error) {
+	bytes, err := rs.FS.ReadFile(rs.Path)
 
-	return &MarshalState{}, nil
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		js JSONState
+	)
+
+	if err := ejson.Unmarshal(bytes, &js); err != nil {
+		return nil, err
+	}
+
+	for _, fn := range tampers {
+		fn(js.JO)
+	}
+
+	ms := MarshalState{
+		O:      FromJSON(js.JO),
+		Active: js.Active,
+		JO:     js.JO,
+	}
+
+	return &ms, Equals(ms.O, js.JO)
 }
