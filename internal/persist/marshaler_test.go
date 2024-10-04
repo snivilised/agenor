@@ -16,104 +16,116 @@ import (
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/persist"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
-var _ = Describe("Marshaler", Ordered, func() {
-	const (
-		foo  = "foo"
-		flac = "*.flac"
-		bar  = "*.bar"
-	)
+func check[T any](entry *checkerTE, err error) error {
+	if err, ok := errors.Unwrap(err).(persist.UnequalValueError[T]); ok {
+		return lo.Ternary(err.Field == entry.field,
+			nil, fmt.Errorf("actual(%q) => expected: %v; value: '%v', other: '%v'",
+				err.Field, entry.field, err.Value, err.Other,
+			),
+		)
+	}
 
+	return &wrongUnequalError{
+		field: entry.field,
+		err:   err,
+	}
+}
+
+func marshal(entry *marshalTE, tfs lfs.TraverseFS) *tampered {
+	// success:
+	o, _, err := opts.Get(
+		pref.IfOptionF(entry.option != nil, func() pref.Option {
+			return entry.option()
+		}),
+	)
+	Expect(err).To(Succeed(), "MARSHAL")
+
+	writePath := destination + "/" + tempFile
+	jo, err := persist.Marshal(&persist.MarshalState{
+		O: o,
+		Active: &types.ActiveState{
+			Root:        destination,
+			Hibernation: enums.HibernationPending,
+			CurrentPath: "/top/a/b/c",
+			Depth:       3,
+		},
+		Path: writePath,
+		Perm: perms.File,
+		FS:   tfs,
+	})
+
+	Expect(err).To(Succeed(), "MARSHAL")
+	Expect(jo).NotTo(BeNil())
+
+	// unequal error:
+	if entry.tweak != nil {
+		entry.tweak(jo)
+	}
+
+	e := persist.Equals(o, jo)
+	Expect(e).NotTo(Succeed(), "MARSHAL")
+	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
+		Expect(entry.checker(entry.checkerTE, e)).To(Succeed(), "MARSHAL")
+	}
+
+	return &tampered{
+		o:  o,
+		jo: jo,
+	}
+}
+
+func unmarshal(entry *marshalTE, tfs lfs.TraverseFS, restorePath string, t *tampered) {
+	// success:
+	state, err := persist.Unmarshal(&types.RestoreState{
+		Path:   restorePath,
+		FS:     tfs,
+		Resume: enums.ResumeStrategySpawn,
+	}, entry.tweak)
+	Expect(err).To(Succeed(), "UNMARSHAL")
+
+	// unequal error:
+	e := persist.Equals(t.o, state.JO)
+	Expect(e).NotTo(Succeed(), "UNMARSHAL")
+
+	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
+		Expect(entry.checker(entry.checkerTE, e)).To(Succeed(), "UNMARSHAL")
+	}
+}
+
+func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
+	return &json.SamplingOptions{
+		Type:      so.Type,
+		InReverse: so.InReverse,
+		NoOf: json.EntryQuantities{
+			Files:   so.NoOf.Files,
+			Folders: so.NoOf.Folders,
+		},
+	}
+}
+
+var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS                                       lfs.TraverseFS
-		nodeFilterDef, polyNodeFilterDef         *core.FilterDef
-		childFilterDef                           *core.ChildFilterDef
-		samplingOptions                          *pref.SamplingOptions
-		sampleFilterDef                          *core.SampleFilterDef
-		jsonNodeFilterDef, jsonPolyNodeFilterDef json.FilterDef
-		polyFilterDef                            *core.PolyFilterDef
+		FS lfs.TraverseFS
+
+		sourceNodeFilterDef *core.FilterDef
+		jsonNodeFilterDef   json.FilterDef
+		samplingOptions     *pref.SamplingOptions
+		jsonSamplingOptions *json.SamplingOptions
+
+		readPath string
 	)
 
 	BeforeAll(func() {
 		Expect(li18ngo.Use()).To(Succeed())
-		nodeFilterDef = &core.FilterDef{
-			Type:            enums.FilterTypeGlob,
-			Description:     "items without .flac suffix",
-			Pattern:         flac,
-			Scope:           enums.ScopeAll,
-			Negate:          true,
-			IfNotApplicable: enums.TriStateBoolTrue,
-		}
 
-		childFilterDef = &core.ChildFilterDef{
-			Type:        enums.FilterTypeGlob,
-			Description: "items without .flac suffix",
-			Pattern:     flac,
-			Negate:      true,
-		}
-
-		samplingOptions = &pref.SamplingOptions{
-			Type:      enums.SampleTypeFilter,
-			InReverse: true,
-			NoOf: pref.EntryQuantities{
-				Files:   2,
-				Folders: 3,
-			},
-		}
-
-		sampleFilterDef = &core.SampleFilterDef{
-			Type:        enums.FilterTypeGlob,
-			Description: "items without .flac suffix",
-			Pattern:     flac,
-			Scope:       enums.ScopeAll,
-			Negate:      true,
-			Poly: &core.PolyFilterDef{
-				File:   *nodeFilterDef,
-				Folder: *nodeFilterDef,
-			},
-		}
-
-		jsonNodeFilterDef = json.FilterDef{
-			Type:            enums.FilterTypeGlob,
-			Description:     "items without .flac suffix",
-			Pattern:         flac,
-			Scope:           enums.ScopeAll,
-			Negate:          true,
-			IfNotApplicable: enums.TriStateBoolTrue,
-		}
-
-		jsonPolyNodeFilterDef = json.FilterDef{
-			Type:            enums.FilterTypePoly,
-			Description:     "items without .flac suffix",
-			Pattern:         flac,
-			Scope:           enums.ScopeAll,
-			Negate:          true,
-			IfNotApplicable: enums.TriStateBoolTrue,
-			Poly: &json.PolyFilterDef{
-				File:   jsonNodeFilterDef,
-				Folder: jsonNodeFilterDef,
-			},
-		}
-
-		polyFilterDef = &core.PolyFilterDef{
-			File:   *nodeFilterDef,
-			Folder: *nodeFilterDef,
-		}
-
-		polyNodeFilterDef = &core.FilterDef{
-			Type:            enums.FilterTypePoly,
-			Description:     "items without .flac suffix",
-			Pattern:         flac,
-			Scope:           enums.ScopeAll,
-			Negate:          true,
-			IfNotApplicable: enums.TriStateBoolTrue,
-			Poly:            polyFilterDef,
-		}
+		readPath = source + "/" + restoreFile
 	})
 
 	BeforeEach(func() {
@@ -125,52 +137,59 @@ var _ = Describe("Marshaler", Ordered, func() {
 			},
 		}
 
-		_ = FS.MkDirAll(to, permDir|os.ModeDir)
+		Expect(FS.MkDirAll(destination, perms.Dir|os.ModeDir)).To(Succeed())
+		Expect(FS.MkDirAll(source, perms.Dir|os.ModeDir)).To(Succeed())
+		Expect(FS.WriteFile(readPath, content, perms.File)).To(Succeed())
+
+		sourceNodeFilterDef = &core.FilterDef{
+			Type:            enums.FilterTypeGlob,
+			Description:     "items without .flac suffix",
+			Pattern:         flac,
+			Scope:           enums.ScopeAll,
+			Negate:          true,
+			IfNotApplicable: enums.TriStateBoolTrue,
+		}
+
+		jsonNodeFilterDef = *createJSONFilterFromCore(sourceNodeFilterDef)
+
+		samplingOptions = &pref.SamplingOptions{
+			Type:      enums.SampleTypeFilter,
+			InReverse: true,
+			NoOf: pref.EntryQuantities{
+				Files:   2,
+				Folders: 3,
+			},
+		}
+
+		jsonSamplingOptions = createJSONSamplingOptions(samplingOptions)
 	})
 
 	Context("map-fs", func() {
 		DescribeTable("marshal",
 			func(entry *marshalTE) {
-				// success:
-				o, _, err := opts.Get(
-					pref.IfOptionF(entry.option != nil, func() pref.Option {
-						return entry.option()
-					}),
-				)
-				Expect(err).To(Succeed())
-
-				writePath := to + "/" + tempFile
-				jo, err := persist.Marshal(&persist.MarshalState{
-					O: o,
-					Active: &types.ActiveState{
-						Root:        to,
-						Hibernation: enums.HibernationPending,
-						NodePath:    "/root/a/b/c",
-						Depth:       3,
-					},
-				},
-					writePath, permFile, FS,
-				)
-
-				Expect(err).To(Succeed())
-				Expect(jo).NotTo(BeNil())
-
-				// unequal error:
-				if entry.tweak != nil {
-					entry.tweak(jo)
-				}
-				equals, err := persist.Equals(o, jo)
-				Expect(equals).To(BeFalse(), "should not compare equal")
-				Expect(err).NotTo(Succeed())
+				// This looks a bit odd, but actually helps us to reduce
+				// the amount of test code required.
+				//
+				// marshal tweaks the JSON state to enforce unequal error, but
+				// the tweak invoked by marshal can be shared by unmarshal,
+				// without having to invoke unmarshal specific functionality.
+				// The result of marshal can be passed into unmarshal.
+				//
+				unmarshal(entry, FS, readPath, marshal(entry, FS))
 			},
 			func(entry *marshalTE) string {
 				return fmt.Sprintf("given: %v, 🧪 should: marshal successfully", entry.given)
 			},
 
 			// 🍉 NavigationBehaviours:
+			//
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "NavigationBehaviours.SubPathBehaviour",
+					given: "NavigationBehaviours.SubPathBehaviour.KeepTrailingSep",
+				},
+				checkerTE: &checkerTE{
+					field:   "KeepTrailingSep",
+					checker: check[bool],
 				},
 				option: func() pref.Option {
 					return pref.WithSubPathBehaviour(&pref.SubPathBehaviour{
@@ -184,12 +203,15 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "NavigationBehaviours.WithSortBehaviour",
+					given: "NavigationBehaviours.WithSortBehaviour.IsCaseSensitive",
+				},
+				checkerTE: &checkerTE{
+					field:   "IsCaseSensitive",
+					checker: check[bool],
 				},
 				option: func() pref.Option {
 					return pref.WithSortBehaviour(&pref.SortBehaviour{
 						IsCaseSensitive: true,
-						SortFilesFirst:  true,
 					})
 				},
 				tweak: func(jo *json.Options) {
@@ -199,7 +221,29 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
+					given: "NavigationBehaviours.WithSortBehaviour.SortFilesFirst",
+				},
+				checkerTE: &checkerTE{
+					field:   "SortFilesFirst",
+					checker: check[bool],
+				},
+				option: func() pref.Option {
+					return pref.WithSortBehaviour(&pref.SortBehaviour{
+						SortFilesFirst: true,
+					})
+				},
+				tweak: func(jo *json.Options) {
+					jo.Behaviours.Sort.SortFilesFirst = false
+				},
+			}),
+
+			Entry(nil, &marshalTE{
+				persistTE: persistTE{
 					given: "NavigationBehaviours.CascadeBehaviour.WithDepth",
+				},
+				checkerTE: &checkerTE{
+					field:   "Depth",
+					checker: check[uint],
 				},
 				option: func() pref.Option {
 					return pref.WithDepth(4)
@@ -213,6 +257,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "NavigationBehaviours.CascadeBehaviour.NoRecurse",
 				},
+				checkerTE: &checkerTE{
+					field:   "NoRecurse",
+					checker: check[bool],
+				},
 				option: pref.WithNoRecurse,
 				tweak: func(jo *json.Options) {
 					jo.Behaviours.Cascade.NoRecurse = false
@@ -220,41 +268,39 @@ var _ = Describe("Marshaler", Ordered, func() {
 			}),
 
 			// 🍉 SamplingOptions:
+			//
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "NavigationBehaviours.SamplingOptions.InReverse",
+					given: "NavigationBehaviours.SamplingOptions.Type",
+				},
+				checkerTE: &checkerTE{
+					field:   "Type",
+					checker: check[enums.SampleType],
 				},
 				option: func() pref.Option {
-					return pref.WithSamplingOptions(&pref.SamplingOptions{
-						Type:      enums.SampleTypeFilter,
-						InReverse: true,
-						NoOf: pref.EntryQuantities{
-							Files:   3,
-							Folders: 4,
-						},
-					})
+					return pref.WithSamplingOptions(samplingOptions)
 				},
 				tweak: func(jo *json.Options) {
-					jo.Sampling.InReverse = false
+					jo.Sampling = *jsonSamplingOptions
+					jo.Sampling.Type = enums.SampleTypeSlice
 				},
 			}),
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "NavigationBehaviours.SamplingOptions.SampleType",
+					given: "NavigationBehaviours.SamplingOptions.InReverse",
+				},
+				checkerTE: &checkerTE{
+					field:   "InReverse",
+					checker: check[bool],
 				},
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(&pref.SamplingOptions{
-						Type:      enums.SampleTypeFilter,
 						InReverse: true,
-						NoOf: pref.EntryQuantities{
-							Files:   3,
-							Folders: 4,
-						},
 					})
 				},
 				tweak: func(jo *json.Options) {
-					jo.Sampling.Type = enums.SampleTypeSlice
+					jo.Sampling.InReverse = false
 				},
 			}),
 
@@ -262,17 +308,15 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "NavigationBehaviours.SamplingOptions.NoOf.Files",
 				},
+				checkerTE: &checkerTE{
+					field:   "Files",
+					checker: check[uint],
+				},
 				option: func() pref.Option {
-					return pref.WithSamplingOptions(&pref.SamplingOptions{
-						Type:      enums.SampleTypeFilter,
-						InReverse: true,
-						NoOf: pref.EntryQuantities{
-							Files:   3,
-							Folders: 4,
-						},
-					})
+					return pref.WithSamplingOptions(samplingOptions)
 				},
 				tweak: func(jo *json.Options) {
+					jo.Sampling = *jsonSamplingOptions
 					jo.Sampling.NoOf.Files = 99
 				},
 			}),
@@ -280,422 +324,6 @@ var _ = Describe("Marshaler", Ordered, func() {
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
 					given: "NavigationBehaviours.SamplingOptions.NoOf.Folders",
-				},
-				option: func() pref.Option {
-					return pref.WithSamplingOptions(&pref.SamplingOptions{
-						Type:      enums.SampleTypeFilter,
-						InReverse: true,
-						NoOf: pref.EntryQuantities{
-							Files:   3,
-							Folders: 4,
-						},
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.NoOf.Folders = 99
-				},
-			}),
-
-			// 🍉 FilterOptions.Node
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:pref.Options",
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &json.FilterDef{
-						Type:        enums.FilterTypeRegex,
-						Description: foo,
-						Pattern:     flac,
-						Scope:       enums.ScopeFile,
-					}
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:json.Options",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = nil
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Type",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Type = enums.FilterTypeExtendedGlob
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Description",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Description = foo
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Pattern",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Pattern = bar
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Scope",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Scope = enums.ScopeFile
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Negate",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Negate = false
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.IfNotApplicable",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: nodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.IfNotApplicable = enums.TriStateBoolFalse
-				},
-			}),
-
-			// 🍉 FilterOptions.Node.Poly
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions.Node.Poly - nil:pref.Options",
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonPolyNodeFilterDef
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions.Node.Poly - nil:json.Options",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: polyNodeFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = nil
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Poly.File",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: &core.FilterDef{
-							Type: enums.FilterTypePoly,
-							Poly: &core.PolyFilterDef{
-								File:   *nodeFilterDef,
-								Folder: *nodeFilterDef,
-							},
-						},
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Poly.File.Description = foo
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Node.Poly.Folder",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Node: &core.FilterDef{
-							Type: enums.FilterTypePoly,
-							Poly: &core.PolyFilterDef{
-								File:   *nodeFilterDef,
-								Folder: *nodeFilterDef,
-							},
-						},
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node.Poly.Folder.Description = foo
-				},
-			}),
-
-			// 🍉 FilterOptions.Child
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:pref.Options",
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = &json.ChildFilterDef{
-						Type:        enums.FilterTypeGlob,
-						Description: "items without .flac suffix",
-						Pattern:     flac,
-						Negate:      true,
-					}
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:json.Options",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Child: childFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = nil
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Child.Type",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Child: childFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child.Type = enums.FilterTypeExtendedGlob
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Child.Description",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Child: childFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child.Description = foo
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Child.Pattern",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Child: childFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child.Pattern = foo
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Child.Negate",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Child: childFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child.Negate = false
-				},
-			}),
-
-			// 🍉 FilterOptions.Sample
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:pref.Options",
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = &json.SampleFilterDef{
-						Type:        enums.FilterTypeRegex,
-						Description: foo,
-						Pattern:     flac,
-						Scope:       enums.ScopeFile,
-					}
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - nil:json.Options",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = nil
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Sample.Type",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample.Type = enums.FilterTypeExtendedGlob
-				},
-			}),
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Sample.Description",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample.Description = foo
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Sample.Pattern",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample.Pattern = bar
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Sample.Scope",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample.Scope = enums.ScopeFile
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "FilterOptions - Sample.Negate",
-				},
-				option: func() pref.Option {
-					return pref.WithFilter(&pref.FilterOptions{
-						Sample: sampleFilterDef,
-					})
-				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample.Negate = false
-				},
-			}),
-
-			// SamplingOptions:
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "Sampling - SampleOptions.Type",
-				},
-				option: func() pref.Option {
-					return pref.WithSamplingOptions(samplingOptions)
-				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.Type = enums.SampleTypeSlice
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "Sampling - SampleOptions.InReverse",
-				},
-				option: func() pref.Option {
-					return pref.WithSamplingOptions(samplingOptions)
-				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.InReverse = false
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "Sampling - SampleOptions.NoOf.Files",
-				},
-				option: func() pref.Option {
-					return pref.WithSamplingOptions(samplingOptions)
-				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.NoOf.Files = 99
-				},
-			}),
-
-			Entry(nil, &marshalTE{
-				persistTE: persistTE{
-					given: "Sampling - SampleOptions.NoOf.Folders",
 				},
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(samplingOptions)
@@ -706,14 +334,20 @@ var _ = Describe("Marshaler", Ordered, func() {
 			}),
 
 			// 🍉 HibernateOptions:
+			//
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
 					given: "HibernateOptions.Behaviour.InclusiveWake",
 				},
+				checkerTE: &checkerTE{
+					field:   "Description",
+					checker: check[string],
+				},
 				option: func() pref.Option {
-					return pref.WithHibernationFilterWake(nodeFilterDef)
+					return pref.WithHibernationFilterWake(sourceNodeFilterDef)
 				},
 				tweak: func(jo *json.Options) {
+					jo.Hibernate.WakeAt = &jsonNodeFilterDef
 					jo.Hibernate.WakeAt.Description = foo
 				},
 			}),
@@ -722,10 +356,15 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "HibernateOptions.Behaviour.InclusiveSleep",
 				},
+				checkerTE: &checkerTE{
+					field:   "Description",
+					checker: check[string],
+				},
 				option: func() pref.Option {
-					return pref.WithHibernationFilterSleep(nodeFilterDef)
+					return pref.WithHibernationFilterSleep(sourceNodeFilterDef)
 				},
 				tweak: func(jo *json.Options) {
+					jo.Hibernate.SleepAt = &jsonNodeFilterDef
 					jo.Hibernate.SleepAt.Description = foo
 				},
 			}),
@@ -733,6 +372,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
 					given: "HibernateOptions.Behaviour.InclusiveWake",
+				},
+				checkerTE: &checkerTE{
+					field:   "InclusiveWake",
+					checker: check[bool],
 				},
 				option: pref.WithHibernationBehaviourExclusiveWake,
 				tweak: func(jo *json.Options) {
@@ -744,6 +387,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "HibernateOptions.Behaviour.InclusiveSleep",
 				},
+				checkerTE: &checkerTE{
+					field:   "InclusiveSleep",
+					checker: check[bool],
+				},
 				option: pref.WithHibernationBehaviourInclusiveSleep,
 				tweak: func(jo *json.Options) {
 					jo.Hibernate.Behaviour.InclusiveSleep = false
@@ -751,9 +398,14 @@ var _ = Describe("Marshaler", Ordered, func() {
 			}),
 
 			// 🍉 ConcurrencyOptions:
+			//
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
 					given: "ConcurrencyOptions.NoW",
+				},
+				checkerTE: &checkerTE{
+					field:   "NoW",
+					checker: check[uint],
 				},
 				option: func() pref.Option {
 					return pref.WithNoW(5)
@@ -767,8 +419,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 		Context("UnequalPtrError", func() {
 			When("pref.Options is nil", func() {
 				It("🧪 should: return UnequalPtrError", func() {
-					equals, err := persist.Equals(nil, &json.Options{})
-					Expect(equals).To(BeFalse(), "should not compare equal")
+					err := persist.Equals(nil, &json.Options{})
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
 						"error should be a locale.ErrUnEqualConversion",
@@ -779,8 +430,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 			When("json FilterDef is nil", func() {
 				It("🧪 should: return UnequalPtrError", func() {
 					o, _, _ := opts.Get()
-					equals, err := persist.Equals(o, nil)
-					Expect(equals).To(BeFalse(), "should not compare equal")
+					err := persist.Equals(o, nil)
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
 						"error should be a locale.ErrUnEqualConversion",

@@ -155,7 +155,9 @@ func FromJSON(o *json.Options) *pref.Options {
 						Type:        o.Filter.Sample.Type,
 						Description: o.Filter.Sample.Description,
 						Pattern:     o.Filter.Sample.Pattern,
-						Scope:       o.Filter.Node.Scope,
+						Scope:       o.Filter.Sample.Scope,
+						Negate:      o.Filter.Sample.Negate,
+						// Poly: tbd,
 					}
 				},
 				func() *core.SampleFilterDef {
@@ -181,14 +183,28 @@ func NodeFilterDefFromJSON(def *json.FilterDef) *core.FilterDef {
 	return lo.TernaryF(def != nil,
 		func() *core.FilterDef {
 			return &core.FilterDef{
-				Type:        def.Type,
-				Description: def.Description,
-				Pattern:     def.Pattern,
-				Negate:      def.Negate,
+				Type:            def.Type,
+				Description:     def.Description,
+				Pattern:         def.Pattern,
+				Negate:          def.Negate,
+				Scope:           def.Scope,
+				IfNotApplicable: def.IfNotApplicable,
+				Poly:            NodePolyDefFromJSON(def.Poly),
 			}
 		},
 		func() *core.FilterDef {
 			return nil
 		},
 	)
+}
+
+func NodePolyDefFromJSON(poly *json.PolyFilterDef) *core.PolyFilterDef {
+	if poly == nil {
+		return nil
+	}
+
+	return &core.PolyFilterDef{
+		File:   *NodeFilterDefFromJSON(&poly.File),
+		Folder: *NodeFilterDefFromJSON(&poly.Folder),
+	}
 }

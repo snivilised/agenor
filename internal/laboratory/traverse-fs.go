@@ -63,9 +63,13 @@ func (f *TestTraverseFS) MkDirAll(name string, perm os.FileMode) error {
 		func(acc []string, s string, _ int) []string {
 			acc = append(acc, s)
 			path := strings.Join(acc, "/")
-			f.MapFS[path] = &fstest.MapFile{
-				Mode: perm | os.ModeDir,
+
+			if _, found := f.MapFS[path]; !found {
+				f.MapFS[path] = &fstest.MapFile{
+					Mode: perm | os.ModeDir,
+				}
 			}
+
 			return acc
 		}, []string{},
 	)

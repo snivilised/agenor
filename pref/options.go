@@ -90,6 +90,8 @@ func IfOptionF(condition bool, option ConditionalOption) Option {
 
 // DefaultOptions
 func DefaultOptions() *Options {
+	// If a change is made to the default, make sure to make the corresponding
+	// same change in internal/persist/data/test-restore.DEFAULT.json
 	nopLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	o := &Options{

@@ -43,14 +43,14 @@ func (UnequalPtrError[T, O]) Unwrap() error {
 }
 
 // Equals compare the pref.Options instance to the derived json instance json.Options.
-// We can't use DeepEquals because, on the structs, because even though the structs
-// may have te same members, DeepEqual will still fail because the host struct is
+// We can't use DeepEquals on the structs, because even though the structs
+// may have the same members, DeepEqual will still fail because the host struct is
 // different; eg: pref.NavigationBehaviours and json.NavigationBehaviours contain
 // the same members, but they are different structs; which means comparison has to be
 // done manually.
-func Equals(o *pref.Options, jo *json.Options) (bool, error) {
+func Equals(o *pref.Options, jo *json.Options) error {
 	if o == nil {
-		return false, fmt.Errorf("pref.Options %w",
+		return fmt.Errorf("pref.Options %w",
 			UnequalPtrError[pref.Options, json.Options]{
 				Field: "[nil pref.Options]",
 				Value: o,
@@ -60,7 +60,7 @@ func Equals(o *pref.Options, jo *json.Options) (bool, error) {
 	}
 
 	if jo == nil {
-		return false, fmt.Errorf("json.Options %w",
+		return fmt.Errorf("json.Options %w",
 			UnequalPtrError[pref.Options, json.Options]{
 				Field: "[nil json.Options]",
 				Value: o,
@@ -69,28 +69,32 @@ func Equals(o *pref.Options, jo *json.Options) (bool, error) {
 		)
 	}
 
-	if equal, err := equalBehaviours(&o.Behaviours, &jo.Behaviours); !equal {
-		return false, err
+	if err := equalBehaviours(&o.Behaviours, &jo.Behaviours); err != nil {
+		return err
 	}
 
-	if equal, err := equalSampling(&o.Sampling, &jo.Sampling); !equal {
-		return false, err
+	if err := equalSamplingOptions(&o.Sampling, &jo.Sampling); err != nil {
+		return err
 	}
 
-	if equal, err := equalFilterOptions(&o.Filter, &jo.Filter); !equal {
-		return false, err
+	if err := equalFilterOptions(&o.Filter, &jo.Filter); err != nil {
+		return err
 	}
 
-	if equal, err := equalFilterDef("wake-at", o.Hibernate.WakeAt, jo.Hibernate.WakeAt); !equal {
-		return equal, err
+	if err := equalFilterDef("wake-at",
+		o.Hibernate.WakeAt, jo.Hibernate.WakeAt,
+	); err != nil {
+		return err
 	}
 
-	if equal, err := equalFilterDef("sleep-at", o.Hibernate.SleepAt, jo.Hibernate.SleepAt); !equal {
-		return equal, err
+	if err := equalFilterDef("sleep-at",
+		o.Hibernate.SleepAt, jo.Hibernate.SleepAt,
+	); err != nil {
+		return err
 	}
 
 	if o.Hibernate.Behaviour.InclusiveWake != jo.Hibernate.Behaviour.InclusiveWake {
-		return false, fmt.Errorf("hibernate-behaviour %w", UnequalValueError[bool]{
+		return fmt.Errorf("hibernate-behaviour %w", UnequalValueError[bool]{
 			Field: "InclusiveWake",
 			Value: o.Hibernate.Behaviour.InclusiveWake,
 			Other: jo.Hibernate.Behaviour.InclusiveWake,
@@ -98,7 +102,7 @@ func Equals(o *pref.Options, jo *json.Options) (bool, error) {
 	}
 
 	if o.Hibernate.Behaviour.InclusiveSleep != jo.Hibernate.Behaviour.InclusiveSleep {
-		return false, fmt.Errorf("hibernate-behaviour %w", UnequalValueError[bool]{
+		return fmt.Errorf("hibernate-behaviour %w", UnequalValueError[bool]{
 			Field: "InclusiveSleep",
 			Value: o.Hibernate.Behaviour.InclusiveSleep,
 			Other: jo.Hibernate.Behaviour.InclusiveSleep,
@@ -106,35 +110,43 @@ func Equals(o *pref.Options, jo *json.Options) (bool, error) {
 	}
 
 	if o.Concurrency.NoW != jo.Concurrency.NoW {
-		return false, fmt.Errorf("concurrency %w", UnequalValueError[uint]{
+		return fmt.Errorf("concurrency %w", UnequalValueError[uint]{
 			Field: "NoW",
 			Value: o.Concurrency.NoW,
 			Other: jo.Concurrency.NoW,
 		})
 	}
 
-	return true, nil
+	return nil
 }
 
-func equalBehaviours(o *pref.NavigationBehaviours, jo *json.NavigationBehaviours) (bool, error) {
+func equalBehaviours(o *pref.NavigationBehaviours, jo *json.NavigationBehaviours) error {
 	if o.SubPath.KeepTrailingSep != jo.SubPath.KeepTrailingSep {
-		return false, fmt.Errorf("subPath %w", UnequalValueError[bool]{
-			Field: "SubPath",
+		return fmt.Errorf("subPath %w", UnequalValueError[bool]{
+			Field: "KeepTrailingSep",
 			Value: o.SubPath.KeepTrailingSep,
 			Other: jo.SubPath.KeepTrailingSep,
 		})
 	}
 
 	if o.Sort.IsCaseSensitive != jo.Sort.IsCaseSensitive {
-		return false, fmt.Errorf("sort %w", UnequalValueError[bool]{
+		return fmt.Errorf("sort %w", UnequalValueError[bool]{
 			Field: "IsCaseSensitive",
 			Value: o.Sort.IsCaseSensitive,
 			Other: jo.Sort.IsCaseSensitive,
 		})
 	}
 
+	if o.Sort.SortFilesFirst != jo.Sort.SortFilesFirst {
+		return fmt.Errorf("sort %w", UnequalValueError[bool]{
+			Field: "SortFilesFirst",
+			Value: o.Sort.SortFilesFirst,
+			Other: jo.Sort.SortFilesFirst,
+		})
+	}
+
 	if o.Cascade.Depth != jo.Cascade.Depth {
-		return false, fmt.Errorf("cascade %w", UnequalValueError[uint]{
+		return fmt.Errorf("cascade %w", UnequalValueError[uint]{
 			Field: "Depth",
 			Value: o.Cascade.Depth,
 			Other: jo.Cascade.Depth,
@@ -142,35 +154,37 @@ func equalBehaviours(o *pref.NavigationBehaviours, jo *json.NavigationBehaviours
 	}
 
 	if o.Cascade.NoRecurse != jo.Cascade.NoRecurse {
-		return false, fmt.Errorf("cascade %w", UnequalValueError[bool]{
+		return fmt.Errorf("cascade %w", UnequalValueError[bool]{
 			Field: "NoRecurse",
 			Value: o.Cascade.NoRecurse,
 			Other: jo.Cascade.NoRecurse,
 		})
 	}
 
-	return true, nil
+	// sort behaviour??
+
+	return nil
 }
 
-func equalSampling(o *pref.SamplingOptions, jo *json.SamplingOptions) (bool, error) {
+func equalSamplingOptions(o *pref.SamplingOptions, jo *json.SamplingOptions) error {
 	if o.Type != jo.Type {
-		return false, fmt.Errorf("sampling %w", UnequalValueError[enums.SampleType]{
-			Field: "SampleType",
+		return fmt.Errorf("sampling %w", UnequalValueError[enums.SampleType]{
+			Field: "Type",
 			Value: o.Type,
 			Other: jo.Type,
 		})
 	}
 
 	if o.InReverse != jo.InReverse {
-		return false, fmt.Errorf("sampling %w", UnequalValueError[bool]{
-			Field: "SampleInReverse",
+		return fmt.Errorf("sampling %w", UnequalValueError[bool]{
+			Field: "InReverse",
 			Value: o.InReverse,
 			Other: jo.InReverse,
 		})
 	}
 
 	if o.NoOf.Files != jo.NoOf.Files {
-		return false, fmt.Errorf("sampling.noOf %w", UnequalValueError[uint]{
+		return fmt.Errorf("sampling.noOf %w", UnequalValueError[uint]{
 			Field: "Files",
 			Value: o.NoOf.Files,
 			Other: jo.NoOf.Files,
@@ -178,41 +192,41 @@ func equalSampling(o *pref.SamplingOptions, jo *json.SamplingOptions) (bool, err
 	}
 
 	if o.NoOf.Folders != jo.NoOf.Folders {
-		return false, fmt.Errorf("sampling.noOf %w", UnequalValueError[uint]{
+		return fmt.Errorf("sampling.noOf %w", UnequalValueError[uint]{
 			Field: "Folders",
 			Value: o.NoOf.Folders,
 			Other: jo.NoOf.Folders,
 		})
 	}
 
-	return true, nil
+	return nil
 }
 
-func equalFilterOptions(o *pref.FilterOptions, jo *json.FilterOptions) (bool, error) {
-	if equal, err := equalFilterDef("node", o.Node, jo.Node); !equal {
-		return equal, err
+func equalFilterOptions(o *pref.FilterOptions, jo *json.FilterOptions) error {
+	if err := equalFilterDef("node", o.Node, jo.Node); err != nil {
+		return err
 	}
 
-	if equal, err := equalChildFilterDef("child", o.Child, jo.Child); !equal {
-		return equal, err
+	if err := equalChildFilterDef("child", o.Child, jo.Child); err != nil {
+		return err
 	}
 
-	if equal, err := equalSampleFilterDef("sample-filter", o.Sample, jo.Sample); !equal {
-		return equal, err
+	if err := equalSampleFilterDef("sample-filter", o.Sample, jo.Sample); err != nil {
+		return err
 	}
 
-	return true, nil
+	return nil
 }
 
 func equalFilterDef(filterName string,
 	def *core.FilterDef, jdef *json.FilterDef,
-) (bool, error) {
+) error {
 	if def == nil && jdef == nil {
-		return true, nil
+		return nil
 	}
 
 	if def == nil && jdef != nil {
-		return false, fmt.Errorf("filter-def %w",
+		return fmt.Errorf("filter-def %w",
 			UnequalPtrError[core.FilterDef, json.FilterDef]{
 				Field: "[nil def]",
 				Value: def,
@@ -222,7 +236,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def != nil && jdef == nil {
-		return false, fmt.Errorf("json-filter-def %w",
+		return fmt.Errorf("json-filter-def %w",
 			UnequalPtrError[core.FilterDef, json.FilterDef]{
 				Field: "[nil jdef]",
 				Value: def,
@@ -232,7 +246,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Type != jdef.Type {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[enums.FilterType]{
 				Field: "Type",
 				Value: def.Type,
@@ -242,7 +256,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Description != jdef.Description {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Description",
 				Value: def.Description,
@@ -252,7 +266,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Pattern != jdef.Pattern {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Pattern",
 				Value: def.Pattern,
@@ -262,7 +276,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Scope != jdef.Scope {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[enums.FilterScope]{
 				Field: "Scope",
 				Value: def.Scope,
@@ -272,7 +286,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Negate != jdef.Negate {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[bool]{
 				Field: "Negate",
 				Value: def.Negate,
@@ -282,7 +296,7 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.IfNotApplicable != jdef.IfNotApplicable {
-		return false, fmt.Errorf("%q filter-def %w", filterName,
+		return fmt.Errorf("%q filter-def %w", filterName,
 			UnequalValueError[enums.TriStateBool]{
 				Field: "IfNotApplicable",
 				Value: def.IfNotApplicable,
@@ -292,27 +306,27 @@ func equalFilterDef(filterName string,
 	}
 
 	if def.Poly != nil && jdef.Poly != nil {
-		if equal, err := equalFilterDef("poly", &def.Poly.File, &jdef.Poly.File); !equal {
-			return equal, err
+		if err := equalFilterDef("poly", &def.Poly.File, &jdef.Poly.File); err != nil {
+			return err
 		}
 
-		if equal, err := equalFilterDef("poly", &def.Poly.Folder, &jdef.Poly.Folder); !equal {
-			return equal, err
+		if err := equalFilterDef("poly", &def.Poly.Folder, &jdef.Poly.Folder); err != nil {
+			return err
 		}
 	}
 
-	return true, nil
+	return nil
 }
 
 func equalChildFilterDef(filterName string,
 	def *core.ChildFilterDef, jdef *json.ChildFilterDef,
-) (bool, error) {
+) error {
 	if def == nil && jdef == nil {
-		return true, nil
+		return nil
 	}
 
 	if def == nil && jdef != nil {
-		return false, fmt.Errorf("filter-def %w",
+		return fmt.Errorf("filter-def %w",
 			UnequalPtrError[core.ChildFilterDef, json.ChildFilterDef]{
 				Field: "[nil def]",
 				Value: def,
@@ -322,7 +336,7 @@ func equalChildFilterDef(filterName string,
 	}
 
 	if def != nil && jdef == nil {
-		return false, fmt.Errorf("filter-def %w",
+		return fmt.Errorf("filter-def %w",
 			UnequalPtrError[core.ChildFilterDef, json.ChildFilterDef]{
 				Field: "[nil jdef]",
 				Value: def,
@@ -332,7 +346,7 @@ func equalChildFilterDef(filterName string,
 	}
 
 	if def.Type != jdef.Type {
-		return false, fmt.Errorf("%q child-filter-def %w", filterName,
+		return fmt.Errorf("%q child-filter-def %w", filterName,
 			UnequalValueError[enums.FilterType]{
 				Field: "Type",
 				Value: def.Type,
@@ -342,7 +356,7 @@ func equalChildFilterDef(filterName string,
 	}
 
 	if def.Description != jdef.Description {
-		return false, fmt.Errorf("%q child-filter-def %w", filterName,
+		return fmt.Errorf("%q child-filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Description",
 				Value: def.Description,
@@ -352,7 +366,7 @@ func equalChildFilterDef(filterName string,
 	}
 
 	if def.Pattern != jdef.Pattern {
-		return false, fmt.Errorf("%q child-filter-def %w", filterName,
+		return fmt.Errorf("%q child-filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Pattern",
 				Value: def.Pattern,
@@ -362,7 +376,7 @@ func equalChildFilterDef(filterName string,
 	}
 
 	if def.Negate != jdef.Negate {
-		return false, fmt.Errorf("%q child-filter-def %w", filterName,
+		return fmt.Errorf("%q child-filter-def %w", filterName,
 			UnequalValueError[bool]{
 				Field: "Negate",
 				Value: def.Negate,
@@ -371,18 +385,18 @@ func equalChildFilterDef(filterName string,
 		)
 	}
 
-	return true, nil
+	return nil
 }
 
 func equalSampleFilterDef(filterName string,
 	def *core.SampleFilterDef, jdef *json.SampleFilterDef,
-) (bool, error) {
+) error {
 	if def == nil && jdef == nil {
-		return true, nil
+		return nil
 	}
 
 	if def == nil && jdef != nil {
-		return false, fmt.Errorf("filter-def %w",
+		return fmt.Errorf("filter-def %w",
 			UnequalPtrError[core.SampleFilterDef, json.SampleFilterDef]{
 				Field: "[nil def]",
 				Value: def,
@@ -392,7 +406,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def != nil && jdef == nil {
-		return false, fmt.Errorf("filter-def %w",
+		return fmt.Errorf("filter-def %w",
 			UnequalPtrError[core.SampleFilterDef, json.SampleFilterDef]{
 				Field: "[nil jdef]",
 				Value: def,
@@ -402,7 +416,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def.Type != jdef.Type {
-		return false, fmt.Errorf("%q sample-filter-def %w", filterName,
+		return fmt.Errorf("%q sample-filter-def %w", filterName,
 			UnequalValueError[enums.FilterType]{
 				Field: "Type",
 				Value: def.Type,
@@ -412,7 +426,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def.Description != jdef.Description {
-		return false, fmt.Errorf("%q sample-filter-def %w", filterName,
+		return fmt.Errorf("%q sample-filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Description",
 				Value: def.Description,
@@ -422,7 +436,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def.Pattern != jdef.Pattern {
-		return false, fmt.Errorf("%q sample-filter-def %w", filterName,
+		return fmt.Errorf("%q sample-filter-def %w", filterName,
 			UnequalValueError[string]{
 				Field: "Pattern",
 				Value: def.Pattern,
@@ -432,7 +446,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def.Scope != jdef.Scope {
-		return false, fmt.Errorf("%q sample-filter-def %w", filterName,
+		return fmt.Errorf("%q sample-filter-def %w", filterName,
 			UnequalValueError[enums.FilterScope]{
 				Field: "Scope",
 				Value: def.Scope,
@@ -442,7 +456,7 @@ func equalSampleFilterDef(filterName string,
 	}
 
 	if def.Negate != jdef.Negate {
-		return false, fmt.Errorf("%q sample-filter-def %w", filterName,
+		return fmt.Errorf("%q sample-filter-def %w", filterName,
 			UnequalValueError[bool]{
 				Field: "Negate",
 				Value: def.Negate,
@@ -451,5 +465,15 @@ func equalSampleFilterDef(filterName string,
 		)
 	}
 
-	return true, nil
+	if def.Poly != nil && jdef.Poly != nil {
+		if err := equalFilterDef("poly", &def.Poly.File, &jdef.Poly.File); err != nil {
+			return err
+		}
+
+		if err := equalFilterDef("poly", &def.Poly.Folder, &jdef.Poly.Folder); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
