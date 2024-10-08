@@ -73,10 +73,18 @@ func buildPolyNodeFilter(definition *core.FilterDef,
 	polyDef.Folder.Scope.Set(enums.ScopeFolder)
 	polyDef.Folder.Scope.Clear(enums.ScopeFile)
 
+	if polyDef.File.Type == enums.FilterTypePoly {
+		return nil, locale.ErrPolyFilterIsInvalid
+	}
+
 	file, err := buildConstituent(&polyDef.File, fo, nativeFn, customFn)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if polyDef.Folder.Type == enums.FilterTypePoly {
+		return nil, locale.ErrPolyFilterIsInvalid
 	}
 
 	folder, err := buildConstituent(&polyDef.Folder, fo, nativeFn, customFn)

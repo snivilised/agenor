@@ -16,6 +16,7 @@ import (
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/lfs"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -43,7 +44,7 @@ var _ = Describe("feature", Ordered, func() {
 
 	Context("comprehension", func() {
 		When("universal: filtering with poly-filter", func() {
-			It("should: invoke for filtered nodes only", Label("example"),
+			It("🧪 should: invoke for filtered nodes only", Label("example"),
 				func(ctx SpecContext) {
 					path := lab.Path(root, "RETRO-WAVE")
 					filterDefs := &pref.FilterOptions{
@@ -164,11 +165,12 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-				FS:        FS,
-				Recording: recording,
-				Path:      path,
-				Result:    result,
-				Err:       err,
+				FS:          FS,
+				Recording:   recording,
+				Path:        path,
+				Result:      result,
+				Err:         err,
+				ExpectedErr: entry.ExpectedErr,
 			})
 		},
 		func(entry *lab.PolyTE) string {
@@ -358,6 +360,25 @@ var _ = Describe("feature", Ordered, func() {
 				Description: "folders: contains i",
 				Pattern:     "[iI]",
 				Scope:       enums.ScopeLeaf,
+			},
+		}),
+
+		// === errors ========================================================
+
+		Entry(nil, &lab.PolyTE{
+			NaviTE: lab.NaviTE{
+				Given:        "invalid poly: constituent is also poly",
+				Relative:     "RETRO-WAVE",
+				Subscription: enums.SubscribeFiles,
+				ExpectedErr:  locale.ErrPolyFilterIsInvalid,
+			},
+			File: core.FilterDef{
+				Type:        enums.FilterTypePoly,
+				Description: "files: constituent is poly",
+			},
+			Folder: core.FilterDef{
+				Type:        enums.FilterTypePoly,
+				Description: "folders: constituent is poly",
 			},
 		}),
 	)
