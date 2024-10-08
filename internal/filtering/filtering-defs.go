@@ -25,7 +25,11 @@ func OrFuncE[T comparable](funcs ...func() (T, error)) (T, error) {
 	var zero T
 	for _, fn := range funcs {
 		result, err := fn()
-		if result != zero && err == nil {
+		if err != nil {
+			return zero, err
+		}
+
+		if result != zero {
 			return result, err
 		}
 	}

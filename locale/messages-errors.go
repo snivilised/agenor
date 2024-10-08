@@ -346,6 +346,32 @@ var errInvalidExtGlobFilterMissingSeparator = InvalidExtGlobFilterMissingSeparat
 	},
 }
 
+// ❌ PolyFilterIsInvalid
+
+// FilterIsNilTemplData
+type PolyFilterIsInvalidTemplData struct {
+	traverseTemplData
+}
+
+// Message
+func (td PolyFilterIsInvalidTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "poly-filter-is-invalid.error",
+		Description: "poly filter definition is invalid error",
+		Other:       "poly filter definition is invalid",
+	}
+}
+
+type PolyFilterIsInvalidError struct {
+	li18ngo.LocalisableError
+}
+
+var ErrPolyFilterIsInvalid = PolyFilterIsInvalidError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: FilterIsNilErrorTemplData{},
+	},
+}
+
 // ❌ UsageMissingRootPath
 
 // UsageMissingRootPathTemplData
