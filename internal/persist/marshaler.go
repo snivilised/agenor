@@ -17,32 +17,46 @@ type (
 	// default. Typically a single test will focus on a single field,
 	// so that the TamperFunc is expected to only update 1 of the members at a
 	// time.
-	TamperFunc func(jo *json.Options)
+	TamperFunc func(result *MarshalResult)
 
-	MarshalState struct {
+	MarshalRequest struct {
 		O      *pref.Options
 		Active *types.ActiveState
-		JO     *json.Options
 		Path   string
 		Perm   fs.FileMode
 		FS     lfs.WriteFileFS
 	}
 
-	JSONState struct {
+	MarshalResult struct {
 		JO     *json.Options
 		Active *types.ActiveState
 	}
+
+	UnmarshalRequest struct {
+		Restore *types.RestoreState
+	}
+
+	UnmarshalResult struct {
+		O      *pref.Options
+		Active *types.ActiveState
+		JO     *json.Options
+	}
+
+	Comparison struct {
+		O  *pref.Options
+		JO *json.Options
+	}
 )
 
-func Marshal(ms *MarshalState) (*json.Options, error) {
-	jo := ToJSON(ms.O)
-	state := &JSONState{
+func Marshal(request *MarshalRequest) (*MarshalResult, error) {
+	jo := ToJSON(request.O)
+	result := &MarshalResult{
 		JO:     jo,
-		Active: ms.Active,
+		Active: request.Active.Clone(),
 	}
 
 	data, err := ejson.MarshalIndent(
-		state,
+		result,
 		JSONMarshalNoPrefix, JSONMarshal2SpacesIndent,
 	)
 
@@ -50,37 +64,43 @@ func Marshal(ms *MarshalState) (*json.Options, error) {
 		return nil, err
 	}
 
-	if err := Equals(ms.O, jo); err != nil {
-		return jo, err
+	if err := Equals(&Comparison{
+		O:  request.O,
+		JO: jo,
+	}); err != nil {
+		return result, err
 	}
 
-	return jo, ms.FS.WriteFile(ms.Path, data, ms.Perm)
+	return result, request.FS.WriteFile(request.Path, data, request.Perm)
 }
 
-func Unmarshal(rs *types.RestoreState, tampers ...TamperFunc) (*MarshalState, error) {
-	bytes, err := rs.FS.ReadFile(rs.Path)
+func Unmarshal(request *UnmarshalRequest, tampers ...TamperFunc) (*UnmarshalResult, error) {
+	bytes, err := request.Restore.FS.ReadFile(request.Restore.Path)
 
 	if err != nil {
 		return nil, err
 	}
 
 	var (
-		js JSONState
+		mr MarshalResult
 	)
 
-	if err := ejson.Unmarshal(bytes, &js); err != nil {
+	if err := ejson.Unmarshal(bytes, &mr); err != nil {
 		return nil, err
 	}
 
 	for _, fn := range tampers {
-		fn(js.JO)
+		fn(&mr)
 	}
 
-	ms := MarshalState{
-		O:      FromJSON(js.JO),
-		Active: js.Active,
-		JO:     js.JO,
+	result := UnmarshalResult{
+		O:      FromJSON(mr.JO),
+		Active: mr.Active,
+		JO:     mr.JO,
 	}
 
-	return &ms, Equals(ms.O, js.JO)
+	return &result, Equals(&Comparison{
+		O:  result.O,
+		JO: result.JO,
+	})
 }

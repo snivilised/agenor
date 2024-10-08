@@ -189,3 +189,8 @@ type (
 func (fn FilterChildrenFunc) Matching(files []fs.DirEntry) []fs.DirEntry {
 	return fn(files)
 }
+
+func (s *ActiveState) Clone() *ActiveState {
+	c := *s
+	return &c
+}
