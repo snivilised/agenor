@@ -13,6 +13,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts/json"
+	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
@@ -242,8 +243,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "FilterOptions - nil:pref.Options",
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &json.FilterDef{
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &json.FilterDef{
 						Type:        enums.FilterTypeRegex,
 						Description: foo,
 						Pattern:     flac,
@@ -261,8 +262,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = nil
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = nil
 				},
 			}),
 
@@ -279,9 +280,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.Type = enums.FilterTypeExtendedGlob
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.Type = enums.FilterTypeExtendedGlob
 				},
 			}),
 
@@ -298,9 +299,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.Description = foo
 				},
 			}),
 
@@ -317,9 +318,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.Pattern = bar
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.Pattern = bar
 				},
 			}),
 
@@ -336,9 +337,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.Scope = enums.ScopeFile
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.Scope = enums.ScopeFile
 				},
 			}),
 
@@ -355,9 +356,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.Negate = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.Negate = false
 				},
 			}),
 
@@ -374,9 +375,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: sourceNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonNodeFilterDef
-					jo.Filter.Node.IfNotApplicable = enums.TriStateBoolFalse
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonNodeFilterDef
+					result.JO.Filter.Node.IfNotApplicable = enums.TriStateBoolFalse
 				},
 			}),
 
@@ -386,8 +387,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "FilterOptions.Node.Poly - nil:pref.Options",
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonPolyNodeFilterDef
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonPolyNodeFilterDef
 				},
 			}),
 
@@ -400,8 +401,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: polyNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = nil
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = nil
 				},
 			}),
 
@@ -418,9 +419,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: polyNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonPolyNodeFilterDef
-					jo.Filter.Node.Poly.File.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonPolyNodeFilterDef
+					result.JO.Filter.Node.Poly.File.Description = foo
 				},
 			}),
 
@@ -437,9 +438,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Node: polyNodeFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Node = &jsonPolyNodeFilterDef
-					jo.Filter.Node.Poly.Folder.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Node = &jsonPolyNodeFilterDef
+					result.JO.Filter.Node.Poly.Folder.Description = foo
 				},
 			}),
 
@@ -449,8 +450,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "FilterOptions - nil:pref.Options",
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = &json.ChildFilterDef{
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = &json.ChildFilterDef{
 						Type:        enums.FilterTypeGlob,
 						Description: "items without .flac suffix",
 						Pattern:     flac,
@@ -468,8 +469,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Child: sourceChildFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = nil
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = nil
 				},
 			}),
 
@@ -486,9 +487,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Child: sourceChildFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = jsonChildFilterDef
-					jo.Filter.Child.Type = enums.FilterTypeExtendedGlob
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = jsonChildFilterDef
+					result.JO.Filter.Child.Type = enums.FilterTypeExtendedGlob
 				},
 			}),
 
@@ -505,9 +506,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Child: sourceChildFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = jsonChildFilterDef
-					jo.Filter.Child.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = jsonChildFilterDef
+					result.JO.Filter.Child.Description = foo
 				},
 			}),
 
@@ -524,9 +525,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Child: sourceChildFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = jsonChildFilterDef
-					jo.Filter.Child.Pattern = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = jsonChildFilterDef
+					result.JO.Filter.Child.Pattern = foo
 				},
 			}),
 
@@ -543,9 +544,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Child: sourceChildFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Child = jsonChildFilterDef
-					jo.Filter.Child.Negate = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Child = jsonChildFilterDef
+					result.JO.Filter.Child.Negate = false
 				},
 			}),
 
@@ -555,8 +556,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "FilterOptions - nil:pref.Options",
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
 				},
 			}),
 
@@ -569,8 +570,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = nil
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = nil
 				},
 			}),
 
@@ -587,9 +588,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
-					jo.Filter.Sample.Type = enums.FilterTypeExtendedGlob
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
+					result.JO.Filter.Sample.Type = enums.FilterTypeExtendedGlob
 				},
 			}),
 
@@ -606,9 +607,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
-					jo.Filter.Sample.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
+					result.JO.Filter.Sample.Description = foo
 				},
 			}),
 
@@ -625,9 +626,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
-					jo.Filter.Sample.Pattern = bar
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
+					result.JO.Filter.Sample.Pattern = bar
 				},
 			}),
 
@@ -644,9 +645,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
-					jo.Filter.Sample.Scope = enums.ScopeFile
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
+					result.JO.Filter.Sample.Scope = enums.ScopeFile
 				},
 			}),
 
@@ -663,9 +664,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sourceSampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSampleFilterDef
-					jo.Filter.Sample.Negate = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSampleFilterDef
+					result.JO.Filter.Sample.Negate = false
 				},
 			}),
 
@@ -675,8 +676,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				persistTE: persistTE{
 					given: "FilterOptions.Sample.Poly - nil:pref.Options",
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSamplePolyFilterDef
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSamplePolyFilterDef
 				},
 			}),
 
@@ -689,8 +690,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = nil
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = nil
 				},
 			}),
 
@@ -707,9 +708,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSamplePolyFilterDef
-					jo.Filter.Sample.Poly.File.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSamplePolyFilterDef
+					result.JO.Filter.Sample.Poly.File.Description = foo
 				},
 			}),
 
@@ -726,9 +727,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Sample: sampleFilterDef,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Filter.Sample = jsonSamplePolyFilterDef
-					jo.Filter.Sample.Poly.Folder.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Filter.Sample = jsonSamplePolyFilterDef
+					result.JO.Filter.Sample.Poly.Folder.Description = foo
 				},
 			}),
 		)

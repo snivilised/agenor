@@ -10,6 +10,10 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
+const (
+	Anon = "ANON"
+)
+
 type UnequalValueError[T any] struct {
 	Field string
 	Value T
@@ -42,13 +46,21 @@ func (UnequalPtrError[T, O]) Unwrap() error {
 	return locale.ErrUnEqualConversion
 }
 
-// Equals compare the pref.Options instance to the derived json instance json.Options.
+func Equals(comparison *Comparison) error {
+	return equalOptions(comparison.O, comparison.JO)
+}
+
+// equalOptions compare the pref.Options instance to the derived json instance json.Options.
 // We can't use DeepEquals on the structs, because even though the structs
 // may have the same members, DeepEqual will still fail because the host struct is
 // different; eg: pref.NavigationBehaviours and json.NavigationBehaviours contain
 // the same members, but they are different structs; which means comparison has to be
-// done manually.
-func Equals(o *pref.Options, jo *json.Options) error {
+// done manually. equalOptions is only required because we have a custom mapping between
+// pref.Options and json.Options, in the form of ToJSON/FromJSON
+//
+// We do need to apply the same technique to Active state, because there is no json
+// version of ActiveState, so there is no custom functionality we need to check.
+func equalOptions(o *pref.Options, jo *json.Options) error {
 	if o == nil {
 		return fmt.Errorf("pref.Options %w",
 			UnequalPtrError[pref.Options, json.Options]{

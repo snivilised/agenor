@@ -8,7 +8,6 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/pref"
 )
@@ -49,8 +48,8 @@ type (
 	}
 
 	tampered struct {
-		o  *pref.Options
-		jo *json.Options
+		o      *pref.Options
+		result *persist.MarshalResult
 	}
 
 	checkerFunc func(entry *checkerTE, err error) error

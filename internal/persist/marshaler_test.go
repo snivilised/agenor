@@ -48,7 +48,7 @@ func marshal(entry *marshalTE, tfs lfs.TraverseFS) *tampered {
 	Expect(err).To(Succeed(), "MARSHAL")
 
 	writePath := destination + "/" + tempFile
-	jo, err := persist.Marshal(&persist.MarshalState{
+	request := &persist.MarshalRequest{
 		O: o,
 		Active: &types.ActiveState{
 			Root:        destination,
@@ -59,39 +59,51 @@ func marshal(entry *marshalTE, tfs lfs.TraverseFS) *tampered {
 		Path: writePath,
 		Perm: perms.File,
 		FS:   tfs,
-	})
+	}
+	result, err := persist.Marshal(request)
 
 	Expect(err).To(Succeed(), "MARSHAL")
-	Expect(jo).NotTo(BeNil())
+	Expect(result).NotTo(BeNil())
 
 	// unequal error:
 	if entry.tweak != nil {
-		entry.tweak(jo)
+		entry.tweak(result)
 	}
 
-	e := persist.Equals(o, jo)
+	e := persist.Equals(&persist.Comparison{
+		O:  o,
+		JO: result.JO,
+	})
+
 	Expect(e).NotTo(Succeed(), "MARSHAL")
 	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
 		Expect(entry.checker(entry.checkerTE, e)).To(Succeed(), "MARSHAL")
 	}
 
 	return &tampered{
-		o:  o,
-		jo: jo,
+		o:      o,
+		result: result,
 	}
 }
 
 func unmarshal(entry *marshalTE, tfs lfs.TraverseFS, restorePath string, t *tampered) {
 	// success:
-	state, err := persist.Unmarshal(&types.RestoreState{
-		Path:   restorePath,
-		FS:     tfs,
-		Resume: enums.ResumeStrategySpawn,
-	}, entry.tweak)
+	request := &persist.UnmarshalRequest{
+		Restore: &types.RestoreState{
+			Path:   restorePath,
+			FS:     tfs,
+			Resume: enums.ResumeStrategySpawn,
+		},
+	}
+	state, err := persist.Unmarshal(request, entry.tweak)
 	Expect(err).To(Succeed(), "UNMARSHAL")
 
 	// unequal error:
-	e := persist.Equals(t.o, state.JO)
+	e := persist.Equals(&persist.Comparison{
+		O:  t.o,
+		JO: state.JO,
+	})
+
 	Expect(e).NotTo(Succeed(), "UNMARSHAL")
 
 	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
@@ -196,8 +208,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						KeepTrailingSep: false,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Behaviours.SubPath.KeepTrailingSep = true
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Behaviours.SubPath.KeepTrailingSep = true
 				},
 			}),
 
@@ -214,8 +226,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						IsCaseSensitive: true,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Behaviours.Sort.IsCaseSensitive = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Behaviours.Sort.IsCaseSensitive = false
 				},
 			}),
 
@@ -232,8 +244,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						SortFilesFirst: true,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Behaviours.Sort.SortFilesFirst = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Behaviours.Sort.SortFilesFirst = false
 				},
 			}),
 
@@ -248,8 +260,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithDepth(4)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Behaviours.Cascade.Depth = 99
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Behaviours.Cascade.Depth = 99
 				},
 			}),
 
@@ -262,8 +274,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 					checker: check[bool],
 				},
 				option: pref.WithNoRecurse,
-				tweak: func(jo *json.Options) {
-					jo.Behaviours.Cascade.NoRecurse = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Behaviours.Cascade.NoRecurse = false
 				},
 			}),
 
@@ -280,9 +292,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(samplingOptions)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling = *jsonSamplingOptions
-					jo.Sampling.Type = enums.SampleTypeSlice
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Sampling = *jsonSamplingOptions
+					result.JO.Sampling.Type = enums.SampleTypeSlice
 				},
 			}),
 
@@ -299,8 +311,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 						InReverse: true,
 					})
 				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.InReverse = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Sampling.InReverse = false
 				},
 			}),
 
@@ -315,9 +327,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(samplingOptions)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling = *jsonSamplingOptions
-					jo.Sampling.NoOf.Files = 99
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Sampling = *jsonSamplingOptions
+					result.JO.Sampling.NoOf.Files = 99
 				},
 			}),
 
@@ -328,8 +340,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(samplingOptions)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Sampling.NoOf.Folders = 99
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Sampling.NoOf.Folders = 99
 				},
 			}),
 
@@ -346,9 +358,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithHibernationFilterWake(sourceNodeFilterDef)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Hibernate.WakeAt = &jsonNodeFilterDef
-					jo.Hibernate.WakeAt.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Hibernate.WakeAt = &jsonNodeFilterDef
+					result.JO.Hibernate.WakeAt.Description = foo
 				},
 			}),
 
@@ -363,9 +375,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithHibernationFilterSleep(sourceNodeFilterDef)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Hibernate.SleepAt = &jsonNodeFilterDef
-					jo.Hibernate.SleepAt.Description = foo
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Hibernate.SleepAt = &jsonNodeFilterDef
+					result.JO.Hibernate.SleepAt.Description = foo
 				},
 			}),
 
@@ -378,8 +390,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 					checker: check[bool],
 				},
 				option: pref.WithHibernationBehaviourExclusiveWake,
-				tweak: func(jo *json.Options) {
-					jo.Hibernate.Behaviour.InclusiveWake = true
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Hibernate.Behaviour.InclusiveWake = true
 				},
 			}),
 
@@ -392,8 +404,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 					checker: check[bool],
 				},
 				option: pref.WithHibernationBehaviourInclusiveSleep,
-				tweak: func(jo *json.Options) {
-					jo.Hibernate.Behaviour.InclusiveSleep = false
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Hibernate.Behaviour.InclusiveSleep = false
 				},
 			}),
 
@@ -410,8 +422,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 				option: func() pref.Option {
 					return pref.WithNoW(5)
 				},
-				tweak: func(jo *json.Options) {
-					jo.Concurrency.NoW = 99
+				tweak: func(result *persist.MarshalResult) {
+					result.JO.Concurrency.NoW = 99
 				},
 			}),
 		)
@@ -419,7 +431,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 		Context("UnequalPtrError", func() {
 			When("pref.Options is nil", func() {
 				It("🧪 should: return UnequalPtrError", func() {
-					err := persist.Equals(nil, &json.Options{})
+					err := persist.Equals(&persist.Comparison{
+						JO: &json.Options{},
+					})
+
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
 						"error should be a locale.ErrUnEqualConversion",
@@ -430,7 +445,11 @@ var _ = Describe("Marshaler", Ordered, func() {
 			When("json FilterDef is nil", func() {
 				It("🧪 should: return UnequalPtrError", func() {
 					o, _, _ := opts.Get()
-					err := persist.Equals(o, nil)
+
+					err := persist.Equals(&persist.Comparison{
+						O: o,
+					})
+
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
 						"error should be a locale.ErrUnEqualConversion",

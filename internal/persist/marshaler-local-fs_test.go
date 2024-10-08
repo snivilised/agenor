@@ -51,7 +51,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 					writerFS := lfs.NewWriteFileFS(testPath, NoOverwrite)
 					writePath := destination + "/" + tempFile
-					jo, err := persist.Marshal(&persist.MarshalState{
+					jo, err := persist.Marshal(&persist.MarshalRequest{
 						O: o,
 						Active: &types.ActiveState{
 							Root:        destination,
