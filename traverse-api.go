@@ -54,7 +54,19 @@ type (
 	ResumeStrategy = enums.ResumeStrategy
 
 	// 🌀 lfs
+	At          = lfs.At
+	CopyFS      = lfs.CopyFS
+	ExistsInFS  = lfs.ExistsInFS
 	FileSystems = lfs.FileSystems
+	MakeDirFS   = lfs.MakeDirFS
+	ReaderFS    = lfs.ReaderFS
+	ReadFileFS  = lfs.ReadFileFS
+	RemoveFS    = lfs.RemoveFS
+	RenameFS    = lfs.RenameFS
+	TraverseFS  = lfs.TraverseFS
+	UniversalFS = lfs.UniversalFS
+	WriteFileFS = lfs.WriteFileFS
+	WriterFS    = lfs.WriterFS
 
 	// 🌀 pref
 	Option  = pref.Option
@@ -82,15 +94,30 @@ const (
 var (
 	// 🌀 lfs
 
-	// NewLocalFS creates a native file system.
-	NewLocalFS = lfs.NewReadDirFS // TODO: check this name
+	// NewReadDirFS creates a file system with read directory capability
+	NewReadDirFS = lfs.NewReadDirFS
 
-	// NewQueryStatusFS defines a file system that has a Stat
-	// method to determine the existence of a path.
-	NewQueryStatusFS = lfs.NewQueryStatusFS
+	// NewReaderFS creates a read only file system
+	NewReaderFS = lfs.NewReaderFS
 
-	// QueryStatusFromFS
-	QueryStatusFromFS = lfs.QueryStatusFromFS
+	// NewReadFileFS  creates a file system with read file capability
+	NewReadFileFS = lfs.NewReadFileFS
+
+	// NewStatFS creates a file system with Stat method
+	NewStatFS = lfs.NewStatFS
+
+	// NewTraverseFS creates a file system that implements functionality required
+	// by the traverse
+	NewTraverseFS = lfs.NewTraverseFS
+
+	// NewUniversalFS creates a file system that's got it all
+	NewUniversalFS = lfs.NewUniversalFS
+
+	// NewWriteFileFS creates a file system with write file capability
+	NewWriteFileFS = lfs.NewWriteFileFS
+
+	// NewWriterFS creates a file system with writer capabilities
+	NewWriterFS = lfs.NewWriterFS
 
 	// 🌀 filtering
 
