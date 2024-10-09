@@ -12,11 +12,18 @@ import (
 // traverse.
 
 type (
+	// At represents generic info required to create a file system
+	At struct {
+		Root      string
+		Overwrite bool
+	}
+
 	// FileSystems contains the logical file systems required
 	// for navigation.
 	FileSystems struct {
 		// T is the file system that contains just the functionality required
-		// for traversal. It can also represent other file systems including afero.
+		// for traversal. It can also represent other file systems including afero,
+		// providing the appropriate adapters are in place.
 		T TraverseFS
 	}
 
@@ -44,23 +51,35 @@ type (
 		ReadFileFS
 	}
 
-	// MkDirAllFS is a file system with a MkDirAll method.
-	MkDirAllFS interface {
+	// MakeDirFS is a file system with a MkDirAll method.
+	MakeDirFS interface {
 		ExistsInFS
-		MkDirAll(name string, perm os.FileMode) error
+		MakeDir(name string, perm os.FileMode) error
+		MakeDirAll(name string, perm os.FileMode) error
+	}
+
+	// MoveFS
+	MoveFS interface {
 	}
 
 	// CopyFS
-	CopyFS interface{}
-
-	// MoveFS
-	MoveFS interface{}
+	CopyFS interface {
+		Copy(from, to string) error
+		// CopyFS copies the file system fsys into the directory dir,
+		// creating dir if necessary.
+		CopyFS(dir string, fsys fs.FS) error
+	}
 
 	// RemoveFS
-	RemoveFS interface{}
+	RemoveFS interface {
+		Remove(name string) error
+		RemoveAll(path string) error
+	}
 
 	// RenameFS
-	RenameFS interface{}
+	RenameFS interface {
+		Rename(from, to string) error
+	}
 
 	// WriteFileFS file system non streaming writer
 	WriteFileFS interface {
@@ -73,8 +92,9 @@ type (
 	// WriterFS
 	WriterFS interface {
 		CopyFS
-		MoveFS
 		ExistsInFS
+		MakeDirFS
+		MoveFS
 		RemoveFS
 		RenameFS
 		WriteFileFS
@@ -83,7 +103,7 @@ type (
 	// TraverseFS non streaming file system with reader and some
 	// writer capabilities
 	TraverseFS interface {
-		MkDirAllFS
+		MakeDirFS
 		ReaderFS
 		WriteFileFS
 	}
@@ -92,5 +112,6 @@ type (
 	UniversalFS interface {
 		ReaderFS
 		WriterFS
+		Move(from, to string) error
 	}
 )

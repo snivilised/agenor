@@ -30,12 +30,12 @@ var _ = Describe("Marshaler", Ordered, func() {
 		}
 
 		toPath := filepath.Join(testPath, destination)
-		if err := os.MkdirAll(toPath, perms.Dir|os.ModeDir); err != nil {
+		if err := os.MkdirAll(toPath, lab.Perms.Dir|os.ModeDir); err != nil {
 			Fail(err.Error())
 		}
 
 		fromPath := filepath.Join(testPath, source)
-		if err := os.MkdirAll(fromPath, perms.Dir|os.ModeDir); err != nil {
+		if err := os.MkdirAll(fromPath, lab.Perms.Dir|os.ModeDir); err != nil {
 			Fail(err.Error())
 		}
 	})
@@ -49,7 +49,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 					)
 					Expect(err).To(Succeed())
 
-					writerFS := lfs.NewWriteFileFS(testPath, NoOverwrite)
+					writerFS := lfs.NewWriteFileFS(lfs.At{
+						Root:      testPath,
+						Overwrite: NoOverwrite,
+					})
 					writePath := destination + "/" + tempFile
 					jo, err := persist.Marshal(&persist.MarshalRequest{
 						O: o,
@@ -60,7 +63,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 							Depth:       3,
 						},
 						Path: writePath,
-						Perm: perms.File,
+						Perm: lab.Perms.File,
 						FS:   writerFS,
 					})
 

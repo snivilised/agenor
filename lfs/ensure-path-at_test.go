@@ -19,7 +19,7 @@ import (
 var _ = Describe("EnsurePathAt", Ordered, func() {
 	var (
 		mocks *lfs.ResolveMocks
-		mfs   *mkDirAllMapFS
+		fS    *makeDirMapFS
 	)
 
 	BeforeAll(func() {
@@ -42,7 +42,7 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 			},
 		}
 
-		mfs = &mkDirAllMapFS{
+		fS = &makeDirMapFS{
 			mapFS: fstest.MapFS{
 				filepath.Join("home", "prodigy"): &fstest.MapFile{
 					Mode: os.ModeDir,
@@ -60,14 +60,14 @@ var _ = Describe("EnsurePathAt", Ordered, func() {
 				location += string(filepath.Separator)
 			}
 
-			actual, err := lfs.EnsurePathAt(location, "default-test.log", permFile, mfs)
+			actual, err := lfs.EnsurePathAt(location, "default-test.log", lab.Perms.File, fS)
 			directory, _ := filepath.Split(actual)
 			directory = filepath.Clean(directory)
 			expected := lab.TrimRoot(lab.Path(home, entry.expected))
 
 			Expect(err).Error().To(BeNil())
 			Expect(actual).To(Equal(expected))
-			Expect(AsDirectory(lab.TrimRoot(directory))).To(ExistInFS(mfs))
+			Expect(AsDirectory(lab.TrimRoot(directory))).To(ExistInFS(fS))
 		},
 		func(entry *ensureTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.given, entry.should)

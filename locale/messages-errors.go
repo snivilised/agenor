@@ -573,3 +573,123 @@ var errInvalidPath = InvalidPathError{
 		Data: InvalidPathErrorTemplData{},
 	},
 }
+
+// ❌ InvalidBinaryFsOp
+
+// InvalidBinaryFsOpErrorTemplData invalid file system operation
+// that involves 2 paths, typically a source and destination.
+// The error also indicates which operation is at fault.
+type InvalidBinaryFsOpErrorTemplData struct {
+	traverseTemplData
+	From string
+	To   string
+	Op   string
+}
+
+// IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
+// if the err's error tree contains the core error:
+// InvalidExtGlobFilterMissingSeparatorError
+func IsBinaryFsOpError(err error) bool {
+	return errors.Is(err, errCoreBinaryFsOp)
+}
+
+func NewInvalidBinaryFsOpError(op, from, to string) error {
+	return errors.Wrap(
+		errCoreBinaryFsOp,
+		li18ngo.Text(InvalidBinaryFsOpErrorTemplData{
+			From: from,
+			To:   to,
+			Op:   op,
+		}),
+	)
+}
+
+// Message
+func (td InvalidBinaryFsOpErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-binary-op.error",
+		Description: "Invalid file system operation",
+		Other:       "{{.Op}}, from: {{.From}}, to {{.To}}",
+	}
+}
+
+// ❌ CoreBinaryFsOpError
+
+type CoreBinaryFsOpErrorTemplData struct {
+	traverseTemplData
+	li18ngo.LocalisableError
+}
+
+func (td CoreBinaryFsOpErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "core-invalid-binary-op.error",
+		Description: "Core Invalid file system operation",
+		Other:       "invalid file system operation",
+	}
+}
+
+var errCoreBinaryFsOp = CoreBinaryFsOpErrorTemplData{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: CoreBinaryFsOpErrorTemplData{},
+	},
+}
+
+// ❌ RejectSameDirMoveError
+
+// RejectSameDirMoveErrorTemplData invalid file system operation
+// that involves 2 paths, typically a source and destination.
+// The error also indicates which operation is at fault.
+type RejectSameDirMoveErrorTemplData struct {
+	traverseTemplData
+	From string
+	To   string
+	Op   string
+}
+
+// IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
+// if the err's error tree contains the core error:
+// InvalidExtGlobFilterMissingSeparatorError
+func IsRejectSameDirMoveError(err error) bool {
+	return errors.Is(err, errCoreRejectSameDirMoveError)
+}
+
+func NewRejectSameDirMoveError(op, from, to string) error {
+	return errors.Wrap(
+		errCoreRejectSameDirMoveError,
+		li18ngo.Text(RejectSameDirMoveErrorTemplData{
+			From: from,
+			To:   to,
+			Op:   op,
+		}),
+	)
+}
+
+// Message
+func (td RejectSameDirMoveErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "reject-same-dir-move.error",
+		Description: "Reject same directory move operation as this is just a rename",
+		Other:       "{{.Op}}, from: {{.From}}, to {{.To}}",
+	}
+}
+
+// ❌ CoreRejectSameDirMoveError
+
+type CoreRejectSameDirMoveErrorTemplData struct {
+	traverseTemplData
+	li18ngo.LocalisableError
+}
+
+func (td CoreRejectSameDirMoveErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "core-reject-same-dir-move.error",
+		Description: "Core reject same directory move operation as this is just a rename",
+		Other:       "same directory move rejected; use rename instead",
+	}
+}
+
+var errCoreRejectSameDirMoveError = CoreRejectSameDirMoveErrorTemplData{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: CoreRejectSameDirMoveErrorTemplData{},
+	},
+}

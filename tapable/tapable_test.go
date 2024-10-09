@@ -11,6 +11,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -211,7 +212,9 @@ var _ = Describe("Tapable", Ordered, func() {
 						},
 					)
 
-					sys := tv.NewLocalFS(root)
+					sys := tv.NewReadDirFS(lfs.At{
+						Root: root,
+					})
 					_, _ = o.Hooks.ReadDirectory.Default()(sys, root)
 					_, _ = o.Hooks.ReadDirectory.Invoke()(sys, root)
 

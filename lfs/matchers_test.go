@@ -8,7 +8,7 @@ import (
 )
 
 type PathExistsMatcher struct {
-	FS interface{}
+	fS interface{}
 }
 
 type AsDirectory string
@@ -16,14 +16,14 @@ type AsFile string
 
 func ExistInFS(fs interface{}) types.GomegaMatcher {
 	return &PathExistsMatcher{
-		FS: fs,
+		fS: fs,
 	}
 }
 
 func (m *PathExistsMatcher) Match(actual interface{}) (bool, error) {
-	FS, fileSystemOK := m.FS.(lfs.MkDirAllFS)
+	FS, fileSystemOK := m.fS.(lfs.ExistsInFS)
 	if !fileSystemOK {
-		return false, fmt.Errorf("❌ matcher expected a VirtualFS instance (%T)", FS)
+		return false, fmt.Errorf("❌ matcher expected an lfs.ExistsInFS instance (%T)", FS)
 	}
 
 	if actualPath, dirOK := actual.(AsDirectory); dirOK {
