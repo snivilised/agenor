@@ -82,16 +82,6 @@ func (m *baseMover) moveItemWithName(from, to string) error {
 	// 'to' includes the file name eg:
 	// from/file.txt => to/file.txt
 	//
-	return os.Rename(
-		filepath.Join(m.root, from),
-		filepath.Join(m.root, to),
-	)
-}
-
-func (m *baseMover) moveFileWithName(from, to string) error {
-	// 'to' includes the file name eg:
-	// from/file.txt => to/file.txt
-	//
 	if filepath.Dir(from) == filepath.Dir(to) {
 		return locale.NewRejectSameDirMoveError(moveOpName, from, to)
 	}
@@ -120,7 +110,7 @@ func (m *baseMover) moveItemWithoutNameClash(from, to string) error {
 		// If there were a merge facility, this is where we would implement this,
 		// ie merge the from directory with to, instead of returning an error.
 		//
-		return locale.NewInvalidBinaryFsOpError(moveOpName, from, to)
+		return locale.NewRejectSameDirMoveError(moveOpName, from, to)
 	}
 
 	return m.moveItemWithoutName(from, to)

@@ -243,11 +243,11 @@ var _ = Describe("op: rename", Ordered, func() {
 			given:   "[from] directory exists, [to] name does not exist, [no-clash]",
 			should:  "succeed",
 			op:      "Rename",
-			require: lab.Static.FS.Scratch,
+			require: lab.Static.FS.Rename.From.Directory,
 			from:    lab.Static.FS.Rename.From.Directory,
 			to:      lab.Static.FS.Rename.To.Directory,
 			arrange: func(entry fsTE[lfs.RenameFS], _ lfs.RenameFS) {
-				Expect(require(root, entry.require, entry.from)).To(Succeed())
+				Expect(require(root, entry.require)).To(Succeed())
 			},
 			action: func(entry fsTE[lfs.RenameFS], fS lfs.RenameFS) {
 				Expect(fS.Rename(entry.from, entry.to)).To(Succeed())
@@ -256,16 +256,16 @@ var _ = Describe("op: rename", Ordered, func() {
 
 		Entry(nil, fsTE[lfs.RenameFS]{
 			given:   "[from] directory exists, [to] equal to [from], [clash]",
-			should:  "succeed, ignored",
+			should:  "fail, directory names can't be same",
 			op:      "Rename",
-			require: lab.Static.FS.Scratch,
+			require: lab.Static.FS.Rename.From.Directory,
 			from:    lab.Static.FS.Rename.From.Directory,
 			to:      lab.Static.FS.Rename.From.Directory,
 			arrange: func(entry fsTE[lfs.RenameFS], _ lfs.RenameFS) {
-				Expect(require(root, entry.require, entry.from)).To(Succeed())
+				Expect(require(root, entry.require)).To(Succeed())
 			},
 			action: func(entry fsTE[lfs.RenameFS], fS lfs.RenameFS) {
-				Expect(fS.Rename(entry.from, entry.to)).To(Succeed())
+				IsLinkError(fS.Rename(entry.from, entry.to), entry.should)
 			},
 		}),
 	)
