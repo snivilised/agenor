@@ -64,10 +64,10 @@ func Marshal(request *MarshalRequest) (*MarshalResult, error) {
 		return nil, err
 	}
 
-	if err := Equals(&Comparison{
+	if err := (&Comparison{
 		O:  request.O,
 		JO: jo,
-	}); err != nil {
+	}).Equals(); err != nil {
 		return result, err
 	}
 
@@ -99,8 +99,8 @@ func Unmarshal(request *UnmarshalRequest, tampers ...TamperFunc) (*UnmarshalResu
 		JO:     mr.JO,
 	}
 
-	return &result, Equals(&Comparison{
+	return &result, (&Comparison{
 		O:  result.O,
 		JO: result.JO,
-	})
+	}).Equals()
 }

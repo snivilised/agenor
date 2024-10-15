@@ -70,10 +70,10 @@ func marshal(entry *marshalTE, tfs nef.TraverseFS) *tampered {
 		entry.tweak(result)
 	}
 
-	e := persist.Equals(&persist.Comparison{
+	e := (&persist.Comparison{
 		O:  o,
 		JO: result.JO,
-	})
+	}).Equals()
 
 	Expect(e).NotTo(Succeed(), "MARSHAL")
 	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
@@ -99,10 +99,10 @@ func unmarshal(entry *marshalTE, tfs nef.TraverseFS, restorePath string, t *tamp
 	Expect(err).To(Succeed(), "UNMARSHAL")
 
 	// unequal error:
-	e := persist.Equals(&persist.Comparison{
+	e := (&persist.Comparison{
 		O:  t.o,
 		JO: state.JO,
-	})
+	}).Equals()
 
 	Expect(e).NotTo(Succeed(), "UNMARSHAL")
 
@@ -431,9 +431,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 		Context("UnequalPtrError", func() {
 			When("pref.Options is nil", func() {
 				It("🧪 should: return UnequalPtrError", func() {
-					err := persist.Equals(&persist.Comparison{
+					err := (&persist.Comparison{
 						JO: &json.Options{},
-					})
+					}).Equals()
 
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
@@ -446,9 +446,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				It("🧪 should: return UnequalPtrError", func() {
 					o, _, _ := opts.Get()
 
-					err := persist.Equals(&persist.Comparison{
+					err := (&persist.Comparison{
 						O: o,
-					})
+					}).Equals()
 
 					Expect(err).NotTo(Succeed())
 					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
