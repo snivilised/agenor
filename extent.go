@@ -1,11 +1,11 @@
 package tv
 
 import (
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -14,19 +14,19 @@ type extent interface {
 	was() *pref.Was
 	plugin(*kernel.Artefacts) types.Plugin
 	options(...pref.Option) (*pref.Options, *opts.Binder, error)
-	traverseFS() lfs.TraverseFS
+	traverseFS() nef.TraverseFS
 	complete() bool
 }
 
 type fileSystems struct {
-	tsys lfs.TraverseFS
+	tsys nef.TraverseFS
 }
 
 type baseExtent struct {
 	fileSys fileSystems
 }
 
-func (ex *baseExtent) traverseFS() lfs.TraverseFS {
+func (ex *baseExtent) traverseFS() nef.TraverseFS {
 	return ex.fileSys.tsys
 }
 

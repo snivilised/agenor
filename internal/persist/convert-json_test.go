@@ -7,16 +7,16 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("Convert Options via JSON", Ordered, func() {
 	var (
-		FS lfs.TraverseFS
+		FS nef.TraverseFS
 	)
 
 	BeforeAll(func() {

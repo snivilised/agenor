@@ -1,6 +1,7 @@
 package tv
 
 import (
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/feat/nanny"
@@ -10,7 +11,6 @@ import (
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -78,17 +78,17 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: using,
-		traverseFS: pref.CreateTraverseFS(func(root string) lfs.TraverseFS {
+		traverseFS: pref.CreateTraverseFS(func(root string) nef.TraverseFS {
 			if using.GetTraverseFS != nil {
 				return using.GetTraverseFS(root)
 			}
 
-			return lfs.NewTraverseFS(lfs.At{
+			return nef.NewTraverseFS(nef.At{
 				Root:      root,
 				Overwrite: noOverwrite,
 			})
 		}),
-		extent: extension(func(tsys lfs.TraverseFS) extent {
+		extent: extension(func(tsys nef.TraverseFS) extent {
 			return &primeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{
@@ -129,17 +129,17 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 func Resume(was *Was, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: &was.Using,
-		traverseFS: pref.CreateTraverseFS(func(root string) lfs.TraverseFS {
+		traverseFS: pref.CreateTraverseFS(func(root string) nef.TraverseFS {
 			if was.Using.GetTraverseFS != nil {
 				return was.Using.GetTraverseFS(root)
 			}
 
-			return lfs.NewTraverseFS(lfs.At{
+			return nef.NewTraverseFS(nef.At{
 				Root:      root,
 				Overwrite: noOverwrite,
 			})
 		}),
-		extent: extension(func(tsys lfs.TraverseFS) extent {
+		extent: extension(func(tsys nef.TraverseFS) extent {
 			return &resumeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{

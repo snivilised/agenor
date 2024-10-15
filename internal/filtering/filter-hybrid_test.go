@@ -9,12 +9,12 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
@@ -85,7 +85,7 @@ var _ = Describe("feature", Ordered, func() {
 					Root:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) lfs.TraverseFS {
+					GetTraverseFS: func(_ string) nef.TraverseFS {
 						return FS
 					},
 				},

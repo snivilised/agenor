@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -18,7 +19,6 @@ import (
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
@@ -38,7 +38,7 @@ func check[T any](entry *checkerTE, err error) error {
 	}
 }
 
-func marshal(entry *marshalTE, tfs lfs.TraverseFS) *tampered {
+func marshal(entry *marshalTE, tfs nef.TraverseFS) *tampered {
 	// success:
 	o, _, err := opts.Get(
 		pref.IfOptionF(entry.option != nil, func() pref.Option {
@@ -86,7 +86,7 @@ func marshal(entry *marshalTE, tfs lfs.TraverseFS) *tampered {
 	}
 }
 
-func unmarshal(entry *marshalTE, tfs lfs.TraverseFS, restorePath string, t *tampered) {
+func unmarshal(entry *marshalTE, tfs nef.TraverseFS, restorePath string, t *tampered) {
 	// success:
 	request := &persist.UnmarshalRequest{
 		Restore: &types.RestoreState{
@@ -124,7 +124,7 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS lfs.TraverseFS
+		FS nef.TraverseFS
 
 		sourceNodeFilterDef *core.FilterDef
 		jsonNodeFilterDef   json.FilterDef

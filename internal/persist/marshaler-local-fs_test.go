@@ -7,12 +7,12 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -49,7 +49,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 					)
 					Expect(err).To(Succeed())
 
-					writerFS := lfs.NewWriteFileFS(lfs.At{
+					writerFS := nef.NewWriteFileFS(nef.At{
 						Root:      testPath,
 						Overwrite: NoOverwrite,
 					})
@@ -86,7 +86,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 						Depth:       3,
 					})
 				*/
-				// readerFS := lfs.NewReadFileFS("/some-path")
+				// readerFS := nef.NewReadFileFS("/some-path")
 				// state, err := persist.Unmarshal(&types.RestoreState{
 				// 	Path:   "some-restore-path",
 				// 	Resume: enums.ResumeStrategySpawn,

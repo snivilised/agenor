@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing/fstest"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/lfs"
 )
 
 const (
@@ -57,7 +57,7 @@ func Provision(provider *IOProvider, verbose bool, portions ...string) (root str
 func ensure(root string, provider *IOProvider, verbose bool) error {
 	repo := Repo("")
 	index := Path(repo, "test/data/musico-index.xml")
-	parent, _ := lfs.SplitParent(root)
+	parent, _ := nef.SplitParent(root)
 	builder := directoryTreeBuilder{
 		root:     TrimRoot(root),
 		stack:    collections.NewStackWith([]string{parent}),

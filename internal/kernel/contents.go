@@ -3,10 +3,10 @@ package kernel
 import (
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"
 )
@@ -20,7 +20,7 @@ func newContents(behaviour *pref.SortBehaviour,
 		hook:      hook,
 	}
 
-	contents.files, contents.folders = lfs.Separate(entries)
+	contents.files, contents.folders = nef.Separate(entries)
 
 	return &contents
 }

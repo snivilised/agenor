@@ -8,13 +8,13 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -63,7 +63,7 @@ var _ = Describe("filtering", Ordered, func() {
 								)
 								return nil
 							},
-							GetTraverseFS: func(_ string) lfs.TraverseFS {
+							GetTraverseFS: func(_ string) nef.TraverseFS {
 								return FS
 							},
 						},
@@ -135,7 +135,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Root:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) lfs.TraverseFS {
+					GetTraverseFS: func(_ string) nef.TraverseFS {
 						return FS
 					},
 				},
