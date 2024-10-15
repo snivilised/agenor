@@ -46,8 +46,8 @@ func (UnequalPtrError[T, O]) Unwrap() error {
 	return locale.ErrUnEqualConversion
 }
 
-func Equals(comparison *Comparison) error {
-	return equalOptions(comparison.O, comparison.JO)
+func (c *Comparison) Equals() error {
+	return equalOptions(c.O, c.JO)
 }
 
 // equalOptions compare the pref.Options instance to the derived json instance json.Options.

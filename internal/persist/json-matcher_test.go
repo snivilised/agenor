@@ -28,10 +28,10 @@ func (m *MarshalJSONMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("❌ matcher expected a *json.Options instance (%T)", jo)
 	}
 
-	if err := persist.Equals(&persist.Comparison{
+	if err := (&persist.Comparison{
 		O:  m.o,
 		JO: jo,
-	}); err != nil {
+	}).Equals(); err != nil {
 		m.err = err
 		return false, err
 	}
@@ -65,10 +65,10 @@ func (m *UnMarshalJSONMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("❌ matcher expected a *pref.Options instance (%T)", o)
 	}
 
-	if err := persist.Equals(&persist.Comparison{
+	if err := (&persist.Comparison{
 		O:  o,
 		JO: m.jo,
-	}); err != nil {
+	}).Equals(); err != nil {
 		m.err = err
 		return false, err
 	}
