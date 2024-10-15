@@ -12,14 +12,25 @@ type tentativeMover struct {
 
 func (m *tentativeMover) create() mover {
 	m.actions = movers{
-		{true, false, false, false}: m.moveFileWithName,         // from exists as file, to does not exist
-		{true, false, true, false}:  m.moveItemWithName,         // from exists as dir, to does not exist
+		{true, false, false, false}: m.moveItemWithName,         // from exists as file, to does not exist
+		{true, false, true, false}:  m.moveDirectoryWithName,    // from exists as dir, to does not exist
 		{true, true, false, true}:   m.moveItemWithoutName,      // from exists as file,to exists as dir
 		{true, true, true, true}:    m.moveItemWithoutNameClash, // from exists as dir, to exists as dir
 		{true, true, false, false}:  m.rejectOverwriteOrNoOp,    // from and to may refer to the same existing file
 	}
 
 	return m
+}
+
+func (m *tentativeMover) moveDirectoryWithName(from, to string) error {
+	// 'to' includes the file name eg:
+	// from/file.txt => to/file.txt
+	//
+	if filepath.Dir(from) == filepath.Dir(to) {
+		return locale.NewRejectSameDirMoveError(moveOpName, from, to)
+	}
+
+	return m.moveItemWithName(from, to)
 }
 
 func (m *tentativeMover) moveItemWithoutName(from, to string) error {

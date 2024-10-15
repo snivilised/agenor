@@ -331,11 +331,11 @@ var _ = Describe("op: move", Ordered, func() {
 			given:   "[from] directory exists, [to] name does not exist, [no-clash]",
 			should:  "fail, same directory move, use rename instead",
 			op:      "Move",
-			require: lab.Static.FS.Scratch,
+			require: lab.Static.FS.Rename.From.Directory,
 			from:    lab.Static.FS.Rename.From.Directory,
 			to:      lab.Static.FS.Rename.To.Directory,
 			arrange: func(entry fsTE[lfs.UniversalFS], _ lfs.UniversalFS) {
-				Expect(require(root, entry.require, entry.from)).To(Succeed())
+				Expect(require(root, entry.require)).To(Succeed())
 			},
 			action: func(entry fsTE[lfs.UniversalFS], fS lfs.UniversalFS) {
 				IsSameDirMoveRejectionError(fS.Move(entry.from, entry.to), entry.should)
@@ -344,16 +344,16 @@ var _ = Describe("op: move", Ordered, func() {
 
 		Entry(nil, fsTE[lfs.UniversalFS]{
 			given:   "[from] directory exists, [to] equal to [from], [clash]",
-			should:  "succeed, ignored",
+			should:  "fail, directory names can't be same",
 			op:      "Move",
-			require: lab.Static.FS.Scratch,
+			require: lab.Static.FS.Rename.From.Directory,
 			from:    lab.Static.FS.Rename.From.Directory,
 			to:      lab.Static.FS.Rename.From.Directory,
 			arrange: func(entry fsTE[lfs.UniversalFS], _ lfs.UniversalFS) {
-				Expect(require(root, entry.require, entry.from)).To(Succeed())
+				Expect(require(root, entry.require)).To(Succeed())
 			},
 			action: func(entry fsTE[lfs.UniversalFS], fS lfs.UniversalFS) {
-				Expect(fS.Move(entry.from, entry.to)).To(Succeed())
+				IsSameDirMoveRejectionError(fS.Move(entry.from, entry.to), entry.should)
 			},
 		}),
 	)
