@@ -1,9 +1,9 @@
 package pref
 
 import (
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 )
 
@@ -86,12 +86,12 @@ func validate(using *Using) error {
 
 type (
 	TraverseFileSystemBuilder interface {
-		Build(root string) lfs.TraverseFS
+		Build(root string) nef.TraverseFS
 	}
 
-	CreateTraverseFS func(root string) lfs.TraverseFS
+	CreateTraverseFS func(root string) nef.TraverseFS
 )
 
-func (fn CreateTraverseFS) Build(root string) lfs.TraverseFS {
+func (fn CreateTraverseFS) Build(root string) nef.TraverseFS {
 	return fn(root)
 }

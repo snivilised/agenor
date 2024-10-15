@@ -4,9 +4,9 @@ import (
 	ejson "encoding/json"
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -24,7 +24,7 @@ type (
 		Active *types.ActiveState
 		Path   string
 		Perm   fs.FileMode
-		FS     lfs.WriteFileFS
+		FS     nef.WriteFileFS
 	}
 
 	MarshalResult struct {

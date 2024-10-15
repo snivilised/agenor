@@ -10,13 +10,13 @@ import (
 
 	"github.com/snivilised/li18ngo"
 
+	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/lfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -57,7 +57,7 @@ var _ = Describe("feature", Ordered, func() {
 								)
 								return nil
 							},
-							GetTraverseFS: func(_ string) lfs.TraverseFS {
+							GetTraverseFS: func(_ string) nef.TraverseFS {
 								return FS
 							},
 						},
@@ -151,7 +151,7 @@ var _ = Describe("feature", Ordered, func() {
 					Root:         path,
 					Subscription: entry.Subscription,
 					Handler:      client,
-					GetTraverseFS: func(_ string) lfs.TraverseFS {
+					GetTraverseFS: func(_ string) nef.TraverseFS {
 						return FS
 					},
 				},

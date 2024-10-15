@@ -3,12 +3,12 @@ package filter
 import (
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 )
 
 type samplerScheme struct {
@@ -43,7 +43,7 @@ func (s *samplerScheme) next(node *core.Node,
 ) (bool, error) {
 	if node.Extension.Scope.IsRoot() {
 		matching := s.filter.Matching(
-			[]fs.DirEntry{lfs.FromFileInfo(node.Info)},
+			[]fs.DirEntry{nef.FromFileInfo(node.Info)},
 		)
 		result := len(matching) > 0
 

@@ -4,12 +4,12 @@ import (
 	"context"
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -66,7 +66,7 @@ type (
 
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS         lfs.FileSystems
+		FS         nef.FileSystems
 		Supervisor *measure.Supervisor
 		Binder     *opts.Binder
 	}
@@ -130,7 +130,7 @@ type (
 	// RestoreState
 	RestoreState struct {
 		Path   string
-		FS     lfs.ReadFileFS
+		FS     nef.ReadFileFS
 		Resume enums.ResumeStrategy
 	}
 )

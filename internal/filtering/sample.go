@@ -3,10 +3,10 @@ package filtering
 import (
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
@@ -80,12 +80,12 @@ func NewSample(def *core.SampleFilterDef,
 }
 
 func (f *Sample) files(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	wanted, others = lfs.Separate(entries)
+	wanted, others = nef.Separate(entries)
 	return wanted, others
 }
 
 func (f *Sample) folders(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
-	others, wanted = lfs.Separate(entries)
+	others, wanted = nef.Separate(entries)
 	return wanted, others
 }
 

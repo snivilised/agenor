@@ -3,10 +3,10 @@ package tv
 import (
 	"time"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -54,19 +54,19 @@ type (
 	ResumeStrategy = enums.ResumeStrategy
 
 	// 🌀 lfs
-	At          = lfs.At
-	CopyFS      = lfs.CopyFS
-	ExistsInFS  = lfs.ExistsInFS
-	FileSystems = lfs.FileSystems
-	MakeDirFS   = lfs.MakeDirFS
-	ReaderFS    = lfs.ReaderFS
-	ReadFileFS  = lfs.ReadFileFS
-	RemoveFS    = lfs.RemoveFS
-	RenameFS    = lfs.RenameFS
-	TraverseFS  = lfs.TraverseFS
-	UniversalFS = lfs.UniversalFS
-	WriteFileFS = lfs.WriteFileFS
-	WriterFS    = lfs.WriterFS
+	At          = nef.At
+	CopyFS      = nef.CopyFS
+	ExistsInFS  = nef.ExistsInFS
+	FileSystems = nef.FileSystems
+	MakeDirFS   = nef.MakeDirFS
+	ReaderFS    = nef.ReaderFS
+	ReadFileFS  = nef.ReadFileFS
+	RemoveFS    = nef.RemoveFS
+	RenameFS    = nef.RenameFS
+	TraverseFS  = nef.TraverseFS
+	UniversalFS = nef.UniversalFS
+	WriteFileFS = nef.WriteFileFS
+	WriterFS    = nef.WriterFS
 
 	// 🌀 pref
 	Option  = pref.Option
@@ -95,29 +95,29 @@ var (
 	// 🌀 lfs
 
 	// NewReadDirFS creates a file system with read directory capability
-	NewReadDirFS = lfs.NewReadDirFS
+	NewReadDirFS = nef.NewReadDirFS
 
 	// NewReaderFS creates a read only file system
-	NewReaderFS = lfs.NewReaderFS
+	NewReaderFS = nef.NewReaderFS
 
 	// NewReadFileFS  creates a file system with read file capability
-	NewReadFileFS = lfs.NewReadFileFS
+	NewReadFileFS = nef.NewReadFileFS
 
 	// NewStatFS creates a file system with Stat method
-	NewStatFS = lfs.NewStatFS
+	NewStatFS = nef.NewStatFS
 
 	// NewTraverseFS creates a file system that implements functionality required
 	// by the traverse
-	NewTraverseFS = lfs.NewTraverseFS
+	NewTraverseFS = nef.NewTraverseFS
 
 	// NewUniversalFS creates a file system that's got it all
-	NewUniversalFS = lfs.NewUniversalFS
+	NewUniversalFS = nef.NewUniversalFS
 
 	// NewWriteFileFS creates a file system with write file capability
-	NewWriteFileFS = lfs.NewWriteFileFS
+	NewWriteFileFS = nef.NewWriteFileFS
 
 	// NewWriterFS creates a file system with writer capabilities
-	NewWriterFS = lfs.NewWriterFS
+	NewWriterFS = nef.NewWriterFS
 
 	// 🌀 filtering
 

@@ -9,12 +9,12 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -135,7 +135,7 @@ func createJSONSampleFilterDefFromCoreWithPoly(def *core.SampleFilterDef,
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS       lfs.TraverseFS
+		FS       nef.TraverseFS
 		readPath string
 
 		// 🍑 NODE:

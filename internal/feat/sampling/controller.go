@@ -3,11 +3,11 @@ package sampling
 import (
 	"io/fs"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/lfs"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -27,7 +27,7 @@ func (p *controller) Next(_ *core.Node, _ types.Inspection) (bool, error) {
 func (p *controller) sample(result []fs.DirEntry, _ error,
 	_ fs.ReadDirFS, _ string,
 ) ([]fs.DirEntry, error) {
-	files, folders := lfs.Separate(result)
+	files, folders := nef.Separate(result)
 
 	return union(&readResult{
 		files:   files,
