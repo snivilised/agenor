@@ -38,7 +38,7 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
-						Root:         RootPath,
+						Tree:         RootPath,
 						Subscription: tv.SubscribeFiles,
 						Handler: func(_ *tv.Node) error {
 							return nil

@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -135,7 +135,7 @@ func createJSONSampleFilterDefFromCoreWithPoly(def *core.SampleFilterDef,
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS       nef.TraverseFS
+		FS       tv.TraverseFS
 		readPath string
 
 		// 🍑 NODE:

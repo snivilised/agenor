@@ -41,7 +41,7 @@ func (s *samplerScheme) create() error {
 func (s *samplerScheme) next(node *core.Node,
 	inspection types.Inspection,
 ) (bool, error) {
-	if node.Extension.Scope.IsRoot() {
+	if node.Extension.Scope.IsTree() {
 		matching := s.filter.Matching(
 			[]fs.DirEntry{nef.FromFileInfo(node.Info)},
 		)

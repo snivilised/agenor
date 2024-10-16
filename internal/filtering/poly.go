@@ -59,7 +59,7 @@ func (f *Poly) Source() string {
 // file matches the poly file filter and the file's parent folder matches
 // the poly folder filter. Returns true of the current node is a folder.
 func (f *Poly) IsMatch(node *core.Node) bool {
-	if !node.IsFolder() {
+	if !node.IsDirectory() {
 		return f.Folder.IsMatch(node.Parent) && f.File.IsMatch(node)
 	}
 
@@ -70,7 +70,7 @@ func (f *Poly) IsMatch(node *core.Node) bool {
 // the poly Filter filter if the current node is a file, returns false
 // for folders.
 func (f *Poly) IsApplicable(node *core.Node) bool {
-	if !node.IsFolder() {
+	if !node.IsDirectory() {
 		return f.File.IsApplicable(node)
 	}
 

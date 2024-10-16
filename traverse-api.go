@@ -53,18 +53,12 @@ type (
 	Subscription   = enums.Subscription
 	ResumeStrategy = enums.ResumeStrategy
 
-	// 🌀 lfs
+	// 🌀 nef
 	At          = nef.At
-	CopyFS      = nef.CopyFS
 	ExistsInFS  = nef.ExistsInFS
 	FileSystems = nef.FileSystems
-	MakeDirFS   = nef.MakeDirFS
-	ReaderFS    = nef.ReaderFS
-	ReadFileFS  = nef.ReadFileFS
-	RemoveFS    = nef.RemoveFS
 	RenameFS    = nef.RenameFS
 	TraverseFS  = nef.TraverseFS
-	UniversalFS = nef.UniversalFS
 	WriteFileFS = nef.WriteFileFS
 	WriterFS    = nef.WriterFS
 
@@ -92,7 +86,7 @@ const (
 )
 
 var (
-	// 🌀 lfs
+	// 🌀 nef
 
 	// NewReadDirFS creates a file system with read directory capability
 	NewReadDirFS = nef.NewReadDirFS
@@ -146,7 +140,7 @@ var (
 	WithDepth = pref.WithDepth
 
 	// WithFaultHandler defines a custom handler to handle an error that occurs
-	// when Stating the root folder. When an error occurs, traversal terminates
+	// when 'Stat'ing the tree root folder. When an error occurs, traversal terminates
 	// immediately. The handler specified allows custom functionality to be invoked
 	// when an error occurs here.
 	WithFaultHandler = pref.WithFaultHandler

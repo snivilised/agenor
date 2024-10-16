@@ -20,7 +20,7 @@ var _ = Describe("event", func() {
 						invoked = true
 					})
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: traversalRoot,
+						Tree: traversalRoot,
 					})
 
 					Expect(invoked).To(BeTrue())
@@ -37,14 +37,14 @@ var _ = Describe("event", func() {
 					})
 					binder.Controls.Begin.Mute()
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: traversalRoot,
+						Tree: traversalRoot,
 					})
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
 					binder.Controls.Begin.Unmute()
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: traversalRoot,
+						Tree: traversalRoot,
 					})
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
@@ -64,7 +64,7 @@ var _ = Describe("event", func() {
 						count++
 					})
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: traversalRoot,
+						Tree: traversalRoot,
 					})
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
@@ -74,7 +74,7 @@ var _ = Describe("event", func() {
 					})
 
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: anotherRoot,
+						Tree: anotherRoot,
 					})
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
@@ -94,7 +94,7 @@ var _ = Describe("event", func() {
 
 					binder.Controls.Begin.Mute()
 					binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-						Root: anotherRoot,
+						Tree: anotherRoot,
 					})
 
 					Expect(count).To(Equal(0), "notification not muted")
@@ -107,7 +107,7 @@ var _ = Describe("event", func() {
 				_, binder, _ := opts.Get()
 
 				binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-					Root: traversalRoot,
+					Tree: traversalRoot,
 				})
 			})
 		})

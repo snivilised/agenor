@@ -23,7 +23,7 @@ type (
 	SimpleHandler func()
 
 	BeginState struct {
-		Root string
+		Tree string
 	}
 
 	// BeginHandler invoked before traversal begins

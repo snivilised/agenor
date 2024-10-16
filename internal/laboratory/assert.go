@@ -1,7 +1,6 @@
 package lab
 
 import (
-	"io/fs"
 	"path/filepath"
 	"strings"
 	"testing/fstest"
@@ -103,9 +102,9 @@ func assertMetrics(entry *NaviTE, to *TestOptions) {
 
 func subscribes(subscription enums.Subscription, mapFile *fstest.MapFile) bool {
 	isUniversalSubscription := (subscription == enums.SubscribeUniversal)
-	files := mapFile != nil && (subscription == enums.SubscribeFiles) && ((mapFile.Mode | fs.ModeDir) == 0)
+	files := mapFile != nil && (subscription == enums.SubscribeFiles) && !mapFile.Mode.IsDir()
 	folders := mapFile != nil && ((subscription == enums.SubscribeFolders) ||
-		subscription == enums.SubscribeFoldersWithFiles) && ((mapFile.Mode | fs.ModeDir) > 0)
+		subscription == enums.SubscribeFoldersWithFiles) && mapFile.Mode.IsDir()
 
 	return isUniversalSubscription || files || folders
 }

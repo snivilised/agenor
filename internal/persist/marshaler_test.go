@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -38,7 +38,7 @@ func check[T any](entry *checkerTE, err error) error {
 	}
 }
 
-func marshal(entry *marshalTE, tfs nef.TraverseFS) *tampered {
+func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 	// success:
 	o, _, err := opts.Get(
 		pref.IfOptionF(entry.option != nil, func() pref.Option {
@@ -86,7 +86,7 @@ func marshal(entry *marshalTE, tfs nef.TraverseFS) *tampered {
 	}
 }
 
-func unmarshal(entry *marshalTE, tfs nef.TraverseFS, restorePath string, t *tampered) {
+func unmarshal(entry *marshalTE, tfs tv.TraverseFS, restorePath string, t *tampered) {
 	// success:
 	request := &persist.UnmarshalRequest{
 		Restore: &types.RestoreState{
@@ -124,7 +124,7 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS nef.TraverseFS
+		FS tv.TraverseFS
 
 		sourceNodeFilterDef *core.FilterDef
 		jsonNodeFilterDef   json.FilterDef

@@ -62,7 +62,7 @@ var _ = Describe("director error", Ordered, func() {
 		},
 
 		Entry(nil, &traverseErrorTE{
-			given: "using missing root path",
+			given: "using missing tree path",
 			using: &tv.Using{
 				Subscription: tv.SubscribeFiles,
 				Handler:      handler,
@@ -72,7 +72,7 @@ var _ = Describe("director error", Ordered, func() {
 		Entry(nil, &traverseErrorTE{
 			given: "using missing subscription",
 			using: &tv.Using{
-				Root:    "/root-traverse-path",
+				Tree:    "/tree-traverse-path",
 				Handler: handler,
 			},
 		}),
@@ -80,7 +80,7 @@ var _ = Describe("director error", Ordered, func() {
 		Entry(nil, &traverseErrorTE{
 			given: "using missing handler",
 			using: &tv.Using{
-				Root:         "/root-traverse-path",
+				Tree:         "/tree-traverse-path",
 				Subscription: tv.SubscribeFiles,
 			},
 		}),
@@ -89,7 +89,7 @@ var _ = Describe("director error", Ordered, func() {
 			given: "as missing restore from path",
 			was: &tv.Was{
 				Using: tv.Using{
-					Root:         "/root-traverse-path",
+					Tree:         "/tree-traverse-path",
 					Subscription: tv.SubscribeFiles,
 					Handler:      handler,
 				},
@@ -101,7 +101,7 @@ var _ = Describe("director error", Ordered, func() {
 			given: "as missing resume strategy",
 			was: &tv.Was{
 				Using: tv.Using{
-					Root:         "/root-traverse-path",
+					Tree:         "/tree-traverse-path",
 					Subscription: tv.SubscribeFiles,
 					Handler:      handler,
 				},
@@ -119,7 +119,7 @@ var _ = Describe("director error", Ordered, func() {
 
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root: RootPath,
+					Tree: TreePath,
 					Handler: func(_ *tv.Node) error {
 						return nil
 					},
@@ -139,7 +139,7 @@ var _ = Describe("director error", Ordered, func() {
 
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         RootPath,
+					Tree:         TreePath,
 					Subscription: tv.SubscribeFiles,
 					Handler: func(_ *tv.Node) error {
 						return nil
@@ -165,7 +165,7 @@ var _ = Describe("director error", Ordered, func() {
 
 			_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root: RootPath,
+					Tree: TreePath,
 					Handler: func(_ *tv.Node) error {
 						return nil
 					},
@@ -185,7 +185,7 @@ var _ = Describe("director error", Ordered, func() {
 			invoked := false
 			_, _ = tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root: RootPath,
+					Tree: TreePath,
 					Handler: func(_ *tv.Node) error {
 						return nil
 					},

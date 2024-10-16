@@ -47,20 +47,20 @@ func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
 	info, ie := n.ao.hooks.QueryStatus.Invoke()(
-		ns.mediator.resources.FS.T, ns.root,
+		ns.mediator.resources.FS.T, ns.tree,
 	)
 
 	err := lo.TernaryF(ie != nil,
 		func() error {
 			return n.ao.defects.Fault.Accept(&pref.NavigationFault{
 				Err:  ie,
-				Path: ns.root,
+				Path: ns.tree,
 				Info: info,
 			})
 		},
 		func() error {
 			_, te := ns.mediator.impl.Traverse(ctx, ns,
-				core.Root(ns.root, info),
+				core.Top(ns.tree, info),
 			)
 
 			return te

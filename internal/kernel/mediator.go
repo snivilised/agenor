@@ -45,7 +45,7 @@ func newMediator(info *mediatorInfo) *mediator {
 	)
 
 	return &mediator{
-		root:         info.using.Root,
+		root:         info.using.Tree,
 		subscription: info.using.Subscription,
 		using:        info.using,
 		impl:         info.impl,
@@ -95,7 +95,7 @@ func (m *mediator) Arrange(active, order []enums.Role) {
 func (m *mediator) Ignite(ignition *types.Ignition) {
 	m.impl.Ignite(ignition)
 	m.resources.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-		Root: m.root,
+		Tree: m.root,
 	})
 }
 
@@ -106,7 +106,7 @@ func (m *mediator) Conclude(result core.TraverseResult) {
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	result, err := m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
-		root:     m.root,
+		tree:     m.root,
 	})
 
 	if !IsBenignError(err) && m.o != nil {
@@ -121,7 +121,7 @@ func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult,
 	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
-		root:     root,
+		tree:     root,
 	})
 }
 

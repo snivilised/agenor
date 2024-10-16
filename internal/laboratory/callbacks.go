@@ -14,7 +14,7 @@ import (
 func Begin(em string) cycle.BeginHandler {
 	return func(state *cycle.BeginState) {
 		GinkgoWriter.Printf(
-			"---> %v [traverse-navigator-test:BEGIN], root: '%v'\n", em, state.Root,
+			"---> %v [traverse-navigator-test:BEGIN], tree: '%v'\n", em, state.Tree,
 		)
 	}
 }
@@ -47,7 +47,7 @@ func FoldersCallback(name string) core.Client {
 			"---> 🔆 FOLDERS//CALLBACK%v: (depth:%v, children:%v) '%v'\n",
 			name, depth, actualNoChildren, node.Path,
 		)
-		Expect(node.IsFolder()).To(BeTrue(),
+		Expect(node.IsDirectory()).To(BeTrue(),
 			Because(node.Path, "node expected to be folder"),
 		)
 		Expect(node.Extension).NotTo(BeNil(), Reason(node.Path))
@@ -59,7 +59,7 @@ func FoldersCallback(name string) core.Client {
 func FilesCallback(name string) core.Client {
 	return func(node *core.Node) error {
 		GinkgoWriter.Printf("---> 🌙 FILES//%v-CALLBACK: '%v'\n", name, node.Path)
-		Expect(node.IsFolder()).To(BeFalse(),
+		Expect(node.IsDirectory()).To(BeFalse(),
 			Because(node.Path, "node expected to be file"),
 		)
 		Expect(node.Extension).NotTo(BeNil(), Reason(node.Path))
@@ -75,7 +75,7 @@ func FoldersCaseSensitiveCallback(first, second string) core.Client {
 		recording[node.Path] = len(node.Children)
 
 		GinkgoWriter.Printf("---> 🔆 CASE-SENSITIVE-CALLBACK: '%v'\n", node.Path)
-		Expect(node.IsFolder()).To(BeTrue())
+		Expect(node.IsDirectory()).To(BeTrue())
 
 		if strings.HasSuffix(node.Path, second) {
 			GinkgoWriter.Printf("---> 💧 FIRST: '%v', 💧 SECOND: '%v'\n", first, second)

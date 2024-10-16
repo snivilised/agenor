@@ -18,11 +18,11 @@ type FilterScope uint32
 const (
 	ScopeUndefined FilterScope = 0 // undefined-scope
 
-	// ScopeRoot, the Root scope
+	// ScopeTree, the Tree scope
 	//
-	ScopeRoot FilterScope = 1 << (iota - 1) // root-scope
+	ScopeTree FilterScope = 1 << (iota - 1) // tree-scope
 
-	// ScopeTop, any node that is a direct descendent of the root node
+	// ScopeTop, any node that is a direct descendent of the tree node
 	//
 	ScopeTop // top-scope
 
@@ -62,9 +62,9 @@ func (f *FilterScope) Clear(mask FilterScope) {
 	*f &^= mask
 }
 
-// IsFolder check is the root bit is set
-func (f *FilterScope) IsRoot() bool {
-	return (*f & ScopeRoot) > 0
+// IsTree check is the tree bit is set
+func (f *FilterScope) IsTree() bool {
+	return (*f & ScopeTree) > 0
 }
 
 // IsFolder check is the folder bit is set

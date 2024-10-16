@@ -23,7 +23,7 @@ type anchor struct {
 }
 
 func (a *anchor) Next(node *core.Node, _ types.Inspection) (bool, error) {
-	if metric := lo.Ternary(node.IsFolder(),
+	if metric := lo.Ternary(node.IsDirectory(),
 		a.crate.Mums[enums.MetricNoFoldersInvoked],
 		a.crate.Mums[enums.MetricNoFilesInvoked],
 	); metric != nil {

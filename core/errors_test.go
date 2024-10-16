@@ -110,7 +110,7 @@ var _ = Describe("Variable untranslated Errors", func() {
 	Context("InvalidPeriscopeRootPath error", func() {
 		When("given: matching error", func() {
 			It("🧪 should: affirm", func() {
-				err := core.NewInvalidPeriscopeRootPathError("/some-root", "/come-current")
+				err := core.NewInvalidPeriscopeRootPathError("/some-tree", "/come-current")
 				Expect(
 					core.IsInvalidPeriscopeRootPathError(err),
 				).To(BeTrue(),

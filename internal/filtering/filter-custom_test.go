@@ -2,13 +2,10 @@ package filtering_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -30,7 +27,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
+			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use()).To(Succeed())
@@ -50,9 +47,9 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				negate:  entry.Negate,
 			}
 
-			path := lab.Path(root, entry.Relative)
+			path := entry.Relative
 			callback := func(item *core.Node) error {
-				indicator := lo.Ternary(item.IsFolder(), "📁", "💠")
+				indicator := lo.Ternary(item.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
 					"===> %v Glob Filter(%v) source: '%v', item-name: '%v', item-scope(fs): '%v(%v)'\n",
 					indicator,
@@ -71,26 +68,19 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
+
 				tv.WithFilter(&pref.FilterOptions{
 					Custom: customFilter,
 				}),
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-				tv.WithHookReadDirectory(
-					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
@@ -110,7 +100,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): custom filter",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
 					Files:   8,
@@ -125,7 +115,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal(any scope): custom filter (negate)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
 					Files:   6,
@@ -141,7 +131,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal(undefined scope): custom filter",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
 					Files:   8,

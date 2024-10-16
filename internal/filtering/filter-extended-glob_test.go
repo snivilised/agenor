@@ -2,13 +2,10 @@ package filtering_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -30,7 +27,7 @@ var _ = Describe("filtering", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "rock"),
+			"rock",
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use()).To(Succeed())
@@ -44,7 +41,7 @@ var _ = Describe("filtering", Ordered, func() {
 		When("universal: filtering with extended glob", func() {
 			It("should: invoke for filtered nodes only", Label("example"),
 				func(ctx SpecContext) {
-					path := lab.Path(root, "RETRO-WAVE")
+					path := lab.Static.RetroWave
 					filterDefs := &pref.FilterOptions{
 						Node: &core.FilterDef{
 							Type:        enums.FilterTypeExtendedGlob,
@@ -55,7 +52,7 @@ var _ = Describe("filtering", Ordered, func() {
 					}
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
-							Root:         path,
+							Tree:         path,
 							Subscription: enums.SubscribeUniversal,
 							Handler: func(node *core.Node) error {
 								GinkgoWriter.Printf(
@@ -63,21 +60,14 @@ var _ = Describe("filtering", Ordered, func() {
 								)
 								return nil
 							},
-							GetTraverseFS: func(_ string) nef.TraverseFS {
+							GetTraverseFS: func(_ string) tv.TraverseFS {
 								return FS
 							},
 						},
+						tv.WithOnBegin(lab.Begin("🛡️")),
+						tv.WithOnEnd(lab.End("🏁")),
+
 						tv.WithFilter(filterDefs),
-						tv.WithHookQueryStatus(
-							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-								return qsys.Stat(lab.TrimRoot(path))
-							},
-						),
-						tv.WithHookReadDirectory(
-							func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-								return rfs.ReadDir(lab.TrimRoot(dirname))
-							},
-						),
 					)).Navigate(ctx)
 
 					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
@@ -110,10 +100,9 @@ var _ = Describe("filtering", Ordered, func() {
 				},
 			}
 
-			path := lab.Path(root, entry.Relative)
-
+			path := entry.Relative
 			callback := func(node *core.Node) error {
-				indicator := lo.Ternary(node.IsFolder(), "📁", "💠")
+				indicator := lo.Ternary(node.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
 					"===> %v Glob Filter(%v) source: '%v', item-name: '%v', item-scope(fs): '%v(%v)'\n",
 					indicator,
@@ -132,24 +121,17 @@ var _ = Describe("filtering", Ordered, func() {
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
+
 				tv.WithFilter(filterDefs),
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-				tv.WithHookReadDirectory(
-					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
