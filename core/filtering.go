@@ -141,5 +141,5 @@ var BenignNodeFilterDef = FilterDef{
 	Type:        enums.FilterTypeRegex,
 	Description: "benign allow all",
 	Pattern:     ".",
-	Scope:       enums.ScopeRoot,
+	Scope:       enums.ScopeTree,
 }

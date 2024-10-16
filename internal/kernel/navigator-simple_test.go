@@ -2,14 +2,12 @@ package kernel_test
 
 import (
 	"fmt"
-	"io/fs"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -30,8 +28,8 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
-			filepath.Join("MUSICO", "rock", "metal"),
+			lab.Static.RetroWave,
+			filepath.Join("rock", "metal"),
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use(
@@ -65,30 +63,21 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			callback := lo.Ternary(entry.Once, once,
 				lo.Ternary(entry.Visit, visitor, entry.Callback),
 			)
-			path := lab.Path(root, entry.Relative)
+			path := entry.Relative
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
 				tv.WithOnEnd(lab.End("🏁")),
+
 				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-				tv.WithHookReadDirectory(
-					func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rfs.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(entry, &lab.TestOptions{
@@ -109,7 +98,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "universal: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeUniversal,
@@ -120,9 +109,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "universal: Path contains folders",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Subscription: enums.SubscribeUniversal,
 			Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: lab.Quantities{
@@ -131,9 +120,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "universal: Path contains folders (visit)",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Visit:        true,
 			Subscription: enums.SubscribeUniversal,
 			Callback:     lab.UniversalCallback("VISIT-CONTAINS-FOLDERS"),
@@ -145,7 +134,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 		// === folders =======================================================
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "folders: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeFolders,
@@ -155,9 +144,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "folders: Path contains folders",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Subscription: enums.SubscribeFolders,
 			Callback:     lab.FoldersCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: lab.Quantities{
@@ -165,9 +154,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "folders: Path contains folders (check all invoked)",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Visit:        true,
 			Subscription: enums.SubscribeFolders,
 			Callback:     lab.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
@@ -192,7 +181,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 		// === files =========================================================
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "files: Path is leaf",
 			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 			Subscription: enums.SubscribeFiles,
@@ -203,9 +192,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "files: Path contains folders",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Subscription: enums.SubscribeFiles,
 			Callback:     lab.FilesCallback("CONTAINS-FOLDERS"),
 			ExpectedNoOf: lab.Quantities{
@@ -214,9 +203,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, Label("RETRO-WAVE"), &lab.NaviTE{
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
 			Given:        "files: Path contains folders",
-			Relative:     "RETRO-WAVE",
+			Relative:     lab.Static.RetroWave,
 			Visit:        true,
 			Subscription: enums.SubscribeFiles,
 			Callback:     lab.FilesCallback("VISIT-CONTAINS-FOLDERS"),

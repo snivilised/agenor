@@ -40,7 +40,7 @@ type (
 	SimpleHandler func()
 
 	// BeginHandler invoked before traversal begins
-	BeginHandler func(root string)
+	BeginHandler func(tree string)
 
 	// EndHandler invoked at the end of traversal
 	EndHandler func(result TraverseResult)

@@ -11,8 +11,8 @@ import (
 // any of the required properties are missing, then traversal will
 // result in an error indicating as such.
 type Using struct {
-	// Root is the path of the directory tree to be traversed
-	Root string
+	// Tree is the root of the directory tree to be traversed
+	Tree string
 
 	// Subscription indicates which file system nodes the client's
 	// callback function will be invoked for.
@@ -38,7 +38,7 @@ type Using struct {
 
 // Validate checks that the properties on Using are all valid.
 func (u Using) Validate() error {
-	if u.Root == "" {
+	if u.Tree == "" {
 		return locale.ErrUsageMissingRootPath
 	}
 

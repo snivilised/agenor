@@ -2,7 +2,6 @@ package tapable_test
 
 import (
 	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -26,7 +25,7 @@ var (
 	fakeSubPath = &core.SubPathInfo{
 		Root: root,
 		Node: &core.Node{
-			Extension: core.Root("/root", nil).Extension,
+			Extension: core.Top("/root", nil).Extension,
 		},
 	}
 )
@@ -42,7 +41,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 	BeforeAll(func() {
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
+			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
 	})
@@ -153,7 +152,7 @@ var _ = Describe("Tapable", Ordered, func() {
 			Context("Chain", func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
-						path := lab.Path(root, "RETRO-WAVE")
+						path := lab.Static.RetroWave
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -162,7 +161,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, err := o.Hooks.ReadDirectory.Invoke()(FS, lab.TrimRoot(path))
+						result, err := o.Hooks.ReadDirectory.Invoke()(FS, path)
 						Expect(err).To(Succeed())
 						Expect(result).To(
 							lab.HaveDirectoryContents(
@@ -175,7 +174,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
-						path := lab.Path(root, "RETRO-WAVE")
+						path := lab.Static.RetroWave
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -191,7 +190,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, e := o.Hooks.ReadDirectory.Invoke()(FS, lab.TrimRoot(path))
+						result, e := o.Hooks.ReadDirectory.Invoke()(FS, path)
 						Expect(e).To(Succeed())
 						Expect(result).To(
 							lab.HaveDirectoryContents(
@@ -227,7 +226,7 @@ var _ = Describe("Tapable", Ordered, func() {
 			Context("Chain", func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
-						path := lab.Path(root, "RETRO-WAVE")
+						path := lab.Static.RetroWave
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,
@@ -236,7 +235,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, err := o.Hooks.QueryStatus.Invoke()(FS, lab.TrimRoot(path))
+						_, err := o.Hooks.QueryStatus.Invoke()(FS, path)
 
 						Expect(err).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
@@ -245,7 +244,7 @@ var _ = Describe("Tapable", Ordered, func() {
 
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
-						path := lab.Path(root, "RETRO-WAVE")
+						path := lab.Static.RetroWave
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,
@@ -261,7 +260,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, e := o.Hooks.QueryStatus.Invoke()(FS, lab.TrimRoot(path))
+						_, e := o.Hooks.QueryStatus.Invoke()(FS, path)
 
 						Expect(e).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not broadcasted")

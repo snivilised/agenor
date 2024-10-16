@@ -54,7 +54,7 @@ type ExtendedGlob struct {
 // IsMatch does this node match the filter
 func (f *ExtendedGlob) IsMatch(node *core.Node) bool {
 	if f.IsApplicable(node) {
-		result := lo.TernaryF(node.IsFolder(),
+		result := lo.TernaryF(node.IsDirectory(),
 			func() bool {
 				result, _ := filepath.Match(f.baseGlob, strings.ToLower(node.Extension.Name))
 

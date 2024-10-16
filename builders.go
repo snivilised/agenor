@@ -33,7 +33,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD FILE SYSTEM & EXTENT
 	//
 	ext := bs.extent.build(
-		bs.traverseFS.Build(bs.using.Root),
+		bs.traverseFS.Build(bs.using.Tree),
 	)
 
 	// BUILD OPTIONS

@@ -40,9 +40,9 @@ func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 
 	switch {
 	case isLeaf && depth == 0:
-		result = enums.ScopeRoot | enums.ScopeLeaf
+		result = enums.ScopeTree | enums.ScopeLeaf
 	case depth == 0:
-		result = enums.ScopeRoot
+		result = enums.ScopeTree
 	case isLeaf && depth == 1:
 		result = enums.ScopeTop | enums.ScopeLeaf
 	case depth == 1:

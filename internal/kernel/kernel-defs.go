@@ -103,7 +103,7 @@ type (
 	// minimise allocations.
 	navigationStatic struct {
 		mediator *mediator
-		root     string
+		tree     string
 	}
 
 	// navigationVapour represents short-lived navigation data whose state relates

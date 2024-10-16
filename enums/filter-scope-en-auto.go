@@ -9,7 +9,7 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[ScopeUndefined-0]
-	_ = x[ScopeRoot-1]
+	_ = x[ScopeTree-1]
 	_ = x[ScopeTop-2]
 	_ = x[ScopeLeaf-4]
 	_ = x[ScopeIntermediate-8]

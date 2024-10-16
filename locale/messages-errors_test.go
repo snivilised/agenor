@@ -22,7 +22,7 @@ var _ = Describe("error messages", Ordered, func() {
 
 	BeforeAll(func() {
 		repo = lab.Repo("")
-		l10nPath = lab.Path(repo, "test/data/l10n")
+		l10nPath = lab.Join(repo, "test/data/l10n")
 
 		_, err := os.Stat(l10nPath)
 		Expect(err).To(Succeed(),

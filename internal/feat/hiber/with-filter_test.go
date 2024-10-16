@@ -2,14 +2,11 @@ package hiber_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 
 	"github.com/snivilised/traverse/core"
@@ -31,8 +28,7 @@ var _ = Describe("feature", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
-			filepath.Join("MUSICO", "edm"),
+			lab.Static.RetroWave, "edm",
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use()).To(Succeed())
@@ -44,13 +40,13 @@ var _ = Describe("feature", Ordered, func() {
 
 	DescribeTable("filter and listen both active",
 		func(ctx SpecContext, entry *hibernateTE) {
-			path := lab.Path(root, "RETRO-WAVE")
+			path := lab.Static.RetroWave
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      entry.Callback,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
@@ -91,17 +87,6 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				),
 
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-
-				tv.WithHookReadDirectory(
-					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rsys.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 				tv.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔆 Waking: '%v'\n", description)
 				}),

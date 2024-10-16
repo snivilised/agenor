@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing/fstest"
 
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
@@ -23,44 +21,43 @@ const (
 
 func Musico(verbose bool, portions ...string) (tsys *TestTraverseFS, root string) {
 	tsys = &TestTraverseFS{
-		fstest.MapFS{
-			".": &fstest.MapFile{
-				Mode: os.ModeDir,
-			},
-		},
+		fstest.MapFS{},
 	}
 
-	return tsys, Provision(
+	root = Provision(
 		NewMemWriteProvider(tsys, os.ReadFile, portions...),
 		verbose,
 		portions...,
 	)
+
+	return tsys, root
 }
 
 func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {
-	repo := Repo(filepath.Join("test", "data", "MUSICO"))
+	repo := Repo("")
+	root = filepath.Join(repo, "test", "data", "MUSICO")
+	index := Join(repo, "test/data/musico-index.xml")
 
-	if ensure(repo, provider, verbose) != nil {
+	if err := ensure(root, index, provider, verbose); err != nil {
+		fmt.Printf("provision failed %v\n", err.Error())
 		return ""
 	}
 
 	if verbose {
 		fmt.Printf("\n🤖 re-generated tree at '%v' (filters: '%v')\n\n",
-			repo, strings.Join(portions, ", "),
+			root, strings.Join(portions, ", "),
 		)
 	}
 
-	return repo
+	return root
 }
 
 // ensure
-func ensure(root string, provider *IOProvider, verbose bool) error {
-	repo := Repo("")
-	index := Path(repo, "test/data/musico-index.xml")
-	parent, _ := nef.SplitParent(root)
+func ensure(root, index string, provider *IOProvider, verbose bool) error {
 	builder := directoryTreeBuilder{
-		root:     TrimRoot(root),
-		stack:    collections.NewStackWith([]string{parent}),
+		root:     root,
+		tree:     "MUSICO",
+		stack:    collections.NewStack[string](),
 		index:    index,
 		doWrite:  doWrite,
 		provider: provider,
@@ -79,20 +76,7 @@ func ensure(root string, provider *IOProvider, verbose bool) error {
 	return builder.walk()
 }
 
-func TrimRoot(root string) string {
-	// omit leading '/', because test-fs stupidly doesn't like it,
-	// so we have to jump through hoops
-	if strings.HasPrefix(root, string(filepath.Separator)) {
-		return root[1:]
-	}
-
-	pattern := `^[a-zA-Z]:[\\/]*`
-	re := regexp.MustCompile(pattern)
-
-	return re.ReplaceAllString(root, "")
-}
-
-func NewMemWriteProvider(store *TestTraverseFS,
+func NewMemWriteProvider(fS *TestTraverseFS,
 	indexReader readFile,
 	portions ...string,
 ) *IOProvider {
@@ -124,13 +108,13 @@ func NewMemWriteProvider(store *TestTraverseFS,
 				}
 
 				if filter(name) {
-					trimmed := TrimRoot(name)
-					store.MapFS[trimmed] = &fstest.MapFile{
+					trimmed := name
+					fS.MapFS[trimmed] = &fstest.MapFile{
 						Data: data,
 						Mode: mode,
 					}
 					show(trimmed, func(path string) bool {
-						entry, ok := store.MapFS[path]
+						entry, ok := fS.MapFS[path]
 						return ok && !entry.Mode.IsDir()
 					})
 				}
@@ -145,12 +129,12 @@ func NewMemWriteProvider(store *TestTraverseFS,
 				}
 
 				if isRoot || filter(path) {
-					trimmed := TrimRoot(path)
-					store.MapFS[trimmed] = &fstest.MapFile{
+					trimmed := path
+					fS.MapFS[trimmed] = &fstest.MapFile{
 						Mode: mode | os.ModeDir,
 					}
 					show(trimmed, func(path string) bool {
-						entry, ok := store.MapFS[path]
+						entry, ok := fS.MapFS[path]
 						return ok && entry.Mode.IsDir()
 					})
 				}
@@ -251,6 +235,7 @@ func (fn matcher) match(portion string) bool {
 // directoryTreeBuilder
 type directoryTreeBuilder struct {
 	root     string
+	tree     string
 	full     string
 	stack    *collections.Stack[string]
 	index    string
@@ -310,13 +295,17 @@ func (r *directoryTreeBuilder) walk() error {
 		return err
 	}
 
-	r.full = r.root
+	r.full = r.tree
 
 	return r.dir(*top, true)
 }
 
 func (r *directoryTreeBuilder) dir(dir Directory, isRoot bool) error { //nolint:gocritic // performance is not a concern
-	r.inc(dir.Name)
+	if !isRoot {
+		// We dont to add the root because only the descendents of the root
+		// should be added
+		r.inc(dir.Name)
+	}
 
 	if r.doWrite {
 		if err := r.provider.folder.out.write(
@@ -336,7 +325,7 @@ func (r *directoryTreeBuilder) dir(dir Directory, isRoot bool) error { //nolint:
 	}
 
 	for _, file := range dir.Files {
-		full := Path(r.full, file.Name)
+		full := Join(r.full, file.Name)
 
 		if r.doWrite {
 			if err := r.provider.file.out.write(

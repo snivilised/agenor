@@ -2,15 +2,12 @@ package hiber_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
 
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -31,8 +28,7 @@ var _ = Describe("feature", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
-			filepath.Join("MUSICO", "edm"),
+			lab.Static.RetroWave, "edm",
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use()).To(Succeed())
@@ -46,10 +42,10 @@ var _ = Describe("feature", Ordered, func() {
 		When("folders: wake and sleep", func() {
 			It("🧪 should: invoke inside hibernation range", Label("example"),
 				func(ctx SpecContext) {
-					path := lab.Path(root, "RETRO-WAVE")
+					path := lab.Static.RetroWave
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
-							Root:         path,
+							Tree:         path,
 							Subscription: enums.SubscribeFolders,
 							Handler: func(node *core.Node) error {
 								GinkgoWriter.Printf(
@@ -57,10 +53,12 @@ var _ = Describe("feature", Ordered, func() {
 								)
 								return nil
 							},
-							GetTraverseFS: func(_ string) nef.TraverseFS {
+							GetTraverseFS: func(_ string) tv.TraverseFS {
 								return FS
 							},
 						},
+						tv.WithOnBegin(lab.Begin("🛡️")),
+						tv.WithOnEnd(lab.End("🏁")),
 
 						tv.WithOnWake(func(description string) {
 							GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
@@ -92,23 +90,6 @@ var _ = Describe("feature", Ordered, func() {
 						// This is only required to change the default inclusivity
 						// of the sleep condition; by default is exclusive.
 						tv.WithHibernationBehaviourInclusiveSleep(),
-
-						tv.WithHookQueryStatus(
-							func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-								return qsys.Stat(lab.TrimRoot(path))
-							},
-						),
-
-						tv.WithHookReadDirectory(
-							func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-								// This is only required because fstest.MapFS strangely
-								// can't resolve paths with a leading /. Any other program
-								// using a different file system should not need to use
-								// this hook for this purpose.
-								//
-								return rsys.ReadDir(lab.TrimRoot(dirname))
-							},
-						),
 					)).Navigate(ctx)
 
 					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders\n",
@@ -130,12 +111,9 @@ var _ = Describe("feature", Ordered, func() {
 				return nil
 			}
 
-			path := lab.Path(
-				root,
-				lo.Ternary(entry.NaviTE.Relative == "",
-					"RETRO-WAVE",
-					entry.NaviTE.Relative,
-				),
+			path := lo.Ternary(entry.NaviTE.Relative == "",
+				lab.Static.RetroWave,
+				entry.NaviTE.Relative,
 			)
 
 			client := func(node *tv.Node) error {
@@ -148,13 +126,15 @@ var _ = Describe("feature", Ordered, func() {
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      client,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
 
 				tv.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
@@ -173,17 +153,6 @@ var _ = Describe("feature", Ordered, func() {
 				),
 
 				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-
-				tv.WithHookReadDirectory(
-					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rsys.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
@@ -205,12 +174,12 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
 				Given:        "wake and sleep (folders, inclusive:default)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"Night Drive", "College",
 					"Northern Council", "Teenage Color",
 				},
-				Prohibited: []string{"RETRO-WAVE", "Chromatics",
+				Prohibited: []string{lab.Static.RetroWave, "Chromatics",
 					"Electric Youth", "Innerworld",
 				},
 				ExpectedNoOf: lab.Quantities{
@@ -238,12 +207,12 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
 				Given:        "wake and sleep (folders, excl:wake, inc:sleep, mute)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"College", "Northern Council",
 					"Teenage Color", "Electric Youth",
 				},
-				Prohibited: []string{"Night Drive", "RETRO-WAVE",
+				Prohibited: []string{"Night Drive", lab.Static.RetroWave,
 					"Chromatics", "Innerworld",
 				},
 				ExpectedNoOf: lab.Quantities{
@@ -272,12 +241,12 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
 				Given:        "wake only (folders, inclusive:default)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFolders,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
-				Prohibited: []string{"RETRO-WAVE", "Chromatics"},
+				Prohibited: []string{lab.Static.RetroWave, "Chromatics"},
 				ExpectedNoOf: lab.Quantities{
 					Folders: 6,
 				},
@@ -298,9 +267,9 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
 				Given:        "sleep only (folders, inclusive:default)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFolders,
-				Mandatory: []string{"RETRO-WAVE", "Chromatics", "Night Drive", "College",
+				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",
 					"Northern Council", "Teenage Color",
 				},
 				Prohibited: []string{"Electric Youth", "Innerworld"},
@@ -325,9 +294,9 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
 				Given:        "sleep only (folders, inclusive:default)",
-				Relative:     "RETRO-WAVE",
+				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFolders,
-				Mandatory:    []string{"RETRO-WAVE", "Chromatics"},
+				Mandatory:    []string{lab.Static.RetroWave, "Chromatics"},
 				Prohibited: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},

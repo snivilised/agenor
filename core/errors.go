@@ -127,12 +127,12 @@ var errMissingListenDetacherFunction = errors.New(
 // ❌ InvalidPeriscopeRootPath error
 
 // NewInvalidPeriscopeRootPathError creates an untranslated error to
-// indicate invalid periscope root path, ie the current path is
-// not a child directory relative to the root path.
-func NewInvalidPeriscopeRootPathError(root, current string) error {
+// indicate invalid periscope tree path, ie the current path is
+// not a child directory relative to the tree path.
+func NewInvalidPeriscopeRootPathError(tree, current string) error {
 	return errors.Wrap(
-		errInvalidPeriscopeRootPath,
-		fmt.Sprintf("root: '%v', current: '%v'", root, current),
+		errInvalidPeriscopeTreePath,
+		fmt.Sprintf("tree: '%v', current: '%v'", tree, current),
 	)
 }
 
@@ -140,11 +140,11 @@ func NewInvalidPeriscopeRootPathError(root, current string) error {
 // if the err's error tree contains the core error:
 // InvalidPeriscopeRootPathError
 func IsInvalidPeriscopeRootPathError(err error) bool {
-	return errors.Is(err, errInvalidPeriscopeRootPath)
+	return errors.Is(err, errInvalidPeriscopeTreePath)
 }
 
-var errInvalidPeriscopeRootPath = errors.New(
-	"root path can't be longer than current",
+var errInvalidPeriscopeTreePath = errors.New(
+	"tree path can't be longer than current",
 )
 
 // ❌ ResumeControllerNotSet error

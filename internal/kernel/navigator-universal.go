@@ -60,7 +60,7 @@ func (n *navigatorUniversal) inspect(ns *navigationStatic,
 		err error
 	)
 
-	if current.IsFolder() {
+	if current.IsDirectory() {
 		vapour.cargo, err = read(ns.mediator.resources.FS.T,
 			n.ro,
 			current.Path,

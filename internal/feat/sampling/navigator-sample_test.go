@@ -2,13 +2,10 @@ package sampling_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -31,8 +28,7 @@ var _ = Describe("feature", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
-			filepath.Join("MUSICO", "edm"),
+			lab.Static.RetroWave, "edm",
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use()).To(Succeed())
@@ -45,10 +41,10 @@ var _ = Describe("feature", Ordered, func() {
 	Context("comprehension", func() {
 		When("universal: slice sample", func() {
 			It("🧪 should: foo", Label("example"), func(ctx SpecContext) {
-				path := lab.Path(root, "RETRO-WAVE")
+				path := lab.Static.RetroWave
 				result, _ := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
-						Root:         path,
+						Tree:         path,
 						Subscription: enums.SubscribeUniversal,
 						Handler: func(node *core.Node) error {
 							GinkgoWriter.Printf(
@@ -56,10 +52,13 @@ var _ = Describe("feature", Ordered, func() {
 							)
 							return nil
 						},
-						GetTraverseFS: func(_ string) nef.TraverseFS {
+						GetTraverseFS: func(_ string) tv.TraverseFS {
 							return FS
 						},
 					},
+					tv.WithOnBegin(lab.Begin("🛡️")),
+					tv.WithOnEnd(lab.End("🏁")),
+
 					tv.WithSamplingOptions(&pref.SamplingOptions{
 						Type: enums.SampleTypeSlice,
 						NoOf: pref.EntryQuantities{
@@ -67,17 +66,6 @@ var _ = Describe("feature", Ordered, func() {
 							Folders: 2,
 						},
 					}),
-
-					tv.WithHookQueryStatus(
-						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-							return qsys.Stat(lab.TrimRoot(path))
-						},
-					),
-					tv.WithHookReadDirectory(
-						func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-							return rsys.ReadDir(lab.TrimRoot(dirname))
-						},
-					),
 				)).Navigate(ctx)
 
 				GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
@@ -99,12 +87,9 @@ var _ = Describe("feature", Ordered, func() {
 				return nil
 			}
 
-			path := lab.Path(
-				root,
-				lo.Ternary(entry.NaviTE.Relative == "",
-					"RETRO-WAVE",
-					entry.NaviTE.Relative,
-				),
+			path := lo.Ternary(entry.NaviTE.Relative == "",
+				lab.Static.RetroWave,
+				entry.NaviTE.Relative,
 			)
 
 			callback := func(node *tv.Node) error {
@@ -121,13 +106,16 @@ var _ = Describe("feature", Ordered, func() {
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
-					Root:         path,
+					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) nef.TraverseFS {
+					GetTraverseFS: func(_ string) tv.TraverseFS {
 						return FS
 					},
 				},
+				tv.WithOnBegin(lab.Begin("🛡️")),
+				tv.WithOnEnd(lab.End("🏁")),
+
 				tv.WithSamplingOptions(&pref.SamplingOptions{
 					Type:      entry.SampleType,
 					InReverse: entry.Reverse,
@@ -160,16 +148,6 @@ var _ = Describe("feature", Ordered, func() {
 					})
 				}),
 				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
-				tv.WithHookQueryStatus(
-					func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-						return qsys.Stat(lab.TrimRoot(path))
-					},
-				),
-				tv.WithHookReadDirectory(
-					func(rsys fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-						return rsys.ReadDir(lab.TrimRoot(dirname))
-					},
-				),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{

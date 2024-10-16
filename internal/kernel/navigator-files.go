@@ -40,7 +40,7 @@ func (n *navigatorFiles) Traverse(ctx context.Context,
 	//
 	vapour, err := n.inspect(ns, current)
 
-	if !current.IsFolder() {
+	if !current.IsDirectory() {
 		// Effectively, this is the file only filter
 		//
 		return false, ns.mediator.Invoke(current, vapour)
@@ -68,7 +68,7 @@ func (n *navigatorFiles) inspect(ns *navigationStatic,
 		err error
 	)
 
-	if vapour.present.IsFolder() {
+	if vapour.present.IsDirectory() {
 		vapour.cargo, err = read(ns.mediator.resources.FS.T,
 			n.ro,
 			current.Path,

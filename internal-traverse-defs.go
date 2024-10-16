@@ -3,7 +3,6 @@ package tv
 import (
 	"io/fs"
 
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -57,12 +56,12 @@ func (fn filesystem) build(path string) fs.FS {
 }
 
 type extentBuilder interface {
-	build(tsys nef.TraverseFS) extent
+	build(tsys TraverseFS) extent
 }
 
-type extension func(tsys nef.TraverseFS) extent
+type extension func(tsys TraverseFS) extent
 
-func (fn extension) build(tsys nef.TraverseFS) extent {
+func (fn extension) build(tsys TraverseFS) extent {
 	return fn(tsys)
 }
 

@@ -31,7 +31,7 @@ func matchNext(filter core.TraverseFilter,
 	matched := filter.IsMatch(node)
 
 	if !matched {
-		filteredOutMetric := lo.Ternary(node.IsFolder(),
+		filteredOutMetric := lo.Ternary(node.IsDirectory(),
 			enums.MetricNoFoldersFilteredOut,
 			enums.MetricNoFilesFilteredOut,
 		)

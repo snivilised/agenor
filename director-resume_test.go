@@ -11,7 +11,6 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
@@ -70,7 +69,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						Using: tv.Using{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
-							GetTraverseFS: func(_ string) nef.TraverseFS {
+							GetTraverseFS: func(_ string) tv.TraverseFS {
 								return emptyFS
 							},
 						},

@@ -2,14 +2,11 @@ package kernel_test
 
 import (
 	"fmt"
-	"io/fs"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -29,7 +26,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 		)
 
 		FS, root = lab.Musico(verbose,
-			filepath.Join("MUSICO", "RETRO-WAVE"),
+			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
 		Expect(li18ngo.Use(
@@ -56,27 +53,20 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 					return entry.Callback(node)
 				}
-				path := lab.Path(root, entry.Relative)
+				path := entry.Relative
 				result, err := tv.Walk().Configure().Extent(tv.Prime(
 					&tv.Using{
-						Root:         path,
+						Tree:         path,
 						Subscription: entry.Subscription,
 						Handler:      once,
-						GetTraverseFS: func(_ string) nef.TraverseFS {
+						GetTraverseFS: func(_ string) tv.TraverseFS {
 							return FS
 						},
 					},
+					tv.WithOnBegin(lab.Begin("🛡️")),
+					tv.WithOnEnd(lab.End("🏁")),
+
 					tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
-					tv.WithHookQueryStatus(
-						func(qsys fs.StatFS, path string) (fs.FileInfo, error) {
-							return qsys.Stat(lab.TrimRoot(path))
-						},
-					),
-					tv.WithHookReadDirectory(
-						func(rfs fs.ReadDirFS, dirname string) ([]fs.DirEntry, error) {
-							return rfs.ReadDir(lab.TrimRoot(dirname))
-						},
-					),
 				)).Navigate(ctx)
 
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
@@ -112,7 +102,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			Entry(nil, &lab.FilterTE{
 				NaviTE: lab.NaviTE{
 					Given:        "folders(with files): Path contains folders (check all invoked)",
-					Relative:     "RETRO-WAVE",
+					Relative:     lab.Static.RetroWave,
 					Visit:        true,
 					Subscription: enums.SubscribeFoldersWithFiles,
 					ExpectedNoOf: lab.Quantities{
