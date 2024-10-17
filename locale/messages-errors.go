@@ -375,16 +375,16 @@ var ErrPolyFilterIsInvalid = PolyFilterIsInvalidError{
 // ❌ UsageMissingRootPath
 
 // UsageMissingRootPathTemplData
-type UsageMissingRootPathErrorTemplData struct {
+type UsageMissingTreePathErrorTemplData struct {
 	traverseTemplData
 }
 
 // Message
-func (td UsageMissingRootPathErrorTemplData) Message() *i18n.Message {
+func (td UsageMissingTreePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-root-path.error",
-		Description: "usage missing root path",
-		Other:       "usage missing root path",
+		ID:          "usage-missing-tree-path.error",
+		Description: "usage missing tree path",
+		Other:       "usage missing tree path",
 	}
 }
 
@@ -394,7 +394,7 @@ type UsageMissingRootPathError struct {
 
 var ErrUsageMissingRootPath = UsageMissingRootPathError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: UsageMissingRootPathErrorTemplData{},
+		Data: UsageMissingTreePathErrorTemplData{},
 	},
 }
 

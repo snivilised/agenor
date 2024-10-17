@@ -11,7 +11,9 @@ import (
 // any of the required properties are missing, then traversal will
 // result in an error indicating as such.
 type Using struct {
-	// Tree is the root of the directory tree to be traversed
+	// Tree is the root of the directory tree to be traversed and
+	// should not be confused with the Root of the file system when
+	// the file system in use is relative.
 	Tree string
 
 	// Subscription indicates which file system nodes the client's

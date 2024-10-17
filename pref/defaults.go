@@ -70,7 +70,7 @@ func difference(parent, child string) string {
 
 // RootItemSubPathHook
 func RootItemSubPathHook(info *core.SubPathInfo) string {
-	return difference(info.Root, info.Node.Path)
+	return difference(info.Tree, info.Node.Path)
 }
 
 // DefaultSubPathHook
@@ -79,7 +79,7 @@ func DefaultSubPathHook(info *core.SubPathInfo) string {
 		return lo.Ternary(info.KeepTrailingSep, string(filepath.Separator), "")
 	}
 
-	return difference(info.Root, info.Node.Extension.Parent)
+	return difference(info.Tree, info.Node.Extension.Parent)
 }
 
 func DefaultFaultHandler(*NavigationFault) error {

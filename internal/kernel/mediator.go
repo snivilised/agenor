@@ -17,7 +17,7 @@ import (
 // mediator controls traversal events, sends notifications and emits
 // life-cycle events
 type mediator struct {
-	root         string
+	tree         string
 	subscription enums.Subscription
 	using        *pref.Using
 	impl         NavigatorImpl
@@ -45,7 +45,7 @@ func newMediator(info *mediatorInfo) *mediator {
 	)
 
 	return &mediator{
-		root:         info.using.Tree,
+		tree:         info.using.Tree,
 		subscription: info.using.Subscription,
 		using:        info.using,
 		impl:         info.impl,
@@ -95,7 +95,7 @@ func (m *mediator) Arrange(active, order []enums.Role) {
 func (m *mediator) Ignite(ignition *types.Ignition) {
 	m.impl.Ignite(ignition)
 	m.resources.Binder.Controls.Begin.Dispatch()(&cycle.BeginState{
-		Tree: m.root,
+		Tree: m.tree,
 	})
 }
 
@@ -106,7 +106,7 @@ func (m *mediator) Conclude(result core.TraverseResult) {
 func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	result, err := m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
-		tree:     m.root,
+		tree:     m.tree,
 	})
 
 	if !IsBenignError(err) && m.o != nil {
@@ -116,12 +116,12 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	return result, err
 }
 
-func (m *mediator) Spawn(ctx context.Context, root string) (core.TraverseResult, error) {
+func (m *mediator) Spawn(ctx context.Context, tree string) (core.TraverseResult, error) {
 	// TODO: send a message indicating spawn
 	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
-		tree:     root,
+		tree:     tree,
 	})
 }
 

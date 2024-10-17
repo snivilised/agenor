@@ -60,7 +60,7 @@ type (
 		Guardian
 		Arrangeable
 		Navigate(ctx context.Context) (core.TraverseResult, error)
-		Spawn(ctx context.Context, root string) (core.TraverseResult, error)
+		Spawn(ctx context.Context, tree string) (core.TraverseResult, error)
 		Supervisor() *measure.Supervisor
 	}
 
@@ -115,8 +115,8 @@ type (
 	}
 
 	// ActiveState
-	ActiveState struct {
-		Root        string
+	ActiveState struct { // keep in sync with test-restore.DEFAULT.json
+		Tree        string
 		Hibernation enums.Hibernation
 		CurrentPath string
 		Depth       int

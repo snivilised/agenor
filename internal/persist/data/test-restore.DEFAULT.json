@@ -39,7 +39,7 @@
     }
   },
   "Active": {
-    "Root": "json/marshal",
+    "Tree": "json/marshal",
     "Hibernation": 1,
     "CurrentPath": "/top/a/b/c",
     "Depth": 3

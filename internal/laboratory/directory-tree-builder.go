@@ -38,7 +38,7 @@ func Provision(provider *IOProvider, verbose bool, portions ...string) (root str
 	root = filepath.Join(repo, "test", "data", "MUSICO")
 	index := Join(repo, "test/data/musico-index.xml")
 
-	if err := ensure(root, index, provider, verbose); err != nil {
+	if err := ensure(index, provider, verbose); err != nil {
 		fmt.Printf("provision failed %v\n", err.Error())
 		return ""
 	}
@@ -53,9 +53,8 @@ func Provision(provider *IOProvider, verbose bool, portions ...string) (root str
 }
 
 // ensure
-func ensure(root, index string, provider *IOProvider, verbose bool) error {
+func ensure(index string, provider *IOProvider, verbose bool) error {
 	builder := directoryTreeBuilder{
-		root:     root,
 		tree:     "MUSICO",
 		stack:    collections.NewStack[string](),
 		index:    index,
@@ -234,7 +233,6 @@ func (fn matcher) match(portion string) bool {
 
 // directoryTreeBuilder
 type directoryTreeBuilder struct {
-	root     string
 	tree     string
 	full     string
 	stack    *collections.Stack[string]

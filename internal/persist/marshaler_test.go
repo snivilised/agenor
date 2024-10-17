@@ -51,7 +51,7 @@ func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 	request := &persist.MarshalRequest{
 		O: o,
 		Active: &types.ActiveState{
-			Root:        destination,
+			Tree:        destination,
 			Hibernation: enums.HibernationPending,
 			CurrentPath: "/top/a/b/c",
 			Depth:       3,

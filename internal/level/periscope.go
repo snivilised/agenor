@@ -33,7 +33,7 @@ func Restore(offset, depth int) *Periscope {
 func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 	result := enums.ScopeIntermediate
 
-	// Root=0
+	// Tree=0
 	// Top=1
 	//
 	depth := p.Depth()
@@ -58,12 +58,12 @@ func (p *Periscope) Depth() int {
 	return p.offset + p.depth - 1
 }
 
-func (p *Periscope) Delta(root, current string) (err error) {
-	rootSize := len(strings.Split(root, string(filepath.Separator)))
+func (p *Periscope) Delta(tree, current string) (err error) {
+	rootSize := len(strings.Split(tree, string(filepath.Separator)))
 	currentSize := len(strings.Split(current, string(filepath.Separator)))
 
 	if rootSize > currentSize {
-		return core.NewInvalidPeriscopeRootPathError(root, current)
+		return core.NewInvalidPeriscopeRootPathError(tree, current)
 	}
 
 	p.offset = currentSize - rootSize

@@ -13,6 +13,6 @@ func TestKernel(t *testing.T) {
 }
 
 const (
-	RootPath    = "traversal-root-path"
+	RootPath    = "traversal-tree-path"
 	RestorePath = "/from-restore-path"
 )
