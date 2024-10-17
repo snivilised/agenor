@@ -27,7 +27,7 @@ var _ = Describe("director error", Ordered, func() {
 	var handler tv.Client
 
 	BeforeAll(func() {
-		handler = func(_ *tv.Node) error {
+		handler = func(_ tv.Servant) error {
 			return nil
 		}
 		Expect(li18ngo.Use(
@@ -120,7 +120,7 @@ var _ = Describe("director error", Ordered, func() {
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Tree: TreePath,
-					Handler: func(_ *tv.Node) error {
+					Handler: func(_ tv.Servant) error {
 						return nil
 					},
 				},
@@ -141,7 +141,7 @@ var _ = Describe("director error", Ordered, func() {
 				&tv.Using{
 					Tree:         TreePath,
 					Subscription: tv.SubscribeFiles,
-					Handler: func(_ *tv.Node) error {
+					Handler: func(_ tv.Servant) error {
 						return nil
 					},
 				},
@@ -166,7 +166,7 @@ var _ = Describe("director error", Ordered, func() {
 			_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 				&tv.Using{
 					Tree: TreePath,
-					Handler: func(_ *tv.Node) error {
+					Handler: func(_ tv.Servant) error {
 						return nil
 					},
 				},
@@ -186,7 +186,7 @@ var _ = Describe("director error", Ordered, func() {
 			_, _ = tv.Walk().Configure().Extent(tv.Prime(
 				&tv.Using{
 					Tree: TreePath,
-					Handler: func(_ *tv.Node) error {
+					Handler: func(_ tv.Servant) error {
 						return nil
 					},
 				},

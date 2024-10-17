@@ -47,7 +47,8 @@ var _ = Describe("feature", Ordered, func() {
 						&tv.Using{
 							Tree:         path,
 							Subscription: enums.SubscribeFolders,
-							Handler: func(node *core.Node) error {
+							Handler: func(servant tv.Servant) error {
+								node := servant.Node()
 								GinkgoWriter.Printf(
 									"---> 🍯 EXAMPLE-HIBERNATE-CALLBACK: '%v'\n", node.Path,
 								)
@@ -116,7 +117,8 @@ var _ = Describe("feature", Ordered, func() {
 				entry.NaviTE.Relative,
 			)
 
-			client := func(node *tv.Node) error {
+			client := func(servant tv.Servant) error {
+				node := servant.Node()
 				GinkgoWriter.Printf(
 					"---> 🌊 HIBERNATE-CALLBACK: '%v'\n", node.Path,
 				)

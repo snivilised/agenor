@@ -19,10 +19,10 @@ func (s *customScheme) create() error {
 	return s.filter.Validate()
 }
 
-func (s *customScheme) next(node *core.Node,
+func (s *customScheme) next(servant core.Servant,
 	_ types.Inspection,
 ) (bool, error) {
-	return matchNext(s.filter, node, s.crate)
+	return matchNext(s.filter, servant.Node(), s.crate)
 }
 
 func matchNext(filter core.TraverseFilter,

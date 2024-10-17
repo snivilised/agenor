@@ -56,13 +56,13 @@ func (fn filesystem) build(path string) fs.FS {
 }
 
 type extentBuilder interface {
-	build(tsys TraverseFS) extent
+	build(fS TraverseFS) extent
 }
 
-type extension func(tsys TraverseFS) extent
+type extension func(fS TraverseFS) extent
 
-func (fn extension) build(tsys TraverseFS) extent {
-	return fn(tsys)
+func (fn extension) build(fS TraverseFS) extent {
+	return fn(fS)
 }
 
 // We need an entity that manages the decoration of the client handler. The

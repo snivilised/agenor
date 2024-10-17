@@ -33,11 +33,11 @@ func Normalise(p string) string {
 }
 
 func Because(name, because string) string {
-	return fmt.Sprintf("❌ for item named: '%v', because: '%v'", name, because)
+	return fmt.Sprintf("❌ for node named: '%v', because: '%v'", name, because)
 }
 
 func Reason(name string) string {
-	return fmt.Sprintf("❌ for item named: '%v'", name)
+	return fmt.Sprintf("❌ for node named: '%v'", name)
 }
 
 func Log() string {

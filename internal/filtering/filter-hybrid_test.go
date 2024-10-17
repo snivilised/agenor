@@ -60,20 +60,21 @@ var _ = Describe("feature", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(item *core.Node) error {
-				actualNoChildren := len(item.Children)
+			callback := func(servant tv.Servant) error {
+				node := servant.Node()
+				actualNoChildren := len(node.Children)
 				GinkgoWriter.Printf(
 					"===> 💠 Child Glob Filter(%v, children: %v)"+
 						"source: '%v', node-name: '%v', node-scope: '%v', depth: '%v'\n",
 					childFilter.Description(),
 					actualNoChildren,
 					childFilter.Source(),
-					item.Extension.Name,
-					item.Extension.Scope,
-					item.Extension.Depth,
+					node.Extension.Name,
+					node.Extension.Scope,
+					node.Extension.Depth,
 				)
 
-				recording[item.Extension.Name] = len(item.Children)
+				recording[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 

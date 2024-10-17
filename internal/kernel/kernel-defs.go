@@ -27,7 +27,7 @@ type (
 		// Traverse
 		Traverse(ctx context.Context,
 			ns *navigationStatic,
-			current *core.Node,
+			servant core.Servant,
 		) (bool, error)
 
 		// Result
@@ -89,7 +89,7 @@ type (
 
 	// Invokable
 	Invokable interface {
-		Invoke(node *core.Node, inspection types.Inspection) error
+		Invoke(servant core.Servant, inspection types.Inspection) error
 	}
 
 	// Mutant represents the mutable interface to the Guardian
@@ -185,8 +185,10 @@ func (v *navigationVapour) AssignChildren(children []fs.DirEntry) {
 	v.present.Children = children
 }
 
-type NodeInvoker func(node *core.Node, inspection types.Inspection) error
+type NodeInvoker func(servant core.Servant, inspection types.Inspection) error
 
-func (fn NodeInvoker) Invoke(node *core.Node, inspection types.Inspection) error {
-	return fn(node, inspection)
+func (fn NodeInvoker) Invoke(servant core.Servant,
+	inspection types.Inspection,
+) error {
+	return fn(servant, inspection)
 }

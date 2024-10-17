@@ -20,8 +20,9 @@ func (n *navigatorUniversal) Top(ctx context.Context,
 
 func (n *navigatorUniversal) Traverse(ctx context.Context,
 	ns *navigationStatic,
-	current *core.Node,
+	servant core.Servant,
 ) (bool, error) {
+	current := servant.Node()
 	descended := ns.mediator.descend(current)
 
 	defer func(permit bool) {
@@ -32,9 +33,9 @@ func (n *navigatorUniversal) Traverse(ctx context.Context,
 		return continueTraversal, nil
 	}
 
-	vapour, err := n.inspect(ns, current)
+	vapour, err := n.inspect(ns, servant)
 
-	if e := ns.mediator.Invoke(current, vapour); e != nil {
+	if e := ns.mediator.Invoke(servant, vapour); e != nil {
 		return continueTraversal, e
 	}
 
@@ -50,10 +51,11 @@ func (n *navigatorUniversal) Traverse(ctx context.Context,
 }
 
 func (n *navigatorUniversal) inspect(ns *navigationStatic,
-	current *core.Node,
+	servant core.Servant,
 ) (inspection, error) {
 	var (
-		vapour = &navigationVapour{
+		current = servant.Node()
+		vapour  = &navigationVapour{
 			ns:      ns,
 			present: current,
 		}

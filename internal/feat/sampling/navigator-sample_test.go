@@ -46,7 +46,8 @@ var _ = Describe("feature", Ordered, func() {
 					&tv.Using{
 						Tree:         path,
 						Subscription: enums.SubscribeUniversal,
-						Handler: func(node *core.Node) error {
+						Handler: func(servant tv.Servant) error {
+							node := servant.Node()
 							GinkgoWriter.Printf(
 								"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
 							)
@@ -92,7 +93,8 @@ var _ = Describe("feature", Ordered, func() {
 				entry.NaviTE.Relative,
 			)
 
-			callback := func(node *tv.Node) error {
+			callback := func(servant tv.Servant) error {
+				node := servant.Node()
 				GinkgoWriter.Printf(
 					"---> 🌊 SAMPLE-CALLBACK: '%v'\n", node.Path,
 				)

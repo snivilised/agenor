@@ -29,8 +29,8 @@ func (s *nativeScheme) create() error {
 	return nil
 }
 
-func (s *nativeScheme) next(node *core.Node,
+func (s *nativeScheme) next(servant core.Servant,
 	_ types.Inspection,
 ) (bool, error) {
-	return matchNext(s.filter, node, s.crate)
+	return matchNext(s.filter, servant.Node(), s.crate)
 }

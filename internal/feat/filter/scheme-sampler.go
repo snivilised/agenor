@@ -38,9 +38,11 @@ func (s *samplerScheme) create() error {
 	return filter.Validate()
 }
 
-func (s *samplerScheme) next(node *core.Node,
+func (s *samplerScheme) next(servant core.Servant,
 	inspection types.Inspection,
 ) (bool, error) {
+	node := servant.Node()
+
 	if node.Extension.Scope.IsTree() {
 		matching := s.filter.Matching(
 			[]fs.DirEntry{nef.FromFileInfo(node.Info)},

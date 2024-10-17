@@ -118,7 +118,8 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "wake, then apply filter until the end",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(node *core.Node) error {
+				Callback: func(servant tv.Servant) error {
+					node := servant.Node()
 					GinkgoWriter.Printf("---> WAKE-HIBERNATE-AND-FILTER-😵‍💫: '%v'\n", node.Path)
 
 					return nil
@@ -142,7 +143,8 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "apply filter until sleep",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(node *core.Node) error {
+				Callback: func(servant tv.Servant) error {
+					node := servant.Node()
 					GinkgoWriter.Printf("---> SLEEP-HIBERNATE-AND-FILTER-😴: '%v'\n", node.Path)
 
 					return nil
@@ -166,7 +168,8 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "apply filter within hibernation range",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(node *core.Node) error {
+				Callback: func(servant tv.Servant) error {
+					node := servant.Node()
 					GinkgoWriter.Printf("---> WAKE/SLEEP-HIBERNATE-AND-FILTER-😴: '%v'\n", node.Path)
 
 					return nil

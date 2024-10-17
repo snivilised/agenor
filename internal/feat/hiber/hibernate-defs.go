@@ -29,7 +29,9 @@ func RestoreOptions() {
 }
 
 type (
-	nextFn func(node *core.Node, inspection types.Inspection) (bool, error)
+	nextFn func(servant core.Servant, node *core.Node,
+		inspection types.Inspection,
+	) (bool, error)
 
 	state struct {
 		next nextFn
@@ -43,7 +45,9 @@ type (
 
 	profile interface {
 		init(controls *cycle.Controls) error
-		next(node *core.Node, inspection types.Inspection) (bool, error)
+		next(servant core.Servant, node *core.Node,
+			inspection types.Inspection,
+		) (bool, error)
 	}
 
 	common struct {

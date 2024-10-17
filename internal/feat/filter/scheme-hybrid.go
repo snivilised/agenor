@@ -52,16 +52,16 @@ func (s *hybridScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	}
 }
 
-func (s *hybridScheme) next(node *core.Node,
+func (s *hybridScheme) next(servant core.Servant,
 	inspection types.Inspection,
 ) (bool, error) {
 	if s.primary != nil {
-		invokeNext, err := s.primary.next(node, inspection)
+		invokeNext, err := s.primary.next(servant, inspection)
 
 		if invokeNext && s.nanny != nil {
 			// The nanny has no say in wether the next link is invoked,
 			// therefore we ignore its next result
-			_, err := s.nanny.next(node, inspection)
+			_, err := s.nanny.next(servant, inspection)
 
 			return invokeNext, err
 		}

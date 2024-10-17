@@ -43,8 +43,10 @@ func (p *plugin) Register(kc types.KernelController) error {
 	return p.scheme.create()
 }
 
-func (p *plugin) Next(node *core.Node, inspection types.Inspection) (bool, error) {
-	return p.scheme.next(node, inspection)
+func (p *plugin) Next(servant core.Servant,
+	inspection types.Inspection,
+) (bool, error) {
+	return p.scheme.next(servant, inspection)
 }
 
 func (p *plugin) Init(pi *types.PluginInit) error {

@@ -16,8 +16,10 @@ type Plugin struct {
 	IfResult core.ResultCompletion
 }
 
-func (p *Plugin) Next(node *core.Node, inspection types.Inspection) (bool, error) {
-	_, _ = node, inspection
+func (p *Plugin) Next(servant core.Servant,
+	inspection types.Inspection,
+) (bool, error) {
+	_, _ = servant, inspection
 	// apply the wake filter
 
 	return true, nil

@@ -32,8 +32,10 @@ type plugin struct {
 	profile profile
 }
 
-func (p *plugin) Next(node *core.Node, inspection types.Inspection) (bool, error) {
-	return p.profile.next(node, inspection)
+func (p *plugin) Next(servant core.Servant,
+	inspection types.Inspection,
+) (bool, error) {
+	return p.profile.next(servant, servant.Node(), inspection)
 }
 
 func (p *plugin) Init(pi *types.PluginInit) error {

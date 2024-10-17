@@ -60,7 +60,9 @@ func (n *navigatorAgent) top(ctx context.Context,
 		},
 		func() error {
 			_, te := ns.mediator.impl.Traverse(ctx, ns,
-				core.Top(ns.tree, info),
+				servant{
+					node: core.Top(ns.tree, info),
+				},
 			)
 
 			return te
@@ -68,13 +70,6 @@ func (n *navigatorAgent) top(ctx context.Context,
 	)
 
 	return ns.mediator.impl.Result(ctx, err), err
-}
-
-func (n *navigatorAgent) Traverse(context.Context,
-	*navigationStatic,
-	*core.Node,
-) (bool, error) {
-	return continueTraversal, nil
 }
 
 // Result is the single point at which a Result is constructed. Due to
@@ -128,18 +123,18 @@ func (n *navigatorAgent) travel(ctx context.Context,
 
 		// TODO: check sampling; should happen transparently, by plugin
 
-		current := core.New(
-			path,
-			entry,
-			info,
-			parent,
-			e,
-		)
-
 		// TODO: ok for Travel to by-pass mediator?
 		//
 		if progress, err := ns.mediator.impl.Traverse(
-			ctx, ns, current,
+			ctx, ns, servant{
+				node: core.New(
+					path,
+					entry,
+					info,
+					parent,
+					e,
+				),
+			},
 		); !progress {
 			if err != nil {
 				if errors.Is(err, fs.SkipDir) {
@@ -148,7 +143,7 @@ func (n *navigatorAgent) travel(ctx context.Context,
 					// skipTraversal, what we're saying is that we want to skip
 					// processing all successive siblings but continue traversal.
 					// The !progress indicates we're skipping the remaining
-					// processing of all of the parent item's remaining children.
+					// processing of all of the parent node's remaining children.
 					// (see the ✨ below ...)
 					//
 					return skipTraversal, err

@@ -20,8 +20,9 @@ func (n *navigatorFiles) Top(ctx context.Context,
 
 func (n *navigatorFiles) Traverse(ctx context.Context,
 	ns *navigationStatic,
-	current *core.Node,
+	servant core.Servant,
 ) (bool, error) {
+	current := servant.Node()
 	descended := ns.mediator.descend(current)
 
 	defer func(permit bool) {
@@ -38,12 +39,12 @@ func (n *navigatorFiles) Traverse(ctx context.Context,
 	// this case, the client should use the OnDescend callback (yet to be implemented) and
 	// return SkipDir from there.
 	//
-	vapour, err := n.inspect(ns, current)
+	vapour, err := n.inspect(ns, servant)
 
 	if !current.IsDirectory() {
 		// Effectively, this is the file only filter
 		//
-		return false, ns.mediator.Invoke(current, vapour)
+		return false, ns.mediator.Invoke(servant, vapour)
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(
@@ -58,10 +59,11 @@ func (n *navigatorFiles) Traverse(ctx context.Context,
 }
 
 func (n *navigatorFiles) inspect(ns *navigationStatic,
-	current *core.Node,
+	servant core.Servant,
 ) (inspection, error) {
 	var (
-		vapour = &navigationVapour{
+		current = servant.Node()
+		vapour  = &navigationVapour{
 			ns:      ns,
 			present: current,
 		}

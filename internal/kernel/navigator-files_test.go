@@ -40,7 +40,7 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 					&tv.Using{
 						Tree:         RootPath,
 						Subscription: tv.SubscribeFiles,
-						Handler: func(_ *tv.Node) error {
+						Handler: func(_ tv.Servant) error {
 							return nil
 						},
 					},
