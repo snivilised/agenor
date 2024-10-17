@@ -19,7 +19,7 @@ func _() {
 }
 
 const (
-	_FilterScope_name_0 = "undefined-scoperoot-scopetop-scope"
+	_FilterScope_name_0 = "undefined-scopetree-scopetop-scope"
 	_FilterScope_name_1 = "leaf-scope"
 	_FilterScope_name_2 = "intermediate-scope"
 	_FilterScope_name_3 = "file-scope"
