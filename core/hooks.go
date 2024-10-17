@@ -35,7 +35,7 @@ type (
 	)
 
 	SubPathInfo struct {
-		Root            string
+		Tree            string
 		Node            *Node
 		KeepTrailingSep bool
 	}

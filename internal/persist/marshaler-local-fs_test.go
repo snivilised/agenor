@@ -57,7 +57,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 					jo, err := persist.Marshal(&persist.MarshalRequest{
 						O: o,
 						Active: &types.ActiveState{
-							Root:        destination,
+							Tree:        destination,
 							Hibernation: enums.HibernationPending,
 							CurrentPath: "/top/a/b/c",
 							Depth:       3,

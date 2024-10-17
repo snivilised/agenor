@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	root      = "/traversal-root-path"
+	tree      = "/traversal-tree-path"
 	spoofed   = "spoofed"
 	respoofed = "re-spoofed"
 	verbose   = false
@@ -23,9 +23,9 @@ const (
 
 var (
 	fakeSubPath = &core.SubPathInfo{
-		Root: root,
+		Tree: tree,
 		Node: &core.Node{
-			Extension: core.Top("/root", nil).Extension,
+			Extension: core.Top("/tree", nil).Extension,
 		},
 	}
 )
@@ -35,7 +35,7 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
-		FS      *lab.TestTraverseFS // don't forget to use TrimRoot
+		FS      *lab.TestTraverseFS
 		root    string
 	)
 

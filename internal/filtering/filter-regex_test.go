@@ -259,10 +259,10 @@ var _ = Describe("feature", Ordered, func() {
 			IfNotApplicable: enums.TriStateBoolTrue,
 		}),
 
-		XEntry(nil, &lab.FilterTE{
+		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders(top): regex filter (ifNotApplicable=false)",
-				Relative:     "", // oops, cant be empty
+				Relative:     ".",
 				Subscription: enums.SubscribeFolders,
 				Mandatory:    []string{"PROGRESSIVE-HOUSE"},
 				Prohibited:   []string{"Blue Amazon", "The Javelin"},

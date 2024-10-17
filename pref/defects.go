@@ -23,7 +23,7 @@ type (
 	Rescuer func()
 
 	// FaultHandler is called to handle an error that occurs when Stating
-	// the root folder. When an error occurs, traversal terminates
+	// the tree folder. When an error occurs, traversal terminates
 	// immediately. The handler specified allows custom functionality
 	// when an error occurs here.
 	FaultHandler interface {
@@ -66,7 +66,7 @@ func (fn Asker) Ask(current *core.Node, contents core.DirectoryContents, err err
 }
 
 // WithFaultHandler defines a custom handler to handle an error that occurs
-// when Stating the root folder. When an error occurs, traversal terminates
+// when 'Stat'ing the tree folder. When an error occurs, traversal terminates
 // immediately. The handler specified allows custom functionality to be invoked
 // when an error occurs here.
 func WithFaultHandler(handler FaultHandler) Option {
