@@ -35,7 +35,9 @@ func (s *nannyScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 	s.common.init(pi, crate)
 }
 
-func (s *nannyScheme) next(_ *core.Node, inspection types.Inspection) (bool, error) {
+func (s *nannyScheme) next(_ core.Servant,
+	inspection types.Inspection,
+) (bool, error) {
 	files := inspection.Sort(enums.EntryTypeFile)
 	matching := s.filter.Matching(files)
 

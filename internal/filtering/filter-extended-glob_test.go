@@ -54,7 +54,8 @@ var _ = Describe("filtering", Ordered, func() {
 						&tv.Using{
 							Tree:         path,
 							Subscription: enums.SubscribeUniversal,
-							Handler: func(node *core.Node) error {
+							Handler: func(servant tv.Servant) error {
+								node := servant.Node()
 								GinkgoWriter.Printf(
 									"---> 🍯 EXAMPLE-EXTENDED-GLOB-FILTER-CALLBACK: '%v'\n", node.Path,
 								)
@@ -101,10 +102,11 @@ var _ = Describe("filtering", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(node *core.Node) error {
+			callback := func(servant tv.Servant) error {
+				node := servant.Node()
 				indicator := lo.Ternary(node.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
-					"===> %v Glob Filter(%v) source: '%v', item-name: '%v', item-scope(fs): '%v(%v)'\n",
+					"===> %v Glob Filter(%v) source: '%v', node-name: '%v', node-scope(fs): '%v(%v)'\n",
 					indicator,
 					traverseFilter.Description(),
 					traverseFilter.Source(),

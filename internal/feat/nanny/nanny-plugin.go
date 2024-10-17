@@ -33,9 +33,10 @@ type plugin struct {
 	crate measure.Crate
 }
 
-func (p *plugin) Next(node *core.Node,
+func (p *plugin) Next(servant core.Servant,
 	inspection types.Inspection,
 ) (bool, error) {
+	node := servant.Node()
 	files := inspection.Sort(enums.EntryTypeFile)
 	node.Children = files
 	p.crate.Mums[enums.MetricNoChildFilesFound].Times(uint(len(files)))

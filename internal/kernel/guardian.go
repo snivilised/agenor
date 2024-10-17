@@ -22,7 +22,8 @@ type anchor struct {
 	crate        measure.Crate
 }
 
-func (a *anchor) Next(node *core.Node, _ types.Inspection) (bool, error) {
+func (a *anchor) Next(servant core.Servant, _ types.Inspection) (bool, error) {
+	node := servant.Node()
 	if metric := lo.Ternary(node.IsDirectory(),
 		a.crate.Mums[enums.MetricNoFoldersInvoked],
 		a.crate.Mums[enums.MetricNoFilesInvoked],
@@ -30,7 +31,7 @@ func (a *anchor) Next(node *core.Node, _ types.Inspection) (bool, error) {
 		metric.Tick()
 	}
 
-	return false, a.client(node)
+	return false, a.client(servant)
 }
 
 func (a *anchor) Role() enums.Role {
@@ -77,8 +78,10 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	g.container.chain[enums.RoleAnchor] = g.anchor
 
 	if len(active) == 0 {
-		g.container.invoker = NodeInvoker(func(node *core.Node, inspection types.Inspection) error {
-			_, err := g.anchor.Next(node, inspection)
+		g.container.invoker = NodeInvoker(func(servant core.Servant,
+			inspection types.Inspection,
+		) error {
+			_, err := g.anchor.Next(servant, inspection)
 			return err
 		})
 
@@ -86,8 +89,10 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	}
 
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
-	g.container.invoker = NodeInvoker(func(node *core.Node, inspection types.Inspection) error {
-		return g.iterate(node, inspection)
+	g.container.invoker = NodeInvoker(func(servant core.Servant,
+		inspection types.Inspection,
+	) error {
+		return g.iterate(servant, inspection)
 	})
 }
 
@@ -125,15 +130,15 @@ func (g *guardian) Unwind(role enums.Role) error {
 // Invoke executes the chain which may or may not end up resulting in
 // the invocation of the client's callback, depending on the contents
 // of the chain.
-func (g *guardian) Invoke(node *core.Node, inspection types.Inspection) error {
-	return g.container.invoker.Invoke(node, inspection)
+func (g *guardian) Invoke(servant core.Servant, inspection types.Inspection) error {
+	return g.container.invoker.Invoke(servant, inspection)
 }
 
-func (g *guardian) iterate(node *core.Node, inspection types.Inspection) error {
+func (g *guardian) iterate(servant core.Servant, inspection types.Inspection) error {
 	for _, role := range g.container.positions.Items() {
 		link := g.container.chain[role]
 
-		if next, err := link.Next(node, inspection); !next || err != nil {
+		if next, err := link.Next(servant, inspection); !next || err != nil {
 			return err
 		}
 	}

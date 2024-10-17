@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
@@ -48,22 +47,23 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(item *core.Node) error {
-				indicator := lo.Ternary(item.IsDirectory(), "📁", "💠")
+			callback := func(servant tv.Servant) error {
+				node := servant.Node()
+				indicator := lo.Ternary(node.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
-					"===> %v Glob Filter(%v) source: '%v', item-name: '%v', item-scope(fs): '%v(%v)'\n",
+					"===> %v Glob Filter(%v) source: '%v', node-name: '%v', node-scope(fs): '%v(%v)'\n",
 					indicator,
 					customFilter.Description(),
 					customFilter.Source(),
-					item.Extension.Name,
-					item.Extension.Scope,
+					node.Extension.Name,
+					node.Extension.Scope,
 					customFilter.Scope(),
 				)
-				if lo.Contains(entry.Mandatory, item.Extension.Name) {
-					Expect(item).Should(MatchCurrentCustomFilter(customFilter))
+				if lo.Contains(entry.Mandatory, node.Extension.Name) {
+					Expect(node).Should(MatchCurrentCustomFilter(customFilter))
 				}
 
-				recording[item.Extension.Name] = len(item.Children)
+				recording[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(

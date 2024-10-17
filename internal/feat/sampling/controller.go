@@ -20,7 +20,7 @@ func (p *controller) Role() enums.Role {
 	return enums.RoleSampler
 }
 
-func (p *controller) Next(_ *core.Node, _ types.Inspection) (bool, error) {
+func (p *controller) Next(_ core.Servant, _ types.Inspection) (bool, error) {
 	return true, nil
 }
 

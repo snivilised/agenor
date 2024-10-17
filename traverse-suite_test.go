@@ -25,7 +25,7 @@ const (
 	folders     = 2
 )
 
-var noOpHandler = func(_ *tv.Node) error {
+var noOpHandler = func(_ tv.Servant) error {
 	return nil
 }
 

@@ -31,9 +31,15 @@ type (
 		Error() error
 	}
 
+	// Servant provides the client with facility to request properties
+	// about the current navigation node.
+	Servant interface {
+		Node() *Node
+	}
+
 	// Client is the callback invoked for each file system node found
 	// during traversal.
-	Client func(node *Node) error
+	Client func(servant Servant) error
 
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
@@ -48,10 +54,6 @@ type (
 	// HibernateHandler is a generic handler that is used by hibernation
 	// to indicate wake or sleep.
 	HibernateHandler func(description string)
-
-	// NodeHandler is a generic handler that is for any notification that contains
-	// the traversal node, such as directory ascend or descend.
-	NodeHandler func(node *Node)
 )
 
 func (fn Completion) IsComplete() bool {

@@ -125,8 +125,8 @@ func (m *mediator) Spawn(ctx context.Context, tree string) (core.TraverseResult,
 	})
 }
 
-func (m *mediator) Invoke(node *core.Node, inspection types.Inspection) error {
-	return m.guardian.Invoke(node, inspection)
+func (m *mediator) Invoke(servant core.Servant, inspection types.Inspection) error {
+	return m.guardian.Invoke(servant, inspection)
 }
 
 func (m *mediator) Supervisor() *measure.Supervisor {

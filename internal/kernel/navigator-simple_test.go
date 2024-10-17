@@ -48,16 +48,17 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 	DescribeTable("Ensure Callback Invoked Once", Label("simple"),
 		func(ctx SpecContext, entry *lab.NaviTE) {
 			recording := make(lab.RecordingMap)
-			once := func(node *tv.Node) error {
+			once := func(servant tv.Servant) error {
+				node := servant.Node()
 				_, found := recording[node.Path] // TODO: should this be name not path?
 				Expect(found).To(BeFalse())
 				recording[node.Path] = len(node.Children)
 
-				return entry.Callback(node)
+				return entry.Callback(servant)
 			}
 
-			visitor := func(node *tv.Node) error {
-				return once(node)
+			visitor := func(servant tv.Servant) error {
+				return once(servant)
 			}
 
 			callback := lo.Ternary(entry.Once, once,

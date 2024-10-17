@@ -6,6 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive,stylecheck // ok
 	. "github.com/onsi/gomega"    //nolint:revive,stylecheck // ok
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/internal/third/lo"
@@ -28,7 +29,8 @@ func End(em string) cycle.EndHandler {
 }
 
 func UniversalCallback(name string) core.Client {
-	return func(node *core.Node) error {
+	return func(servant tv.Servant) error {
+		node := servant.Node()
 		depth := node.Extension.Depth
 		GinkgoWriter.Printf(
 			"---> 🌊 UNIVERSAL//%v-CALLBACK: (depth:%v) '%v'\n", name, depth, node.Path,
@@ -40,7 +42,8 @@ func UniversalCallback(name string) core.Client {
 }
 
 func FoldersCallback(name string) core.Client {
-	return func(node *core.Node) error {
+	return func(servant tv.Servant) error {
+		node := servant.Node()
 		depth := node.Extension.Depth
 		actualNoChildren := len(node.Children)
 		GinkgoWriter.Printf(
@@ -57,7 +60,8 @@ func FoldersCallback(name string) core.Client {
 }
 
 func FilesCallback(name string) core.Client {
-	return func(node *core.Node) error {
+	return func(servant tv.Servant) error {
+		node := servant.Node()
 		GinkgoWriter.Printf("---> 🌙 FILES//%v-CALLBACK: '%v'\n", name, node.Path)
 		Expect(node.IsDirectory()).To(BeFalse(),
 			Because(node.Path, "node expected to be file"),
@@ -71,7 +75,8 @@ func FilesCallback(name string) core.Client {
 func FoldersCaseSensitiveCallback(first, second string) core.Client {
 	recording := make(RecordingMap)
 
-	return func(node *core.Node) error {
+	return func(servant tv.Servant) error {
+		node := servant.Node()
 		recording[node.Path] = len(node.Children)
 
 		GinkgoWriter.Printf("---> 🔆 CASE-SENSITIVE-CALLBACK: '%v'\n", node.Path)

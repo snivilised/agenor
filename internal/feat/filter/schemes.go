@@ -12,7 +12,7 @@ type (
 	scheme interface {
 		create() error
 		init(pi *types.PluginInit, crate *measure.Crate)
-		next(node *core.Node, inspection types.Inspection) (bool, error)
+		next(servant core.Servant, inspection types.Inspection) (bool, error)
 	}
 )
 

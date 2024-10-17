@@ -59,7 +59,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 		return c.kc.Result(ctx, c.err), c.err
 	}
 
-	c.decorator = func(node *core.Node) error {
+	c.decorator = func(servant Servant) error {
 		// c.decorator is the function we register with the navigator,
 		// so instead of invoking the client handler, the navigator
 		// will invoke the decorator, which will send a job to the pool
@@ -70,7 +70,7 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 		// either by a Tap or a bus event...
 		//
 		input := &TraverseInput{
-			Node:    node,
+			Servant: servant,
 			Handler: c.ext.using().Handler,
 		}
 
@@ -81,11 +81,11 @@ func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) 
 
 	c.pool, c.err = pants.NewManifoldFuncPool(
 		ctx, func(input *TraverseInput) (*TraverseOutput, error) {
-			err := input.Handler(input.Node)
+			err := input.Handler(input.Servant)
 
 			return &TraverseOutput{
-				Node:  input.Node,
-				Error: err,
+				Servant: input.Servant,
+				Error:   err,
 			}, err
 		}, c.wg,
 		pants.WithSize(c.o.Concurrency.NoW),

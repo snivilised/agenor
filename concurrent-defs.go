@@ -8,9 +8,9 @@ import (
 type (
 	// TraverseInput represents the type  of inputs accepted by the worker pool
 	TraverseInput struct {
-		// Node represents the file system entity (file or folder) for which
+		// Servant represents the file system entity (file or folder) for which
 		// a job will execute.
-		Node *core.Node
+		Servant Servant
 
 		// Handler is the client defined callback function that should be
 		// invoked for all eligible Nodes.
@@ -31,9 +31,9 @@ type (
 
 	// TraverseOutput represents the output of a single job executed by the pool.
 	TraverseOutput struct {
-		// Node represents the file system entity (file or folder) from
+		// Servant represents the file system entity (file or folder) from
 		// which this output was generated via the client defined handler.
-		Node *core.Node
+		Servant Servant
 
 		// Error error result of client's handler.
 		Error error

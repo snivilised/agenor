@@ -48,7 +48,7 @@ type (
 		// condition is true. The predicate function should return false once condition
 		// has been met to complete the sample. Of course, the loop will only run while
 		// there are still remaining items to consider (ie there are no more entries
-		// to consider for the current traverse item).
+		// to consider for the current traverse node).
 		While WhileDirectoryPredicate
 	}
 

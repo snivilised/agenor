@@ -18,7 +18,7 @@ type extent interface {
 }
 
 type fileSystems struct {
-	tsys TraverseFS
+	fS TraverseFS
 }
 
 type baseExtent struct {
@@ -26,7 +26,7 @@ type baseExtent struct {
 }
 
 func (ex *baseExtent) traverseFS() TraverseFS {
-	return ex.fileSys.tsys
+	return ex.fileSys.fS
 }
 
 type primeExtent struct {
@@ -81,7 +81,7 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
-	loaded, binder, err := resume.Load(ex.fileSys.tsys, ex.w.From, settings...)
+	loaded, binder, err := resume.Load(ex.fileSys.fS, ex.w.From, settings...)
 	ex.loaded = loaded
 
 	// TODO: get the resume point from the resume persistence file

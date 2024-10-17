@@ -54,7 +54,8 @@ var _ = Describe("feature", Ordered, func() {
 						&tv.Using{
 							Tree:         path,
 							Subscription: enums.SubscribeUniversal,
-							Handler: func(node *core.Node) error {
+							Handler: func(servant tv.Servant) error {
+								node := servant.Node()
 								GinkgoWriter.Printf(
 									"---> 🍯 EXAMPLE-REGEX-FILTER-CALLBACK: '%v'\n", node.Path,
 								)
@@ -101,22 +102,23 @@ var _ = Describe("feature", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(item *core.Node) error {
-				indicator := lo.Ternary(item.IsDirectory(), "📁", "💠")
+			callback := func(servant tv.Servant) error {
+				node := servant.Node()
+				indicator := lo.Ternary(node.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
-					"===> %v Glob Filter(%v) source: '%v', item-name: '%v', item-scope(fs): '%v(%v)'\n",
+					"===> %v Glob Filter(%v) source: '%v', node-name: '%v', node-scope(fs): '%v(%v)'\n",
 					indicator,
 					traverseFilter.Description(),
 					traverseFilter.Source(),
-					item.Extension.Name,
-					item.Extension.Scope,
+					node.Extension.Name,
+					node.Extension.Scope,
 					traverseFilter.Scope(),
 				)
-				if lo.Contains(entry.Mandatory, item.Extension.Name) {
-					Expect(item).Should(MatchCurrentRegexFilter(traverseFilter))
+				if lo.Contains(entry.Mandatory, node.Extension.Name) {
+					Expect(node).Should(MatchCurrentRegexFilter(traverseFilter))
 				}
 
-				recording[item.Extension.Name] = len(item.Children)
+				recording[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(

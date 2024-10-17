@@ -19,18 +19,18 @@ const (
 	doWrite = true
 )
 
-func Musico(verbose bool, portions ...string) (tsys *TestTraverseFS, root string) {
-	tsys = &TestTraverseFS{
+func Musico(verbose bool, portions ...string) (fS *TestTraverseFS, root string) {
+	fS = &TestTraverseFS{
 		fstest.MapFS{},
 	}
 
 	root = Provision(
-		NewMemWriteProvider(tsys, os.ReadFile, portions...),
+		NewMemWriteProvider(fS, os.ReadFile, portions...),
 		verbose,
 		portions...,
 	)
 
-	return tsys, root
+	return fS, root
 }
 
 func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {

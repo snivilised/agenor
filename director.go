@@ -78,7 +78,7 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: using,
-		traverseFS: pref.CreateTraverseFS(func(root string) TraverseFS {
+		fS: pref.CreateTraverseFS(func(root string) TraverseFS {
 			if using.GetTraverseFS != nil {
 				return using.GetTraverseFS(root)
 			}
@@ -88,11 +88,11 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				Overwrite: noOverwrite,
 			})
 		}),
-		extent: extension(func(tsys TraverseFS) extent {
+		extent: extension(func(fS TraverseFS) extent {
 			return &primeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{
-						tsys: tsys,
+						fS: fS,
 					},
 				},
 				u: using,
@@ -129,7 +129,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 func Resume(was *Was, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: &was.Using,
-		traverseFS: pref.CreateTraverseFS(func(root string) TraverseFS {
+		fS: pref.CreateTraverseFS(func(root string) TraverseFS {
 			if was.Using.GetTraverseFS != nil {
 				return was.Using.GetTraverseFS(root)
 			}
@@ -139,11 +139,11 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 				Overwrite: noOverwrite,
 			})
 		}),
-		extent: extension(func(tsys TraverseFS) extent {
+		extent: extension(func(fS TraverseFS) extent {
 			return &resumeExtent{
 				baseExtent: baseExtent{
 					fileSys: fileSystems{
-						tsys: tsys,
+						fS: fS,
 					},
 				},
 				w: was,
