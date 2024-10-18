@@ -41,7 +41,7 @@ type Using struct {
 // Validate checks that the properties on Using are all valid.
 func (u Using) Validate() error {
 	if u.Tree == "" {
-		return locale.ErrUsageMissingRootPath
+		return locale.ErrUsageMissingTreePath
 	}
 
 	return validate(&u)

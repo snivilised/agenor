@@ -1,6 +1,8 @@
 package locale
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -17,7 +19,7 @@ type FilterIsNilErrorTemplData struct {
 // Message
 func (td FilterIsNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-is-nil.error",
+		ID:          "filter-is-nil.static-error",
 		Description: "filter is nil error",
 		Other:       "filter is nil",
 	}
@@ -43,7 +45,7 @@ type FilterMissingTypeErrorTemplData struct {
 // Message
 func (td FilterMissingTypeErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-missing-type.error",
+		ID:          "filter-missing-type.static-error",
 		Description: "filter missing type",
 		Other:       "filter missing type",
 	}
@@ -69,7 +71,7 @@ type FilterCustomNotSupportedErrorTemplData struct {
 // Message
 func (td FilterCustomNotSupportedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "custom-filter-not-supported-for-children.error",
+		ID:          "custom-filter-not-supported-for-children.static-error",
 		Description: "custom filter not supported for children",
 		Other:       "custom filter not supported for children",
 	}
@@ -95,7 +97,7 @@ type FilterUndefinedErrorTemplData struct {
 // Message
 func (td FilterUndefinedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-is-undefined.error",
+		ID:          "filter-is-undefined.static-error",
 		Description: "filter is undefined error",
 		Other:       "filter is undefined",
 	}
@@ -121,7 +123,7 @@ type InternalFailedToGetNavigatorDriverErrorTemplData struct {
 // Message
 func (td InternalFailedToGetNavigatorDriverErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "failed-to-get-navigator-driver.error",
+		ID:          "failed-to-get-navigator-driver.static-error",
 		Description: "failed to get navigator driver",
 		Other:       "failed to get navigator driver",
 	}
@@ -137,45 +139,68 @@ var ErrInternalFailedToGetNavigatorDriver = InternalFailedToGetNavigatorDriverEr
 	},
 }
 
-// ❌ InvalidIncaseFilterDef error
+// ❌ InvalidIncaseFilterDefError
 
-// InvalidIncaseFilterDefTemplData
-type InvalidIncaseFilterDefErrorTemplData struct {
+type InvalidIncaseFilterDefTemplData struct {
 	traverseTemplData
+	Pattern string
 }
 
-// Message
-func (td InvalidIncaseFilterDefErrorTemplData) Message() *i18n.Message {
+func (td InvalidIncaseFilterDefTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-incase-filter-definition.error",
-		Description: "invalid incase filter definition; pattern is missing separator",
-		Other:       "invalid incase filter definition; pattern is missing separator",
+		ID:          "invalid-incase-filter-definition.dynamic-error",
+		Description: "invalid incase filter definition; pattern is missing separator wrapper error",
+		Other:       "pattern: {{.Pattern}}",
 	}
 }
 
 type InvalidIncaseFilterDefError struct {
 	li18ngo.LocalisableError
+	Wrapped error
 }
 
-// IsInvalidIncaseFilterDefError uses errors.Is to check
-// if the err's error tree contains the core error:
-// InvalidIncaseFilterDefError
-func IsInvalidIncaseFilterDefError(err error) bool {
-	return errors.Is(err, errInvalidIncaseFilterDef)
+func (e InvalidIncaseFilterDefError) Error() string {
+	return fmt.Sprintf("%v, %v", e.Wrapped.Error(), li18ngo.Text(e.Data))
+}
+
+func (e InvalidIncaseFilterDefError) Unwrap() error {
+	return e.Wrapped
 }
 
 func NewInvalidIncaseFilterDefError(pattern string) error {
-	return errors.Wrap(
-		errInvalidIncaseFilterDef,
-		li18ngo.Text(PatternFieldTemplData{
-			Pattern: pattern,
-		}),
-	)
+	return &InvalidIncaseFilterDefError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: InvalidIncaseFilterDefTemplData{
+				Pattern: pattern,
+			},
+		},
+		Wrapped: errCoreInvalidIncaseFilterDef,
+	}
 }
 
-var errInvalidIncaseFilterDef = InvalidIncaseFilterDefError{
+type CoreInvalidIncaseFilterDefErrorTemplData struct {
+	traverseTemplData
+}
+
+func IsInvalidIncaseFilterDefError(err error) bool {
+	return errors.Is(err, errCoreInvalidIncaseFilterDef)
+}
+
+func (td CoreInvalidIncaseFilterDefErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-incase-filter-definition.core-error",
+		Description: "invalid incase filter definition; pattern is missing separator core error",
+		Other:       "invalid incase filter definition; pattern is missing separator",
+	}
+}
+
+type CoreInvalidIncaseFilterDefError struct {
+	li18ngo.LocalisableError
+}
+
+var errCoreInvalidIncaseFilterDef = CoreInvalidIncaseFilterDefError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidIncaseFilterDefErrorTemplData{},
+		Data: CoreInvalidIncaseFilterDefErrorTemplData{},
 	},
 }
 
@@ -189,7 +214,7 @@ type WorkerPoolCreationFailedErrorTemplData struct {
 // Message
 func (td WorkerPoolCreationFailedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "failed-to-create-worker-pool.error",
+		ID:          "failed-to-create-worker-pool.static-error",
 		Description: "failed to create worker pool",
 		Other:       "failed to create worker pool",
 	}
@@ -215,7 +240,7 @@ type InvalidFileSamplingSpecMissingFilesErrorTemplData struct {
 // Message
 func (td InvalidFileSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-files.error",
+		ID:          "invalid-file-sampling-spec-missing-files.static-error",
 		Description: "invalid file sampling specification, missing no of files",
 		Other:       "invalid file sampling specification, missing no of files",
 	}
@@ -241,7 +266,7 @@ type InvalidFolderSamplingSpecMissingFoldersErrorTemplData struct {
 // Message
 func (td InvalidFolderSamplingSpecMissingFoldersErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-folders.error",
+		ID:          "invalid-file-sampling-spec-missing-folders.static-error",
 		Description: "invalid file sampling specification, missing no of folders",
 		Other:       "invalid file sampling specification, missing no of folders",
 	}
@@ -267,7 +292,7 @@ type MissingCustomFilterDefinitionErrorTemplData struct {
 // Message
 func (td MissingCustomFilterDefinitionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "missing-custom-filter-definition.error",
+		ID:          "missing-custom-filter-definition.static-error",
 		Description: "config error missing-custom-filter-definition",
 		Other:       "missing custom filter definition (config error)",
 	}
@@ -282,10 +307,6 @@ var ErrMissingCustomFilterDefinition = MissingCustomFilterDefinitionError{
 		Data: MissingCustomFilterDefinitionErrorTemplData{},
 	},
 }
-
-// to define variable error with simple field - "Field and Variable error/fv18e"
-// "Simple i18n Field"
-// followed by
 
 // 🍀 Pattern
 
@@ -309,40 +330,72 @@ func (td PatternFieldTemplData) Message() *i18n.Message {
 // InvalidExtGlobFilterMissingSeparatorTemplData
 type InvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
 	traverseTemplData
+	Pattern string
 }
 
 // Message
 func (td InvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-extended-glob-filter-missing-separator.error",
+		ID:          "invalid-extended-glob-filter-missing-separator.dynamic-error",
 		Description: "invalid extended glob filter definition; pattern is missing separator",
-		Other:       "invalid extended glob filter definition; pattern is missing separator",
+		Other:       "pattern: {{.Pattern}}",
 	}
 }
 
 type InvalidExtGlobFilterMissingSeparatorError struct {
 	li18ngo.LocalisableError
+	Wrapped error
+}
+
+func (e InvalidExtGlobFilterMissingSeparatorError) Error() string {
+	return fmt.Sprintf("%v, %v", e.Wrapped.Error(), li18ngo.Text(e.Data))
+}
+
+func (e InvalidExtGlobFilterMissingSeparatorError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewInvalidExtGlobFilterMissingSeparatorError(pattern string) error {
+	return &InvalidExtGlobFilterMissingSeparatorError{
+		Wrapped: errCoreInvalidExtGlobFilterMissingSeparator,
+		LocalisableError: li18ngo.LocalisableError{
+			Data: InvalidExtGlobFilterMissingSeparatorErrorTemplData{
+				Pattern: pattern,
+			},
+		},
+	}
+}
+
+// ❌ CoreInvalidExtGlobFilterMissingSeparator
+
+// InvalidExtGlobFilterMissingSeparatorTemplData
+type CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
+	traverseTemplData
 }
 
 // IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
 // if the err's error tree contains the core error:
-// InvalidExtGlobFilterMissingSeparatorError
+// CoreInvalidExtGlobFilterMissingSeparatorError
 func IsInvalidExtGlobFilterMissingSeparatorError(err error) bool {
-	return errors.Is(err, errInvalidExtGlobFilterMissingSeparator)
+	return errors.Is(err, errCoreInvalidExtGlobFilterMissingSeparator)
 }
 
-func NewInvalidExtGlobFilterMissingSeparatorError(pattern string) error {
-	return errors.Wrap(
-		errInvalidExtGlobFilterMissingSeparator,
-		li18ngo.Text(PatternFieldTemplData{
-			Pattern: pattern,
-		}),
-	)
+// Message
+func (td CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-extended-glob-filter-missing-separator.core-error",
+		Description: "invalid extended glob filter definition; pattern is missing separator",
+		Other:       "invalid extended glob filter definition; pattern is missing separator",
+	}
 }
 
-var errInvalidExtGlobFilterMissingSeparator = InvalidExtGlobFilterMissingSeparatorError{
+type CoreInvalidExtGlobFilterMissingSeparatorError struct {
+	li18ngo.LocalisableError
+}
+
+var errCoreInvalidExtGlobFilterMissingSeparator = CoreInvalidExtGlobFilterMissingSeparatorError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidExtGlobFilterMissingSeparatorErrorTemplData{},
+		Data: CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData{},
 	},
 }
 
@@ -356,7 +409,7 @@ type PolyFilterIsInvalidTemplData struct {
 // Message
 func (td PolyFilterIsInvalidTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "poly-filter-is-invalid.error",
+		ID:          "poly-filter-is-invalid.static-error",
 		Description: "poly filter definition is invalid error",
 		Other:       "poly filter definition is invalid",
 	}
@@ -372,7 +425,7 @@ var ErrPolyFilterIsInvalid = PolyFilterIsInvalidError{
 	},
 }
 
-// ❌ UsageMissingRootPath
+// ❌ UsageMissingTreePath
 
 // UsageMissingRootPathTemplData
 type UsageMissingTreePathErrorTemplData struct {
@@ -382,17 +435,17 @@ type UsageMissingTreePathErrorTemplData struct {
 // Message
 func (td UsageMissingTreePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-tree-path.error",
+		ID:          "usage-missing-tree-path.static-error",
 		Description: "usage missing tree path",
 		Other:       "usage missing tree path",
 	}
 }
 
-type UsageMissingRootPathError struct {
+type UsageMissingTreePathError struct {
 	li18ngo.LocalisableError
 }
 
-var ErrUsageMissingRootPath = UsageMissingRootPathError{
+var ErrUsageMissingTreePath = UsageMissingTreePathError{
 	LocalisableError: li18ngo.LocalisableError{
 		Data: UsageMissingTreePathErrorTemplData{},
 	},
@@ -408,7 +461,7 @@ type UsageMissingRestorePathErrorTemplData struct {
 // Message
 func (td UsageMissingRestorePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-restore-path.error",
+		ID:          "usage-missing-restore-path.static-error",
 		Description: "usage missing restore path",
 		Other:       "usage missing restore path",
 	}
@@ -434,7 +487,7 @@ type UsageMissingSubscriptionErrorTemplData struct {
 // Message
 func (td UsageMissingSubscriptionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-subscription.error",
+		ID:          "usage-missing-subscription.static-error",
 		Description: "usage missing subscription",
 		Other:       "usage missing subscription",
 	}
@@ -460,7 +513,7 @@ type UsageMissingHandlerErrorTemplData struct {
 // Message
 func (td UsageMissingHandlerErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-handler.error",
+		ID:          "usage-missing-handler.static-error",
 		Description: "usage missing handler",
 		Other:       "usage missing handler",
 	}
@@ -486,7 +539,7 @@ type IDGeneratorFuncCantBeNilErrorTemplData struct {
 // Message
 func (td IDGeneratorFuncCantBeNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "id-generator-func-cant-be-nil.error",
+		ID:          "id-generator-func-cant-be-nil.static-error",
 		Description: "id generator func is nil, should be defined",
 		Other:       "id generator func can't be nil",
 	}
@@ -512,7 +565,7 @@ type UnEqualJSONConversionErrorTemplData struct {
 // Message
 func (td UnEqualJSONConversionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "un-equal-conversion.error",
+		ID:          "un-equal-conversion.static-error",
 		Description: "JSON options conversion error",
 		Other:       "unequal JSON conversion",
 	}
@@ -530,116 +583,155 @@ var ErrUnEqualConversion = UnEqualConversionError{
 
 // ❌ InvalidPath
 
-// InvalidPathErrorTemplData invalid file system path; path must be relative
-// relative to the root already defined for this file system so should not
-// start or end with a /. Also, only a / should be used to denote a separator
-// which applies to all platforms.
-type InvalidPathErrorTemplData struct {
+type InvalidPathTemplData struct {
 	traverseTemplData
 	Path string
 }
 
-// IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
-// if the err's error tree contains the core error:
-// InvalidExtGlobFilterMissingSeparatorError
-func IsInvalidPathError(err error) bool {
-	return errors.Is(err, errInvalidPath)
-}
-
-func NewInvalidPathError(path string) error {
-	return errors.Wrap(
-		errInvalidPath,
-		li18ngo.Text(InvalidPathErrorTemplData{
-			Path: path,
-		}),
-	)
-}
-
-// Message
-func (td InvalidPathErrorTemplData) Message() *i18n.Message {
+func (td InvalidPathTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-path.error",
-		Description: "Invalid file system path",
-		Other:       "invalid path {{.Path}}",
+		ID:          "invalid-path.dynamic-error",
+		Description: "invalid path dynamic error",
+		Other:       "path: {{.Path}}",
 	}
 }
 
 type InvalidPathError struct {
 	li18ngo.LocalisableError
+	Wrapped error
 }
 
-var errInvalidPath = InvalidPathError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidPathErrorTemplData{},
-	},
+func (e InvalidPathError) Error() string {
+	wrapped := e.Wrapped.Error()
+	path := li18ngo.Text(e.Data)
+	return fmt.Sprintf("%v, %v", wrapped, path)
 }
 
-// ❌ InvalidBinaryFsOp
-
-// InvalidBinaryFsOpErrorTemplData invalid file system operation
-// that involves 2 paths, typically a source and destination.
-// The error also indicates which operation is at fault.
-type InvalidBinaryFsOpErrorTemplData struct {
-	traverseTemplData
-	From string
-	To   string
-	Op   string
+func (e InvalidPathError) Unwrap() error {
+	return e.Wrapped
 }
 
-// IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
-// if the err's error tree contains the core error:
-// InvalidExtGlobFilterMissingSeparatorError
-func IsBinaryFsOpError(err error) bool {
-	return errors.Is(err, errCoreBinaryFsOp)
-}
-
-func NewInvalidBinaryFsOpError(op, from, to string) error {
-	return errors.Wrap(
-		errCoreBinaryFsOp,
-		li18ngo.Text(InvalidBinaryFsOpErrorTemplData{
-			From: from,
-			To:   to,
-			Op:   op,
-		}),
-	)
-}
-
-// Message
-func (td InvalidBinaryFsOpErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-binary-op.error",
-		Description: "Invalid file system operation",
-		Other:       "{{.Op}}, from: {{.From}}, to {{.To}}",
+func NewInvalidPathError(path string) error {
+	return &InvalidPathError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: InvalidPathTemplData{
+				Path: path,
+			},
+		},
+		Wrapped: errCoreInvalidPath,
 	}
 }
 
-// ❌ CoreBinaryFsOpError
+// ❌ CoreInvalidPathError
 
-type CoreBinaryFsOpErrorTemplData struct {
+type CoreInvalidPathErrorTemplData struct {
 	traverseTemplData
+}
+
+func IsInvalidPathError(err error) bool {
+	return errors.Is(err, errCoreInvalidPath)
+}
+
+func (td CoreInvalidPathErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-path.core-error",
+		Description: "invalid path core error",
+		Other:       "invalid path",
+	}
+}
+
+type CoreInvalidPathError struct {
 	li18ngo.LocalisableError
 }
 
-func (td CoreBinaryFsOpErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "core-invalid-binary-op.error",
-		Description: "Core Invalid file system operation",
-		Other:       "invalid file system operation",
-	}
-}
-
-var errCoreBinaryFsOp = CoreBinaryFsOpErrorTemplData{
+var errCoreInvalidPath = CoreInvalidPathError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: CoreBinaryFsOpErrorTemplData{},
+		Data: CoreInvalidPathErrorTemplData{},
 	},
 }
 
-// ❌ RejectSameDirMoveError
+// BOOKMARK
 
-// RejectSameDirMoveErrorTemplData invalid file system operation
+// ❌ InvalidBinaryFsOp, can be used to adapt the non i18n nefilim.InvalidBinaryFsOp
+// error into an i18n one.
+
+type InvalidBinaryFsOpTemplData struct {
+	traverseTemplData
+	From string
+	To   string
+	Op   string
+}
+
+func (td InvalidBinaryFsOpTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-binary-op.dynamic-error",
+		Description: "invalid binary op dynamic error",
+		Other:       "tbd: {{.Field}}",
+	}
+}
+
+type InvalidBinaryFsOpError struct {
+	li18ngo.LocalisableError
+	Wrapped error
+}
+
+func (e InvalidBinaryFsOpError) Error() string {
+	return fmt.Sprintf("%v, %v", e.Wrapped.Error(), li18ngo.Text(e.Data))
+}
+
+func (e InvalidBinaryFsOpError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewInvalidBinaryFsOpError(op, from, to string) error {
+	return &InvalidBinaryFsOpError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: InvalidBinaryFsOpTemplData{
+				From: from,
+				To:   to,
+				Op:   op,
+			},
+		},
+		Wrapped: errCoreInvalidBinaryFsOp, // replace with nefilim version
+	}
+}
+
+// ❌ CoreInvalidBinaryFsOp
+
+type CoreInvalidBinaryFsOpErrorTemplData struct {
+	traverseTemplData
+}
+
+func IsInvalidBinaryFsOpError(err error) bool {
+	return errors.Is(err, errCoreInvalidBinaryFsOp)
+}
+
+func (td CoreInvalidBinaryFsOpErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "invalid-binary-op.core-error",
+		Description: "invalid binary op core error",
+		Other:       "invalid binary op",
+	}
+}
+
+// will be replaced by nefilim.CoreInvalidBinaryFsOpError
+type CoreInvalidBinaryFsOpError struct {
+	li18ngo.LocalisableError
+}
+
+// this will be replaced by the nefilim.errCoreInvalidBinaryFsOp error
+var errCoreInvalidBinaryFsOp = CoreInvalidBinaryFsOpError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: CoreInvalidBinaryFsOpErrorTemplData{},
+	},
+}
+
+// ❌ RejectSameDirMoveError; replace with nefilim version
+
+// RejectSameDirMoveErrorTemplDataL invalid file system operation
 // that involves 2 paths, typically a source and destination.
 // The error also indicates which operation is at fault.
-type RejectSameDirMoveErrorTemplData struct {
+type RejectSameDirMoveErrorTemplDataL struct {
 	traverseTemplData
 	From string
 	To   string
@@ -649,14 +741,14 @@ type RejectSameDirMoveErrorTemplData struct {
 // IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
 // if the err's error tree contains the core error:
 // InvalidExtGlobFilterMissingSeparatorError
-func IsRejectSameDirMoveError(err error) bool {
-	return errors.Is(err, errCoreRejectSameDirMoveError)
+func IsRejectSameDirMoveErrorL(err error) bool {
+	return errors.Is(err, errCoreRejectSameDirMoveErrorL)
 }
 
-func NewRejectSameDirMoveError(op, from, to string) error {
+func NewRejectSameDirMoveErrorL(op, from, to string) error {
 	return errors.Wrap(
-		errCoreRejectSameDirMoveError,
-		li18ngo.Text(RejectSameDirMoveErrorTemplData{
+		errCoreRejectSameDirMoveErrorL,
+		li18ngo.Text(RejectSameDirMoveErrorTemplDataL{
 			From: from,
 			To:   to,
 			Op:   op,
@@ -665,7 +757,7 @@ func NewRejectSameDirMoveError(op, from, to string) error {
 }
 
 // Message
-func (td RejectSameDirMoveErrorTemplData) Message() *i18n.Message {
+func (td RejectSameDirMoveErrorTemplDataL) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "reject-same-dir-move.error",
 		Description: "Reject same directory move operation as this is just a rename",
@@ -673,14 +765,14 @@ func (td RejectSameDirMoveErrorTemplData) Message() *i18n.Message {
 	}
 }
 
-// ❌ CoreRejectSameDirMoveError
+// ❌ CoreRejectSameDirMoveError; replace with nefilim version
 
-type CoreRejectSameDirMoveErrorTemplData struct {
+type CoreRejectSameDirMoveErrorTemplDataL struct {
 	traverseTemplData
 	li18ngo.LocalisableError
 }
 
-func (td CoreRejectSameDirMoveErrorTemplData) Message() *i18n.Message {
+func (td CoreRejectSameDirMoveErrorTemplDataL) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "core-reject-same-dir-move.error",
 		Description: "Core reject same directory move operation as this is just a rename",
@@ -688,8 +780,9 @@ func (td CoreRejectSameDirMoveErrorTemplData) Message() *i18n.Message {
 	}
 }
 
-var errCoreRejectSameDirMoveError = CoreRejectSameDirMoveErrorTemplData{
+// replace with nefilim version
+var errCoreRejectSameDirMoveErrorL = CoreRejectSameDirMoveErrorTemplDataL{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: CoreRejectSameDirMoveErrorTemplData{},
+		Data: CoreRejectSameDirMoveErrorTemplDataL{},
 	},
 }
