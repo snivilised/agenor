@@ -43,11 +43,11 @@ var _ = Describe("error messages", Ordered, func() {
 		}
 	})
 
-	Context("InvalidExtGlobFilterMissingSeparator error", func() {
+	Context("InvalidExtGlobFilterMissingSeparator error", func() { // PENDING
 		When("variant error created", func() {
 			It("should: render translated content", func() {
 				const (
-					expected = "pattern: foo: invalid extended glob filter definition; pattern is missing separator"
+					expected = "invalid extended glob filter definition; pattern is missing separator, pattern: foo"
 				)
 				text := locale.NewInvalidExtGlobFilterMissingSeparatorError(
 					"foo",
@@ -83,7 +83,7 @@ var _ = Describe("error messages", Ordered, func() {
 		When("variant error created", func() {
 			It("should: render translated content", func() {
 				const (
-					expected = "pattern: foo: invalid incase filter definition; pattern is missing separator"
+					expected = "invalid incase filter definition; pattern is missing separator, pattern: foo"
 				)
 				text := locale.NewInvalidIncaseFilterDefError(
 					"foo",
