@@ -32,6 +32,10 @@ github.com/snivilised/li18ngo v0.1.4 h1:y6EECoVFpmkud2yDEeBnMnebPmSvdrEZ/LAq1PoP
 github.com/snivilised/li18ngo v0.1.4/go.mod h1:Or3qUhpR6AM1X51i82RtyCvORWy2/hrxY9lg1i1gFTE=
 github.com/snivilised/nefilim v0.1.1 h1:uMhLSfj5prGr2bahwzSM50rpd22fiiv0ZDLSzxYWsgg=
 github.com/snivilised/nefilim v0.1.1/go.mod h1:+4/hKxgfvE8eNjLMJC+3ropEZSQuiR/NqfPtIuw7ZMw=
+github.com/snivilised/nefilim v0.1.2 h1:zv8d5jr13jrgLaIIHyc2Wdn5Fae6TnqY4x4mspPsAWs=
+github.com/snivilised/nefilim v0.1.2/go.mod h1:+4/hKxgfvE8eNjLMJC+3ropEZSQuiR/NqfPtIuw7ZMw=
+github.com/snivilised/nefilim v0.1.3 h1:ImY1KW1H6/LvdEggDAx8YwB0r8AmT+coWwER75Asdz8=
+github.com/snivilised/nefilim v0.1.3/go.mod h1:+4/hKxgfvE8eNjLMJC+3ropEZSQuiR/NqfPtIuw7ZMw=
 github.com/snivilised/pants v0.1.2 h1:6Abj02gV5rFYyKfCsmeEiOi1pLdRyITKUY5oDoRgYuU=
 github.com/snivilised/pants v0.1.2/go.mod h1:BOZa24yLxVjjnTCFWQeCzUWL8eK4TLtXtkz3pMdEFQM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=

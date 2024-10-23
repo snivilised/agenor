@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/snivilised/li18ngo v0.1.4
-	github.com/snivilised/nefilim v0.1.1
+	github.com/snivilised/nefilim v0.1.3
 	github.com/snivilised/pants v0.1.2
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
