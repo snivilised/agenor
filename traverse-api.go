@@ -55,9 +55,9 @@ type (
 	ResumeStrategy = enums.ResumeStrategy
 
 	// 🌀 nef
-	At          = nef.At
 	ExistsInFS  = nef.ExistsInFS
 	FileSystems = nef.FileSystems
+	Rel         = nef.Rel
 	RenameFS    = nef.RenameFS
 	TraverseFS  = nef.TraverseFS
 	WriteFileFS = nef.WriteFileFS
