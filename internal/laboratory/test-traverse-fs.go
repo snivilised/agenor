@@ -8,7 +8,6 @@ import (
 
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
 )
 
 type testMapFile struct {
@@ -55,7 +54,7 @@ func (f *TestTraverseFS) Create(name string) (*os.File, error) {
 
 func (f *TestTraverseFS) MakeDir(name string, perm os.FileMode) error {
 	if !fs.ValidPath(name) {
-		return locale.NewInvalidPathError(name)
+		return nef.NewInvalidPathError("MakeDir", name)
 	}
 
 	if _, found := f.MapFS[name]; !found {
@@ -69,7 +68,7 @@ func (f *TestTraverseFS) MakeDir(name string, perm os.FileMode) error {
 
 func (f *TestTraverseFS) MakeDirAll(name string, perm os.FileMode) error {
 	if !fs.ValidPath(name) {
-		return locale.NewInvalidPathError(name)
+		return nef.NewInvalidPathError("MakeDir", name)
 	}
 
 	segments := strings.Split(name, "/")
