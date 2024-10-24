@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
+	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
@@ -49,7 +50,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 					)
 					Expect(err).To(Succeed())
 
-					writerFS := nef.NewWriteFileFS(nef.At{
+					writerFS := nef.NewWriteFileFS(tv.Rel{
 						Root:      testPath,
 						Overwrite: NoOverwrite,
 					})

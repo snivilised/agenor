@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -211,7 +210,7 @@ var _ = Describe("Tapable", Ordered, func() {
 						},
 					)
 
-					sys := tv.NewReadDirFS(nef.At{
+					sys := tv.NewReadDirFS(tv.Rel{
 						Root: root,
 					})
 					_, _ = o.Hooks.ReadDirectory.Default()(sys, root)

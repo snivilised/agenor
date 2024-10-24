@@ -83,7 +83,7 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				return using.GetTraverseFS(root)
 			}
 
-			return nef.NewTraverseFS(nef.At{
+			return nef.NewTraverseFS(Rel{
 				Root:      root,
 				Overwrite: noOverwrite,
 			})
@@ -134,7 +134,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 				return was.Using.GetTraverseFS(root)
 			}
 
-			return nef.NewTraverseFS(nef.At{
+			return nef.NewTraverseFS(Rel{
 				Root:      root,
 				Overwrite: noOverwrite,
 			})

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing/fstest"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/locale"
 )
@@ -102,4 +103,8 @@ func (f *TestTraverseFS) WriteFile(name string, data []byte, perm os.FileMode) e
 	}
 
 	return nil
+}
+
+func (f *TestTraverseFS) Ensure(_ nef.PathAs) (string, error) {
+	panic("NOT-IMPL: TestTraverseFS.Ensure")
 }
