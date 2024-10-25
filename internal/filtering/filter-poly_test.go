@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
@@ -20,8 +21,7 @@ import (
 
 var _ = Describe("feature", Ordered, func() {
 	var (
-		fS   *luna.MemFS
-		root string
+		fS *luna.MemFS
 	)
 
 	BeforeAll(func() {
@@ -29,10 +29,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		fS, root = lab.Musico(verbose,
-			lab.Static.RetroWave,
-		)
-		Expect(root).NotTo(BeEmpty())
+		fS = hydra.Nuxx(verbose, lab.Static.RetroWave)
 		Expect(li18ngo.Use()).To(Succeed())
 	})
 

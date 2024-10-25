@@ -9,6 +9,7 @@ import (
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/pref"
@@ -19,6 +20,7 @@ const (
 	spoofed   = "spoofed"
 	respoofed = "re-spoofed"
 	verbose   = false
+	root      = "foo-bar"
 )
 
 var (
@@ -36,14 +38,12 @@ var _ = Describe("Tapable", Ordered, func() {
 		o       *pref.Options
 		err     error
 		fS      *luna.MemFS
-		root    string
 	)
 
 	BeforeAll(func() {
-		fS, root = lab.Musico(verbose,
+		fS = hydra.Nuxx(verbose,
 			lab.Static.RetroWave,
 		)
-		Expect(root).NotTo(BeEmpty())
 	})
 
 	BeforeEach(func() {
