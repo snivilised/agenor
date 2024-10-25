@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -34,7 +35,7 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
-		FS      *lab.TestTraverseFS
+		FS      *luna.MemFS
 		root    string
 	)
 

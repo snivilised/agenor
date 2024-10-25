@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -18,7 +19,7 @@ import (
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
 	var (
-		FS   *lab.TestTraverseFS
+		FS   *luna.MemFS
 		root string
 	)
 

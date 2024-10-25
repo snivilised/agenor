@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -164,7 +165,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		FS = &lab.TestTraverseFS{
+		FS = &luna.MemFS{
 			MapFS: fstest.MapFS{
 				home: &fstest.MapFile{
 					Mode: os.ModeDir,

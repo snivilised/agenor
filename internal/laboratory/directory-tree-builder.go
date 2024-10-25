@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing/fstest"
 
+	"github.com/snivilised/nefilim/luna"
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
@@ -19,10 +20,8 @@ const (
 	doWrite = true
 )
 
-func Musico(verbose bool, portions ...string) (fS *TestTraverseFS, root string) {
-	fS = &TestTraverseFS{
-		fstest.MapFS{},
-	}
+func Musico(verbose bool, portions ...string) (fS *luna.MemFS, root string) {
+	fS = luna.NewMemFS()
 
 	root = Provision(
 		NewMemWriteProvider(fS, os.ReadFile, portions...),
@@ -75,7 +74,7 @@ func ensure(index string, provider *IOProvider, verbose bool) error {
 	return builder.walk()
 }
 
-func NewMemWriteProvider(fS *TestTraverseFS,
+func NewMemWriteProvider(fS *luna.MemFS,
 	indexReader readFile,
 	portions ...string,
 ) *IOProvider {
