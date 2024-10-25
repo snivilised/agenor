@@ -12,7 +12,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
+	"github.com/snivilised/traverse/hydra"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
@@ -33,7 +33,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 			},
 		)).To(Succeed())
 
-		tree = lab.Repo("test")
+		tree = hydra.Repo("test")
 	})
 
 	BeforeEach(func() {

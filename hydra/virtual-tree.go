@@ -1,10 +1,11 @@
-package lab
+package hydra
 
 import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing/fstest"
@@ -14,47 +15,71 @@ import (
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
+// Nuxx is a luna.MemFS factory hardcoded to Musico
+func Nuxx(verbose bool, portions ...string) (fS *luna.MemFS) {
+	fS = luna.NewMemFS()
+
+	musico(
+		newMemWriteProvider(fS, os.ReadFile, verbose, portions...),
+		verbose,
+	)
+
+	return fS
+}
+
+// CustomTree is a luna.MemFS factory, equivalent to Nuxx that is populated by an
+// alternative xml file. index is the full path the xml index file and
+// tree is the name of the root element in the file (for Nuxx, this would be
+// "MUSICO"). The tree can be filtered by specifying 'portions'.
+func CustomTree(index, element string, verbose bool,
+	portions ...string,
+) (fS *luna.MemFS, err error) {
+	fS = luna.NewMemFS()
+
+	err = custom(
+		index,
+		element,
+		newMemWriteProvider(fS, os.ReadFile, verbose, portions...),
+		verbose,
+	)
+
+	return fS, err
+}
+
+// index is the full path to the xml index to load, including the xml file name
+// tree is the name of the root element of the tree
+func custom(index, tree string, provider *IOProvider, verbose bool) error {
+	if _, err := os.Stat(index); err != nil {
+		return err
+	}
+
+	if err := ensure(index, tree, provider, verbose); err != nil {
+		fmt.Printf("provision failed %v\n", err.Error())
+
+		return err
+	}
+
+	return nil
+}
+
 const (
 	offset  = 2
 	tabSize = 2
 	doWrite = true
 )
 
-func Musico(verbose bool, portions ...string) (fS *luna.MemFS, root string) {
-	fS = luna.NewMemFS()
-
-	root = Provision(
-		NewMemWriteProvider(fS, os.ReadFile, portions...),
-		verbose,
-		portions...,
-	)
-
-	return fS, root
-}
-
-func Provision(provider *IOProvider, verbose bool, portions ...string) (root string) {
+func musico(provider *IOProvider, verbose bool) {
 	repo := Repo("")
-	root = filepath.Join(repo, "test", "data", "MUSICO")
-	index := Join(repo, "test/data/musico-index.xml")
+	index := Combine(repo, "test/data/musico-index.xml")
 
-	if err := ensure(index, provider, verbose); err != nil {
+	if err := ensure(index, "MUSICO", provider, verbose); err != nil {
 		fmt.Printf("provision failed %v\n", err.Error())
-		return ""
 	}
-
-	if verbose {
-		fmt.Printf("\n🤖 re-generated tree at '%v' (filters: '%v')\n\n",
-			root, strings.Join(portions, ", "),
-		)
-	}
-
-	return root
 }
 
-// ensure
-func ensure(index string, provider *IOProvider, verbose bool) error {
-	builder := directoryTreeBuilder{
-		tree:     "MUSICO",
+func ensure(index, tree string, provider *IOProvider, verbose bool) error {
+	builder := virtualTree{
+		tree:     tree,
 		stack:    collections.NewStack[string](),
 		index:    index,
 		doWrite:  doWrite,
@@ -74,8 +99,9 @@ func ensure(index string, provider *IOProvider, verbose bool) error {
 	return builder.walk()
 }
 
-func NewMemWriteProvider(fS *luna.MemFS,
+func newMemWriteProvider(fS *luna.MemFS,
 	indexReader readFile,
+	verbose bool,
 	portions ...string,
 ) *IOProvider {
 	filter := lo.Ternary(len(portions) > 0,
@@ -92,6 +118,12 @@ func NewMemWriteProvider(fS *luna.MemFS,
 			return true
 		}),
 	)
+
+	if verbose {
+		fmt.Printf("\n🤖 re-generating tree (filters: '%v')\n\n",
+			strings.Join(portions, ", "),
+		)
+	}
 
 	// PS: to check the existence of a path in an fs in production
 	// code, use fs.Stat(fsys, path) instead of os.Stat/os.Lstat
@@ -230,8 +262,8 @@ func (fn matcher) match(portion string) bool {
 	return fn(portion)
 }
 
-// directoryTreeBuilder
-type directoryTreeBuilder struct {
+// virtualTree
+type virtualTree struct {
 	tree     string
 	full     string
 	stack    *collections.Stack[string]
@@ -244,7 +276,7 @@ type directoryTreeBuilder struct {
 	show     display
 }
 
-func (r *directoryTreeBuilder) read() (*Directory, error) {
+func (r *virtualTree) read() (*Directory, error) {
 	data, err := r.provider.file.in.read(r.index)
 
 	if err != nil {
@@ -260,16 +292,16 @@ func (r *directoryTreeBuilder) read() (*Directory, error) {
 	return &tree.Root, nil
 }
 
-func (r *directoryTreeBuilder) pad() string {
+func (r *virtualTree) pad() string {
 	return string(bytes.Repeat([]byte{' '}, (r.depth+offset)*tabSize))
 }
 
-func (r *directoryTreeBuilder) refill() string {
+func (r *virtualTree) refill() string {
 	segments := r.stack.Content()
 	return filepath.Join(segments...)
 }
 
-func (r *directoryTreeBuilder) inc(name string) {
+func (r *virtualTree) inc(name string) {
 	r.stack.Push(name)
 	r.full = r.refill()
 
@@ -277,7 +309,7 @@ func (r *directoryTreeBuilder) inc(name string) {
 	r.padding = r.pad()
 }
 
-func (r *directoryTreeBuilder) dec() {
+func (r *virtualTree) dec() {
 	_, _ = r.stack.Pop()
 	r.full = r.refill()
 
@@ -285,7 +317,7 @@ func (r *directoryTreeBuilder) dec() {
 	r.padding = r.pad()
 }
 
-func (r *directoryTreeBuilder) walk() error {
+func (r *virtualTree) walk() error {
 	top, err := r.read()
 
 	if err != nil {
@@ -297,7 +329,7 @@ func (r *directoryTreeBuilder) walk() error {
 	return r.dir(*top, true)
 }
 
-func (r *directoryTreeBuilder) dir(dir Directory, isRoot bool) error { //nolint:gocritic // performance is not a concern
+func (r *virtualTree) dir(dir Directory, isRoot bool) error { //nolint:gocritic // performance is not a concern
 	if !isRoot {
 		// We dont to add the root because only the descendents of the root
 		// should be added
@@ -322,7 +354,7 @@ func (r *directoryTreeBuilder) dir(dir Directory, isRoot bool) error { //nolint:
 	}
 
 	for _, file := range dir.Files {
-		full := Join(r.full, file.Name)
+		full := Combine(r.full, file.Name)
 
 		if r.doWrite {
 			if err := r.provider.file.out.write(
@@ -339,4 +371,29 @@ func (r *directoryTreeBuilder) dir(dir Directory, isRoot bool) error { //nolint:
 	r.dec()
 
 	return nil
+}
+
+// Combine creates a path from the parent combined with the relative path. The relative
+// path is a file system path so should only contain forward slashes, not the standard
+// file path separator as denoted by filepath.Separator, typically used when interacting
+// with the local file system. Do not use trailing "/".
+func Combine(parent, relative string) string {
+	if relative == "" {
+		return parent
+	}
+
+	return parent + "/" + relative
+}
+
+// Repo gets the path of the repo with relative joined on
+func Repo(relative string) string {
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("Error obtaining repository path: %v\n", err)
+		return ""
+	}
+	repo := strings.TrimSpace(string(output))
+
+	return Combine(repo, relative)
 }

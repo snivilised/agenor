@@ -2,7 +2,6 @@ package lab
 
 import (
 	"fmt"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -19,15 +18,6 @@ func Join(parent, relative string) string {
 	return parent + "/" + relative
 }
 
-// Repo gets the path of the repo with relative joined on
-func Repo(relative string) string {
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	output, _ := cmd.Output()
-	repo := strings.TrimSpace(string(output))
-
-	return Join(repo, relative)
-}
-
 func Normalise(p string) string {
 	return strings.ReplaceAll(p, "/", string(filepath.Separator))
 }
@@ -38,8 +28,4 @@ func Because(name, because string) string {
 
 func Reason(name string) string {
 	return fmt.Sprintf("❌ for node named: '%v'", name)
-}
-
-func Log() string {
-	return Repo("Test/test.log")
 }
