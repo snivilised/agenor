@@ -10,6 +10,7 @@ import (
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
@@ -17,8 +18,7 @@ import (
 
 var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 	var (
-		fS   *luna.MemFS
-		root string
+		fS *luna.MemFS
 	)
 
 	BeforeAll(func() {
@@ -26,10 +26,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			verbose = false
 		)
 
-		fS, root = lab.Musico(verbose,
-			lab.Static.RetroWave,
-		)
-		Expect(root).NotTo(BeEmpty())
+		fS = hydra.Nuxx(verbose, lab.Static.RetroWave)
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
