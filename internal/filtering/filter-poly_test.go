@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -19,7 +20,7 @@ import (
 
 var _ = Describe("feature", Ordered, func() {
 	var (
-		FS   *lab.TestTraverseFS
+		fS   *luna.MemFS
 		root string
 	)
 
@@ -28,7 +29,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = lab.Musico(verbose,
+		fS, root = lab.Musico(verbose,
 			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -75,7 +76,7 @@ var _ = Describe("feature", Ordered, func() {
 								return nil
 							},
 							GetTraverseFS: func(_ string) tv.TraverseFS {
-								return FS
+								return fS
 							},
 						},
 						tv.WithOnBegin(lab.Begin("🛡️")),
@@ -139,7 +140,7 @@ var _ = Describe("feature", Ordered, func() {
 					Subscription: entry.Subscription,
 					Handler:      callback,
 					GetTraverseFS: func(_ string) tv.TraverseFS {
-						return FS
+						return fS
 					},
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
@@ -149,7 +150,7 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-				FS:          FS,
+				FS:          fS,
 				Recording:   recording,
 				Path:        path,
 				Result:      result,

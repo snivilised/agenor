@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -34,12 +35,12 @@ var _ = Describe("Tapable", Ordered, func() {
 		invoked bool
 		o       *pref.Options
 		err     error
-		FS      *lab.TestTraverseFS
+		fS      *luna.MemFS
 		root    string
 	)
 
 	BeforeAll(func() {
-		FS, root = lab.Musico(verbose,
+		fS, root = lab.Musico(verbose,
 			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -160,7 +161,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, err := o.Hooks.ReadDirectory.Invoke()(FS, path)
+						result, err := o.Hooks.ReadDirectory.Invoke()(fS, path)
 						Expect(err).To(Succeed())
 						Expect(result).To(
 							lab.HaveDirectoryContents(
@@ -189,7 +190,7 @@ var _ = Describe("Tapable", Ordered, func() {
 							},
 						)
 
-						result, e := o.Hooks.ReadDirectory.Invoke()(FS, path)
+						result, e := o.Hooks.ReadDirectory.Invoke()(fS, path)
 						Expect(e).To(Succeed())
 						Expect(result).To(
 							lab.HaveDirectoryContents(
@@ -234,7 +235,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, err := o.Hooks.QueryStatus.Invoke()(FS, path)
+						_, err := o.Hooks.QueryStatus.Invoke()(fS, path)
 
 						Expect(err).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
@@ -259,7 +260,7 @@ var _ = Describe("Tapable", Ordered, func() {
 								return result, err
 							},
 						)
-						_, e := o.Hooks.QueryStatus.Invoke()(FS, path)
+						_, e := o.Hooks.QueryStatus.Invoke()(fS, path)
 
 						Expect(e).To(Succeed())
 						Expect(invoked).To(BeTrue(), "QueryStatus hook not broadcasted")
@@ -275,8 +276,8 @@ var _ = Describe("Tapable", Ordered, func() {
 							return nil, nil
 						},
 					)
-					_, _ = o.Hooks.QueryStatus.Default()(FS, root)
-					_, _ = o.Hooks.QueryStatus.Invoke()(FS, root)
+					_, _ = o.Hooks.QueryStatus.Default()(fS, root)
+					_, _ = o.Hooks.QueryStatus.Invoke()(fS, root)
 
 					Expect(invoked).To(BeTrue(), "QueryStatus hook not invoked")
 				})

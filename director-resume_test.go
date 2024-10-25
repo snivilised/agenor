@@ -2,20 +2,18 @@ package tv_test
 
 import (
 	"context"
-	"os"
 	"sync"
-	"testing/fstest"
 
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
@@ -23,7 +21,7 @@ import (
 
 var _ = Describe("Director(Resume)", Ordered, func() {
 	var (
-		emptyFS *lab.TestTraverseFS
+		fS      *luna.MemFS
 		restore pref.Option
 	)
 
@@ -33,13 +31,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 			return nil
 		}
-		emptyFS = &lab.TestTraverseFS{
-			MapFS: fstest.MapFS{
-				".": &fstest.MapFile{
-					Mode: os.ModeDir,
-				},
-			},
-		}
+		fS = luna.NewMemFS()
 
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
@@ -70,7 +62,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 							GetTraverseFS: func(_ string) tv.TraverseFS {
-								return emptyFS
+								return fS
 							},
 						},
 						From:     RestorePath,
