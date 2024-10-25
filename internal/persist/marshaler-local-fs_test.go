@@ -10,6 +10,7 @@ import (
 	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
@@ -23,7 +24,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 	BeforeAll(func() {
 		Expect(li18ngo.Use()).To(Succeed())
 
-		testPath = lab.Repo("test")
+		testPath = hydra.Repo("test")
 		testFile := filepath.Join(testPath, destination, tempFile)
 
 		if _, err := os.Stat(testFile); err == nil {
