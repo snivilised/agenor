@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -18,7 +19,7 @@ import (
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
 	var (
-		FS   *lab.TestTraverseFS
+		fS   *luna.MemFS
 		root string
 	)
 
@@ -27,7 +28,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = lab.Musico(verbose,
+		fS, root = lab.Musico(verbose,
 			lab.Static.RetroWave,
 			filepath.Join("rock", "metal"),
 		)
@@ -72,7 +73,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					Subscription: entry.Subscription,
 					Handler:      callback,
 					GetTraverseFS: func(_ string) tv.TraverseFS {
-						return FS
+						return fS
 					},
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
@@ -82,7 +83,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(entry, &lab.TestOptions{
-				FS:        FS,
+				FS:        fS,
 				Recording: recording,
 				Path:      path,
 				Result:    result,

@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
@@ -16,7 +17,7 @@ import (
 
 var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 	var (
-		FS   *lab.TestTraverseFS
+		fS   *luna.MemFS
 		root string
 	)
 
@@ -25,7 +26,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 			verbose = false
 		)
 
-		FS, root = lab.Musico(verbose,
+		fS, root = lab.Musico(verbose,
 			lab.Static.RetroWave,
 		)
 		Expect(root).NotTo(BeEmpty())
@@ -61,7 +62,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 						Subscription: entry.Subscription,
 						Handler:      once,
 						GetTraverseFS: func(_ string) tv.TraverseFS {
-							return FS
+							return fS
 						},
 					},
 					tv.WithOnBegin(lab.Begin("🛡️")),
