@@ -9,8 +9,8 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	"github.com/snivilised/traverse/hydra"
 	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("error messages", Ordered, func() {

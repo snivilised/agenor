@@ -10,12 +10,12 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -805,6 +805,32 @@ var _ = Describe("feature", Ordered, func() {
 			NoOf: pref.EntryQuantities{
 				Folders: 2,
 			},
+		}),
+
+		Entry(nil, &lab.SampleTE{
+			NaviTE: lab.NaviTE{
+				Given:        "custom filter not defined",
+				Should:       "fail",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedErr:  locale.ErrFilterIsNil,
+			},
+			Filter: &lab.FilterTE{ // 🍒
+				Type: enums.FilterTypeCustom,
+			},
+			SampleType: enums.SampleTypeCustom,
+		}),
+
+		Entry(nil, &lab.SampleTE{
+			NaviTE: lab.NaviTE{
+				Given:        "filter missing type",
+				Should:       "fail",
+				Relative:     "edm",
+				Subscription: enums.SubscribeUniversal,
+				ExpectedErr:  locale.ErrFilterMissingType,
+			},
+			Filter:     &lab.FilterTE{},
+			SampleType: enums.SampleTypeCustom,
 		}),
 	)
 })

@@ -10,12 +10,12 @@ import (
 	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("Marshaler", Ordered, func() {

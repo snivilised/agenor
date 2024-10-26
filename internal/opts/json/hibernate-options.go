@@ -1,7 +1,5 @@
 package json
 
-import "fmt"
-
 type (
 	// HibernationBehaviour
 	HibernationBehaviour struct {
@@ -26,9 +24,3 @@ type (
 		Behaviour HibernationBehaviour
 	}
 )
-
-func (b *HibernationBehaviour) String() string {
-	return fmt.Sprintf("[HibernationBehaviour] inclusive wake: %v, inclusive sleep: %v",
-		b.InclusiveWake, b.InclusiveSleep,
-	)
-}

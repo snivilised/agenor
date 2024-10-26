@@ -109,6 +109,8 @@ func (ps *PositionalSet[T]) Items() []T {
 		}
 	}
 
+	ps.invalidated = false
+
 	return ps.cache
 }
 

@@ -11,11 +11,11 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -318,6 +318,49 @@ var _ = Describe("feature", Ordered, func() {
 				Description: "items without '.txt' suffix",
 				Pattern:     "*|txt",
 				Negate:      true,
+			},
+		}),
+
+		// === error ==============================================================
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "malformed extended glob filter (missing |)",
+				Should:       "fail",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedErr:  locale.NewInvalidIncaseFilterDefError("*.flac"),
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders contains o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+			},
+			ChildDef: core.ChildFilterDef{
+				Type:        enums.FilterTypeExtendedGlob,
+				Description: "items with '.flac' suffix",
+				Pattern:     "*.flac",
+			},
+		}),
+
+		Entry(nil, &lab.HybridFilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "malformed extended glob filter, missing type",
+				Should:       "fail",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFoldersWithFiles,
+				ExpectedErr:  locale.ErrFilterUndefined,
+			},
+			NodeDef: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders contains o",
+				Pattern:     "*o*",
+				Scope:       enums.ScopeFolder,
+			},
+			ChildDef: core.ChildFilterDef{
+				Description: "type missing",
+				Pattern:     "*.flac",
 			},
 		}),
 	)

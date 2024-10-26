@@ -2,6 +2,7 @@ package filtering_test
 
 import (
 	"fmt"
+	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -10,11 +11,11 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -137,11 +138,12 @@ var _ = Describe("feature", Ordered, func() {
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-				FS:        fS,
-				Recording: recording,
-				Path:      path,
-				Result:    result,
-				Err:       err,
+				FS:          fS,
+				Recording:   recording,
+				Path:        path,
+				Result:      result,
+				Err:         err,
+				ExpectedErr: entry.ExpectedErr,
 			})
 		},
 		func(entry *lab.FilterTE) string {
@@ -277,6 +279,23 @@ var _ = Describe("feature", Ordered, func() {
 			Pattern:         "HOUSE",
 			Scope:           enums.ScopeTop,
 			IfNotApplicable: enums.TriStateBoolFalse,
+		}),
+
+		// === error =========================================================
+
+		Entry(nil, &lab.FilterTE{
+			NaviTE: lab.NaviTE{
+				Given:        "files(any scope): regex filter",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFiles,
+				ExpectedErr: &syntax.Error{
+					Code: "missing closing )",
+					Expr: "(",
+				},
+			},
+			Description: "items that start with 'vinyl'",
+			Pattern:     "(",
+			Scope:       enums.ScopeAll,
 		}),
 	)
 })

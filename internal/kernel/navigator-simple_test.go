@@ -11,11 +11,11 @@ import (
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("NavigatorUniversal", Ordered, func() {
