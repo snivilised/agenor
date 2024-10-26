@@ -35,6 +35,11 @@ type (
 		Sample          core.SampleTraverseFilter
 	}
 
+	FilterErrataTE struct {
+		NaviTE
+		Filter *pref.FilterOptions
+	}
+
 	HybridFilterTE struct {
 		NaviTE
 		NodeDef  core.FilterDef

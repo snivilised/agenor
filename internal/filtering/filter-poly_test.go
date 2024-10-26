@@ -2,6 +2,7 @@ package filtering_test
 
 import (
 	"fmt"
+	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -11,12 +12,12 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -350,6 +351,7 @@ var _ = Describe("feature", Ordered, func() {
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
 				Given:        "invalid poly: constituent is also poly",
+				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedErr:  locale.ErrPolyFilterIsInvalid,
@@ -361,6 +363,31 @@ var _ = Describe("feature", Ordered, func() {
 			Folder: core.FilterDef{
 				Type:        enums.FilterTypePoly,
 				Description: "folders: constituent is poly",
+			},
+		}),
+
+		Entry(nil, &lab.PolyTE{
+			NaviTE: lab.NaviTE{
+				Given:        "poly - files:regex; folders:glob",
+				Should:       "fail",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeUniversal,
+				ExpectedErr: &syntax.Error{
+					Code: "missing closing )",
+					Expr: "(",
+				},
+			},
+			File: core.FilterDef{
+				Type:        enums.FilterTypeRegex,
+				Description: "files: starts with vinyl",
+				Pattern:     "(",
+				Scope:       enums.ScopeFile,
+			},
+			Folder: core.FilterDef{
+				Type:        enums.FilterTypeGlob,
+				Description: "folders: contains i (case sensitive)",
+				Pattern:     "*i*",
+				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
 			},
 		}),
 	)

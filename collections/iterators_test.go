@@ -336,23 +336,47 @@ var _ = Describe("Iterators", func() {
 	)
 
 	Context("Reset", func() {
-		When("Invoked", func() {
-			It("🧪 should: re-assign content of iterator", func() {
-				forwardIt := getSleeveIt(ForwardIterator, []sleeve{
-					&record{name: "the next best american record"},
-					&record{name: "the greatest"},
-					&record{name: "bartender"},
+		Context("forward", func() {
+			When("Invoked", func() {
+				It("🧪 should: re-assign content of iterator", func() {
+					forwardIt := getSleeveIt(ForwardIterator, []sleeve{
+						&record{name: "the next best american record"},
+						&record{name: "the greatest"},
+						&record{name: "bartender"},
+					})
+					for current := forwardIt.Start(); forwardIt.Valid(); current = forwardIt.Next() {
+						_ = current
+					}
+					forwardIt.Reset([]sleeve{
+						&record{name: "happiness is a butterfly"},
+						&record{name: "hope is a dangerous thing ..."},
+					})
+					actual := forwardIt.Start().song()
+					expected := "happiness is a butterfly"
+					Expect(actual).To(Equal(expected))
 				})
-				for current := forwardIt.Start(); forwardIt.Valid(); current = forwardIt.Next() {
-					_ = current
-				}
-				forwardIt.Reset([]sleeve{
-					&record{name: "happiness is a butterfly"},
-					&record{name: "hope is a dangerous thing ..."},
+			})
+		})
+
+		Context("reverse", func() {
+			When("Invoked", func() {
+				It("🧪 should: re-assign content of iterator", func() {
+					reverseIt := getSleeveIt(ReverseIterator, []sleeve{
+						&record{name: "the next best american record"},
+						&record{name: "the greatest"},
+						&record{name: "bartender"},
+					})
+					for current := reverseIt.Start(); reverseIt.Valid(); current = reverseIt.Next() {
+						_ = current
+					}
+					reverseIt.Reset([]sleeve{
+						&record{name: "happiness is a butterfly"},
+						&record{name: "hope is a dangerous thing ..."},
+					})
+					actual := reverseIt.Start().song()
+					expected := "hope is a dangerous thing ..."
+					Expect(actual).To(Equal(expected))
 				})
-				actual := forwardIt.Start().song()
-				expected := "happiness is a butterfly"
-				Expect(actual).To(Equal(expected))
 			})
 		})
 	})

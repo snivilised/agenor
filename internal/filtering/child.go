@@ -15,10 +15,6 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 		filter core.ChildTraverseFilter
 	)
 
-	if def == nil {
-		return nil, locale.ErrFilterIsNil
-	}
-
 	switch def.Type {
 	case enums.FilterTypeExtendedGlob:
 		var (

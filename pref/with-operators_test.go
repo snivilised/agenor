@@ -89,31 +89,37 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithHookSort", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHookSort(
+			option := tv.WithHookSort(
 				func([]fs.DirEntry, ...any) {},
-			)).NotTo(BeNil()) // !!no-test
+			)
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithHookFileSubPath", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHookFileSubPath(func(*core.SubPathInfo) string {
+			option := tv.WithHookFileSubPath(func(*core.SubPathInfo) string {
 				return ""
-			})).NotTo(BeNil()) // !!no-test
+			})
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithHookFolderSubPath", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHookFolderSubPath(func(*core.SubPathInfo) string {
+			option := tv.WithHookFolderSubPath(func(*core.SubPathInfo) string {
 				return ""
-			})).NotTo(BeNil()) // !!no-test
+			})
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithNavigationBehaviours", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithNavigationBehaviours(
+			option := tv.WithNavigationBehaviours(
 				&pref.NavigationBehaviours{
 					SubPath: pref.SubPathBehaviour{
 						KeepTrailingSep: true,
@@ -125,13 +131,17 @@ var _ = Describe("With Operators", Ordered, func() {
 						Depth: 2,
 					},
 				},
-			)).NotTo(BeNil()) // !!no-test
+			)
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithPanicHandler", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithPanicHandler(&testPanicHandler{})).NotTo(BeNil()) // !!no-test
+			option := tv.WithPanicHandler(&testPanicHandler{})
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
@@ -164,26 +174,32 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithSkipHandler", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithSkipHandler(&testSkipHandler{})).NotTo(BeNil()) // !!no-test
+			option := tv.WithSkipHandler(&testSkipHandler{})
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithSortBehaviour", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithSortBehaviour(&pref.SortBehaviour{
+			option := tv.WithSortBehaviour(&pref.SortBehaviour{
 				IsCaseSensitive: true,
 				SortFilesFirst:  true,
-			})).NotTo(BeNil()) // !!no-test
+			})
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 
 	Context("WithSubPathBehaviour", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithSubPathBehaviour(
+			option := tv.WithSubPathBehaviour(
 				&pref.SubPathBehaviour{
 					KeepTrailingSep: true,
 				},
-			)).NotTo(BeNil()) // !!no-test
+			)
+			Expect(option).NotTo(BeNil())
+			_ = option(pref.DefaultOptions())
 		})
 	})
 })

@@ -10,9 +10,24 @@ import (
 )
 
 type (
-	invocationChain   = map[enums.Role]types.Link
-	positionalRoleSet = collections.PositionalSet[enums.Role]
+	invocationChain    = map[enums.Role]types.Link
+	positionalRoleSet  = collections.PositionalSet[enums.Role]
+	iterationContainer struct {
+		invoker   Invokable
+		positions *positionalRoleSet
+		chain     invocationChain
+	}
 )
+
+type (
+	NodeInvoker func(servant core.Servant, inspection types.Inspection) error
+)
+
+func (fn NodeInvoker) Invoke(servant core.Servant,
+	inspection types.Inspection,
+) error {
+	return fn(servant, inspection)
+}
 
 // anchor is a specialised link that should always be the
 // last in the chain and contains the original client's handler.
@@ -36,12 +51,6 @@ func (a *anchor) Next(servant core.Servant, _ types.Inspection) (bool, error) {
 
 func (a *anchor) Role() enums.Role {
 	return enums.RoleAnchor
-}
-
-type iterationContainer struct {
-	invoker   Invokable
-	positions *positionalRoleSet
-	chain     invocationChain
 }
 
 // guardian controls access to the client callback

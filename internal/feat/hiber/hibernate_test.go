@@ -2,6 +2,7 @@ package hiber_test
 
 import (
 	"fmt"
+	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -12,10 +13,10 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/hydra"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -321,6 +322,57 @@ var _ = Describe("feature", Ordered, func() {
 				Behaviour: core.HibernationBehaviour{
 					InclusiveWake:  true,
 					InclusiveSleep: false,
+				},
+			},
+		}),
+
+		// error ==================================================================
+
+		Entry(nil, &hibernateTE{
+			NaviTE: lab.NaviTE{
+				Given:        "wake only (folders, inclusive:default)",
+				Should:       "fail",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFolders,
+				Mandatory: []string{"Night Drive", "College", "Northern Council",
+					"Teenage Color", "Electric Youth", "Innerworld",
+				},
+				Prohibited: []string{lab.Static.RetroWave, "Chromatics"},
+				ExpectedErr: &syntax.Error{
+					Code: "missing closing )",
+					Expr: "(",
+				},
+			},
+			Hibernate: &core.HibernateOptions{
+				WakeAt: &core.FilterDef{
+					Type:        enums.FilterTypeRegex,
+					Description: "Wake At: Night Drive",
+					Pattern:     "(",
+				},
+			},
+		}),
+
+		Entry(nil, &hibernateTE{
+			NaviTE: lab.NaviTE{
+				Given:        "sleep only (folders, inclusive:default)",
+				Should:       "fail",
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFolders,
+				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",
+					"Northern Council", "Teenage Color",
+				},
+				Prohibited: []string{"Electric Youth", "Innerworld"},
+				ExpectedErr: &syntax.Error{
+					Code: "missing closing )",
+					Expr: "(",
+				},
+			},
+
+			Hibernate: &core.HibernateOptions{
+				SleepAt: &core.FilterDef{
+					Type:        enums.FilterTypeRegex,
+					Description: "Sleep At: Electric Youth",
+					Pattern:     "(",
 				},
 			},
 		}),
