@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+type (
+	NamedFunc func(name string) string
+)
+
+var (
+	Reasons = struct {
+		Node NamedFunc
+	}{
+		Node: func(name string) string {
+			return fmt.Sprintf("❌ for node named: '%v'", name)
+		},
+	}
+)
+
 func Normalise(p string) string {
 	return strings.ReplaceAll(p, "/", string(filepath.Separator))
 }

@@ -10,13 +10,6 @@ import (
 	"github.com/snivilised/traverse/tapable"
 )
 
-// 📦 pkg: pref - contains user option definitions; do not use anything
-// in kernel (cyclic).
-
-const (
-	badge = "badge: option-requester"
-)
-
 type (
 	Options struct {
 		// Behaviours collection of behaviours that adjust the way navigation occurs,
@@ -88,7 +81,7 @@ func IfOptionF(condition bool, option ConditionalOption) Option {
 	return nil
 }
 
-// DefaultOptions
+// DefaultOptions // TODO: move to defaults.go
 func DefaultOptions() *Options {
 	// If a change is made to the default, make sure to make the corresponding
 	// same change in internal/persist/data/test-restore.DEFAULT.json
