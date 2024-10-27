@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/traverse/core"
 )
 
-// WithHookCaseSensitiveSort specifies that a folder's contents
+// WithHookCaseSensitiveSort specifies that a directory's contents
 // should be sorted with case sensitivity.
 func WithHookCaseSensitiveSort() Option {
 	return func(o *Options) error {
@@ -24,18 +24,18 @@ func WithHookFileSubPath(hook core.SubPathHook) Option {
 	}
 }
 
-// WithHookFolderSubPath defines an custom hook to override the
-// default behaviour for obtaining the sub-path of a folder.
-func WithHookFolderSubPath(hook core.SubPathHook) Option {
+// WithHookDirectorySubPath defines an custom hook to override the
+// default behaviour for obtaining the sub-path of a directory.
+func WithHookDirectorySubPath(hook core.SubPathHook) Option {
 	return func(o *Options) error {
-		o.Hooks.FolderSubPath.Tap(hook)
+		o.Hooks.DirectorySubPath.Tap(hook)
 
 		return nil
 	}
 }
 
 // WithHookQueryStatus defines an custom hook to override the
-// default behaviour for Stating a folder.
+// default behaviour for Stating a directory.
 func WithHookQueryStatus(hook core.QueryStatusHook) Option {
 	return func(o *Options) error {
 		o.Hooks.QueryStatus.Tap(hook)
@@ -45,7 +45,7 @@ func WithHookQueryStatus(hook core.QueryStatusHook) Option {
 }
 
 // WithHookReadDirectory defines an custom hook to override the
-// default behaviour for reading a folder's contents.
+// default behaviour for reading a directory's contents.
 func WithHookReadDirectory(hook core.ReadDirectoryHook) Option {
 	return func(o *Options) error {
 		o.Hooks.ReadDirectory.Tap(hook)
@@ -55,7 +55,7 @@ func WithHookReadDirectory(hook core.ReadDirectoryHook) Option {
 }
 
 // WithHookSort defines an custom hook to override the
-// default behaviour for sorting a folder's contents.
+// default behaviour for sorting a directory's contents.
 func WithHookSort(hook core.SortHook) Option {
 	return func(o *Options) error {
 		o.Hooks.Sort.Tap(hook)

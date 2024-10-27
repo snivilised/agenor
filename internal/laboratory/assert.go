@@ -90,8 +90,8 @@ func assertMetrics(entry *NaviTE, to *TestOptions) {
 				Count: entry.ExpectedNoOf.Files,
 			}),
 			HaveMetricCountOf(ExpectedMetric{
-				Type:  enums.MetricNoFoldersInvoked,
-				Count: entry.ExpectedNoOf.Folders,
+				Type:  enums.MetricNoDirectoriesInvoked,
+				Count: entry.ExpectedNoOf.Directories,
 			}),
 			HaveMetricCountOf(ExpectedMetric{
 				Type:  enums.MetricNoChildFilesFound,
@@ -104,8 +104,8 @@ func assertMetrics(entry *NaviTE, to *TestOptions) {
 func subscribes(subscription enums.Subscription, mapFile *fstest.MapFile) bool {
 	isUniversalSubscription := (subscription == enums.SubscribeUniversal)
 	files := mapFile != nil && (subscription == enums.SubscribeFiles) && !mapFile.Mode.IsDir()
-	folders := mapFile != nil && ((subscription == enums.SubscribeFolders) ||
-		subscription == enums.SubscribeFoldersWithFiles) && mapFile.Mode.IsDir()
+	directories := mapFile != nil && ((subscription == enums.SubscribeDirectories) ||
+		subscription == enums.SubscribeDirectoriesWithFiles) && mapFile.Mode.IsDir()
 
-	return isUniversalSubscription || files || folders
+	return isUniversalSubscription || files || directories
 }

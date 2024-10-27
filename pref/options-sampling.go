@@ -28,11 +28,11 @@ type (
 		Iteration SamplingIterationOptions
 	}
 
-	// EntryQuantities contains specification of no of files and folders
+	// EntryQuantities contains specification of no of files and directories
 	// used in various contexts, but primarily sampling.
 	EntryQuantities struct {
-		Files   uint
-		Folders uint
+		Files       uint
+		Directories uint
 	}
 
 	// SamplingIterationOptions
@@ -61,10 +61,10 @@ type (
 	// EnoughAlready when using the universal navigator within a sampling operation, set
 	// these accordingly from inside the while predicate to indicate wether the iteration
 	// loop should continue to consider more entries to be included in the sample. So
-	// set Files/Folders flags to true, when enough of those items have been included.
+	// set Files/Directories flags to true, when enough of those items have been included.
 	EnoughAlready struct {
-		Files   bool
-		Folders bool
+		Files       bool
+		Directories bool
 	}
 
 	// FilteredInfo used within the sampling process during a traversal; more specifically,

@@ -45,8 +45,8 @@ func NewSample(def *core.SampleFilterDef,
 		return nil, locale.ErrInvalidFileSamplingSpecMissingFiles
 	}
 
-	if base.scope.IsFolder() && so.NoOf.Folders == 0 {
-		return nil, locale.ErrInvalidFolderSamplingSpecMissingFolders
+	if base.scope.IsDirectory() && so.NoOf.Directories == 0 {
+		return nil, locale.ErrInvalidSamplingSpecMissingDirectories
 	}
 
 	switch def.Type {
@@ -84,7 +84,7 @@ func (f *Sample) files(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
 	return wanted, others
 }
 
-func (f *Sample) folders(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
+func (f *Sample) directories(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
 	others, wanted = nef.Separate(entries)
 	return wanted, others
 }
@@ -94,8 +94,8 @@ func (f *Sample) all(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
 }
 
 func (f *Sample) fn() candidates {
-	if f.scope.IsFolder() {
-		return f.folders
+	if f.scope.IsDirectory() {
+		return f.directories
 	}
 
 	if f.scope.IsFile() {

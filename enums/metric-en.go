@@ -17,23 +17,23 @@ const (
 	//
 	MetricNoFilesFilteredOut // metric-no-of-files-filtered-out
 
-	// MetricNoFoldersInvoked represents the no of folders invoked for during traversal
+	// MetricNoDirectoriesInvoked represents the no of directories invoked for during traversal
 	//
-	MetricNoFoldersInvoked // metric-no-of-folders
+	MetricNoDirectoriesInvoked // metric-no-of-directories
 
-	// MetricNoFoldersFilteredOut represents the no of folders filtered out
+	// MetricNoDirectoriesFilteredOut represents the no of directories filtered out
 	//
-	MetricNoFoldersFilteredOut // metric-no-of-folders-filtered-out
+	MetricNoDirectoriesFilteredOut // metric-no-of-directories-filtered-out
 
 	// MetricNoChildFilesFound represents the number of children files
-	// of a particular directory that pass the compound filter when using the folders
+	// of a particular directory that pass the compound filter when using the directories
 	// with files subscription
 	//
 	MetricNoChildFilesFound // metric-no-of-child-files-found
 
 	// MetricNoChildFilesFilteredOut represents the number of children files
 	// of a particular directory that fail to pass the compound filter when using
-	// the folders with files subscription
+	// the directories with files subscription
 	//
 	MetricNoChildFilesFilteredOut // metric-no-of-child-files-found
 )

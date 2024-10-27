@@ -53,18 +53,18 @@ type (
 		IfNotApplicable enums.TriStateBool
 
 		// Poly allows for the definition of a PolyFilter which contains separate
-		// filters that target files and folders separately. If present, then
+		// filters that target files and directories separately. If present, then
 		// all other fields are redundant, since the filter definitions inside
 		// Poly should be referred to instead.
 		Poly *PolyFilterDef
 	}
 
 	PolyFilterDef struct {
-		File   FilterDef
-		Folder FilterDef
+		File      FilterDef
+		Directory FilterDef
 	}
 
-	// ChildTraverseFilter filter that can be applied to a folder's collection of entries
+	// ChildTraverseFilter filter that can be applied to a directory's collection of entries
 	// when subscription is
 
 	ChildTraverseFilter interface {
@@ -79,7 +79,7 @@ type (
 		Source() string
 
 		// Matching returns the collection of files contained within this
-		// item's folder that matches this filter.
+		// item's directory that matches this filter.
 		Matching(children []fs.DirEntry) []fs.DirEntry
 	}
 
@@ -108,14 +108,14 @@ type (
 		Pattern string
 
 		// Scope which file system entries this filter applies to;
-		// for sampling, only ScopeFile and ScopeFolder are valid.
+		// for sampling, only ScopeFile and ScopeDirectory are valid.
 		Scope enums.FilterScope
 
 		// Negate, reverses the applicability of the filter (Defaults to false)
 		Negate bool
 
 		// Poly allows for the definition of a PolyFilter which contains separate
-		// filters that target files and folders separately. If present, then
+		// filters that target files and directories separately. If present, then
 		// all other fields are redundant, since the filter definitions inside
 		// Poly should be referred to instead.
 		Poly *PolyFilterDef
@@ -132,7 +132,7 @@ type (
 		Validate() error
 
 		// Matching returns the collection of files contained within this
-		// item's folder that matches this filter.
+		// item's directory that matches this filter.
 		Matching(children []fs.DirEntry) []fs.DirEntry
 	}
 )

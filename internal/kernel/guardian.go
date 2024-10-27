@@ -40,7 +40,7 @@ type anchor struct {
 func (a *anchor) Next(servant core.Servant, _ types.Inspection) (bool, error) {
 	node := servant.Node()
 	if metric := lo.Ternary(node.IsDirectory(),
-		a.crate.Mums[enums.MetricNoFoldersInvoked],
+		a.crate.Mums[enums.MetricNoDirectoriesInvoked],
 		a.crate.Mums[enums.MetricNoFilesInvoked],
 	); metric != nil {
 		metric.Tick()

@@ -26,8 +26,8 @@ const (
 	//
 	ScopeTop // top-scope
 
-	// ScopeLeaf, for directories, any node that has no sub folders. For files, any node
-	// that appears under a leaf directory node
+	// ScopeLeaf, for directories, any node that has no sub directories. For
+	// files, any node that appears under a leaf directory node
 	//
 	ScopeLeaf // leaf-scope
 
@@ -39,9 +39,9 @@ const (
 	//
 	ScopeFile // file-scope
 
-	// ScopeFolder attributed to directory nodes
+	// ScopeDirectory attributed to directory nodes
 	//
-	ScopeFolder // folder-scope
+	ScopeDirectory // directory-scope
 
 	// ScopeCustom, client defined categorisation (yet to be confirmed)
 	//
@@ -67,9 +67,9 @@ func (f *FilterScope) IsTree() bool {
 	return (*f & ScopeTree) > 0
 }
 
-// IsFolder check is the folder bit is set
-func (f *FilterScope) IsFolder() bool {
-	return (*f & ScopeFolder) > 0
+// IsDirectory check is the directory bit is set
+func (f *FilterScope) IsDirectory() bool {
+	return (*f & ScopeDirectory) > 0
 }
 
 // IsFile check is the file bit is set
@@ -77,7 +77,7 @@ func (f *FilterScope) IsFile() bool {
 	return (*f & ScopeFile) > 0
 }
 
-// Scrub ensures only file/folder scopes are set
+// Scrub ensures only file/directory scopes are set
 func (f *FilterScope) Scrub() FilterScope {
 	var (
 		scrub FilterScope
@@ -87,8 +87,8 @@ func (f *FilterScope) Scrub() FilterScope {
 		scrub.Set(ScopeFile)
 	}
 
-	if f.IsFolder() {
-		scrub.Set(ScopeFolder)
+	if f.IsDirectory() {
+		scrub.Set(ScopeDirectory)
 	}
 
 	return scrub

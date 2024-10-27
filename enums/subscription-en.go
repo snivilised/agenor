@@ -7,9 +7,9 @@ package enums
 type Subscription uint
 
 const (
-	SubscribeUndefined        Subscription = iota
-	SubscribeFiles                         // subscribe-files
-	SubscribeFolders                       // subscribe-folders
-	SubscribeFoldersWithFiles              // subscribe-folders-with-files
-	SubscribeUniversal                     // subscribe-to-everything
+	SubscribeUndefined            Subscription = iota
+	SubscribeFiles                             // subscribe-files
+	SubscribeDirectories                       // subscribe-directories
+	SubscribeDirectoriesWithFiles              // subscribe-directories-with-files
+	SubscribeUniversal                         // subscribe-to-everything
 )

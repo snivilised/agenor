@@ -103,46 +103,46 @@ var _ = Describe("Tapable", Ordered, func() {
 			})
 		})
 
-		Context("FolderSubPath ", func() {
+		Context("DirectorySubPath ", func() {
 			Context("Chain", func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
-						o.Hooks.FolderSubPath.Chain(
+						o.Hooks.DirectorySubPath.Chain(
 							func(_ string, _ *core.SubPathInfo) string {
 								return spoofed
 							},
 						)
-						result := o.Hooks.FolderSubPath.Invoke()(fakeSubPath)
+						result := o.Hooks.DirectorySubPath.Invoke()(fakeSubPath)
 
-						Expect(result).To(Equal(spoofed), "FolderSubPath hook not invoked")
+						Expect(result).To(Equal(spoofed), "DirectorySubPath hook not invoked")
 					})
 				})
 
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
-						o.Hooks.FolderSubPath.Chain(func(_ string, _ *core.SubPathInfo) string {
+						o.Hooks.DirectorySubPath.Chain(func(_ string, _ *core.SubPathInfo) string {
 							return spoofed
 						})
-						o.Hooks.FolderSubPath.Chain(func(_ string, _ *core.SubPathInfo) string {
+						o.Hooks.DirectorySubPath.Chain(func(_ string, _ *core.SubPathInfo) string {
 							return respoofed
 						})
-						result := o.Hooks.FolderSubPath.Invoke()(fakeSubPath)
+						result := o.Hooks.DirectorySubPath.Invoke()(fakeSubPath)
 
-						Expect(result).To(Equal(respoofed), "FolderSubPath hook not invoked")
+						Expect(result).To(Equal(respoofed), "DirectorySubPath hook not invoked")
 					})
 				})
 			})
 
 			When("Tap", func() {
 				It("🧪 should: invoke hook", func() {
-					o.Hooks.FolderSubPath.Tap(func(_ *core.SubPathInfo) string {
+					o.Hooks.DirectorySubPath.Tap(func(_ *core.SubPathInfo) string {
 						invoked = true
 						return ""
 					})
-					o.Hooks.FolderSubPath.Default()(fakeSubPath)
-					o.Hooks.FolderSubPath.Invoke()(fakeSubPath)
+					o.Hooks.DirectorySubPath.Default()(fakeSubPath)
+					o.Hooks.DirectorySubPath.Invoke()(fakeSubPath)
 
-					Expect(invoked).To(BeTrue(), "FolderSubPath hook not invoked")
+					Expect(invoked).To(BeTrue(), "DirectorySubPath hook not invoked")
 				})
 			})
 

@@ -117,8 +117,8 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 		Type:      so.Type,
 		InReverse: so.InReverse,
 		NoOf: json.EntryQuantities{
-			Files:   so.NoOf.Files,
-			Folders: so.NoOf.Folders,
+			Files:       so.NoOf.Files,
+			Directories: so.NoOf.Directories,
 		},
 	}
 }
@@ -169,8 +169,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 			Type:      enums.SampleTypeFilter,
 			InReverse: true,
 			NoOf: pref.EntryQuantities{
-				Files:   2,
-				Folders: 3,
+				Files:       2,
+				Directories: 3,
 			},
 		}
 
@@ -336,13 +336,13 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "NavigationBehaviours.SamplingOptions.NoOf.Folders",
+					given: "NavigationBehaviours.SamplingOptions.NoOf.Directories",
 				},
 				option: func() pref.Option {
 					return pref.WithSamplingOptions(samplingOptions)
 				},
 				tweak: func(result *persist.MarshalResult) {
-					result.JO.Sampling.NoOf.Folders = 99
+					result.JO.Sampling.NoOf.Directories = 99
 				},
 			}),
 

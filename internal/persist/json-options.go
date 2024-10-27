@@ -35,8 +35,8 @@ func ToJSON(o *pref.Options) *json.Options {
 			Type:      o.Sampling.Type,
 			InReverse: o.Sampling.InReverse,
 			NoOf: json.EntryQuantities{
-				Files:   o.Sampling.NoOf.Files,
-				Folders: o.Sampling.NoOf.Folders,
+				Files:       o.Sampling.NoOf.Files,
+				Directories: o.Sampling.NoOf.Directories,
 			},
 		},
 		Filter: json.FilterOptions{
@@ -106,8 +106,8 @@ func NodePolyDefToJSON(poly *core.PolyFilterDef) *json.PolyFilterDef {
 	}
 
 	return &json.PolyFilterDef{
-		File:   *NodeFilterDefToJSON(&poly.File),
-		Folder: *NodeFilterDefToJSON(&poly.Folder),
+		File:      *NodeFilterDefToJSON(&poly.File),
+		Directory: *NodeFilterDefToJSON(&poly.Directory),
 	}
 }
 
@@ -130,8 +130,8 @@ func FromJSON(o *json.Options) *pref.Options {
 			Type:      o.Sampling.Type,
 			InReverse: o.Sampling.InReverse,
 			NoOf: pref.EntryQuantities{
-				Files:   o.Sampling.NoOf.Files,
-				Folders: o.Sampling.NoOf.Folders,
+				Files:       o.Sampling.NoOf.Files,
+				Directories: o.Sampling.NoOf.Directories,
 			},
 		},
 		Filter: pref.FilterOptions{
@@ -204,7 +204,7 @@ func NodePolyDefFromJSON(poly *json.PolyFilterDef) *core.PolyFilterDef {
 	}
 
 	return &core.PolyFilterDef{
-		File:   *NodeFilterDefFromJSON(&poly.File),
-		Folder: *NodeFilterDefFromJSON(&poly.Folder),
+		File:      *NodeFilterDefFromJSON(&poly.File),
+		Directory: *NodeFilterDefFromJSON(&poly.Directory),
 	}
 }

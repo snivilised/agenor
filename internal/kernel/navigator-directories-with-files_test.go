@@ -16,7 +16,7 @@ import (
 	"github.com/snivilised/traverse/test/hydra"
 )
 
-var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
+var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 	var (
 		fS *luna.MemFS
 	)
@@ -80,17 +80,17 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 				return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 			},
 
-			// === folders (with files) ==========================================
+			// === directories (with files) ======================================
 
 			Entry(nil, &lab.FilterTE{
 				NaviTE: lab.NaviTE{
-					Given:        "folders(with files): Path is leaf",
+					Given:        "directories(with files): Path is leaf",
 					Relative:     "RETRO-WAVE/Chromatics/Night Drive",
-					Subscription: enums.SubscribeFoldersWithFiles,
-					Callback:     lab.FoldersCallback("LEAF-PATH"),
+					Subscription: enums.SubscribeDirectoriesWithFiles,
+					Callback:     lab.DirectoriesCallback("LEAF-PATH"),
 					ExpectedNoOf: lab.Quantities{
-						Files:   0,
-						Folders: 1,
+						Files:       0,
+						Directories: 1,
 						Children: map[string]int{
 							"Night Drive": 4,
 						},
@@ -100,13 +100,13 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 
 			Entry(nil, &lab.FilterTE{
 				NaviTE: lab.NaviTE{
-					Given:        "folders(with files): Path contains folders (check all invoked)",
+					Given:        "directories(with files): Path contains directories (check all invoked)",
 					Relative:     lab.Static.RetroWave,
 					Visit:        true,
-					Subscription: enums.SubscribeFoldersWithFiles,
+					Subscription: enums.SubscribeDirectoriesWithFiles,
 					ExpectedNoOf: lab.Quantities{
-						Files:   0,
-						Folders: 8,
+						Files:       0,
+						Directories: 8,
 						Children: map[string]int{
 							"Night Drive":      4,
 							"Northern Council": 4,
@@ -114,7 +114,7 @@ var _ = Describe("NavigatorFoldersWithFiles", Ordered, func() {
 							"Innerworld":       3,
 						},
 					},
-					Callback: lab.FoldersCallback("CONTAINS-FOLDERS (check all invoked)"),
+					Callback: lab.DirectoriesCallback("CONTAINS-DIRECTORIES (check all invoked)"),
 				},
 			}),
 		)

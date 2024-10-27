@@ -148,8 +148,8 @@ func newMemWriteProvider(fS *luna.MemFS,
 				return nil
 			}),
 		},
-		folder: folderHandler{
-			out: writeFolder(func(path string, mode os.FileMode, show display, isRoot bool) error {
+		directory: directoryHandler{
+			out: writeDirectory(func(path string, mode os.FileMode, show display, isRoot bool) error {
 				if path == "" {
 					return nil
 				}
@@ -192,11 +192,11 @@ type (
 
 	writeFile func(name string, data []byte, perm os.FileMode, show display) error
 
-	folderWriter interface {
+	directoryWriter interface {
 		write(path string, perm os.FileMode, show display, isRoot bool) error
 	}
 
-	writeFolder func(path string, perm os.FileMode, show display, isRoot bool) error
+	writeDirectory func(path string, perm os.FileMode, show display, isRoot bool) error
 
 	filter interface {
 		match(portion string) bool
@@ -209,14 +209,14 @@ type (
 		out fileWriter
 	}
 
-	folderHandler struct {
-		out folderWriter
+	directoryHandler struct {
+		out directoryWriter
 	}
 
 	IOProvider struct {
-		filter filter
-		file   fileHandler
-		folder folderHandler
+		filter    filter
+		file      fileHandler
+		directory directoryHandler
 	}
 
 	Tree struct {
@@ -250,7 +250,7 @@ func (fn existsEntry) exists(path string) bool {
 	return fn(path)
 }
 
-func (fn writeFolder) write(path string, perm os.FileMode, show display, isRoot bool) error {
+func (fn writeDirectory) write(path string, perm os.FileMode, show display, isRoot bool) error {
 	return fn(path, perm, show, isRoot)
 }
 
@@ -333,7 +333,7 @@ func (r *virtualTree) dir(dir Directory, isRoot bool) error { //nolint:gocritic 
 	}
 
 	if r.doWrite {
-		if err := r.provider.folder.out.write(
+		if err := r.provider.directory.out.write(
 			r.full,
 			os.ModePerm,
 			r.show,

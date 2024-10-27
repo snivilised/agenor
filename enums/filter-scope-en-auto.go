@@ -14,7 +14,7 @@ func _() {
 	_ = x[ScopeLeaf-4]
 	_ = x[ScopeIntermediate-8]
 	_ = x[ScopeFile-16]
-	_ = x[ScopeFolder-32]
+	_ = x[ScopeDirectory-32]
 	_ = x[ScopeCustom-64]
 }
 
@@ -23,7 +23,7 @@ const (
 	_FilterScope_name_1 = "leaf-scope"
 	_FilterScope_name_2 = "intermediate-scope"
 	_FilterScope_name_3 = "file-scope"
-	_FilterScope_name_4 = "folder-scope"
+	_FilterScope_name_4 = "directory-scope"
 	_FilterScope_name_5 = "custom-scope"
 )
 

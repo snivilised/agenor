@@ -185,8 +185,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						},
 						tv.WithSamplingOptions(&pref.SamplingOptions{
 							NoOf: pref.EntryQuantities{
-								Files:   files,
-								Folders: folders,
+								Files:       files,
+								Directories: directories,
 							},
 							Type: enums.SampleTypeSlice,
 							Iteration: pref.SamplingIterationOptions{

@@ -80,10 +80,10 @@ const (
 	ResumeStrategyFastward = enums.ResumeStrategyFastward
 
 	// 🌀 enum:Subscribe
-	SubscribeFiles            = enums.SubscribeFiles
-	SubscribeFolders          = enums.SubscribeFolders
-	SubscribeFoldersWithFiles = enums.SubscribeFoldersWithFiles
-	SubscribeUniversal        = enums.SubscribeUniversal
+	SubscribeFiles                = enums.SubscribeFiles
+	SubscribeDirectories          = enums.SubscribeDirectories
+	SubscribeDirectoriesWithFiles = enums.SubscribeDirectoriesWithFiles
+	SubscribeUniversal            = enums.SubscribeUniversal
 )
 
 var (
@@ -136,17 +136,17 @@ var (
 	// CPU count, optimising performance based on the system's processing capabilities.
 	WithCPU = pref.WithCPU
 
-	// WithDepth sets the maximum number of folders deep the navigator
+	// WithDepth sets the maximum number of directories deep the navigator
 	// will traverse to.
 	WithDepth = pref.WithDepth
 
 	// WithFaultHandler defines a custom handler to handle an error that occurs
-	// when 'Stat'ing the tree root folder. When an error occurs, traversal terminates
+	// when 'Stat'ing the tree root directory. When an error occurs, traversal terminates
 	// immediately. The handler specified allows custom functionality to be invoked
 	// when an error occurs here.
 	WithFaultHandler = pref.WithFaultHandler
 
-	// WithFilter used to determine which file system nodes (files or folders)
+	// WithFilter used to determine which file system nodes (files or directories)
 	// the client defined handler is invoked for. Note that the filter does not
 	// determine navigation, it only determines wether the callback is invoked.
 	WithFilter = pref.WithFilter
@@ -173,28 +173,28 @@ var (
 	// session.
 	WithHibernationOptions = pref.WithHibernationOptions
 
-	// WithHookCaseSensitiveSort specifies that a folder's contents
+	// WithHookCaseSensitiveSort specifies that a directory's contents
 	// should be sorted with case sensitivity.
 	WithHookCaseSensitiveSort = pref.WithHookCaseSensitiveSort
 
-	// WithHookFolderSubPath defines an custom hook to override the
-	// default behaviour for obtaining the sub-path of a folder.
-	WithHookFolderSubPath = pref.WithHookFolderSubPath
+	// WithHookDirectorySubPath defines an custom hook to override the
+	// default behaviour for obtaining the sub-path of a directory.
+	WithHookDirectorySubPath = pref.WithHookDirectorySubPath
 
 	// WithHookFileSubPath defines an custom hook to override the
 	// default behaviour for obtaining the sub-path of a file.
 	WithHookFileSubPath = pref.WithHookFileSubPath
 
 	// WithHookQueryStatus defines an custom hook to override the
-	// default behaviour for Stating a folder.
+	// default behaviour for Stating a directory.
 	WithHookQueryStatus = pref.WithHookQueryStatus
 
 	// WithHookReadDirectory defines an custom hook to override the
-	// default behaviour for reading a folder's contents.
+	// default behaviour for reading a directory's contents.
 	WithHookReadDirectory = pref.WithHookReadDirectory
 
 	// WithHookSort defines an custom hook to override the
-	// default behaviour for sorting a folder's contents.
+	// default behaviour for sorting a directory's contents.
 	WithHookSort = pref.WithHookSort
 
 	// WithLogger defines a structure logger

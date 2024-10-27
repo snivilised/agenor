@@ -11,7 +11,7 @@ type (
 		//
 		IsCaseSensitive bool
 
-		// SortFilesFirst defines whether a folder's files or directories
+		// SortFilesFirst defines whether a directory's files or directories
 		// should be navigated first.
 		//
 		SortFilesFirst bool
@@ -44,7 +44,7 @@ type (
 		//
 		SubPath SubPathBehaviour
 
-		// Sort, behaviours relating to sorting of a folder's directory entries.
+		// Sort, behaviours relating to sorting of a directory's entries.
 		//
 		Sort SortBehaviour
 
@@ -81,7 +81,7 @@ func WithSortBehaviour(sb *SortBehaviour) Option {
 	}
 }
 
-// WithDepth sets the maximum number of folders deep the navigator
+// WithDepth sets the maximum number of directories deep the navigator
 // will traverse to.
 func WithDepth(depth uint) Option {
 	return func(o *Options) error {

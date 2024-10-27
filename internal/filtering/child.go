@@ -80,7 +80,7 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 
 // ChildFilter ================================================================
 
-// Child filter used when subscription is FoldersWithFiles
+// Child filter used when subscription is DirectoriesWithFiles
 type Child struct {
 	Name    string
 	Pattern string

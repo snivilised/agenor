@@ -8,14 +8,14 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[EntryTypeFolder-0]
+	_ = x[EntryTypeDirectory-0]
 	_ = x[EntryTypeFile-1]
 	_ = x[EntryTypeAll-2]
 }
 
-const _EntryType_name = "folder-entryfile-entryall-entries"
+const _EntryType_name = "directory-entryfile-entryall-entries"
 
-var _EntryType_index = [...]uint8{0, 12, 22, 33}
+var _EntryType_index = [...]uint8{0, 15, 25, 36}
 
 func (i EntryType) String() string {
 	if i >= EntryType(len(_EntryType_index)-1) {

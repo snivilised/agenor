@@ -81,8 +81,8 @@ func (f *ChildRegex) Matching(children []fs.DirEntry) []fs.DirEntry {
 // is used to filter on a compound basis but has some differences to ChildRegexFilter
 // that necessitates its use. The biggest difference is that ChildRegexFilter is
 // designed to only be applied to file directory entries, where as SampleRegex
-// can be applied to files or folders. It also possesses a scope field used to
-// distinguish only between files and folders.
+// can be applied to files or directories. It also possesses a scope field used to
+// distinguish only between files and directories.
 type SampleRegex struct {
 	Sample
 	rex *regexp.Regexp

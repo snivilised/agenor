@@ -18,9 +18,9 @@ func extend(ns *navigationStatic, vapour inspection) {
 	)
 
 	if current.IsDirectory() {
-		isLeaf = len(contents.Folders()) == 0
+		isLeaf = len(contents.Directories()) == 0
 		scope = ns.mediator.periscope.Scope(isLeaf)
-		scope |= enums.ScopeFolder
+		scope |= enums.ScopeDirectory
 	} else {
 		scope = enums.ScopeLeaf
 		scope |= enums.ScopeFile
@@ -44,7 +44,7 @@ func extend(ns *navigationStatic, vapour inspection) {
 	}
 
 	subpath := lo.TernaryF(current.IsDirectory(),
-		func() string { return ns.mediator.o.Hooks.FolderSubPath.Invoke()(spInfo) },
+		func() string { return ns.mediator.o.Hooks.DirectorySubPath.Invoke()(spInfo) },
 		func() string { return ns.mediator.o.Hooks.FileSubPath.Invoke()(spInfo) },
 	)
 

@@ -53,8 +53,8 @@ func newImpl(using *pref.Using,
 			navigatorAgent: agent,
 		}
 
-	case enums.SubscribeFolders, enums.SubscribeFoldersWithFiles:
-		impl = &navigatorFolders{
+	case enums.SubscribeDirectories, enums.SubscribeDirectoriesWithFiles:
+		impl = &navigatorDirectories{
 			navigatorAgent: agent,
 		}
 

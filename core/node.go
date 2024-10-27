@@ -31,7 +31,7 @@ type Extension struct {
 	Name    string            // derived as the leaf segment from filepath.Split
 	Parent  string            // derived as the directory from filepath.Split
 	SubPath string            // represents the path between the tree and the current item
-	Scope   enums.FilterScope // type of folder corresponding to the Filter Scope
+	Scope   enums.FilterScope // type of directory corresponding to the Filter Scope
 	Custom  any               // to be set and used by the client
 }
 
@@ -65,7 +65,7 @@ func Top(tree string, info fs.FileInfo) *Node {
 	return node
 }
 
-// IsDirectory indicates wether this node is a folder.
+// IsDirectory indicates wether this node is a directory.
 func (n *Node) IsDirectory() bool {
 	return n.dir
 }

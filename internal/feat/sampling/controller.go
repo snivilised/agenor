@@ -27,12 +27,12 @@ func (p *controller) Next(_ core.Servant, _ types.Inspection) (bool, error) {
 func (p *controller) sample(result []fs.DirEntry, _ error,
 	_ fs.ReadDirFS, _ string,
 ) ([]fs.DirEntry, error) {
-	files, folders := nef.Separate(result)
+	files, directories := nef.Separate(result)
 
 	return union(&readResult{
-		files:   files,
-		folders: folders,
-		o:       p.o,
+		files:       files,
+		directories: directories,
+		o:           p.o,
 	}), nil
 }
 
@@ -41,9 +41,9 @@ type (
 )
 
 type readResult struct {
-	files   []fs.DirEntry
-	folders []fs.DirEntry
-	o       *pref.SamplingOptions
+	files       []fs.DirEntry
+	directories []fs.DirEntry
+	o           *pref.SamplingOptions
 }
 
 func union(r *readResult) []fs.DirEntry {
@@ -55,12 +55,12 @@ func union(r *readResult) []fs.DirEntry {
 		r.o.InReverse, last, first,
 	)(noOfFiles, r.files)
 
-	noOfFolders := lo.Ternary(r.o.NoOf.Folders == 0,
-		uint(len(r.folders)), r.o.NoOf.Folders,
+	noOfDirectories := lo.Ternary(r.o.NoOf.Directories == 0,
+		uint(len(r.directories)), r.o.NoOf.Directories,
 	)
 	both = append(both, lo.Ternary(
 		r.o.InReverse, last, first,
-	)(noOfFolders, r.folders)...)
+	)(noOfDirectories, r.directories)...)
 
 	return both
 }

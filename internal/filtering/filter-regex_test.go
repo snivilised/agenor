@@ -72,8 +72,8 @@ var _ = Describe("feature", Ordered, func() {
 						tv.WithFilter(filterDefs),
 					)).Navigate(ctx)
 
-					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+						result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 						result.Metrics().Count(enums.MetricNoFilesInvoked),
 					)
 				},
@@ -158,8 +158,8 @@ var _ = Describe("feature", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   4,
-					Folders: 0,
+					Files:       4,
+					Directories: 0,
 				},
 			},
 			Description: "items that start with 'vinyl'",
@@ -173,8 +173,8 @@ var _ = Describe("feature", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   10,
-					Folders: 0,
+					Files:       10,
+					Directories: 0,
 				},
 			},
 			Description: "items that don't start with 'vinyl'",
@@ -189,24 +189,24 @@ var _ = Describe("feature", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   4,
-					Folders: 0,
+					Files:       4,
+					Directories: 0,
 				},
 			},
 			Description: "items that start with 'vinyl'",
 			Pattern:     "^vinyl",
 		}),
 
-		// === folders =======================================================
+		// === directories ===================================================
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(any scope): regex filter",
+				Given:        "directories(any scope): regex filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 2,
+					Files:       0,
+					Directories: 2,
 				},
 			},
 			Description: "items that start with 'C'",
@@ -216,12 +216,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(any scope): regex filter (negate)",
+				Given:        "directories(any scope): regex filter (negate)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 6,
+					Files:       0,
+					Directories: 6,
 				},
 			},
 			Description: "items that don't start with 'C'",
@@ -232,12 +232,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(undefined scope): regex filter",
+				Given:        "directories(undefined scope): regex filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 2,
+					Files:       0,
+					Directories: 2,
 				},
 			},
 			Description: "items that start with 'C'",
@@ -248,12 +248,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(top): regex filter (ifNotApplicable=true)",
+				Given:        "directories(top): regex filter (ifNotApplicable=true)",
 				Relative:     "PROGRESSIVE-HOUSE",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 10,
+					Files:       0,
+					Directories: 10,
 				},
 				Mandatory: []string{"PROGRESSIVE-HOUSE"},
 			},
@@ -265,14 +265,14 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(top): regex filter (ifNotApplicable=false)",
+				Given:        "directories(top): regex filter (ifNotApplicable=false)",
 				Relative:     ".",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory:    []string{"PROGRESSIVE-HOUSE"},
 				Prohibited:   []string{"Blue Amazon", "The Javelin"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 1,
+					Files:       0,
+					Directories: 1,
 				},
 			},
 			Description:     "top items that contain 'HOUSE'",

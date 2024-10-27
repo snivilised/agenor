@@ -8,17 +8,17 @@ import (
 	"github.com/snivilised/traverse/internal/types"
 )
 
-type navigatorFolders struct {
+type navigatorDirectories struct {
 	navigatorAgent
 }
 
-func (n *navigatorFolders) Top(ctx context.Context,
+func (n *navigatorDirectories) Top(ctx context.Context,
 	ns *navigationStatic,
 ) (*types.KernelResult, error) {
 	return n.top(ctx, ns)
 }
 
-func (n *navigatorFolders) Traverse(ctx context.Context,
+func (n *navigatorDirectories) Traverse(ctx context.Context,
 	ns *navigationStatic,
 	servant core.Servant,
 ) (bool, error) {
@@ -48,7 +48,7 @@ func (n *navigatorFolders) Traverse(ctx context.Context,
 	return n.travel(ctx, ns, vapour)
 }
 
-func (n *navigatorFolders) inspect(ns *navigationStatic,
+func (n *navigatorDirectories) inspect(ns *navigationStatic,
 	servant core.Servant,
 ) (inspection, error) {
 	var (
@@ -60,18 +60,18 @@ func (n *navigatorFolders) inspect(ns *navigationStatic,
 		err error
 	)
 
-	// for the folders navigator, we ignore the user defined setting in
+	// for the directories navigator, we ignore the user defined setting in
 	// (Options).Core.Behaviours.Sort.DirectoryEntryOrder, as we're only
-	// interested in folders and therefore forced to use
-	// enums.DirectoryEntryOrderFoldersFirst instead.
+	// interested in directories and therefore forced to use
+	// NavigationBehaviours.SortBehaviour.SortFilesFirst=true instead.
 	//
 	vapour.cargo, err = read(ns.mediator.resources.FS.T,
 		n.ro,
 		current.Path,
 	)
 
-	vapour.Sort(enums.EntryTypeFolder)
-	vapour.Pick(enums.EntryTypeFolder)
+	vapour.Sort(enums.EntryTypeDirectory)
+	vapour.Pick(enums.EntryTypeDirectory)
 
 	extend(ns, vapour)
 

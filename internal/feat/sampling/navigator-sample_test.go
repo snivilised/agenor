@@ -61,14 +61,14 @@ var _ = Describe("feature", Ordered, func() {
 					tv.WithSamplingOptions(&pref.SamplingOptions{
 						Type: enums.SampleTypeSlice,
 						NoOf: pref.EntryQuantities{
-							Files:   2,
-							Folders: 2,
+							Files:       2,
+							Directories: 2,
 						},
 					}),
 				)).Navigate(ctx)
 
-				GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-					result.Metrics().Count(enums.MetricNoFoldersInvoked),
+				GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+					result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 					result.Metrics().Count(enums.MetricNoFilesInvoked),
 				)
 			})
@@ -120,8 +120,8 @@ var _ = Describe("feature", Ordered, func() {
 					Type:      entry.SampleType,
 					InReverse: entry.Reverse,
 					NoOf: pref.EntryQuantities{
-						Files:   entry.NoOf.Files,
-						Folders: entry.NoOf.Folders,
+						Files:       entry.NoOf.Files,
+						Directories: entry.NoOf.Directories,
 					},
 					Iteration: lo.TernaryF(entry.Each != nil,
 						func() pref.SamplingIterationOptions {
@@ -171,8 +171,8 @@ var _ = Describe("feature", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"cover.night-drive.jpg"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 8,
+					Files:       8,
+					Directories: 8,
 				},
 			},
 			SampleType: enums.SampleTypeSlice,
@@ -183,49 +183,49 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(slice): first, with 2 folders",
-				Should:       "invoke for at most 2 folders per directory",
+				Given:        "universal(slice): first, with 2 directories",
+				Should:       "invoke for at most 2 directories per directory",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   11,
-					Folders: 6,
+					Files:       11,
+					Directories: 6,
 				},
 			},
 			SampleType: enums.SampleTypeSlice,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(slice): first, with 2 files and 2 folders",
-				Should:       "invoke for at most 2 files and 2 folders per directory",
+				Given:        "universal(slice): first, with 2 files and 2 directories",
+				Should:       "invoke for at most 2 files and 2 directories per directory",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"cover.night-drive.jpg", "Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   6,
-					Folders: 6,
+					Files:       6,
+					Directories: 6,
 				},
 			},
 			SampleType: enums.SampleTypeSlice,
 			NoOf: pref.EntryQuantities{
-				Files:   2,
-				Folders: 2,
+				Files:       2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): first, single file, first 2 folders",
+				Given:        "universal(filter): first, single file, first 2 directories",
 				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   7,
-					Folders: 14,
+					Files:       7,
+					Directories: 14,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🧄
@@ -236,21 +236,21 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
-				Files:   1,
-				Folders: 2,
+				Files:       1,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): first, single file, first 2 folders",
+				Given:        "universal(filter): first, single file, first 2 directories",
 				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   7,
-					Folders: 14,
+					Files:       7,
+					Directories: 14,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀
@@ -261,21 +261,21 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
-				Files:   1,
-				Folders: 2,
+				Files:       1,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): last, last single files, last 2 folders",
+				Given:        "universal(filter): last, last single files, last 2 directories",
 				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"01 - Dre.flac"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 15,
+					Files:       8,
+					Directories: 15,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🧄
@@ -287,21 +287,21 @@ var _ = Describe("feature", Ordered, func() {
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Files:   1,
-				Folders: 2,
+				Files:       1,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): last, last single files, last 2 folders",
+				Given:        "universal(filter): last, last single files, last 2 directories",
 				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"01 - Dre.flac"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 15,
+					Files:       8,
+					Directories: 15,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀
@@ -313,152 +313,152 @@ var _ = Describe("feature", Ordered, func() {
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Files:   1,
-				Folders: 2,
+				Files:       1,
+				Directories: 2,
 			},
 		}),
 
-		// === folders =======================================================
+		// === directories ===================================================
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(slice): first, with 2 folders",
-				Should:       "invoke for at most 2 folders per directory",
-				Subscription: enums.SubscribeFolders,
+				Given:        "directories(slice): first, with 2 directories",
+				Should:       "invoke for at most 2 directories per directory",
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 				},
 			},
 			SampleType: enums.SampleTypeSlice,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(slice): last, with last single folder",
-				Should:       "invoke for only last folder per directory",
-				Subscription: enums.SubscribeFolders,
+				Given:        "directories(slice): last, with last single directory",
+				Should:       "invoke for only last directory per directory",
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Chromatics"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 3,
+					Directories: 3,
 				},
 			},
 			SampleType: enums.SampleTypeSlice,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders(filter): first, with 2 folders that start with A",
-				Should:       "invoke for at most 2 folders per directory",
+				Given:        "filtered directories(filter): first, with 2 directories that start with A",
+				Should:       "invoke for at most 2 directories per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Tales Of Ephidrina"},
 				ExpectedNoOf: lab.Quantities{
 					// AMBIENT-TECHNO, Amorphous Androgynous, Aphex Twin
-					Folders: 3,
+					Directories: 3,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🧄
 				Description: "glob: items with that start with A",
 				Type:        enums.FilterTypeGlob,
 				Pattern:     "A*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders(filter): first, with 2 folders that start with A",
-				Should:       "invoke for at most 2 folders per directory",
+				Given:        "filtered directories(filter): first, with 2 directories that start with A",
+				Should:       "invoke for at most 2 directories per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Tales Of Ephidrina"},
 				ExpectedNoOf: lab.Quantities{
 					// AMBIENT-TECHNO, Amorphous Androgynous, Aphex Twin
-					Folders: 3,
+					Directories: 3,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀
 				Description: "regex: items with that start with A",
 				Type:        enums.FilterTypeRegex,
 				Pattern:     "^A",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders(filter): last, with single folder that start with A",
-				Should:       "invoke for at most a single folder per directory",
+				Given:        "filtered directories(filter): last, with single directory that start with A",
+				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🧄
 				Description: "glob: items with that start with A",
 				Type:        enums.FilterTypeGlob,
 				Pattern:     "A*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders(filter): last, with single folder that start with A",
-				Should:       "invoke for at most a single folder per directory",
+				Given:        "filtered directories(filter): last, with single directory that start with A",
+				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀
 				Description: "regex: items with that start with A",
 				Type:        enums.FilterTypeRegex,
 				Pattern:     "^A",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
-		// === folders with files ============================================
+		// === directories with files ========================================
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders with files(slice): first, with 2 folders",
-				Should:       "invoke for at most 2 folders per directory",
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Given:        "directories with files(slice): first, with 2 directories",
+				Should:       "invoke for at most 2 directories per directory",
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 					Children: map[string]int{
 						"Night Drive":      4,
 						"Northern Council": 4,
@@ -468,18 +468,18 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			SampleType: enums.SampleTypeSlice,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders with files(slice): last, with last single folder",
-				Should:       "invoke for only last folder per directory",
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Given:        "directories with files(slice): last, with last single directory",
+				Should:       "invoke for only last directory per directory",
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Chromatics"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 3,
+					Directories: 3,
 					Children: map[string]int{
 						"Innerworld": 3,
 					},
@@ -488,57 +488,57 @@ var _ = Describe("feature", Ordered, func() {
 			SampleType: enums.SampleTypeSlice,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders with files(filter): last, with single folder that start with A",
-				Should:       "invoke for at most a single folder per directory",
+				Given:        "filtered directories with files(filter): last, with single directory that start with A",
+				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
-					Folders:  2,
-					Children: map[string]int{},
+					Directories: 2,
+					Children:    map[string]int{},
 				},
 			},
-			Filter: &lab.FilterTE{ // 🧄 this is folder filter, not child filter
+			Filter: &lab.FilterTE{ // 🧄 this is directory filter, not child filter
 				Description: "glob: items that start with A",
 				Type:        enums.FilterTypeGlob,
 				Pattern:     "A*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders with files(filter): last, with single folder that start with A",
-				Should:       "invoke for at most a single folder per directory",
+				Given:        "filtered directories with files(filter): last, with single directory that start with A",
+				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
-					Folders:  2,
-					Children: map[string]int{},
+					Directories: 2,
+					Children:    map[string]int{},
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀
 				Description: "regex: items that start with A",
 				Type:        enums.FilterTypeRegex,
 				Pattern:     "^A",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			Reverse:    true,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 		}),
 
@@ -578,10 +578,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		// ScopeLeaf is not supported. Sampling filters only support
-		// file/folder scopes because a node's scope is determined after
+		// file/directory scopes because a node's scope is determined after
 		// a directory's contents are read, but sampling filter is
 		// applied at the point the contents are read. Any scopes other
-		// than file/folder are ignored.
+		// than file/directory are ignored.
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
 				Given:        "filtered files(filter): first, 2 files",
@@ -680,14 +680,14 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "universal(custom): first, single file, 2 folders",
+				Given:        "universal(custom): first, single file, 2 directories",
 				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
 				ExpectedNoOf: lab.Quantities{
-					Files:   7,
-					Folders: 14,
+					Files:       7,
+					Directories: 14,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🍒
@@ -700,33 +700,33 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			SampleType: enums.SampleTypeCustom,
 			NoOf: pref.EntryQuantities{
-				Files:   1,
-				Folders: 2,
+				Files:       1,
+				Directories: 2,
 			},
 		}),
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "filtered folders(custom): last, single folder that starts with A",
-				Should:       "invoke for at most a single folder per directory",
+				Given:        "filtered directories(custom): last, single directory that starts with A",
+				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 				},
 			},
 			Filter: &lab.FilterTE{ // 🍒
 				Type: enums.FilterTypeCustom,
 				Sample: &customSamplingFilter{
-					Sample:      tv.NewCustomSampleFilter(enums.ScopeFolder),
+					Sample:      tv.NewCustomSampleFilter(enums.ScopeDirectory),
 					description: "custom(glob): items with A prefix",
 					pattern:     "A*",
 				},
 			},
 			SampleType: enums.SampleTypeCustom,
 			NoOf: pref.EntryQuantities{
-				Folders: 1,
+				Directories: 1,
 			},
 			Reverse: true,
 		}),
@@ -761,21 +761,21 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.SampleTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder spec, without no of folders",
-				Should:       "return invalid folder spec error",
+				Given:        "directory spec, without no of directories",
+				Should:       "return invalid directory spec error",
 				Relative:     "edm/ELECTRONICA",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"03 - Mountain Goat.flac"},
 				ExpectedNoOf: lab.Quantities{
 					Files: 24,
 				},
-				ExpectedErr: locale.ErrInvalidFolderSamplingSpecMissingFolders,
+				ExpectedErr: locale.ErrInvalidSamplingSpecMissingDirectories,
 			},
 			Filter: &lab.FilterTE{ // 🧄
 				Description: "glob: items with .flac suffix",
 				Type:        enums.FilterTypeGlob,
 				Pattern:     "*.flac",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
@@ -803,7 +803,7 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			SampleType: enums.SampleTypeFilter,
 			NoOf: pref.EntryQuantities{
-				Folders: 2,
+				Directories: 2,
 			},
 		}),
 

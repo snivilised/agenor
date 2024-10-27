@@ -5,11 +5,11 @@ import (
 )
 
 type (
-	// EntryQuantities contains specification of no of files and folders
+	// EntryQuantities contains specification of no of files and directories
 	// used in various contexts, but primarily sampling.
 	EntryQuantities struct {
-		Files   uint `json:"no-of-files"`
-		Folders uint `json:"no-of-folders"`
+		Files       uint `json:"no-of-files"`
+		Directories uint `json:"no-of-directories"`
 	}
 
 	// SamplingOptions

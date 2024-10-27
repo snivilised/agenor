@@ -6,9 +6,9 @@ package enums
 type EntryType uint
 
 const (
-	// EntryTypeFolder
+	// EntryTypeDirectory
 	//
-	EntryTypeFolder EntryType = iota // folder-entry
+	EntryTypeDirectory EntryType = iota // directory-entry
 
 	// EntryTypeFile
 	//

@@ -53,11 +53,11 @@ var _ = Describe("feature", Ordered, func() {
 									Pattern:     "^vinyl",
 									Scope:       enums.ScopeFile,
 								},
-								Folder: core.FilterDef{
+								Directory: core.FilterDef{
 									Type:        enums.FilterTypeGlob,
-									Description: "folders: contains i (case sensitive)",
+									Description: "directories: contains i (case sensitive)",
 									Pattern:     "*i*",
-									Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+									Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 								},
 							},
 						},
@@ -83,8 +83,8 @@ var _ = Describe("feature", Ordered, func() {
 						tv.WithFilter(filterDefs),
 					)).Navigate(ctx)
 
-					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+						result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 						result.Metrics().Count(enums.MetricNoFilesInvoked),
 					)
 				},
@@ -103,8 +103,8 @@ var _ = Describe("feature", Ordered, func() {
 				Node: &core.FilterDef{
 					Type: enums.FilterTypePoly,
 					Poly: &core.PolyFilterDef{
-						File:   entry.File,
-						Folder: entry.Folder,
+						File:      entry.File,
+						Directory: entry.Directory,
 					},
 				},
 				Sink: func(reply pref.FilterReply) {
@@ -160,19 +160,19 @@ var _ = Describe("feature", Ordered, func() {
 			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
 		},
 
-		// === universal(file:regex; folder:glob) ============================
+		// === universal(file:regex; directory:glob) =========================
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; folders:glob",
+				Given:        "poly - files:regex; directories:glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
 					// file is 2 not 3 because *i* is case sensitive so Innerworld is not a match
-					// The next(not this one) regex test case, fixes this because folder regex has better
+					// The next(not this one) regex test case, fixes this because directory regex has better
 					// control over case sensitivity
-					Files:   2,
-					Folders: 8,
+					Files:       2,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -181,24 +181,24 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "^vinyl",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders: contains i (case sensitive)",
+				Description: "directories: contains i (case sensitive)",
 				Pattern:     "*i*",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 
-		// === universal(file:regex; folder:regex) ===========================
+		// === universal(file:regex; directory:regex) ========================
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; folders:regex",
+				Given:        "poly - files:regex; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 8,
+					Files:       3,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -207,19 +207,19 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "^vinyl",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
-				Description: "folders: contains i (case insensitive)",
+				Description: "directories: contains i (case insensitive)",
 				Pattern:     "[iI]",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 
-		// === universal(file:extended-glob; folder:glob) ====================
+		// === universal(file:extended-glob; directory:glob) =================
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; folders:glob",
+				Given:        "poly - files:extended-glob; directories:glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -227,8 +227,8 @@ var _ = Describe("feature", Ordered, func() {
 					// The next 2 tests regex/extended-glob test case, fixes this because they
 					// have better control over case sensitivity
 					//
-					Files:   2,
-					Folders: 8,
+					Files:       2,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -237,22 +237,22 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders: contains i (case sensitive)",
+				Description: "directories: contains i (case sensitive)",
 				Pattern:     "*i*",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; folders:regex",
+				Given:        "poly - files:extended-glob; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 8,
+					Files:       3,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -261,22 +261,22 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
-				Description: "folders: contains i (case sensitive)",
+				Description: "directories: contains i (case sensitive)",
 				Pattern:     "[iI]",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; folders:extended-glob",
+				Given:        "poly - files:extended-glob; directories:extended-glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 8,
+					Files:       3,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -285,26 +285,26 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
-				Description: "folders: contains i (case sensitive)",
+				Description: "directories: contains i (case sensitive)",
 				Pattern:     "*i*|",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 
-		// For the poly filter, the file/folder scopes must be set correctly, but because
+		// For the poly filter, the file/directory scopes must be set correctly, but because
 		// they can be set automatically, the client is not forced to set them. This test
-		// checks that when the file/folder scopes are not set, then poly filtering still works
+		// checks that when the file/directory scopes are not set, then poly filtering still works
 		// properly.
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly(scopes omitted) - files:regex; folders:regex",
+				Given:        "poly(scopes omitted) - files:regex; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 8,
+					Files:       3,
+					Directories: 8,
 				},
 			},
 			File: core.FilterDef{
@@ -313,15 +313,15 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "^vinyl",
 				// file scope omitted
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
-				Description: "folders: contains i (case insensitive)",
+				Description: "directories: contains i (case insensitive)",
 				Pattern:     "[iI]",
-				Scope:       enums.ScopeLeaf, // folder scope omitted
+				Scope:       enums.ScopeLeaf, // directory scope omitted
 			},
 		}),
 
-		// === files (file:regex; folder:regex) ==============================
+		// === files (file:regex; directory:regex) ==============================
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
@@ -329,8 +329,8 @@ var _ = Describe("feature", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 0,
+					Files:       3,
+					Directories: 0,
 				},
 			},
 			File: core.FilterDef{
@@ -338,9 +338,9 @@ var _ = Describe("feature", Ordered, func() {
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeRegex,
-				Description: "folders: contains i",
+				Description: "directories: contains i",
 				Pattern:     "[iI]",
 				Scope:       enums.ScopeLeaf,
 			},
@@ -360,15 +360,15 @@ var _ = Describe("feature", Ordered, func() {
 				Type:        enums.FilterTypePoly,
 				Description: "files: constituent is poly",
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypePoly,
-				Description: "folders: constituent is poly",
+				Description: "directories: constituent is poly",
 			},
 		}),
 
 		Entry(nil, &lab.PolyTE{
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; folders:glob",
+				Given:        "poly - files:regex; directories:glob",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
@@ -383,11 +383,11 @@ var _ = Describe("feature", Ordered, func() {
 				Pattern:     "(",
 				Scope:       enums.ScopeFile,
 			},
-			Folder: core.FilterDef{
+			Directory: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders: contains i (case sensitive)",
+				Description: "directories: contains i (case sensitive)",
 				Pattern:     "*i*",
-				Scope:       enums.ScopeFolder | enums.ScopeLeaf,
+				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
 			},
 		}),
 	)

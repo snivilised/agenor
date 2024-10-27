@@ -42,7 +42,7 @@ type (
 	}
 )
 
-// WithFilter used to determine which file system nodes (files or folders)
+// WithFilter used to determine which file system nodes (files or directories)
 // the client defined handler is invoked for. Note that the filter does not
 // determine navigation, it only determines wether the callback is invoked.
 func WithFilter(filter *FilterOptions) Option {

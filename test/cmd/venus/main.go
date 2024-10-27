@@ -146,8 +146,8 @@ func navigate(n *navigation) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-		result.Metrics().Count(enums.MetricNoFoldersInvoked),
+	fmt.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+		result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 		result.Metrics().Count(enums.MetricNoFilesInvoked),
 	)
 }
@@ -159,7 +159,7 @@ func subscribe(sub string) enums.Subscription {
 	case "file", "f":
 		subscription = enums.SubscribeFiles
 	case "dir", "d":
-		subscription = enums.SubscribeFolders
+		subscription = enums.SubscribeDirectories
 	}
 
 	return subscription

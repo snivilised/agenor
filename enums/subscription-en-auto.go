@@ -10,14 +10,14 @@ func _() {
 	var x [1]struct{}
 	_ = x[SubscribeUndefined-0]
 	_ = x[SubscribeFiles-1]
-	_ = x[SubscribeFolders-2]
-	_ = x[SubscribeFoldersWithFiles-3]
+	_ = x[SubscribeDirectories-2]
+	_ = x[SubscribeDirectoriesWithFiles-3]
 	_ = x[SubscribeUniversal-4]
 }
 
-const _Subscription_name = "Undefinedsubscribe-filessubscribe-folderssubscribe-folders-with-filessubscribe-to-everything"
+const _Subscription_name = "Undefinedsubscribe-filessubscribe-directoriessubscribe-directories-with-filessubscribe-to-everything"
 
-var _Subscription_index = [...]uint8{0, 9, 24, 41, 69, 92}
+var _Subscription_index = [...]uint8{0, 9, 24, 45, 77, 100}
 
 func (i Subscription) String() string {
 	if i >= Subscription(len(_Subscription_index)-1) {
