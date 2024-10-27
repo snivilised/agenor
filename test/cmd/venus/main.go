@@ -132,7 +132,7 @@ func navigate(n *navigation) {
 		tv.IfOptionF(n.pattern != "", func() pref.Option {
 			return tv.WithFilter(&pref.FilterOptions{
 				Node: &core.FilterDef{
-					Type:        enums.FilterTypeExtendedGlob,
+					Type:        enums.FilterTypeGlobEx,
 					Description: "as selected by user",
 					Pattern:     n.pattern,
 					Scope:       enums.ScopeAll,

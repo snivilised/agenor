@@ -232,7 +232,7 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			},
 			File: core.FilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
@@ -256,7 +256,7 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			},
 			File: core.FilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
@@ -280,13 +280,13 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			},
 			File: core.FilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "files: txt files starting with vinyl",
 				Pattern:     "vinyl*|txt",
 				Scope:       enums.ScopeFile,
 			},
 			Directory: core.FilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "directories: contains i (case sensitive)",
 				Pattern:     "*i*|",
 				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,

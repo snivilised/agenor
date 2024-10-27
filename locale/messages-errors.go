@@ -336,8 +336,8 @@ type InvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
 // Message
 func (td InvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-extended-glob-filter-missing-separator.dynamic-error",
-		Description: "invalid extended glob filter definition; pattern is missing separator",
+		ID:          "invalid-glob-ex-filter-missing-separator.dynamic-error",
+		Description: "invalid glob ex filter definition; pattern is missing separator",
 		Other:       "pattern: {{.Pattern}}",
 	}
 }
@@ -384,8 +384,8 @@ func IsInvalidExtGlobFilterMissingSeparatorError(err error) bool {
 func (td CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-extended-glob-filter-missing-separator.core-error",
-		Description: "invalid extended glob filter definition; pattern is missing separator",
-		Other:       "invalid extended glob filter definition; pattern is missing separator",
+		Description: "invalid glob ex filter definition; pattern is missing separator",
+		Other:       "invalid glob ex filter definition; pattern is missing separator",
 	}
 }
 
