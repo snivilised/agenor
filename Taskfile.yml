@@ -52,6 +52,14 @@ tasks:
     cmds:
       - ginkgo -v --dry-run ./...
 
+  clean:
+    cmds:
+      - go clean
+
+  clean-t:
+    cmds:
+      - go clean -testcache
+
   t:
     cmds:
       - go test ./...
@@ -112,13 +120,11 @@ tasks:
     cmds:
       - go test
 
-  clean:
+  # this needs to be invoked using -- eg:
+  # task venus -- -filter RETRO-WAVE,DUB
+  venus:
     cmds:
-      - go clean
-
-  clean-t:
-    cmds:
-      - go clean -testcache
+      - go run ./test/cmd/venus/main.go {{.CLI_ARGS}}
 
   # === ginkgo ================================================
 

@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Venus CLI",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/test/cmd/venus/main.go",
+      "args": ["-path", "RETRO-WAVE", "-pattern", "*|flac"],
+      "cwd": "${workspaceFolder}",
+    },
+    {
       "name": "Launch Package",
       "type": "go",
       "request": "launch",
