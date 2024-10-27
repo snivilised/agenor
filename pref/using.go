@@ -59,10 +59,14 @@ type Was struct {
 
 	// Strategy represent what type of resume is run.
 	Strategy enums.ResumeStrategy
+
+	// Restorer function defined by client invoked as part of the resume
+	// process
+	Restorer Restorer
 }
 
 // Validate checks that the properties on Using and Was are all valid.
-func (a Was) Validate() error {
+func (a Was) Validate() error { //nolint:gocritic // Was is low frequency
 	if a.From == "" {
 		return locale.ErrUsageMissingRestorePath
 	}
