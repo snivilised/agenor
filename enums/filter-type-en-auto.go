@@ -9,16 +9,16 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[FilterTypeUndefined-0]
-	_ = x[FilterTypeExtendedGlob-1]
+	_ = x[FilterTypeGlobEx-1]
 	_ = x[FilterTypeRegex-2]
 	_ = x[FilterTypeGlob-3]
 	_ = x[FilterTypeCustom-4]
 	_ = x[FilterTypePoly-5]
 }
 
-const _FilterType_name = "undefined-filterextended-glob-filterregex-filterglob-filtercustom-filterpoly-filter"
+const _FilterType_name = "undefined-filterglob-ex-filterregex-filterglob-filtercustom-filterpoly-filter"
 
-var _FilterType_index = [...]uint8{0, 16, 36, 48, 59, 72, 83}
+var _FilterType_index = [...]uint8{0, 16, 30, 42, 53, 66, 77}
 
 func (i FilterType) String() string {
 	if i >= FilterType(len(_FilterType_index)-1) {

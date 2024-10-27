@@ -7,7 +7,7 @@ type FilterType uint
 const (
 	FilterTypeUndefined FilterType = iota // undefined-filter
 
-	// FilterTypeExtendedGlob is the preferred filter type as it the most
+	// FilterTypeGlobEx is the preferred filter type as it the most
 	// user friendly. The base part of the name is filtered by a glob
 	// and the suffix is filtered by a list of defined extensions. The pattern
 	// for the extended filter type is composed of 2 parts; the first is a
@@ -17,7 +17,7 @@ const (
 	// a leading dot. An example pattern definition would be:
 	// "cover.*|.jpg,jpeg"
 	//
-	FilterTypeExtendedGlob // extended-glob-filter
+	FilterTypeGlobEx // glob-ex-filter
 
 	// FilterTypeRegex regex filter
 	//

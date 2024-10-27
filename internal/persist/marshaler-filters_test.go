@@ -283,7 +283,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				tweak: func(result *persist.MarshalResult) {
 					result.JO.Filter.Node = &jsonNodeFilterDef
-					result.JO.Filter.Node.Type = enums.FilterTypeExtendedGlob
+					result.JO.Filter.Node.Type = enums.FilterTypeGlobEx
 				},
 			}),
 
@@ -490,7 +490,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				tweak: func(result *persist.MarshalResult) {
 					result.JO.Filter.Child = jsonChildFilterDef
-					result.JO.Filter.Child.Type = enums.FilterTypeExtendedGlob
+					result.JO.Filter.Child.Type = enums.FilterTypeGlobEx
 				},
 			}),
 
@@ -591,7 +591,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				tweak: func(result *persist.MarshalResult) {
 					result.JO.Filter.Sample = jsonSampleFilterDef
-					result.JO.Filter.Sample.Type = enums.FilterTypeExtendedGlob
+					result.JO.Filter.Sample.Type = enums.FilterTypeGlobEx
 				},
 			}),
 

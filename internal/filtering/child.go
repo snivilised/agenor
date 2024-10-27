@@ -16,19 +16,19 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 	)
 
 	switch def.Type {
-	case enums.FilterTypeExtendedGlob:
+	case enums.FilterTypeGlobEx:
 		var (
 			err                error
 			segments, suffixes []string
 		)
 
-		if segments, suffixes, err = splitExtendedGlobPattern(def.Pattern); err != nil {
+		if segments, suffixes, err = splitGlobExPattern(def.Pattern); err != nil {
 			return nil, locale.NewInvalidIncaseFilterDefError(def.Pattern)
 		}
 
 		base, exclusion := splitGlob(segments[0])
 
-		filter = &ChildExtendedGlobFilter{
+		filter = &ChildGlobExFilter{
 			Child: Child{
 				Name:    def.Description,
 				Pattern: def.Pattern,

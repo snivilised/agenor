@@ -11,20 +11,20 @@ import (
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
-func createExtendedGlobFilter(def *core.FilterDef,
+func createGlobExFilter(def *core.FilterDef,
 	ifNotApplicable bool,
 ) (core.TraverseFilter, error) {
 	var (
 		err                error
 		segments, suffixes []string
 	)
-	if segments, suffixes, err = splitExtendedGlobPattern(def.Pattern); err != nil {
+	if segments, suffixes, err = splitGlobExPattern(def.Pattern); err != nil {
 		return nil, err
 	}
 
 	base, exclusion := splitGlob(segments[0])
 
-	filter := &ExtendedGlob{
+	filter := &GlobEx{
 		Base: Base{
 			name:            def.Description,
 			scope:           def.Scope,
@@ -43,7 +43,7 @@ func createExtendedGlobFilter(def *core.FilterDef,
 	return filter, nil
 }
 
-type ExtendedGlob struct {
+type GlobEx struct {
 	Base
 	baseGlob     string
 	suffixes     []string
@@ -52,7 +52,7 @@ type ExtendedGlob struct {
 }
 
 // IsMatch does this node match the filter
-func (f *ExtendedGlob) IsMatch(node *core.Node) bool {
+func (f *GlobEx) IsMatch(node *core.Node) bool {
 	if f.IsApplicable(node) {
 		result := lo.TernaryF(node.IsDirectory(),
 			func() bool {
@@ -61,7 +61,7 @@ func (f *ExtendedGlob) IsMatch(node *core.Node) bool {
 				return result
 			},
 			func() bool {
-				return filterFileByExtendedGlob(
+				return filterFileByGlobEx(
 					node.Extension.Name, f.baseGlob, f.exclusion, f.suffixes, f.anyExtension,
 				)
 			},
@@ -73,9 +73,9 @@ func (f *ExtendedGlob) IsMatch(node *core.Node) bool {
 	return f.ifNotApplicable
 }
 
-// ChildExtendedGlobFilter ==========================================================
+// ChildGlobExFilter ================================================================
 
-type ChildExtendedGlobFilter struct {
+type ChildGlobExFilter struct {
 	Child
 	baseGlob     string
 	exclusion    string
@@ -83,17 +83,17 @@ type ChildExtendedGlobFilter struct {
 	anyExtension bool
 }
 
-func (f *ChildExtendedGlobFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
+func (f *ChildGlobExFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
 	return lo.Filter(children, func(entry fs.DirEntry, _ int) bool {
 		name := entry.Name()
 
-		return f.invert(filterFileByExtendedGlob(
+		return f.invert(filterFileByGlobEx(
 			name, f.baseGlob, f.exclusion, f.suffixes, f.anyExtension,
 		))
 	})
 }
 
-func filterFileByExtendedGlob(name, base, exclusion string,
+func filterFileByGlobEx(name, base, exclusion string,
 	suffixes []string, anyExtension bool,
 ) bool {
 	extension := filepath.Ext(name)

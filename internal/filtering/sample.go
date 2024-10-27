@@ -50,7 +50,7 @@ func NewSample(def *core.SampleFilterDef,
 	}
 
 	switch def.Type {
-	case enums.FilterTypeExtendedGlob:
+	case enums.FilterTypeGlobEx:
 	case enums.FilterTypeRegex:
 		filter = &SampleRegex{
 			Sample: base,

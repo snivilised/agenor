@@ -98,26 +98,26 @@ func (m *IsCurrentGlobMatchMatcher) NegatedFailureMessage(actual interface{}) st
 	)
 }
 
-// === MatchCurrentExtendedGlobFilter ===
+// === MatchCurrentGlobExFilter ===
 //
 
-type IsCurrentExtendedGlobMatchMatcher struct {
+type IsCurrentGlobExMatchMatcher struct {
 	egbFilter interface{}
 }
 
 func MatchCurrentExtendedFilter(expected interface{}) GomegaMatcher {
-	return &IsCurrentExtendedGlobMatchMatcher{
+	return &IsCurrentGlobExMatchMatcher{
 		egbFilter: expected,
 	}
 }
 
-func (m *IsCurrentExtendedGlobMatchMatcher) Match(actual interface{}) (bool, error) {
+func (m *IsCurrentGlobExMatchMatcher) Match(actual interface{}) (bool, error) {
 	node, itemOk := actual.(*core.Node)
 	if !itemOk {
 		return false, fmt.Errorf("matcher expected a *TraverseItem (%T)", node)
 	}
 
-	egbFilter, filterOk := m.egbFilter.(*filtering.ExtendedGlob)
+	egbFilter, filterOk := m.egbFilter.(*filtering.GlobEx)
 	if !filterOk {
 		return false, fmt.Errorf("matcher expected a *IncaseFilter (%T)", egbFilter)
 	}
@@ -125,18 +125,18 @@ func (m *IsCurrentExtendedGlobMatchMatcher) Match(actual interface{}) (bool, err
 	return egbFilter.IsMatch(node), nil
 }
 
-func (m *IsCurrentExtendedGlobMatchMatcher) FailureMessage(actual interface{}) string {
+func (m *IsCurrentGlobExMatchMatcher) FailureMessage(actual interface{}) string {
 	node, _ := actual.(*core.Node)
-	egbFilter, _ := m.egbFilter.(*filtering.ExtendedGlob)
+	egbFilter, _ := m.egbFilter.(*filtering.GlobEx)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nto match incase\n\t%v\n",
 		node.Extension.Name, egbFilter.Source(),
 	)
 }
 
-func (m *IsCurrentExtendedGlobMatchMatcher) NegatedFailureMessage(actual interface{}) string {
+func (m *IsCurrentGlobExMatchMatcher) NegatedFailureMessage(actual interface{}) string {
 	node, _ := actual.(*core.Node)
-	egbFilter, _ := m.egbFilter.(*filtering.ExtendedGlob)
+	egbFilter, _ := m.egbFilter.(*filtering.GlobEx)
 
 	return fmt.Sprintf("🔥 Expected\n\t%v\nNOT to match incase\n\t%v\n",
 		node.Extension.Name, egbFilter.Source(),

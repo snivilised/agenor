@@ -233,7 +233,7 @@ var _ = Describe("feature", Ordered, func() {
 				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "items with '.flac' suffix",
 				Pattern:     "*|flac",
 			},
@@ -259,7 +259,7 @@ var _ = Describe("feature", Ordered, func() {
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "items without '.txt' suffix",
 				Pattern:     "*|txt",
 				Negate:      true,
@@ -314,7 +314,7 @@ var _ = Describe("feature", Ordered, func() {
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "items without '.txt' suffix",
 				Pattern:     "*|txt",
 				Negate:      true,
@@ -325,7 +325,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "malformed extended glob filter (missing |)",
+				Given:        "malformed glob ex filter (missing |)",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
@@ -338,7 +338,7 @@ var _ = Describe("feature", Ordered, func() {
 				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeExtendedGlob,
+				Type:        enums.FilterTypeGlobEx,
 				Description: "items with '.flac' suffix",
 				Pattern:     "*.flac",
 			},
@@ -346,7 +346,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "malformed extended glob filter, missing type",
+				Given:        "malformed glob ex filter, missing type",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,

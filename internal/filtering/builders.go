@@ -18,8 +18,8 @@ func buildNativeNodeFilter(definition *core.FilterDef) (core.TraverseFilter, err
 	)
 
 	switch definition.Type {
-	case enums.FilterTypeExtendedGlob:
-		filter, err = createExtendedGlobFilter(definition, ifNotApplicable)
+	case enums.FilterTypeGlobEx:
+		filter, err = createGlobExFilter(definition, ifNotApplicable)
 
 	case enums.FilterTypeRegex:
 		filter = createRegexFilter(definition, ifNotApplicable)
@@ -132,7 +132,7 @@ func getCustomFilter(_ *core.FilterDef,
 	return fo.Custom, nil
 }
 
-func splitExtendedGlobPattern(pattern string) (segments, suffixes []string, err error) {
+func splitGlobExPattern(pattern string) (segments, suffixes []string, err error) {
 	if !strings.Contains(pattern, "|") {
 		return []string{}, []string{},
 			locale.NewInvalidExtGlobFilterMissingSeparatorError(pattern)
