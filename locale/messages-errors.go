@@ -232,13 +232,13 @@ var ErrWorkerPoolCreationFailed = WorkerPoolCreationFailedError{
 
 // ❌ InvalidFileSamplingSpecMissingFilesError
 
-// InvalidFileSamplingSpecMissingFilesErrorTemplData
-type InvalidFileSamplingSpecMissingFilesErrorTemplData struct {
+// InvalidSamplingSpecMissingFilesErrorTemplData
+type InvalidSamplingSpecMissingFilesErrorTemplData struct {
 	traverseTemplData
 }
 
 // Message
-func (td InvalidFileSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Message {
+func (td InvalidSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-file-sampling-spec-missing-files.static-error",
 		Description: "invalid file sampling specification, missing no of files",
@@ -252,33 +252,33 @@ type InvalidFileSamplingSpecificationError struct {
 
 var ErrInvalidFileSamplingSpecMissingFiles = InvalidFileSamplingSpecificationError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidFileSamplingSpecMissingFilesErrorTemplData{},
+		Data: InvalidSamplingSpecMissingFilesErrorTemplData{},
 	},
 }
 
-// ❌ InvalidFolderSamplingSpecMissingFolders
+// ❌ InvalidSamplingSpecMissingDirectoriesError
 
-// InvalidFolderSamplingSpecMissingFoldersTemplData
-type InvalidFolderSamplingSpecMissingFoldersErrorTemplData struct {
+// InvalidSamplingSpecMissingDirectoriesErrorTemplData
+type InvalidSamplingSpecMissingDirectoriesErrorTemplData struct {
 	traverseTemplData
 }
 
 // Message
-func (td InvalidFolderSamplingSpecMissingFoldersErrorTemplData) Message() *i18n.Message {
+func (td InvalidSamplingSpecMissingDirectoriesErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-folders.static-error",
-		Description: "invalid file sampling specification, missing no of folders",
-		Other:       "invalid file sampling specification, missing no of folders",
+		ID:          "invalid-file-sampling-spec-missing-directories.static-error",
+		Description: "invalid file sampling specification, missing no of directories",
+		Other:       "invalid file sampling specification, missing no of directories",
 	}
 }
 
-type InvalidFolderSamplingSpecMissingFoldersError struct {
+type InvalidSamplingSpecMissingDirectoriesError struct {
 	li18ngo.LocalisableError
 }
 
-var ErrInvalidFolderSamplingSpecMissingFolders = InvalidFolderSamplingSpecMissingFoldersError{
+var ErrInvalidSamplingSpecMissingDirectories = InvalidSamplingSpecMissingDirectoriesError{
 	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidFolderSamplingSpecMissingFoldersErrorTemplData{},
+		Data: InvalidSamplingSpecMissingDirectoriesErrorTemplData{},
 	},
 }
 

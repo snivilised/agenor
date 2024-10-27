@@ -20,7 +20,7 @@ func newContents(behaviour *pref.SortBehaviour,
 		hook:      hook,
 	}
 
-	contents.files, contents.folders = nef.Separate(entries)
+	contents.files, contents.directories = nef.Separate(entries)
 
 	return &contents
 }
@@ -30,14 +30,14 @@ func newContents(behaviour *pref.SortBehaviour,
 // This abstraction removes the differences in sorting behaviour on
 // different platforms.
 type Contents struct {
-	folders   []fs.DirEntry
-	files     []fs.DirEntry
-	behaviour *pref.SortBehaviour
-	hook      tapable.Hook[core.SortHook, core.ChainSortHook]
+	directories []fs.DirEntry
+	files       []fs.DirEntry
+	behaviour   *pref.SortBehaviour
+	hook        tapable.Hook[core.SortHook, core.ChainSortHook]
 }
 
-func (c *Contents) Folders() []fs.DirEntry {
-	return c.folders
+func (c *Contents) Directories() []fs.DirEntry {
+	return c.directories
 }
 
 func (c *Contents) Files() []fs.DirEntry {
@@ -48,31 +48,31 @@ func (c *Contents) Files() []fs.DirEntry {
 // order defined in the traversal options.
 func (c *Contents) All() []fs.DirEntry {
 	//nolint:ineffassign,staticcheck // prealloc
-	result := make([]fs.DirEntry, 0, len(c.files)+len(c.folders))
+	result := make([]fs.DirEntry, 0, len(c.files)+len(c.directories))
 
 	if c.behaviour.SortFilesFirst {
 		result = c.files
-		result = append(result, c.folders...)
+		result = append(result, c.directories...)
 	} else {
-		result = c.folders
+		result = c.directories
 		result = append(result, c.files...)
 	}
 
 	return result
 }
 
-// Sort will sort either the folders or files or both.
+// Sort will sort either the directories or files or both.
 func (c *Contents) Sort(et enums.EntryType) {
 	type selectors map[enums.EntryType]func() [][]fs.DirEntry
 
 	sortables := selectors{
 		enums.EntryTypeAll: func() [][]fs.DirEntry {
 			return [][]fs.DirEntry{
-				c.folders, c.files,
+				c.directories, c.files,
 			}
 		},
-		enums.EntryTypeFolder: func() [][]fs.DirEntry {
-			return [][]fs.DirEntry{c.folders}
+		enums.EntryTypeDirectory: func() [][]fs.DirEntry {
+			return [][]fs.DirEntry{c.directories}
 		},
 		enums.EntryTypeFile: func() [][]fs.DirEntry {
 			return [][]fs.DirEntry{c.files}
@@ -86,21 +86,21 @@ func (c *Contents) Sort(et enums.EntryType) {
 
 func (c *Contents) clear() {
 	c.files = []fs.DirEntry{}
-	c.folders = []fs.DirEntry{}
+	c.directories = []fs.DirEntry{}
 }
 
 func newEmptyContents(prealloc ...*pref.EntryQuantities) *Contents {
 	return lo.TernaryF(len(prealloc) == 0,
 		func() *Contents {
 			return &Contents{
-				files:   []fs.DirEntry{},
-				folders: []fs.DirEntry{},
+				files:       []fs.DirEntry{},
+				directories: []fs.DirEntry{},
 			}
 		},
 		func() *Contents {
 			return &Contents{
-				files:   make([]fs.DirEntry, 0, prealloc[0].Files),
-				folders: make([]fs.DirEntry, 0, prealloc[0].Folders),
+				files:       make([]fs.DirEntry, 0, prealloc[0].Files),
+				directories: make([]fs.DirEntry, 0, prealloc[0].Directories),
 			}
 		},
 	)

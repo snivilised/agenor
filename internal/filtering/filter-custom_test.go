@@ -102,8 +102,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 			},
 			Description: "items with '.flac' suffix",
@@ -117,8 +117,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   6,
-					Folders: 8,
+					Files:       6,
+					Directories: 8,
 				},
 			},
 			Description: "items without .flac suffix",
@@ -133,8 +133,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 			},
 			Description: "items with '.flac' suffix",
@@ -149,8 +149,8 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 			},
 			Description: "items with '.flac' suffix",

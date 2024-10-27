@@ -46,14 +46,14 @@ var _ = Describe("feature", Ordered, func() {
 	})
 
 	Context("comprehension", func() {
-		When("folders: wake and sleep", func() {
+		When("directories: wake and sleep", func() {
 			It("🧪 should: invoke inside hibernation range", Label("example"),
 				func(ctx SpecContext) {
 					path := lab.Static.RetroWave
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&tv.Using{
 							Tree:         path,
-							Subscription: enums.SubscribeFolders,
+							Subscription: enums.SubscribeDirectories,
 							Handler: func(servant tv.Servant) error {
 								node := servant.Node()
 								GinkgoWriter.Printf(
@@ -100,8 +100,8 @@ var _ = Describe("feature", Ordered, func() {
 						tv.WithHibernationBehaviourInclusiveSleep(),
 					)).Navigate(ctx)
 
-					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders\n",
-						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories\n",
+						result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 					)
 				},
 			)
@@ -178,13 +178,13 @@ var _ = Describe("feature", Ordered, func() {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
 		},
 
-		// === folders =======================================================
+		// === directories ===================================================
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "wake and sleep (folders, inclusive:default)",
+				Given:        "wake and sleep (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College",
 					"Northern Council", "Teenage Color",
 				},
@@ -192,7 +192,7 @@ var _ = Describe("feature", Ordered, func() {
 					"Electric Youth", "Innerworld",
 				},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 4,
+					Directories: 4,
 				},
 			},
 			Hibernate: &core.HibernateOptions{
@@ -215,9 +215,9 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "wake and sleep (folders, excl:wake, inc:sleep, mute)",
+				Given:        "wake and sleep (directories, excl:wake, inc:sleep, mute)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"College", "Northern Council",
 					"Teenage Color", "Electric Youth",
 				},
@@ -225,7 +225,7 @@ var _ = Describe("feature", Ordered, func() {
 					"Chromatics", "Innerworld",
 				},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 4,
+					Directories: 4,
 				},
 			},
 			Hibernate: &core.HibernateOptions{
@@ -249,15 +249,15 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "wake only (folders, inclusive:default)",
+				Given:        "wake only (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
 				Prohibited: []string{lab.Static.RetroWave, "Chromatics"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 				},
 			},
 			Hibernate: &core.HibernateOptions{
@@ -275,15 +275,15 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (folders, inclusive:default)",
+				Given:        "sleep only (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",
 					"Northern Council", "Teenage Color",
 				},
 				Prohibited: []string{"Electric Youth", "Innerworld"},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 				},
 			},
 
@@ -302,15 +302,15 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (folders, inclusive:default)",
+				Given:        "sleep only (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory:    []string{lab.Static.RetroWave, "Chromatics"},
 				Prohibited: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 				},
 			},
 			Hibernate: &core.HibernateOptions{
@@ -330,10 +330,10 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "wake only (folders, inclusive:default)",
+				Given:        "wake only (directories, inclusive:default)",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
 					"Teenage Color", "Electric Youth", "Innerworld",
 				},
@@ -354,10 +354,10 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &hibernateTE{
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (folders, inclusive:default)",
+				Given:        "sleep only (directories, inclusive:default)",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",
 					"Northern Council", "Teenage Color",
 				},

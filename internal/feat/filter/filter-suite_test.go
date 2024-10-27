@@ -32,8 +32,8 @@ type FilterTE struct {
 
 type PolyTE struct {
 	lab.NaviTE
-	File   core.FilterDef
-	Folder core.FilterDef
+	File      core.FilterDef
+	Directory core.FilterDef
 }
 
 type customFilter struct {

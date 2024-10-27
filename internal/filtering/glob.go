@@ -44,7 +44,7 @@ type ChildGlob struct {
 }
 
 // Matching returns the collection of files contained within this
-// node's folder that matches this filter.
+// node's directory that matches this filter.
 func (f *ChildGlob) Matching(children []fs.DirEntry) []fs.DirEntry {
 	return lo.Filter(children,
 		func(entry fs.DirEntry, _ int) bool {
@@ -60,8 +60,8 @@ func (f *ChildGlob) Matching(children []fs.DirEntry) []fs.DirEntry {
 // is used to filter on a compound basis but has some differences to ChildGlobFilter
 // that necessitates its use. The biggest difference is that ChildGlobFilter is
 // designed to only be applied to file directory entries, where as SampleGlob
-// can be applied to files or folders. It also possesses a scope field used to
-// distinguish only between files and folders.
+// can be applied to files or directories. It also possesses a scope field used to
+// distinguish only between files and directories.
 type SampleGlob struct {
 	Sample
 }

@@ -51,7 +51,7 @@ func (p *plugin) Next(servant core.Servant,
 
 func (p *plugin) Init(pi *types.PluginInit) error {
 	p.crate.Mums = p.Mediator.Supervisor().Many(
-		enums.MetricNoFoldersFilteredOut,
+		enums.MetricNoDirectoriesFilteredOut,
 		enums.MetricNoFilesFilteredOut,
 		enums.MetricNoChildFilesFound,
 		enums.MetricNoChildFilesFilteredOut,

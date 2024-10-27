@@ -109,8 +109,8 @@ func createJSONSampleFilterFromCoreWithPoly(
 ) *core.SampleFilterDef {
 	return &core.SampleFilterDef{
 		Poly: &core.PolyFilterDef{
-			File:   *def,
-			Folder: *def,
+			File:      *def,
+			Directory: *def,
 		},
 	}
 }
@@ -191,15 +191,15 @@ var _ = Describe("Marshaler", Ordered, func() {
 		jsonNodeFilterDef = *createJSONFilterFromCore(sourceNodeFilterDef)
 		jsonPolyNodeFilterDef = *createJSONFilterFromCoreWithPoly(
 			sourceNodeFilterDef, &json.PolyFilterDef{
-				File:   jsonNodeFilterDef,
-				Folder: jsonNodeFilterDef,
+				File:      jsonNodeFilterDef,
+				Directory: jsonNodeFilterDef,
 			},
 		)
 
 		polyNodeFilterDef = createCoreFilterDefFromJSONWithPoly(
 			&jsonNodeFilterDef, &core.PolyFilterDef{
-				File:   *sourceNodeFilterDef,
-				Folder: *sourceNodeFilterDef,
+				File:      *sourceNodeFilterDef,
+				Directory: *sourceNodeFilterDef,
 			},
 		)
 
@@ -215,8 +215,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 		jsonSampleFilterDef = createJSONSampleFilterFromCore(sourceSampleFilterDef)
 		jsonSamplePolyFilterDef = &json.SampleFilterDef{
 			Poly: &json.PolyFilterDef{
-				File:   jsonNodeFilterDef,
-				Folder: jsonNodeFilterDef,
+				File:      jsonNodeFilterDef,
+				Directory: jsonNodeFilterDef,
 			},
 		}
 
@@ -428,7 +428,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "FilterOptions - Node.Poly.Folder",
+					given: "FilterOptions - Node.Poly.Directory",
 				},
 				checkerTE: &checkerTE{
 					field:   "Description",
@@ -441,7 +441,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				tweak: func(result *persist.MarshalResult) {
 					result.JO.Filter.Node = &jsonPolyNodeFilterDef
-					result.JO.Filter.Node.Poly.Folder.Description = foo
+					result.JO.Filter.Node.Poly.Directory.Description = foo
 				},
 			}),
 
@@ -717,7 +717,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 			Entry(nil, &marshalTE{
 				persistTE: persistTE{
-					given: "FilterOptions - Sample.Poly.Folder",
+					given: "FilterOptions - Sample.Poly.Directory",
 				},
 				checkerTE: &checkerTE{
 					field:   "Description",
@@ -730,7 +730,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				tweak: func(result *persist.MarshalResult) {
 					result.JO.Filter.Sample = jsonSamplePolyFilterDef
-					result.JO.Filter.Sample.Poly.Folder.Description = foo
+					result.JO.Filter.Sample.Poly.Directory.Description = foo
 				},
 			}),
 		)

@@ -10,15 +10,15 @@ func _() {
 	var x [1]struct{}
 	_ = x[MetricNoFilesInvoked-1]
 	_ = x[MetricNoFilesFilteredOut-2]
-	_ = x[MetricNoFoldersInvoked-3]
-	_ = x[MetricNoFoldersFilteredOut-4]
+	_ = x[MetricNoDirectoriesInvoked-3]
+	_ = x[MetricNoDirectoriesFilteredOut-4]
 	_ = x[MetricNoChildFilesFound-5]
 	_ = x[MetricNoChildFilesFilteredOut-6]
 }
 
-const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no-of-foldersmetric-no-of-folders-filtered-outmetric-no-of-child-files-foundmetric-no-of-child-files-found"
+const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no-of-directoriesmetric-no-of-directories-filtered-outmetric-no-of-child-files-foundmetric-no-of-child-files-found"
 
-var _Metric_index = [...]uint8{0, 18, 49, 69, 102, 132, 162}
+var _Metric_index = [...]uint8{0, 18, 49, 73, 110, 140, 170}
 
 func (i Metric) String() string {
 	i -= 1

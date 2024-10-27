@@ -8,7 +8,7 @@ import (
 type (
 	// TraverseInput represents the type  of inputs accepted by the worker pool
 	TraverseInput struct {
-		// Servant represents the file system entity (file or folder) for which
+		// Servant represents the file system entity (file or directory) for which
 		// a job will execute.
 		Servant Servant
 
@@ -31,7 +31,7 @@ type (
 
 	// TraverseOutput represents the output of a single job executed by the pool.
 	TraverseOutput struct {
-		// Servant represents the file system entity (file or folder) from
+		// Servant represents the file system entity (file or directory) from
 		// which this output was generated via the client defined handler.
 		Servant Servant
 

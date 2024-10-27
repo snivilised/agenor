@@ -10,7 +10,7 @@ type (
 		//
 		IsCaseSensitive bool
 
-		// SortFilesFirst defines whether a folder's files or directories
+		// SortFilesFirst defines whether a directory's files or directories
 		// should be navigated first.
 		//
 		SortFilesFirst bool
@@ -36,7 +36,7 @@ type (
 		//
 		SubPath SubPathBehaviour
 
-		// Sort, behaviours relating to sorting of a folder's directory entries.
+		// Sort, behaviours relating to sorting of a directory's entries.
 		//
 		Sort SortBehaviour
 

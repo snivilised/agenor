@@ -101,10 +101,10 @@ var _ = Describe("feature", Ordered, func() {
 			})
 
 			files := result.Metrics().Count(enums.MetricNoFilesInvoked)
-			folders := result.Metrics().Count(enums.MetricNoFoldersInvoked)
+			directories := result.Metrics().Count(enums.MetricNoDirectoriesInvoked)
 
-			GinkgoWriter.Printf("---> 🍕🍕 Metrics, files:'%v', folders:'%v'\n",
-				files, folders,
+			GinkgoWriter.Printf("---> 🍕🍕 Metrics, files:'%v', directories:'%v'\n",
+				files, directories,
 			)
 		},
 		func(entry *hibernateTE) string {
@@ -181,7 +181,7 @@ var _ = Describe("feature", Ordered, func() {
 					Type:        enums.FilterTypeGlob,
 					Description: "Sleep At: A1 - Incident.flac",
 					Pattern:     "A1 - Incident.flac",
-					Scope:       enums.ScopeFolder,
+					Scope:       enums.ScopeDirectory,
 				},
 				SleepAt: &core.FilterDef{
 					Type:        enums.FilterTypeGlob,

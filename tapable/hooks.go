@@ -6,11 +6,11 @@ import (
 
 type (
 	Hooks struct {
-		FileSubPath   Hook[core.SubPathHook, core.ChainSubPathHook]
-		FolderSubPath Hook[core.SubPathHook, core.ChainSubPathHook]
-		ReadDirectory Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
-		QueryStatus   Hook[core.QueryStatusHook, core.ChainQueryStatusHook]
-		Sort          Hook[core.SortHook, core.ChainSortHook]
+		FileSubPath      Hook[core.SubPathHook, core.ChainSubPathHook]
+		DirectorySubPath Hook[core.SubPathHook, core.ChainSubPathHook]
+		ReadDirectory    Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
+		QueryStatus      Hook[core.QueryStatusHook, core.ChainQueryStatusHook]
+		Sort             Hook[core.SortHook, core.ChainSortHook]
 	}
 
 	// HookCtrl contains the handler function to be invoked.

@@ -1,6 +1,6 @@
 package nanny
 
-// 📦 pkg: nanny - handles a node's children for folders with children subscription
+// 📦 pkg: nanny - handles a node's children for directories with children subscription
 
 import (
 	"github.com/snivilised/traverse/core"
@@ -14,7 +14,7 @@ import (
 func IfActive(o *pref.Options,
 	using *pref.Using, mediator types.Mediator,
 ) types.Plugin {
-	if using.Subscription == enums.SubscribeFoldersWithFiles &&
+	if using.Subscription == enums.SubscribeDirectoriesWithFiles &&
 		!o.Filter.IsFilteringActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{

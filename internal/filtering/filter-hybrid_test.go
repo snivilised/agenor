@@ -42,7 +42,7 @@ var _ = Describe("feature", Ordered, func() {
 		services.Reset()
 	})
 
-	DescribeTable("folders with files filtered",
+	DescribeTable("directories with files filtered",
 		func(ctx SpecContext, entry *lab.HybridFilterTE) {
 			var (
 				childFilter core.ChildTraverseFilter
@@ -106,11 +106,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter",
+				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 					Children: map[string]int{
 						"Northern Council": 2,
 						"Teenage Color":    2,
@@ -120,9 +120,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Type:        enums.FilterTypeGlob,
@@ -133,11 +133,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter (negate)",
+				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 					Children: map[string]int{
 						"Night Drive": 3,
 					},
@@ -145,9 +145,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders don't contain o",
+				Description: "directories don't contain o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
@@ -160,11 +160,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): regex child filter",
+				Given:        "directory(with files): regex child filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 					Children: map[string]int{
 						"Northern Council": 2,
 						"Teenage Color":    2,
@@ -174,9 +174,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Type:        enums.FilterTypeRegex,
@@ -187,11 +187,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): regex child filter (negate)",
+				Given:        "directory(with files): regex child filter (negate)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 					Children: map[string]int{
 						"Night Drive": 3,
 					},
@@ -199,9 +199,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders don't contain o",
+				Description: "directories don't contain o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
@@ -214,11 +214,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter",
+				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 					Children: map[string]int{
 						"Northern Council": 2,
 						"Teenage Color":    2,
@@ -228,9 +228,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
@@ -241,11 +241,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter (negate)",
+				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 					Children: map[string]int{
 						"Night Drive": 3,
 					},
@@ -253,9 +253,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders don't contain o",
+				Description: "directories don't contain o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
@@ -268,11 +268,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter",
+				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 6,
+					Directories: 6,
 					Children: map[string]int{
 						"Northern Council": 2,
 						"Teenage Color":    2,
@@ -283,9 +283,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Type:        enums.FilterTypeCustom,
@@ -296,11 +296,11 @@ var _ = Describe("feature", Ordered, func() {
 
 		Entry(nil, &lab.HybridFilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folder(with files): glob child filter (negate)",
+				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
-					Folders: 2,
+					Directories: 2,
 					Children: map[string]int{
 						"Night Drive": 3,
 					},
@@ -308,9 +308,9 @@ var _ = Describe("feature", Ordered, func() {
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders don't contain o",
+				Description: "directories don't contain o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 				Negate:      true,
 			},
 			ChildDef: core.ChildFilterDef{
@@ -328,14 +328,14 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "malformed extended glob filter (missing |)",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedErr:  locale.NewInvalidIncaseFilterDefError("*.flac"),
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Type:        enums.FilterTypeExtendedGlob,
@@ -349,14 +349,14 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "malformed extended glob filter, missing type",
 				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeFoldersWithFiles,
+				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedErr:  locale.ErrFilterUndefined,
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,
-				Description: "folders contains o",
+				Description: "directories contains o",
 				Pattern:     "*o*",
-				Scope:       enums.ScopeFolder,
+				Scope:       enums.ScopeDirectory,
 			},
 			ChildDef: core.ChildFilterDef{
 				Description: "type missing",

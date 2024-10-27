@@ -11,7 +11,7 @@ import (
 type (
 	DirectoryContents interface {
 		All() []fs.DirEntry
-		Folders() []fs.DirEntry
+		Directories() []fs.DirEntry
 		Files() []fs.DirEntry
 	}
 )

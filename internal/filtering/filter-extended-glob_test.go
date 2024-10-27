@@ -69,8 +69,8 @@ var _ = Describe("filtering", Ordered, func() {
 						tv.WithFilter(filterDefs),
 					)).Navigate(ctx)
 
-					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+						result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 						result.Metrics().Count(enums.MetricNoFilesInvoked),
 					)
 				},
@@ -78,7 +78,7 @@ var _ = Describe("filtering", Ordered, func() {
 		})
 	})
 
-	DescribeTable("folders with files",
+	DescribeTable("directories with files",
 		func(ctx SpecContext, entry *lab.FilterTE) {
 			var (
 				traverseFilter core.TraverseFilter
@@ -155,8 +155,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 5,
+					Files:       16,
+					Directories: 5,
 				},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
@@ -171,8 +171,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 5,
+					Files:       16,
+					Directories: 5,
 				},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
@@ -187,8 +187,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   19,
-					Folders: 5,
+					Files:       19,
+					Directories: 5,
 				},
 				Mandatory:  []string{"front.jpg"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -204,8 +204,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 5,
+					Files:       3,
+					Directories: 5,
 				},
 				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
@@ -221,8 +221,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   7,
-					Folders: 5,
+					Files:       7,
+					Directories: 5,
 				},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
@@ -238,8 +238,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 5,
+					Files:       16,
+					Directories: 5,
 				},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
 			},
@@ -253,8 +253,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   4,
-					Folders: 1,
+					Files:       4,
+					Directories: 1,
 				},
 				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
@@ -264,40 +264,40 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		// === folders =======================================================
+		// === directories ===================================================
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(any scope): extended glob filter",
+				Given:        "directories(any scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 2,
+					Files:       0,
+					Directories: 2,
 				},
 				Mandatory:  []string{"Marillion"},
 				Prohibited: []string{"Fugazi"},
 			},
-			Description: "folders starting with M",
+			Description: "directories starting with M",
 			Pattern:     "M*|",
-			Scope:       enums.ScopeFolder,
+			Scope:       enums.ScopeDirectory,
 		}),
 
 		Entry(nil, &lab.FilterTE{
 			NaviTE: lab.NaviTE{
-				Given:        "folders(folder scope): extended glob filter (negate)",
+				Given:        "directories(directory scope): extended glob filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 3,
+					Files:       0,
+					Directories: 3,
 				},
 				Mandatory:  []string{"Fugazi"},
 				Prohibited: []string{"Marillion"},
 			},
-			Description: "folders NOT starting with M",
+			Description: "directories NOT starting with M",
 			Pattern:     "M*|",
-			Scope:       enums.ScopeFolder,
+			Scope:       enums.ScopeDirectory,
 			Negate:      true,
 		}),
 
@@ -305,15 +305,15 @@ var _ = Describe("filtering", Ordered, func() {
 			NaviTE: lab.NaviTE{
 				Given:        "universal(undefined scope): extended glob filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeFolders,
+				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
-					Files:   0,
-					Folders: 2,
+					Files:       0,
+					Directories: 2,
 				},
 				Mandatory:  []string{"Marillion"},
 				Prohibited: []string{"Fugazi"},
 			},
-			Description: "folders starting with M",
+			Description: "directories starting with M",
 			Pattern:     "M*|",
 		}),
 
@@ -325,8 +325,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 0,
+					Files:       16,
+					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -342,8 +342,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 0,
+					Files:       16,
+					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -359,8 +359,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   19,
-					Folders: 0,
+					Files:       19,
+					Directories: 0,
 				},
 				Mandatory:  []string{"front.jpg"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -376,8 +376,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   3,
-					Folders: 0,
+					Files:       3,
+					Directories: 0,
 				},
 				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
@@ -393,8 +393,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   7,
-					Folders: 0,
+					Files:       7,
+					Directories: 0,
 				},
 				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
@@ -411,8 +411,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 0,
+					Files:       16,
+					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -427,8 +427,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   4,
-					Folders: 0,
+					Files:       4,
+					Directories: 0,
 				},
 				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
@@ -446,8 +446,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 5,
+					Files:       16,
+					Directories: 5,
 				},
 				Mandatory:  []string{"Marillion"},
 				Prohibited: []string{"cover-clutching-at-straws-jpg"},
@@ -464,8 +464,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   16,
-					Folders: 4,
+					Files:       16,
+					Directories: 4,
 				},
 				Prohibited: []string{"Marillion"},
 			},
@@ -483,8 +483,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:   12,
-					Folders: 0,
+					Files:       12,
+					Directories: 0,
 				},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},

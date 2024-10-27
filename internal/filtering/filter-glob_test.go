@@ -70,8 +70,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 						tv.WithFilter(filterDefs),
 					)).Navigate(ctx)
 
-					GinkgoWriter.Printf("===> 🍭 invoked '%v' folders, '%v' files.\n",
-						result.Metrics().Count(enums.MetricNoFoldersInvoked),
+					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
+						result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
 						result.Metrics().Count(enums.MetricNoFilesInvoked),
 					)
 				},
@@ -153,8 +153,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 			},
 			Description: "items with '.flac' suffix",
@@ -168,8 +168,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   6,
-					Folders: 8,
+					Files:       6,
+					Directories: 8,
 				},
 			},
 			Description: "items without .flac suffix",
@@ -184,8 +184,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 			},
 			Description: "items with '.flac' suffix",
@@ -200,8 +200,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 4,
+					Files:       8,
+					Directories: 4,
 				},
 				Mandatory: []string{"A1 - Can You Kiss Me First.flac"},
 			},
@@ -217,8 +217,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:   8,
-					Folders: 0,
+					Files:       8,
+					Directories: 0,
 				},
 				Mandatory:  []string{"A1 - Can You Kiss Me First.flac"},
 				Prohibited: []string{"vinyl-info.teenage-color"},

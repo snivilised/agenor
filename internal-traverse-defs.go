@@ -111,7 +111,7 @@ func (fn extension) build(fS TraverseFS) extent {
 // KERNEL: mediator
 
 // KERNEL: navigationController
-// navigationImpl: navigatorBase // implFiles, implFolders, implUniversal // agent
+// navigationImpl: navigatorBase // implFiles, implDirectories, implUniversal // agent
 
 // FEATURE: resume hydrate (depends on FEATURE: hibernation)
 // resumeController

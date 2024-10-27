@@ -138,7 +138,7 @@ func newHooks() tapable.Hooks {
 			tapable.SubPathAttacher,
 		),
 
-		FolderSubPath: tapable.NewHookCtrl[
+		DirectorySubPath: tapable.NewHookCtrl[
 			core.SubPathHook, core.ChainSubPathHook, tapable.SubPathBroadcaster,
 		](
 			DefaultSubPathHook,

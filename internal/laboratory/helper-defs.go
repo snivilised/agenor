@@ -48,8 +48,8 @@ type (
 
 	PolyTE struct {
 		NaviTE
-		File   core.FilterDef
-		Folder core.FilterDef
+		File      core.FilterDef
+		Directory core.FilterDef
 	}
 
 	SampleTE struct {
@@ -63,9 +63,9 @@ type (
 	}
 
 	Quantities struct {
-		Files    uint
-		Folders  uint
-		Children map[string]int
+		Files       uint
+		Directories uint
+		Children    map[string]int
 	}
 
 	MatcherExpectation[T comparable] struct {

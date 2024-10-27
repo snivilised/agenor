@@ -40,7 +40,7 @@ type mediatorInfo struct {
 func newMediator(info *mediatorInfo) *mediator {
 	mums := info.resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
-		enums.MetricNoFoldersInvoked,
+		enums.MetricNoDirectoriesInvoked,
 		enums.MetricNoChildFilesFound,
 	)
 

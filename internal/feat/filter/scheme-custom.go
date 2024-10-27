@@ -32,7 +32,7 @@ func matchNext(filter core.TraverseFilter,
 
 	if !matched {
 		filteredOutMetric := lo.Ternary(node.IsDirectory(),
-			enums.MetricNoFoldersFilteredOut,
+			enums.MetricNoDirectoriesFilteredOut,
 			enums.MetricNoFilesFilteredOut,
 		)
 		crate.Mums[filteredOutMetric].Tick()

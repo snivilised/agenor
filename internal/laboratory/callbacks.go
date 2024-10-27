@@ -41,17 +41,17 @@ func UniversalCallback(name string) core.Client {
 	}
 }
 
-func FoldersCallback(name string) core.Client {
+func DirectoriesCallback(name string) core.Client {
 	return func(servant tv.Servant) error {
 		node := servant.Node()
 		depth := node.Extension.Depth
 		actualNoChildren := len(node.Children)
 		GinkgoWriter.Printf(
-			"---> 🔆 FOLDERS//CALLBACK%v: (depth:%v, children:%v) '%v'\n",
+			"---> 🔆 DIRECTORIES//CALLBACK%v: (depth:%v, children:%v) '%v'\n",
 			name, depth, actualNoChildren, node.Path,
 		)
 		Expect(node.IsDirectory()).To(BeTrue(),
-			Because(node.Path, "node expected to be folder"),
+			Because(node.Path, "node expected to be directory"),
 		)
 		Expect(node.Extension).NotTo(BeNil(), Reason(node.Path))
 
@@ -72,7 +72,7 @@ func FilesCallback(name string) core.Client {
 	}
 }
 
-func FoldersCaseSensitiveCallback(first, second string) core.Client {
+func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 	recording := make(RecordingMap)
 
 	return func(servant tv.Servant) error {

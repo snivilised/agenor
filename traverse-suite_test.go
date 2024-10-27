@@ -22,7 +22,7 @@ const (
 	TreePath    = "traversal-tree-path"
 	RestorePath = "/from-restore-path"
 	files       = 3
-	folders     = 2
+	directories = 2
 )
 
 var noOpHandler = func(_ tv.Servant) error {

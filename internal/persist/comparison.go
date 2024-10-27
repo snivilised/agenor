@@ -203,11 +203,11 @@ func equalSamplingOptions(o *pref.SamplingOptions, jo *json.SamplingOptions) err
 		})
 	}
 
-	if o.NoOf.Folders != jo.NoOf.Folders {
+	if o.NoOf.Directories != jo.NoOf.Directories {
 		return fmt.Errorf("sampling.noOf %w", UnequalValueError[uint]{
-			Field: "Folders",
-			Value: o.NoOf.Folders,
-			Other: jo.NoOf.Folders,
+			Field: "Directories",
+			Value: o.NoOf.Directories,
+			Other: jo.NoOf.Directories,
 		})
 	}
 
@@ -322,7 +322,7 @@ func equalFilterDef(filterName string,
 			return err
 		}
 
-		if err := equalFilterDef("poly", &def.Poly.Folder, &jdef.Poly.Folder); err != nil {
+		if err := equalFilterDef("poly", &def.Poly.Directory, &jdef.Poly.Directory); err != nil {
 			return err
 		}
 	}
@@ -482,7 +482,7 @@ func equalSampleFilterDef(filterName string,
 			return err
 		}
 
-		if err := equalFilterDef("poly", &def.Poly.Folder, &jdef.Poly.Folder); err != nil {
+		if err := equalFilterDef("poly", &def.Poly.Directory, &jdef.Poly.Directory); err != nil {
 			return err
 		}
 	}

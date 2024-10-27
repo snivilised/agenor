@@ -107,9 +107,9 @@ var _ = Describe("With Operators", Ordered, func() {
 		})
 	})
 
-	Context("WithHookFolderSubPath", func() {
+	Context("WithHookDirectorySubPath", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithHookFolderSubPath(func(*core.SubPathInfo) string {
+			option := tv.WithHookDirectorySubPath(func(*core.SubPathInfo) string {
 				return ""
 			})
 			Expect(option).NotTo(BeNil())
@@ -164,8 +164,8 @@ var _ = Describe("With Operators", Ordered, func() {
 					Type:      enums.SampleTypeFilter,
 					InReverse: true,
 					NoOf: pref.EntryQuantities{
-						Files:   2,
-						Folders: 3,
+						Files:       2,
+						Directories: 3,
 					},
 				},
 			)).NotTo(BeNil())

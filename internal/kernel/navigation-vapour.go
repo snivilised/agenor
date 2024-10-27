@@ -49,8 +49,8 @@ func (v *navigationVapour) Sort(et enums.EntryType) []fs.DirEntry {
 	switch et {
 	case enums.EntryTypeAll:
 		return v.cargo.All()
-	case enums.EntryTypeFolder:
-		return v.cargo.folders
+	case enums.EntryTypeDirectory:
+		return v.cargo.directories
 	case enums.EntryTypeFile:
 		return v.cargo.files
 	}
@@ -62,8 +62,8 @@ func (v *navigationVapour) Pick(et enums.EntryType) {
 	switch et {
 	case enums.EntryTypeAll:
 		v.ents = v.cargo.All()
-	case enums.EntryTypeFolder:
-		v.ents = v.cargo.folders
+	case enums.EntryTypeDirectory:
+		v.ents = v.cargo.directories
 	case enums.EntryTypeFile:
 		v.ents = v.cargo.files
 	}

@@ -6,8 +6,8 @@ import (
 
 type (
 	PolyFilterDef struct {
-		File   FilterDef
-		Folder FilterDef
+		File      FilterDef
+		Directory FilterDef
 	}
 
 	FilterDef struct {
@@ -33,7 +33,7 @@ type (
 		IfNotApplicable enums.TriStateBool `json:"if-not-applicable"`
 
 		// Poly allows for the definition of a PolyFilter which contains separate
-		// filters that target files and folders separately. If present, then
+		// filters that target files and directories separately. If present, then
 		// all other fields are redundant, since the filter definitions inside
 		// Poly should be referred to instead.
 		Poly *PolyFilterDef
@@ -64,14 +64,14 @@ type (
 		Pattern string `json:"sample-filter"`
 
 		// Scope which file system entries this filter applies to;
-		// for sampling, only ScopeFile and ScopeFolder are valid.
+		// for sampling, only ScopeFile and ScopeDirectory are valid.
 		Scope enums.FilterScope `json:"sample-filter-scope"`
 
 		// Negate, reverses the applicability of the filter (Defaults to false)
 		Negate bool `json:"negate"`
 
 		// Poly allows for the definition of a PolyFilter which contains separate
-		// filters that target files and folders separately. If present, then
+		// filters that target files and directories separately. If present, then
 		// all other fields are redundant, since the filter definitions inside
 		// Poly should be referred to instead.
 		Poly *PolyFilterDef
