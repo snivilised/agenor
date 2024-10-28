@@ -99,19 +99,34 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 			}
 		}),
 		options: optionals(func(ext extent) (*pref.Options, *opts.Binder, error) {
-			ve := using.Validate()
-
-			if using.O != nil {
-				return using.O, opts.Push(using.O), ve
+			type baggage struct {
+				o      *pref.Options
+				binder *opts.Binder
+				err    error
 			}
 
-			o, binder, err := ext.options(settings...)
+			b := func(ve error) *baggage {
+				return lo.TernaryF(using.O != nil,
+					func() *baggage {
+						return &baggage{
+							o:      using.O,
+							binder: opts.Push(using.O),
+							err:    ve,
+						}
+					},
+					func() *baggage {
+						o, binder, err := ext.options(settings...)
 
-			if ve != nil {
-				return o, binder, ve
-			}
+						return &baggage{
+							o:      o,
+							binder: binder,
+							err:    lo.Ternary(ve != nil, ve, err),
+						}
+					},
+				)
+			}(using.Validate())
 
-			return o, binder, err
+			return b.o, b.binder, b.err
 		}),
 		navigator: kernel.Builder(func(o *pref.Options, // pass in controls here, or put on resources
 			resources *types.Resources,
@@ -152,14 +167,13 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
-		options: optionals(func(ext extent) (*pref.Options, *opts.Binder, error) {
-			ve := was.Validate()
-
-			o, binder, err := ext.options(settings...)
-
-			if ve != nil {
-				return o, binder, ve
+		options: optionals(func(ext extent) (o *pref.Options, binder *opts.Binder, err error) {
+			o, binder, err = ext.options(settings...)
+			if err != nil {
+				return o, binder, err
 			}
+
+			err = was.Validate()
 
 			return o, binder, err
 		}),
