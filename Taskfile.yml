@@ -68,10 +68,6 @@ tasks:
     cmds:
       - go test ./tapable
 
-  tc:
-    cmds:
-      - go test ./cycle
-
   lfs:
     cmds:
       - go test ./lfs
@@ -87,6 +83,10 @@ tasks:
   tl:
     cmds:
       - go test ./locale
+
+  tlc:
+    cmds:
+      - go test ./life
 
   tcore:
     cmds:

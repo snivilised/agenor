@@ -8,19 +8,19 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive,stylecheck // ok
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/life"
 )
 
-func Begin(em string) cycle.BeginHandler {
-	return func(state *cycle.BeginState) {
+func Begin(em string) life.BeginHandler {
+	return func(state *life.BeginState) {
 		GinkgoWriter.Printf(
 			"---> %v [traverse-navigator-test:BEGIN], tree: '%v'\n", em, state.Tree,
 		)
 	}
 }
 
-func End(em string) cycle.EndHandler {
+func End(em string) life.EndHandler {
 	return func(result core.TraverseResult) {
 		GinkgoWriter.Printf(
 			"---> %v [traverse-navigator-test:END], err: '%v'\n", em, result.Error(),

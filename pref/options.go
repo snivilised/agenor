@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/tapable"
 )
 
@@ -38,7 +38,7 @@ type (
 
 		// Events provides the ability to tap into life cycle events
 		//
-		Events cycle.Events
+		Events life.Events
 
 		// Hooks contains client hook-able functions
 		//

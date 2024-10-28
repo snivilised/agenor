@@ -5,10 +5,10 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 )
 
@@ -18,7 +18,7 @@ type simple struct {
 	current state
 }
 
-func (p *simple) init(controls *cycle.Controls) error {
+func (p *simple) init(controls *life.Controls) error {
 	p.states = p.create()
 	p.controls = controls
 

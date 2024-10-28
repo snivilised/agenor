@@ -273,7 +273,7 @@ var (
 
 // This high level list assumes everything can use core and enums; dependencies
 // can only point downwards. NB: These restrictions do not apply to the unit tests;
-// eg, "cycle_test" defines tests that are dependent on "pref", but "cycle" is prohibited
+// eg, "life_test" defines tests that are dependent on "pref", but "life" is prohibited
 // from using "pref".
 // ============================================================================
 // 🔆 user interface layer
@@ -294,13 +294,13 @@ var (
 // ---
 //
 // 🔆 support layer
-// pref: ["cycle", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
+// pref: ["life", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
 // persist: []
 // services: []
 // ---
 //
 // 🔆 intermediary layer
-// cycle: [], !("pref")
+// life: [], !("pref")
 // ---
 //
 // 🔆 platform layer

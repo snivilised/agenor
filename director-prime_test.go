@@ -10,10 +10,10 @@ import (
 	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
@@ -113,7 +113,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
-						tv.WithOnBegin(func(_ *cycle.BeginState) {}),
+						tv.WithOnBegin(func(_ *life.BeginState) {}),
 						tv.WithCPU(),
 					)).Navigate(ctx)
 

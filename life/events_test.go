@@ -1,4 +1,4 @@
-package cycle_test
+package life_test
 
 import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -6,7 +6,7 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
+	"github.com/snivilised/traverse/life"
 )
 
 var _ = Describe("controls", Ordered, func() {
@@ -19,8 +19,8 @@ var _ = Describe("controls", Ordered, func() {
 			const path = "/traversal-tree"
 
 			var (
-				controls cycle.Controls
-				events   cycle.Events
+				controls life.Controls
+				events   life.Events
 				begun    bool
 				ended    bool
 			)
@@ -31,7 +31,7 @@ var _ = Describe("controls", Ordered, func() {
 
 			// client:
 			//
-			events.Begin.On(func(state *cycle.BeginState) {
+			events.Begin.On(func(state *life.BeginState) {
 				begun = true
 				Expect(state.Tree).To(Equal(path))
 			})
@@ -42,7 +42,7 @@ var _ = Describe("controls", Ordered, func() {
 
 			// component side:
 			//
-			controls.Begin.Dispatch()(&cycle.BeginState{
+			controls.Begin.Dispatch()(&life.BeginState{
 				Tree: path,
 			})
 			controls.End.Dispatch()(nil)

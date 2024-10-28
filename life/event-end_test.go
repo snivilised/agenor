@@ -1,4 +1,4 @@
-package cycle_test
+package life_test
 
 import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -6,22 +6,23 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/internal/types"
 )
 
 var _ = Describe("event", func() {
-	var node core.Node
+	var result types.KernelResult
 
-	Context("descend", func() {
+	Context("end", func() {
 		Context("single", func() {
 			When("listener", func() {
 				It("🧪 should: invoke client's handler", func() {
 					invoked := false
 					o, binder, _ := opts.Get()
 
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						invoked = true
 					})
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Dispatch()(&result)
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -32,16 +33,16 @@ var _ = Describe("event", func() {
 					invoked := false
 					o, binder, _ := opts.Get()
 
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						invoked = true
 					})
-					binder.Controls.Descend.Mute()
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Mute()
+					binder.Controls.End.Dispatch()(&result)
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
-					binder.Controls.Descend.Unmute()
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Unmute()
+					binder.Controls.End.Dispatch()(&result)
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -53,21 +54,21 @@ var _ = Describe("event", func() {
 					count := 0
 					o, binder, _ := opts.Get()
 
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Dispatch()(&result)
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
 
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Dispatch()(&result)
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -77,15 +78,15 @@ var _ = Describe("event", func() {
 					count := 0
 					o, binder, _ := opts.Get()
 
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
-					o.Events.Descend.On(func(_ *core.Node) {
+					o.Events.End.On(func(_ core.TraverseResult) {
 						count++
 					})
 
-					binder.Controls.Descend.Mute()
-					binder.Controls.Descend.Dispatch()(&node)
+					binder.Controls.End.Mute()
+					binder.Controls.End.Dispatch()(&result)
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -96,7 +97,7 @@ var _ = Describe("event", func() {
 			It("🧪 should: invoke no-op", func() {
 				_, binder, _ := opts.Get()
 
-				binder.Controls.Descend.Dispatch()(&node)
+				binder.Controls.End.Dispatch()(&result)
 			})
 		})
 	})

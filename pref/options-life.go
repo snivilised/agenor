@@ -1,13 +1,13 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/cycle"
+	"github.com/snivilised/traverse/life"
 )
 
 // WithOnAscend sets ascend handler, invoked when navigator
 // traverses up a directory, ie after all children have been
 // visited.
-func WithOnAscend(handler cycle.NodeHandler) Option {
+func WithOnAscend(handler life.NodeHandler) Option {
 	return func(o *Options) error {
 		o.Events.Ascend.On(handler)
 
@@ -17,7 +17,7 @@ func WithOnAscend(handler cycle.NodeHandler) Option {
 
 // WithOnBegin sets the begin handler, invoked before the start
 // of a traversal session.
-func WithOnBegin(handler cycle.BeginHandler) Option {
+func WithOnBegin(handler life.BeginHandler) Option {
 	return func(o *Options) error {
 		o.Events.Begin.On(handler)
 
@@ -27,7 +27,7 @@ func WithOnBegin(handler cycle.BeginHandler) Option {
 
 // WithOnDescend sets the descend handler, invoked when navigator
 // traverses down into a child directory.
-func WithOnDescend(handler cycle.NodeHandler) Option {
+func WithOnDescend(handler life.NodeHandler) Option {
 	return func(o *Options) error {
 		o.Events.Descend.On(handler)
 
@@ -37,7 +37,7 @@ func WithOnDescend(handler cycle.NodeHandler) Option {
 
 // WithOnEnd sets the end handler, invoked at the end of a traversal
 // session.
-func WithOnEnd(handler cycle.EndHandler) Option {
+func WithOnEnd(handler life.EndHandler) Option {
 	return func(o *Options) error {
 		o.Events.End.On(handler)
 
@@ -48,7 +48,7 @@ func WithOnEnd(handler cycle.EndHandler) Option {
 // WithOnWake sets the wake handler, when hibernation is active
 // and the wake condition has occurred, ie when a file system
 // node is encountered that matches the hibernation's wake filter.
-func WithOnWake(handler cycle.HibernateHandler) Option {
+func WithOnWake(handler life.HibernateHandler) Option {
 	return func(o *Options) error {
 		o.Events.Wake.On(handler)
 
@@ -59,7 +59,7 @@ func WithOnWake(handler cycle.HibernateHandler) Option {
 // WithOnSleep sets the sleep handler, when hibernation is active
 // and the sleep condition has occurred, ie when a file system
 // node is encountered that matches the hibernation's sleep filter.
-func WithOnSleep(handler cycle.HibernateHandler) Option {
+func WithOnSleep(handler life.HibernateHandler) Option {
 	return func(o *Options) error {
 		o.Events.Sleep.On(handler)
 

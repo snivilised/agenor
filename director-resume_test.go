@@ -12,9 +12,9 @@ import (
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
@@ -27,7 +27,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 	BeforeAll(func() {
 		restore = func(o *tv.Options) error {
-			o.Events.Begin.On(func(_ *cycle.BeginState) {})
+			o.Events.Begin.On(func(_ *life.BeginState) {})
 
 			return nil
 		}

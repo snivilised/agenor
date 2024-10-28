@@ -6,10 +6,10 @@ import (
 
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -51,7 +51,7 @@ type (
 	// PluginInit
 	PluginInit struct {
 		O        *pref.Options
-		Controls *cycle.Controls
+		Controls *life.Controls
 	}
 
 	// Mediator controls interactions between different entities of

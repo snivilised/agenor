@@ -1,4 +1,4 @@
-package cycle_test
+package life_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 )
 
-func TestCycle(t *testing.T) {
+func TestLife(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Cycle Suite")
+	RunSpecs(t, "Life Suite")
 }

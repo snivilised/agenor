@@ -1,10 +1,10 @@
-package cycle
+package life
 
 import (
 	"github.com/snivilised/traverse/core"
 )
 
-// 📦 pkg: cycle - represents life cycle events; can't use prefs
+// 📦 pkg: life - represents life cycle events; can't use prefs
 
 // beforeX
 // afterX
