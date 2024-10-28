@@ -1,18 +1,18 @@
 package opts
 
 import (
-	"github.com/snivilised/traverse/cycle"
+	"github.com/snivilised/traverse/life"
 )
 
 type (
 	// Binder contains items derived from Options
 	Binder struct {
-		Controls cycle.Controls
+		Controls life.Controls
 	}
 )
 
 func NewBinder() *Binder {
 	return &Binder{
-		Controls: cycle.NewControls(),
+		Controls: life.NewControls(),
 	}
 }

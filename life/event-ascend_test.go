@@ -1,4 +1,4 @@
-package cycle_test
+package life_test
 
 import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok

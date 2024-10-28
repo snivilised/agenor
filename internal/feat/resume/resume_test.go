@@ -9,10 +9,10 @@ import (
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/cycle"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
+	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
@@ -91,7 +91,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 					// end of synthetic assignments
 
 					if strategy == enums.ResumeStrategyFastward {
-						o.Events.Begin.On(func(_ *cycle.BeginState) {
+						o.Events.Begin.On(func(_ *life.BeginState) {
 							Fail("begin handler should not be invoked because begin notification muted")
 						})
 					}

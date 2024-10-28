@@ -1,4 +1,4 @@
-package cycle_test
+package life_test
 
 const (
 	traversalRoot = "/traversal-tree"

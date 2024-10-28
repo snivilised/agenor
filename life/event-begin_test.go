@@ -1,25 +1,27 @@
-package cycle_test
+package life_test
 
 import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/life"
 )
 
 var _ = Describe("event", func() {
-	var description string
-
-	Context("sleep", func() {
+	Context("begin", func() {
 		Context("single", func() {
 			When("listener", func() {
 				It("🧪 should: invoke client's handler", func() {
 					invoked := false
 					o, binder, _ := opts.Get()
 
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						invoked = true
 					})
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: traversalRoot,
+					})
 
 					Expect(invoked).To(BeTrue())
 				})
@@ -30,16 +32,20 @@ var _ = Describe("event", func() {
 					invoked := false
 					o, binder, _ := opts.Get()
 
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						invoked = true
 					})
-					binder.Controls.Sleep.Mute()
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Mute()
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: traversalRoot,
+					})
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
-					binder.Controls.Sleep.Unmute()
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Unmute()
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: traversalRoot,
+					})
 					Expect(invoked).To(BeTrue(), "notification not muted")
 				})
 			})
@@ -51,21 +57,25 @@ var _ = Describe("event", func() {
 					count := 0
 					o, binder, _ := opts.Get()
 
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						count++
 					})
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						count++
 					})
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: traversalRoot,
+					})
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						count++
 					})
 
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: anotherRoot,
+					})
 					Expect(count).To(Equal(3), "not all listeners were invoked for second notification")
 				})
 			})
@@ -75,15 +85,17 @@ var _ = Describe("event", func() {
 					count := 0
 					o, binder, _ := opts.Get()
 
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						count++
 					})
-					o.Events.Sleep.On(func(_ string) {
+					o.Events.Begin.On(func(_ *life.BeginState) {
 						count++
 					})
 
-					binder.Controls.Sleep.Mute()
-					binder.Controls.Sleep.Dispatch()(description)
+					binder.Controls.Begin.Mute()
+					binder.Controls.Begin.Dispatch()(&life.BeginState{
+						Tree: anotherRoot,
+					})
 
 					Expect(count).To(Equal(0), "notification not muted")
 				})
@@ -94,7 +106,9 @@ var _ = Describe("event", func() {
 			It("🧪 should: invoke no-op", func() {
 				_, binder, _ := opts.Get()
 
-				binder.Controls.Sleep.Dispatch()(description)
+				binder.Controls.Begin.Dispatch()(&life.BeginState{
+					Tree: traversalRoot,
+				})
 			})
 		})
 	})

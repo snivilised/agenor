@@ -1,4 +1,4 @@
-package cycle
+package life
 
 import (
 	"github.com/snivilised/traverse/core"
