@@ -9,10 +9,12 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
@@ -23,6 +25,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 	var (
 		fS      *luna.MemFS
 		restore pref.Option
+
+		jsonPath string
 	)
 
 	BeforeAll(func() {
@@ -32,6 +36,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 			return nil
 		}
 		fS = luna.NewMemFS()
+		jsonPath = lab.GetJSONPath()
 
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
@@ -61,11 +66,14 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						Using: tv.Using{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
-							GetTraverseFS: func(_ string) tv.TraverseFS {
-								return fS
+							GetForest: func(_ string) *core.Forest {
+								return &core.Forest{
+									T: fS,
+									R: nef.NewTraverseABS(),
+								}
 							},
 						},
-						From:     RestorePath,
+						From:     jsonPath,
 						Strategy: tv.ResumeStrategyFastward,
 					},
 					tv.WithDepth(depth),
@@ -92,7 +100,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
-						From:     RestorePath,
+						From:     jsonPath,
 						Strategy: tv.ResumeStrategySpawn,
 					},
 					tv.WithOnDescend(func(_ *core.Node) {}),
@@ -122,7 +130,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
-							From:     RestorePath,
+							From:     jsonPath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithFilter(&pref.FilterOptions{}),
@@ -149,7 +157,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
-							From:     RestorePath,
+							From:     jsonPath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithHibernationFilterWake(&core.FilterDef{
@@ -180,7 +188,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
-							From:     RestorePath,
+							From:     jsonPath,
 							Strategy: tv.ResumeStrategySpawn,
 						},
 						tv.WithSamplingOptions(&pref.SamplingOptions{

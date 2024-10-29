@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/snivilised/traverse/test/hydra"
 )
 
 type (
@@ -30,4 +32,16 @@ func Because(name, because string) string {
 
 func Reason(name string) string {
 	return fmt.Sprintf("❌ for node named: '%v'", name)
+}
+
+// Yoke is similar to filepath.Join but it is meant specifically for relative file
+// systems where the rules of a path are different; see fs.ValidPath
+func Yoke(segments ...string) string {
+	return strings.Join(segments, "/")
+}
+
+func GetJSONPath() string {
+	jroot := hydra.Repo(filepath.Join("test", "json"))
+
+	return Yoke(jroot, "unmarshal", Static.JSONFile)
 }

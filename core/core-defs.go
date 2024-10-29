@@ -2,6 +2,8 @@ package core
 
 import (
 	"time"
+
+	nef "github.com/snivilised/nefilim"
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
@@ -35,6 +37,20 @@ type (
 	// about the current navigation node.
 	Servant interface {
 		Node() *Node
+	}
+
+	// Forest contains the logical file systems required
+	// for navigation.
+	Forest struct {
+		// T is the file system that contains just the functionality required
+		// for traversal. It can also represent other file systems including afero,
+		// providing the appropriate adapters are in place.
+		T nef.TraverseFS
+
+		// R is the file system required for resume operations, ie we load
+		// and save resume state via this file system instance, which is
+		// distinct from the traversal file system.
+		R nef.TraverseFS
 	}
 
 	// Client is the callback invoked for each file system node found

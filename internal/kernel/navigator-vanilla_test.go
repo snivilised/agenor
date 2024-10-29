@@ -8,8 +8,10 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
@@ -45,7 +47,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		services.Reset()
 	})
 
-	DescribeTable("Ensure Callback Invoked Once", Label("simple"),
+	DescribeTable("Ensure Callback Invoked Once", Label("vanilla"),
 		func(ctx SpecContext, entry *lab.NaviTE) {
 			recording := make(lab.RecordingMap)
 			once := func(servant tv.Servant) error {
@@ -71,8 +73,11 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) tv.TraverseFS {
-						return fS
+					GetForest: func(_ string) *core.Forest {
+						return &core.Forest{
+							T: fS,
+							R: nef.NewTraverseABS(),
+						}
 					},
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),

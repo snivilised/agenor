@@ -14,8 +14,10 @@ var (
 	}
 
 	Static = struct {
+		JSONFile  string
 		RetroWave string
 	}{
+		JSONFile:  "resume-state.json",
 		RetroWave: "RETRO-WAVE",
 	}
 )

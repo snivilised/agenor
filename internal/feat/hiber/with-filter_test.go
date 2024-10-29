@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 
@@ -44,8 +45,11 @@ var _ = Describe("feature", Ordered, func() {
 					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      entry.Callback,
-					GetTraverseFS: func(_ string) tv.TraverseFS {
-						return fS
+					GetForest: func(_ string) *core.Forest {
+						return &core.Forest{
+							T: fS,
+							R: nef.NewTraverseABS(),
+						}
 					},
 				},
 

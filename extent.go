@@ -1,6 +1,7 @@
 package tv
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
@@ -13,7 +14,7 @@ type extent interface {
 	was() *pref.Was
 	plugin(*kernel.Artefacts) types.Plugin
 	options(...pref.Option) (*pref.Options, *opts.Binder, error)
-	traverseFS() TraverseFS
+	forest() *core.Forest
 	complete() bool
 }
 
@@ -22,11 +23,11 @@ type fileSystems struct {
 }
 
 type baseExtent struct {
-	fileSys fileSystems
+	trees *core.Forest
 }
 
-func (ex *baseExtent) traverseFS() TraverseFS {
-	return ex.fileSys.fS
+func (ex *baseExtent) forest() *core.Forest {
+	return ex.trees
 }
 
 type primeExtent struct {
@@ -81,7 +82,7 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
-	loaded, binder, err := resume.Load(ex.fileSys.fS, ex.w.From, settings...)
+	loaded, binder, err := resume.Load(ex.trees.R, ex.w.From, settings...)
 	ex.loaded = loaded
 
 	// TODO: get the resume point from the resume persistence file
