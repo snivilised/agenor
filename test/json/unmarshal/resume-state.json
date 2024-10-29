@@ -39,9 +39,9 @@
     }
   },
   "Active": {
-    "Tree": "json/marshal",
+    "Tree": "set/this/tree/in/unit/test",
     "Hibernation": 1,
-    "CurrentPath": "/top/a/b/c",
+    "CurrentPath": "set/this/path/in/unit/test",
     "Depth": 3
   }
 }

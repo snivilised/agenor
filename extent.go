@@ -82,7 +82,12 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
-	loaded, binder, err := resume.Load(ex.trees.R, ex.w.From, settings...)
+	loaded, binder, err := resume.Load(&types.RestoreState{
+		Path:   ex.w.From,
+		FS:     ex.trees.R,
+		Resume: ex.w.Strategy,
+	}, settings...)
+
 	ex.loaded = loaded
 
 	// TODO: get the resume point from the resume persistence file

@@ -280,7 +280,7 @@ var (
 // ---
 //
 // 🔆 feature layer
-// resume: ["pref"]
+// resume: ["pref", "opts"]
 // sampling: ["filter"]
 // hiber: ["filter", "services"]
 // filter: []

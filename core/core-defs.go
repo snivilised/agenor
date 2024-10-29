@@ -4,6 +4,7 @@ import (
 	"time"
 
 	nef "github.com/snivilised/nefilim"
+	"github.com/snivilised/traverse/enums"
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
@@ -16,6 +17,7 @@ type (
 		IsComplete() bool
 	}
 
+	// Completion
 	Completion func() bool
 
 	// Session represents a traversal session and keeps tracks of
@@ -57,6 +59,13 @@ type (
 	// during traversal.
 	Client func(servant Servant) error
 
+	ActiveState struct {
+		Tree        string
+		Hibernation enums.Hibernation
+		CurrentPath string
+		Depth       int
+	}
+
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
 	SimpleHandler func()
@@ -74,4 +83,9 @@ type (
 
 func (fn Completion) IsComplete() bool {
 	return fn()
+}
+
+func (s *ActiveState) Clone() *ActiveState {
+	c := *s
+	return &c
 }

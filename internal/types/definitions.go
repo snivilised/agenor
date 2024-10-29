@@ -80,7 +80,7 @@ type (
 
 	// Restoration; tbd...
 	Restoration interface {
-		Inject(state opts.ActiveState)
+		Inject(state *core.ActiveState)
 	}
 
 	// Facilities is the interface provided to plugins to enable them
@@ -112,15 +112,6 @@ type (
 		Sort(et enums.EntryType) []fs.DirEntry
 		Pick(et enums.EntryType)
 		AssignChildren(children []fs.DirEntry)
-	}
-
-	// ActiveState
-	ActiveState struct { // keep in sync with test-restore.DEFAULT.json
-		Tree        string
-		Hibernation enums.Hibernation
-		CurrentPath string
-		Depth       int
-		// metrics
 	}
 
 	SaveState struct {
@@ -188,9 +179,4 @@ type (
 
 func (fn FilterChildrenFunc) Matching(files []fs.DirEntry) []fs.DirEntry {
 	return fn(files)
-}
-
-func (s *ActiveState) Clone() *ActiveState {
-	c := *s
-	return &c
 }

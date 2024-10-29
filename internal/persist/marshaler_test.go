@@ -51,7 +51,7 @@ func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 	writePath := destination + "/" + tempFile
 	request := &persist.MarshalRequest{
 		O: o,
-		Active: &types.ActiveState{
+		Active: &core.ActiveState{
 			Tree:        destination,
 			Hibernation: enums.HibernationPending,
 			CurrentPath: "/top/a/b/c",
@@ -96,6 +96,7 @@ func unmarshal(entry *marshalTE, tfs tv.TraverseFS, restorePath string, t *tampe
 			Resume: enums.ResumeStrategySpawn,
 		},
 	}
+
 	state, err := persist.Unmarshal(request, entry.tweak)
 	Expect(err).To(Succeed(), "UNMARSHAL")
 
