@@ -1,31 +1,21 @@
 package opts
 
 import (
-	"io/fs"
-
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/pref"
 )
 
-func Load(fS fs.FS, from string, settings ...pref.Option) (*LoadInfo, *Binder, error) {
-	o := pref.DefaultOptions()
+func Bind(o *pref.Options, active *core.ActiveState,
+	settings ...pref.Option,
+) (*LoadInfo, *Binder, error) {
 	binder := NewBinder()
 	o.Events.Bind(&binder.Controls)
 
-	file, err := fS.Open(from)
-	if err != nil {
-		return &LoadInfo{
-			O:      o,
-			WakeAt: "tbd",
-		}, binder, err
-	}
-	defer file.Close()
-
-	// TODO: save any active state on the binder, eg the wake point
-
-	err = apply(o, settings...)
+	err := apply(o, settings...)
 
 	return &LoadInfo{
 		O:      o,
-		WakeAt: "tbd",
+		State:  active,
+		WakeAt: active.CurrentPath, // this looks redundant, because we can get it off ts
 	}, binder, err
 }

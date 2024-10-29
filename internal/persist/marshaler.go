@@ -5,6 +5,7 @@ import (
 	"io/fs"
 
 	nef "github.com/snivilised/nefilim"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -20,16 +21,16 @@ type (
 	TamperFunc func(result *MarshalResult)
 
 	MarshalRequest struct {
+		Active *core.ActiveState
 		O      *pref.Options
-		Active *types.ActiveState
 		Path   string
 		Perm   fs.FileMode
 		FS     nef.WriteFileFS
 	}
 
 	MarshalResult struct {
+		Active *core.ActiveState
 		JO     *json.Options
-		Active *types.ActiveState
 	}
 
 	UnmarshalRequest struct {
@@ -37,14 +38,14 @@ type (
 	}
 
 	UnmarshalResult struct {
-		O      *pref.Options
-		Active *types.ActiveState
+		Active *core.ActiveState
 		JO     *json.Options
+		O      *pref.Options
 	}
 
 	Comparison struct {
-		O  *pref.Options
 		JO *json.Options
+		O  *pref.Options
 	}
 )
 
@@ -74,7 +75,9 @@ func Marshal(request *MarshalRequest) (*MarshalResult, error) {
 	return result, request.FS.WriteFile(request.Path, data, request.Perm)
 }
 
-func Unmarshal(request *UnmarshalRequest, tampers ...TamperFunc) (*UnmarshalResult, error) {
+func Unmarshal(request *UnmarshalRequest,
+	tampers ...TamperFunc,
+) (*UnmarshalResult, error) {
 	bytes, err := request.Restore.FS.ReadFile(request.Restore.Path)
 
 	if err != nil {

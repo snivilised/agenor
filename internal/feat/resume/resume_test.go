@@ -193,7 +193,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 		// to, because the listener is already in the active listening state. But resumeAt
 		// still has to be set because that is what would happen in the real world.
 		//
-		XEntry(nil, &resumeTE{
+		XEntry(nil, &resumeTE{ // UNDER CONSTRUCTION !!!
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen pending",
 				Relative:     "RETRO-WAVE",

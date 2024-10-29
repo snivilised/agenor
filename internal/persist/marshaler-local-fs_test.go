@@ -9,11 +9,11 @@ import (
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
 )
@@ -58,7 +58,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 					writePath := destination + "/" + tempFile
 					jo, err := persist.Marshal(&persist.MarshalRequest{
 						O: o,
-						Active: &types.ActiveState{
+						Active: &core.ActiveState{
 							Tree:        destination,
 							Hibernation: enums.HibernationPending,
 							CurrentPath: "/top/a/b/c",
