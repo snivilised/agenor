@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -123,8 +124,11 @@ func navigate(n *navigation) {
 
 				return nil
 			},
-			GetTraverseFS: func(_ string) tv.TraverseFS {
-				return fS
+			GetForest: func(_ string) *core.Forest {
+				return &core.Forest{
+					T: fS,
+					R: nef.NewTraverseABS(),
+				}
 			},
 		},
 		tv.WithOnBegin(lab.Begin("🔊")),

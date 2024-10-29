@@ -22,7 +22,7 @@ type buildArtefacts struct {
 // instance.
 type Builders struct {
 	using     *pref.Using
-	fS        pref.TraverseFileSystemBuilder
+	forest    pref.ForestBuilder
 	options   optionsBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
@@ -33,7 +33,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD FILE SYSTEM & EXTENT
 	//
 	ext := bs.extent.build(
-		bs.fS.Build(bs.using.Tree),
+		bs.forest.Build(bs.using.Tree),
 	)
 
 	// BUILD OPTIONS
@@ -50,9 +50,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD NAVIGATOR
 	//
 	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
-		FS: FileSystems{
-			T: ext.traverseFS(),
-		},
+		FS:         ext.forest(),
 		Supervisor: measure.New(),
 		Binder:     binder,
 	})

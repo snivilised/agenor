@@ -3,6 +3,7 @@ package tv
 import (
 	"io/fs"
 
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -56,13 +57,13 @@ func (fn filesystem) build(path string) fs.FS {
 }
 
 type extentBuilder interface {
-	build(fS TraverseFS) extent
+	build(forest *core.Forest) extent
 }
 
-type extension func(fS TraverseFS) extent
+type extension func(forest *core.Forest) extent
 
-func (fn extension) build(fS TraverseFS) extent {
-	return fn(fS)
+func (fn extension) build(forest *core.Forest) extent {
+	return fn(forest)
 }
 
 // We need an entity that manages the decoration of the client handler. The

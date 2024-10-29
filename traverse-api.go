@@ -56,7 +56,6 @@ type (
 
 	// 🌀 nef
 	ExistsInFS  = nef.ExistsInFS
-	FileSystems = nef.FileSystems
 	Rel         = nef.Rel
 	RenameFS    = nef.RenameFS
 	TraverseFS  = nef.TraverseFS

@@ -7,8 +7,10 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
@@ -58,8 +60,11 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 						Tree:         path,
 						Subscription: entry.Subscription,
 						Handler:      once,
-						GetTraverseFS: func(_ string) tv.TraverseFS {
-							return fS
+						GetForest: func(_ string) *core.Forest {
+							return &core.Forest{
+								T: fS,
+								R: nef.NewTraverseABS(),
+							}
 						},
 					},
 					tv.WithOnBegin(lab.Begin("🛡️")),

@@ -66,7 +66,7 @@ type (
 
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS         nef.FileSystems
+		FS         *core.Forest
 		Supervisor *measure.Supervisor
 		Binder     *opts.Binder
 	}

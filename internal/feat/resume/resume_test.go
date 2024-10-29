@@ -7,8 +7,10 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
@@ -26,10 +28,9 @@ var noOp = func(string) {}
 
 var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 	var (
-		// jroot        string
-		fromJSONPath string
-		tree         string
-		fS           *luna.MemFS
+		jsonPath string
+		tree     string
+		fS       *luna.MemFS
 	)
 
 	BeforeAll(func() {
@@ -42,9 +43,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 		)).To(Succeed())
 
 		fS = hydra.Nuxx(verbose, lab.Static.RetroWave)
-
-		// jroot = helpers.JoinCwd("Test", "json")
-		tree = hydra.Repo("test")
+		jsonPath = lab.GetJSONPath()
 	})
 
 	BeforeEach(func() {
@@ -69,12 +68,12 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 					// to avoid the need to create many restore files
 					// (eg resume-state.json) for different test cases.
 					//
-					// this is akin to tampering; needs to be re-thought
+
+					// this is akin to tampering for testing purpose; needs to be re-thought
 					//
 					ts.Tree = tree
 					ts.CurrentPath = entry.Relative
 					ts.Hibernation = entry.active.listenState
-					// Subscription ??? = entry.subscription
 
 					if profile.filtered {
 						// the json resume state contains a filter definition, so the
@@ -127,6 +126,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 							Fail(fmt.Sprintf("item: '%v' should have been fast forwarded over", node.Path))
 						}
 					}
+
 					return once(node)
 				}
 
@@ -143,17 +143,17 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 				result, err := tv.Walk().Configure().Extent(tv.Resume(
 					&tv.Was{
 						Using: pref.Using{
-							Tree:         tree,
+							Tree:         entry.Relative,
 							Subscription: entry.Subscription,
 							Handler:      callback,
-							GetTraverseFS: func(_ string) tv.TraverseFS {
-								return fS
+							GetForest: func(_ string) *core.Forest {
+								return &core.Forest{
+									T: fS,
+									R: nef.NewTraverseABS(),
+								}
 							},
 						},
-						// From: this has to be a real physical path, but how does this affect
-						// the fS? Perhaps, we load the xml into fS?
-						//
-						From:     fromJSONPath,
+						From:     jsonPath,
 						Strategy: strategy,
 						Restorer: restorer,
 					},
@@ -176,7 +176,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 					FS:          fS,
 					Recording:   recording,
-					Path:        tree,
+					Path:        entry.Relative,
 					Result:      result,
 					Err:         err,
 					ExpectedErr: entry.ExpectedErr,

@@ -10,8 +10,8 @@ github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1v
 github.com/go-task/slim-sprig/v3 v3.0.0/go.mod h1:W848ghGpv3Qj3dhTPRyJypKRiqCdHZiAzKg9hl15HA8=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/google/pprof v0.0.0-20241023014458-598669927662 h1:SKMkD83p7FwUqKmBsPdLHF5dNyxq3jOWwu9w9UyH5vA=
-github.com/google/pprof v0.0.0-20241023014458-598669927662/go.mod h1:vavhavw2zAxS5dIdcRluK6cSGGPlZynqzFM8NdvU144=
+github.com/google/pprof v0.0.0-20241029010322-833c56d90c8e h1:v7R0PZoC2p1KWQmv1+GqCXQe59Ab1TkDF8Y9Lg2W6m4=
+github.com/google/pprof v0.0.0-20241029010322-833c56d90c8e/go.mod h1:vavhavw2zAxS5dIdcRluK6cSGGPlZynqzFM8NdvU144=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
@@ -30,8 +30,6 @@ github.com/rogpeppe/go-internal v1.13.1 h1:KvO1DLK/DRN07sQ1LQKScxyZJuNnedQ5/wKSR
 github.com/rogpeppe/go-internal v1.13.1/go.mod h1:uMEvuHeurkdAXX61udpOXGD/AzZDWNMNyH2VO9fmH0o=
 github.com/snivilised/li18ngo v0.1.7 h1:XRYpmP7jSAxzRyg5WH0PViFb9ycWGFcDkQQqd2GsjzQ=
 github.com/snivilised/li18ngo v0.1.7/go.mod h1:NVOexqt/aIhnenNPQDqbJchLNte92io87j5o2l+HNqs=
-github.com/snivilised/nefilim v0.1.4 h1:bhiENDl/T6ZQO146eF8UnxtXLQenSzEyjwuTeWScImw=
-github.com/snivilised/nefilim v0.1.4/go.mod h1:+4/hKxgfvE8eNjLMJC+3ropEZSQuiR/NqfPtIuw7ZMw=
 github.com/snivilised/nefilim v0.1.5 h1:onBndcSMV99oZtqS+r1R+r+IAxoylipQHu3kaKhKGgM=
 github.com/snivilised/nefilim v0.1.5/go.mod h1:+4/hKxgfvE8eNjLMJC+3ropEZSQuiR/NqfPtIuw7ZMw=
 github.com/snivilised/pants v0.1.2 h1:6Abj02gV5rFYyKfCsmeEiOi1pLdRyITKUY5oDoRgYuU=

@@ -2,6 +2,7 @@ package tv
 
 import (
 	nef "github.com/snivilised/nefilim"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/feat/nanny"
@@ -78,22 +79,22 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: using,
-		fS: pref.CreateTraverseFS(func(root string) TraverseFS {
-			if using.GetTraverseFS != nil {
-				return using.GetTraverseFS(root)
+		forest: pref.CreateForest(func(root string) *core.Forest {
+			if using.GetForest != nil {
+				return using.GetForest(root)
 			}
-
-			return nef.NewTraverseFS(Rel{
-				Root:      root,
-				Overwrite: noOverwrite,
-			})
+			return &core.Forest{
+				T: nef.NewTraverseFS(Rel{
+					Root:      root,
+					Overwrite: noOverwrite,
+				}),
+				R: nef.NewTraverseABS(),
+			}
 		}),
-		extent: extension(func(fS TraverseFS) extent {
+		extent: extension(func(forest *core.Forest) extent {
 			return &primeExtent{
 				baseExtent: baseExtent{
-					fileSys: fileSystems{
-						fS: fS,
-					},
+					trees: forest,
 				},
 				u: using,
 			}
@@ -144,22 +145,22 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 func Resume(was *Was, settings ...pref.Option) *Builders {
 	return &Builders{
 		using: &was.Using,
-		fS: pref.CreateTraverseFS(func(root string) TraverseFS {
-			if was.Using.GetTraverseFS != nil {
-				return was.Using.GetTraverseFS(root)
+		forest: pref.CreateForest(func(root string) *core.Forest {
+			if was.Using.GetForest != nil {
+				return was.Using.GetForest(root)
 			}
-
-			return nef.NewTraverseFS(Rel{
-				Root:      root,
-				Overwrite: noOverwrite,
-			})
+			return &core.Forest{
+				T: nef.NewTraverseFS(Rel{
+					Root:      root,
+					Overwrite: noOverwrite,
+				}),
+				R: nef.NewTraverseABS(),
+			}
 		}),
-		extent: extension(func(fS TraverseFS) extent {
+		extent: extension(func(forest *core.Forest) extent {
 			return &resumeExtent{
 				baseExtent: baseExtent{
-					fileSys: fileSystems{
-						fS: fS,
-					},
+					trees: forest,
 				},
 				w: was,
 			}

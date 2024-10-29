@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
@@ -59,8 +60,11 @@ var _ = Describe("filtering", Ordered, func() {
 								)
 								return nil
 							},
-							GetTraverseFS: func(_ string) tv.TraverseFS {
-								return fS
+							GetForest: func(_ string) *core.Forest {
+								return &core.Forest{
+									T: fS,
+									R: nef.NewTraverseABS(),
+								}
 							},
 						},
 						tv.WithOnBegin(lab.Begin("🛡️")),
@@ -124,8 +128,11 @@ var _ = Describe("filtering", Ordered, func() {
 					Tree:         path,
 					Subscription: entry.Subscription,
 					Handler:      callback,
-					GetTraverseFS: func(_ string) tv.TraverseFS {
-						return fS
+					GetForest: func(_ string) *core.Forest {
+						return &core.Forest{
+							T: fS,
+							R: nef.NewTraverseABS(),
+						}
 					},
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
