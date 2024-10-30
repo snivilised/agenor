@@ -3,7 +3,6 @@ package kernel
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/pref"
 )
 
 type (
@@ -16,18 +15,18 @@ type (
 	}
 
 	NavigatorBuilder interface {
-		Build(o *pref.Options,
+		Build(artefacts types.OptionHarvest,
 			resources *types.Resources,
 		) (*Artefacts, error)
 	}
 
-	Builder func(o *pref.Options,
+	Builder func(artefacts types.OptionHarvest,
 		resources *types.Resources,
 	) (*Artefacts, error)
 )
 
-func (fn Builder) Build(o *pref.Options,
+func (fn Builder) Build(artefacts types.OptionHarvest,
 	resources *types.Resources,
 ) (*Artefacts, error) {
-	return fn(o, resources)
+	return fn(artefacts, resources)
 }

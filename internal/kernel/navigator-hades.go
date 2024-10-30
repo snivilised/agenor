@@ -42,5 +42,11 @@ func (n *navigatorHades) Mediator() types.Mediator {
 	return nil
 }
 
+func (n *navigatorHades) Resume(context.Context,
+	*core.ActiveState,
+) (core.TraverseResult, error) {
+	return &types.KernelResult{}, nil
+}
+
 func (n *navigatorHades) Conclude(_ core.TraverseResult) {
 }

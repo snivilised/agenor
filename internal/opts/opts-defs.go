@@ -13,7 +13,6 @@ import (
 //
 
 type LoadInfo struct {
-	O      *pref.Options
-	State  *core.ActiveState
-	WakeAt string
+	O     *pref.Options
+	State *core.ActiveState
 }

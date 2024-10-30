@@ -25,6 +25,12 @@ func (nc *NavigationController) Ignite(ignition *types.Ignition) {
 	nc.med.Ignite(ignition)
 }
 
+func (nc *NavigationController) Resume(ctx context.Context,
+	active *core.ActiveState,
+) (core.TraverseResult, error) {
+	return nc.med.Resume(ctx, active)
+}
+
 func (nc *NavigationController) Conclude(result core.TraverseResult) {
 	nc.med.Conclude(result)
 }

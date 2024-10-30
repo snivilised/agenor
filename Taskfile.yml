@@ -100,6 +100,10 @@ tasks:
     cmds:
       - go test ./internal/feat/hiber
 
+  tf-res:
+    cmds:
+      - go test ./internal/feat/resume
+
   tf-samp:
     cmds:
       - go test ./internal/feat/sampling

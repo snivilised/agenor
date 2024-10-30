@@ -116,16 +116,31 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	return result, err
 }
 
-func (m *mediator) Spawn(ctx context.Context, tree string) (core.TraverseResult, error) {
+func (m *mediator) Resume(ctx context.Context,
+	active *core.ActiveState,
+) (core.TraverseResult, error) {
+	// there is something missing here...
+	//
+	return m.impl.Top(ctx, &navigationStatic{
+		mediator: m,
+		tree:     active.Tree,
+	})
+}
+
+func (m *mediator) Spawn(ctx context.Context,
+	active *core.ActiveState,
+) (core.TraverseResult, error) {
 	// TODO: send a message indicating spawn
 	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
-		tree:     tree,
+		tree:     active.Tree,
 	})
 }
 
-func (m *mediator) Invoke(servant core.Servant, inspection types.Inspection) error {
+func (m *mediator) Invoke(servant core.Servant,
+	inspection types.Inspection,
+) error {
 	return m.guardian.Invoke(servant, inspection)
 }
 

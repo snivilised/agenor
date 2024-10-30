@@ -14,8 +14,7 @@ func Bind(o *pref.Options, active *core.ActiveState,
 	err := apply(o, settings...)
 
 	return &LoadInfo{
-		O:      o,
-		State:  active,
-		WakeAt: active.CurrentPath, // this looks redundant, because we can get it off ts
+		O:     o,
+		State: active,
 	}, binder, err
 }

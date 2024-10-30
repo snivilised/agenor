@@ -11,4 +11,5 @@ const (
 	RoleHibernate                // hibernate-role
 	RoleSampler                  // sampler-role
 	RoleNanny                    // nanny-role
+	RoleFastward                 // fastward-role
 )
