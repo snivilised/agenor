@@ -5,18 +5,44 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-// optionsBuilder
-type optionsBuilder interface {
-	build(ext extent) (*pref.Options, *opts.Binder, error)
+type optionHarvest struct {
+	o      *pref.Options
+	binder *opts.Binder
+	loaded *opts.LoadInfo
 }
 
-type optionals func(ext extent) (*pref.Options, *opts.Binder, error)
+func (a *optionHarvest) Options() *pref.Options {
+	return lo.TernaryF(a.loaded != nil,
+		func() *pref.Options {
+			return a.loaded.O
+		},
+		func() *pref.Options {
+			return a.o
+		},
+	)
+}
 
-func (fn optionals) build(ext extent) (*pref.Options, *opts.Binder, error) {
+func (a *optionHarvest) Binder() *opts.Binder {
+	return a.binder
+}
+
+func (a *optionHarvest) Loaded() *opts.LoadInfo {
+	return a.loaded
+}
+
+// optionsBuilder
+type optionsBuilder interface {
+	build(ext extent) (types.OptionHarvest, error)
+}
+
+type optionBuilder func(ext extent) (types.OptionHarvest, error)
+
+func (fn optionBuilder) build(ext extent) (types.OptionHarvest, error) {
 	return fn(ext)
 }
 

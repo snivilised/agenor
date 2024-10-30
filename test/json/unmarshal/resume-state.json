@@ -42,6 +42,7 @@
     "Tree": "set/this/tree/in/unit/test",
     "Hibernation": 1,
     "CurrentPath": "set/this/path/in/unit/test",
+    "IsDir": true,
     "Depth": 3
   }
 }

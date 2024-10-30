@@ -1,6 +1,8 @@
 package pref
 
-import "github.com/snivilised/traverse/enums"
+import (
+	"github.com/snivilised/traverse/core"
+)
 
 // 📦 pkg: pref - contains user option definitions; do not use anything
 // in kernel (cyclic).
@@ -10,14 +12,7 @@ const (
 )
 
 type (
-	TraversalState struct {
-		Tree        string
-		Hibernation enums.Hibernation
-		CurrentPath string
-		Depth       int
-	}
-
 	// Restorer function defined by client invoked as part of the resume
 	// process
-	Restorer func(o *Options, ts *TraversalState) error
+	Restorer func(o *Options, active *core.ActiveState) error
 )

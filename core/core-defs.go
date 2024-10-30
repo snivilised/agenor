@@ -63,6 +63,7 @@ type (
 		Tree        string
 		Hibernation enums.Hibernation
 		CurrentPath string
+		IsDir       bool
 		Depth       int
 	}
 

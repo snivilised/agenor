@@ -60,7 +60,8 @@ type (
 		Guardian
 		Arrangeable
 		Navigate(ctx context.Context) (core.TraverseResult, error)
-		Spawn(ctx context.Context, tree string) (core.TraverseResult, error)
+		Resume(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
+		Spawn(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
 		Supervisor() *measure.Supervisor
 	}
 
@@ -101,6 +102,7 @@ type (
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context, err error) *KernelResult
 		Mediator() Mediator
+		Resume(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
 		Conclude(result core.TraverseResult)
 	}
 
@@ -123,6 +125,13 @@ type (
 		Path   string
 		FS     nef.ReadFileFS
 		Resume enums.ResumeStrategy
+	}
+
+	// OptionHarvest
+	OptionHarvest interface {
+		Options() *pref.Options
+		Binder() *opts.Binder
+		Loaded() *opts.LoadInfo
 	}
 )
 

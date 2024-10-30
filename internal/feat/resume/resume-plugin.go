@@ -13,23 +13,11 @@ import (
 type Plugin struct {
 	kernel.BasePlugin
 	IfResult core.ResultCompletion
-}
-
-func (p *Plugin) Next(servant core.Servant,
-	inspection types.Inspection,
-) (bool, error) {
-	_, _ = servant, inspection
-	// apply the wake filter
-
-	return true, nil
-}
-
-func (p *Plugin) Role() enums.Role {
-	return enums.RoleHibernate
+	Active   *core.ActiveState
 }
 
 func (p *Plugin) Init(_ *types.PluginInit) error {
-	return p.Mediator.Decorate(p)
+	return nil
 }
 
 func (p *Plugin) IsComplete() bool {

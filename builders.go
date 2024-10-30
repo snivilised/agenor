@@ -23,7 +23,7 @@ type buildArtefacts struct {
 type Builders struct {
 	using     *pref.Using
 	forest    pref.ForestBuilder
-	options   optionsBuilder
+	harvest   optionsBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
 	extent    extentBuilder
@@ -38,34 +38,34 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD OPTIONS
 	//
-	o, binder, optionsErr := bs.options.build(ext)
+	harvest, optionsErr := bs.harvest.build(ext)
 	if optionsErr != nil {
 		return &buildArtefacts{
-			o:   o,
-			kc:  kernel.HadesNav(o, optionsErr),
+			o:   harvest.Options(),
+			kc:  kernel.HadesNav(harvest.Options(), optionsErr),
 			ext: ext,
 		}, optionsErr
 	}
 
 	// BUILD NAVIGATOR
 	//
-	artefacts, navErr := bs.navigator.Build(o, &types.Resources{
+	artefacts, navErr := bs.navigator.Build(harvest, &types.Resources{
 		FS:         ext.forest(),
 		Supervisor: measure.New(),
-		Binder:     binder,
+		Binder:     harvest.Binder(),
 	})
 
 	if navErr != nil {
 		return &buildArtefacts{
-			o:   o,
-			kc:  kernel.HadesNav(o, navErr),
+			o:   harvest.Options(),
+			kc:  kernel.HadesNav(harvest.Options(), navErr),
 			ext: ext,
 		}, navErr
 	}
 
 	// BUILD PLUGINS
 	//
-	plugins, pluginsErr := bs.plugins.build(o,
+	plugins, pluginsErr := bs.plugins.build(harvest.Options(),
 		bs.using,
 		artefacts.Mediator,
 		artefacts.Kontroller,
@@ -74,8 +74,8 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	if pluginsErr != nil {
 		return &buildArtefacts{
-			o:   o,
-			kc:  kernel.HadesNav(o, pluginsErr),
+			o:   harvest.Options(),
+			kc:  kernel.HadesNav(harvest.Options(), pluginsErr),
 			ext: ext,
 		}, pluginsErr
 	}
@@ -89,15 +89,16 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	)
 	order := manifest(active)
 	artefacts.Mediator.Arrange(active, order)
+
 	pi := &types.PluginInit{
-		O:        o,
-		Controls: &binder.Controls,
+		O:        harvest.Options(),
+		Controls: &harvest.Binder().Controls,
 	}
 
 	for _, p := range plugins {
 		if bindErr := p.Init(pi); bindErr != nil {
 			return &buildArtefacts{
-				o:       o,
+				o:       harvest.Options(),
 				kc:      artefacts.Kontroller,
 				plugins: plugins,
 				ext:     ext,
@@ -106,7 +107,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	}
 
 	return &buildArtefacts{
-		o:       o,
+		o:       harvest.Options(),
 		kc:      artefacts.Kontroller,
 		plugins: plugins,
 		ext:     ext,

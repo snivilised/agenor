@@ -13,7 +13,7 @@ type extent interface {
 	using() *pref.Using
 	was() *pref.Was
 	plugin(*kernel.Artefacts) types.Plugin
-	options(...pref.Option) (*pref.Options, *opts.Binder, error)
+	options(...pref.Option) (types.OptionHarvest, error)
 	forest() *core.Forest
 	complete() bool
 }
@@ -47,8 +47,13 @@ func (ex *primeExtent) plugin(*kernel.Artefacts) types.Plugin {
 	return nil
 }
 
-func (ex *primeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
-	return opts.Get(settings...)
+func (ex *primeExtent) options(settings ...pref.Option) (types.OptionHarvest, error) {
+	o, binder, err := opts.Get(settings...)
+
+	return &optionHarvest{
+		o:      o,
+		binder: binder,
+	}, err
 }
 
 func (ex *primeExtent) complete() bool {
@@ -72,16 +77,17 @@ func (ex *resumeExtent) was() *pref.Was {
 
 func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 	ex.rp = &resume.Plugin{
+		Active: ex.loaded.State,
 		BasePlugin: kernel.BasePlugin{
 			Mediator: artefacts.Mediator,
 		},
 		IfResult: artefacts.IfResult,
 	}
 
-	return ex.rp
+	return ex.rp // 2
 }
 
-func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.Binder, error) {
+func (ex *resumeExtent) options(settings ...pref.Option) (types.OptionHarvest, error) {
 	loaded, binder, err := resume.Load(&types.RestoreState{
 		Path:   ex.w.From,
 		FS:     ex.trees.R,
@@ -90,11 +96,15 @@ func (ex *resumeExtent) options(settings ...pref.Option) (*pref.Options, *opts.B
 
 	ex.loaded = loaded
 
-	// TODO: get the resume point from the resume persistence file
-	// then set up hibernation with this defined as a hibernation
-	// filter.
-	//
-	return loaded.O, binder, err
+	if ex.w.Restorer != nil {
+		err = ex.w.Restorer(ex.loaded.O, ex.loaded.State)
+	}
+
+	return &optionHarvest{
+		o:      loaded.O,
+		binder: binder,
+		loaded: loaded,
+	}, err // 1
 }
 
 func (ex *resumeExtent) complete() bool {

@@ -99,40 +99,40 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				u: using,
 			}
 		}),
-		options: optionals(func(ext extent) (*pref.Options, *opts.Binder, error) {
+		harvest: optionBuilder(func(ext extent) (types.OptionHarvest, error) {
 			type baggage struct {
-				o      *pref.Options
-				binder *opts.Binder
-				err    error
+				harvest types.OptionHarvest
+				err     error
 			}
 
 			b := func(ve error) *baggage {
 				return lo.TernaryF(using.O != nil,
 					func() *baggage {
 						return &baggage{
-							o:      using.O,
-							binder: opts.Push(using.O),
-							err:    ve,
+							harvest: &optionHarvest{
+								o:      using.O,
+								binder: opts.Push(using.O),
+							},
+							err: ve,
 						}
 					},
 					func() *baggage {
-						o, binder, err := ext.options(settings...)
+						oa, err := ext.options(settings...)
 
 						return &baggage{
-							o:      o,
-							binder: binder,
-							err:    lo.Ternary(ve != nil, ve, err),
+							harvest: oa,
+							err:     lo.Ternary(ve != nil, ve, err),
 						}
 					},
 				)
 			}(using.Validate())
 
-			return b.o, b.binder, b.err
+			return b.harvest, b.err
 		}),
-		navigator: kernel.Builder(func(o *pref.Options, // pass in controls here, or put on resources
+		navigator: kernel.Builder(func(harvest types.OptionHarvest, // pass in controls here, or put on resources
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
-			return kernel.New(using, o, &kernel.Benign{}, resources), nil
+			return kernel.New(using, harvest.Options(), &kernel.Benign{}, resources), nil
 		}),
 		plugins: activated(features),
 	}
@@ -168,21 +168,24 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		// we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
-		options: optionals(func(ext extent) (o *pref.Options, binder *opts.Binder, err error) {
-			o, binder, err = ext.options(settings...)
+		harvest: optionBuilder(func(ext extent) (harvest types.OptionHarvest, err error) {
+			harvest, err = ext.options(settings...)
+
 			if err != nil {
-				return o, binder, err
+				return harvest, err
 			}
 
 			err = was.Validate()
 
-			return o, binder, err
+			return harvest, err
 		}),
-		navigator: kernel.Builder(func(o *pref.Options,
+		navigator: kernel.Builder(func(harvest types.OptionHarvest,
 			resources *types.Resources,
 		) (*kernel.Artefacts, error) {
-			return resume.NewController(was,
-				kernel.New(&was.Using, o, resume.GetSealer(was), resources),
+			return resume.NewController(
+				was,
+				harvest,
+				kernel.New(&was.Using, harvest.Options(), resume.GetSealer(was), resources),
 			), nil
 		}),
 		plugins: activated(features),

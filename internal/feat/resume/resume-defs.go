@@ -3,7 +3,9 @@ package resume
 import (
 	"context"
 
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/kernel"
+	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
@@ -17,16 +19,18 @@ const (
 )
 
 type resumeStrategy interface {
-	init()
+	types.Link
+	init(load *opts.LoadInfo) error
 	attach()
 	detach()
-	resume(context.Context) (*types.KernelResult, error)
+	resume(context.Context, *pref.Was) (*types.KernelResult, error)
 	ifResult() bool
 	finish() error
 }
 
 type baseStrategy struct {
-	o    *pref.Options
-	kc   types.KernelController
-	impl kernel.NavigatorImpl
+	active *core.ActiveState
+	was    *pref.Was
+	kc     types.KernelController
+	impl   kernel.NavigatorImpl
 }
