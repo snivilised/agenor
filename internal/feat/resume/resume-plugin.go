@@ -6,33 +6,49 @@ import (
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-type Plugin struct {
-	kernel.BasePlugin
-	IfResult core.ResultCompletion
-	Active   *core.ActiveState
-	guardian types.Guardian
+type (
+	From struct {
+		Active   *core.ActiveState
+		Mediator types.Mediator
+		Strategy enums.ResumeStrategy
+		IfResult core.ResultCompletion
+	}
+
+	Plugin struct {
+		kernel.BasePlugin
+		IfResult   core.ResultCompletion
+		Active     *core.ActiveState
+		kontroller types.KernelController
+	}
+)
+
+func New(from *From,
+) *Plugin {
+	return &Plugin{
+		Active: from.Active,
+		BasePlugin: kernel.BasePlugin{
+			Mediator: from.Mediator,
+			ActivatedRole: lo.Ternary(from.Strategy == enums.ResumeStrategyFastward,
+				enums.RoleFastward, enums.RoleUndefined,
+			),
+		},
+		IfResult: from.IfResult,
+	}
 }
 
 func (p *Plugin) Init(pi *types.PluginInit) error {
-	p.guardian = pi.Kontroller.Mediator()
+	p.kontroller = pi.Kontroller
 
 	return nil
 }
 
 func (p *Plugin) IsComplete() bool {
 	return p.IfResult.IsComplete()
-}
-
-func GetSealer(was *pref.Was) types.GuardianSealer {
-	if was.Strategy == enums.ResumeStrategyFastward {
-		return &fastwardGuardianSealer{}
-	}
-
-	return &kernel.Benign{}
 }
 
 func Load(restoration *types.RestoreState,
@@ -47,33 +63,26 @@ func Load(restoration *types.RestoreState,
 	return opts.Bind(result.O, result.Active, settings...)
 }
 
-// this is not named correctly
-func NewController(was *pref.Was, harvest types.OptionHarvest,
-	artefacts *kernel.Artefacts,
+func WithArtefacts(was *pref.Was, harvest types.OptionHarvest,
+	resources *types.Resources,
 ) *kernel.Artefacts {
-	// The Controller on the incoming artefacts is the core navigator. It is
-	// decorated here for resume. The strategy only needs access to the core navigator.
-	// The resume navigator delegates to the strategy.
-	//
-	var (
-		strategy resumeStrategy
-		err      error
+	sealer := lo.Ternary(was.Strategy == enums.ResumeStrategyFastward,
+		types.GuardianSealer(&fastwardGuardianSealer{}),
+		types.GuardianSealer(&kernel.Benign{}),
 	)
 
-	if strategy, err = newStrategy(was, harvest, artefacts.Kontroller); err != nil {
-		return artefacts
-	}
+	controller := kernel.New(&was.Using, harvest.Options(), resources, sealer)
+	strategy := newStrategy(was, harvest, controller, sealer)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{
-			kc:         artefacts.Kontroller,
-			was:        was,
-			load:       harvest.Loaded(),
-			strategy:   strategy,
-			facilities: artefacts.Facilities,
+			kc:       controller,
+			was:      was,
+			load:     harvest.Loaded(),
+			strategy: strategy,
 		},
-		Mediator:  artefacts.Mediator,
-		Resources: artefacts.Resources,
+		Mediator:  controller.Mediator(),
+		Resources: resources,
 		IfResult:  strategy.ifResult,
 	}
 }

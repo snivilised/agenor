@@ -6,10 +6,24 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func New(using *pref.Using, o *pref.Options,
-	sealer types.GuardianSealer,
+func WithArtefacts(using *pref.Using, o *pref.Options,
 	resources *types.Resources,
+	sealer types.GuardianSealer,
 ) *Artefacts {
+	controller := New(using, o, resources, sealer)
+	mediator := controller.Mediator()
+
+	return &Artefacts{
+		Kontroller: controller,
+		Mediator:   mediator,
+		Resources:  resources,
+	}
+}
+
+func New(using *pref.Using, o *pref.Options,
+	resources *types.Resources,
+	sealer types.GuardianSealer,
+) *NavigationController {
 	impl := newImpl(using, o, resources)
 	mediator := newMediator(&mediatorInfo{
 		using:     using,
@@ -18,13 +32,8 @@ func New(using *pref.Using, o *pref.Options,
 		sealer:    sealer,
 		resources: resources,
 	})
-	controller := newNavigationController(mediator)
 
-	return &Artefacts{
-		Kontroller: controller,
-		Mediator:   mediator,
-		Resources:  resources,
-	}
+	return newNavigationController(mediator)
 }
 
 func newImpl(using *pref.Using,

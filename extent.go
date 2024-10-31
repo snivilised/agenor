@@ -64,7 +64,7 @@ type resumeExtent struct {
 	baseExtent
 	w      *pref.Was
 	loaded *opts.LoadInfo
-	rp     *resume.Plugin
+	pin    *resume.Plugin
 }
 
 func (ex *resumeExtent) using() *pref.Using {
@@ -76,15 +76,14 @@ func (ex *resumeExtent) was() *pref.Was {
 }
 
 func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
-	ex.rp = &resume.Plugin{
-		Active: ex.loaded.State,
-		BasePlugin: kernel.BasePlugin{
-			Mediator: artefacts.Mediator,
-		},
+	ex.pin = resume.New(&resume.From{
+		Active:   ex.loaded.State,
+		Mediator: artefacts.Mediator,
+		Strategy: ex.w.Strategy,
 		IfResult: artefacts.IfResult,
-	}
+	})
 
-	return ex.rp // 2
+	return ex.pin
 }
 
 func (ex *resumeExtent) options(settings ...pref.Option) (types.OptionHarvest, error) {
@@ -104,9 +103,9 @@ func (ex *resumeExtent) options(settings ...pref.Option) (types.OptionHarvest, e
 		o:      loaded.O,
 		binder: binder,
 		loaded: loaded,
-	}, err // 1
+	}, err
 }
 
 func (ex *resumeExtent) complete() bool {
-	return ex.rp.IfResult.IsComplete()
+	return ex.pin.IfResult.IsComplete()
 }

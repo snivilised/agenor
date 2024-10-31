@@ -117,10 +117,10 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 						}
 					},
 					func() *baggage {
-						oa, err := ext.options(settings...)
+						harvest, err := ext.options(settings...)
 
 						return &baggage{
-							harvest: oa,
+							harvest: harvest,
 							err:     lo.Ternary(ve != nil, ve, err),
 						}
 					},
@@ -129,10 +129,15 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 
 			return b.harvest, b.err
 		}),
-		navigator: kernel.Builder(func(harvest types.OptionHarvest, // pass in controls here, or put on resources
+		navigator: kernel.Builder(func(harvest types.OptionHarvest,
 			resources *types.Resources,
-		) (*kernel.Artefacts, error) {
-			return kernel.New(using, harvest.Options(), &kernel.Benign{}, resources), nil
+		) *kernel.Artefacts {
+			return kernel.WithArtefacts(
+				using,
+				harvest.Options(),
+				resources,
+				&kernel.Benign{},
+			)
 		}),
 		plugins: activated(features),
 	}
@@ -181,12 +186,12 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		}),
 		navigator: kernel.Builder(func(harvest types.OptionHarvest,
 			resources *types.Resources,
-		) (*kernel.Artefacts, error) {
-			return resume.NewController(
+		) *kernel.Artefacts {
+			return resume.WithArtefacts(
 				was,
 				harvest,
-				kernel.New(&was.Using, harvest.Options(), resume.GetSealer(was), resources),
-			), nil
+				resources,
+			)
 		}),
 		plugins: activated(features),
 	}

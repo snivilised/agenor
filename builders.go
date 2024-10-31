@@ -49,19 +49,11 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
-	artefacts, navErr := bs.navigator.Build(harvest, &types.Resources{
+	artefacts := bs.navigator.Build(harvest, &types.Resources{
 		FS:         ext.forest(),
 		Supervisor: measure.New(),
 		Binder:     harvest.Binder(),
 	})
-
-	if navErr != nil {
-		return &buildArtefacts{
-			o:   harvest.Options(),
-			kc:  kernel.HadesNav(harvest.Options(), navErr),
-			ext: ext,
-		}, navErr
-	}
 
 	// BUILD PLUGINS
 	//

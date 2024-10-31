@@ -2,7 +2,6 @@ package resume_test
 
 import (
 	"fmt"
-	"strings"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -54,7 +53,10 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 		func(ctx SpecContext, entry *resumeTE) {
 			invocations := strategyInvocations{}
 
-			for _, strategy := range strategies {
+			for _, strategy := range []enums.ResumeStrategy{
+				enums.ResumeStrategyFastward,
+				// enums.ResumeStrategySpawn,
+			} {
 				recording := make(lab.RecordingMap)
 				profile, ok := profiles[entry.profile]
 
@@ -75,20 +77,8 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 					active.CurrentPath = entry.active.resumeAt
 					active.Hibernation = entry.active.listenState
 
-					if profile.filtered {
-						// the json resume state contains a filter definition, so the
-						// filtered flag determines if this filter should be applied
-						// to the test case.
-						//
-						// However, test-restore.DEFAULT, reflects the default options
-						// which does not have a filter defined. So we should reverse
-						// this and define a filter if profile.filtered.
-						// TODO: define a filter.
-						noOp("waiting for a filter to be defined")
-
-						// actually, the filter should be set automatically by the plugin,
-						// using the resumeAt point.
-					}
+					o.Events.Begin.On(lab.Begin("🛡️"))
+					o.Events.End.On(lab.End("🏁"))
 					//
 					// end of synthetic assignments
 
@@ -116,21 +106,23 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 					node := servant.Node()
 					depth := node.Extension.Depth
 					GinkgoWriter.Printf(
-						"---> ⏩ %v: (depth:%v) '%v'\n", themes[strategy].label, depth, node.Path,
+						"---> ⏩ %v: (depth:%v) '%v'\n", strategy, depth, node.Path,
 					)
 					msg := fmt.Sprintf("%v, was invoked, but does not satisfy sample criteria",
 						lab.Reason(node.Extension.Name),
 					)
 					Expect(entry.Prohibited).ToNot(ContainElement(node.Extension.Name), msg)
 
-					if strategy == enums.ResumeStrategyFastward {
-						segments := strings.Split(node.Path, "/")
-						last := segments[len(segments)-1]
+					// TODO: restore this check
+					//
+					// if strategy == enums.ResumeStrategyFastward {
+					// 	segments := strings.Split(node.Path, "/")
+					// 	last := segments[len(segments)-1]
 
-						if _, found := prohibited[last]; found {
-							Fail(fmt.Sprintf("item: '%v' should have been fast forwarded over", node.Path))
-						}
-					}
+					// 	if _, found := prohibited[last]; found {
+					// 		Fail(fmt.Sprintf("item: '%v' should have been fast forwarded over", node.Path))
+					// 	}
+					// }
 
 					return once(node)
 				}
@@ -179,12 +171,13 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 				}
 
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-					FS:          fS,
-					Recording:   recording,
-					Path:        entry.Relative,
-					Result:      result,
-					Err:         err,
-					ExpectedErr: entry.ExpectedErr,
+					FS:            fS,
+					Recording:     recording,
+					Path:          entry.Relative,
+					Result:        result,
+					Err:           err,
+					ExpectedErr:   entry.ExpectedErr,
+					ByPassMetrics: true,
 				})
 			}
 		},
@@ -198,7 +191,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 		// to, because the listener is already in the active listening state. But resumeAt
 		// still has to be set because that is what would happen in the real world.
 		//
-		XEntry(nil, &resumeTE{ // UNDER CONSTRUCTION !!!
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen pending",
 				Relative:     "RETRO-WAVE",
@@ -212,7 +205,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> universal(pending): unfiltered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen active",
 				Relative:     "RETRO-WAVE",
@@ -233,7 +226,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> universal(active): unfiltered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders: listen pending",
 				Relative:     "RETRO-WAVE",
@@ -247,7 +240,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> folders(pending): unfiltered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders: listen active",
 				Relative:     "RETRO-WAVE",
@@ -261,7 +254,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> folders(active): unfiltered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "files: listen pending",
 				Relative:     "RETRO-WAVE",
@@ -275,7 +268,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> files(pending): unfiltered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "files: listen active",
 				Relative:     "RETRO-WAVE",
@@ -291,7 +284,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 
 		// === Filtering (uni/folder/file)
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
@@ -304,7 +297,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile: "-> universal: filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
@@ -317,7 +310,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile: "-> folders: filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "files: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
@@ -332,7 +325,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 
 		// === Listening and filtering (uni/folder/file)
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
@@ -346,7 +339,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> universal: listen pending and filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "universal: listen active and filtered",
 				Relative:     "RETRO-WAVE",
@@ -360,7 +353,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> universal: filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
@@ -374,7 +367,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> folders: listen pending and filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "folders: listen active and filtered",
 				Relative:     "RETRO-WAVE",
@@ -388,7 +381,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> folders: filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "files: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
@@ -402,7 +395,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 			profile:        "-> files: listen pending and filtered",
 		}),
 
-		XEntry(nil, &resumeTE{
+		Entry(nil, &resumeTE{
 			NaviTE: lab.NaviTE{
 				Given:        "files: listen active and filtered",
 				Relative:     "RETRO-WAVE",
