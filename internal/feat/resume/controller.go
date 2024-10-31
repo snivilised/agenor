@@ -42,36 +42,6 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 	c.kc.Conclude(result)
 }
 
-// this is not named correctly
-func NewController(was *pref.Was, harvest types.OptionHarvest,
-	artefacts *kernel.Artefacts,
-) *kernel.Artefacts {
-	// The Controller on the incoming artefacts is the core navigator. It is
-	// decorated here for resume. The strategy only needs access to the core navigator.
-	// The resume navigator delegates to the strategy.
-	//
-	var (
-		strategy resumeStrategy
-		err      error
-	)
-	if strategy, err = newStrategy(was, harvest, artefacts.Kontroller); err != nil {
-		return artefacts
-	}
-
-	return &kernel.Artefacts{
-		Kontroller: &Controller{
-			kc:         artefacts.Kontroller,
-			was:        was,
-			load:       harvest.Loaded(),
-			strategy:   strategy,
-			facilities: artefacts.Facilities,
-		},
-		Mediator:  artefacts.Mediator,
-		Resources: artefacts.Resources,
-		IfResult:  strategy.ifResult,
-	}
-}
-
 func newStrategy(was *pref.Was,
 	harvest types.OptionHarvest,
 	kc types.KernelController,

@@ -165,7 +165,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 				w: was,
 			}
 		}),
-		// we need state; record the hibernation wake point, so
+		// TODO: we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
 		harvest: optionBuilder(func(ext extent) (harvest types.OptionHarvest, err error) {
