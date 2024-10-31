@@ -139,11 +139,7 @@ func (s *fastwardStrategy) resume(ctx context.Context,
 	// we need a resume method, so we can pass in the active
 	// state that it needs to start from
 	//
-	result, err := s.kc.Resume(ctx, s.active)
-
-	// TODO: we shouldn't have to type-cast, so correct the
-	// return type
-	return result.(*types.KernelResult), err
+	return s.kc.Resume(ctx, s.active)
 }
 
 func (s *fastwardStrategy) ifResult() bool {

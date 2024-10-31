@@ -21,8 +21,6 @@ type (
 		// perform a full Prime run, or Resume from a previously
 		// cancelled run.
 		//
-		// I wonder if this could be replaced by Prime/Resume, to simplify
-		//
 		Extent(bs *Builders) core.Navigator
 	}
 
@@ -35,7 +33,7 @@ func (fn director) Extent(bs *Builders) core.Navigator {
 
 // NavigatorFactory
 type NavigatorFactory interface {
-	// Configure is a factory function that creates a navigator.
+	// ConfigureL is a factory function that creates a navigator.
 	// We don't return an error here as that would make using the factory
 	// awkward. Instead, if there is an error during the build process,
 	// we return a fake navigator that when invoked immediately returns

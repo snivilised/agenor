@@ -32,7 +32,9 @@ func (c *Controller) Mediator() types.Mediator {
 	return c.kc.Mediator()
 }
 
-func (c *Controller) Resume(context.Context, *core.ActiveState) (core.TraverseResult, error) {
+func (c *Controller) Resume(context.Context,
+	*core.ActiveState,
+) (*types.KernelResult, error) {
 	return &types.KernelResult{}, nil
 }
 
@@ -114,7 +116,7 @@ func newStrategy(was *pref.Was,
 	return strategy, nil
 }
 
-func (c *Controller) Navigate(ctx context.Context) (core.TraverseResult, error) {
+func (c *Controller) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	if err := c.kc.Mediator().Decorate(c.strategy); err != nil {
 		return c.Result(ctx, err), err
 	}

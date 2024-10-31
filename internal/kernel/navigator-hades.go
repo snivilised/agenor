@@ -26,7 +26,7 @@ func (n *navigatorHades) Rank() {
 func (n *navigatorHades) Ignite(*types.Ignition) {
 }
 
-func (n *navigatorHades) Navigate(ctx context.Context) (core.TraverseResult, error) {
+func (n *navigatorHades) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	return n.Result(ctx, n.err), n.err
 }
 
@@ -44,7 +44,7 @@ func (n *navigatorHades) Mediator() types.Mediator {
 
 func (n *navigatorHades) Resume(context.Context,
 	*core.ActiveState,
-) (core.TraverseResult, error) {
+) (*types.KernelResult, error) {
 	return &types.KernelResult{}, nil
 }
 

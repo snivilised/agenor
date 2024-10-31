@@ -103,7 +103,7 @@ func (m *mediator) Conclude(result core.TraverseResult) {
 	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 
-func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
+func (m *mediator) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	result, err := m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     m.tree,
@@ -118,8 +118,9 @@ func (m *mediator) Navigate(ctx context.Context) (core.TraverseResult, error) {
 
 func (m *mediator) Resume(ctx context.Context,
 	active *core.ActiveState,
-) (core.TraverseResult, error) {
-	// there is something missing here...
+) (*types.KernelResult, error) {
+	// TODO: there is something missing here...
+	// we need to do more with the loaded active state
 	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
@@ -129,9 +130,10 @@ func (m *mediator) Resume(ctx context.Context,
 
 func (m *mediator) Spawn(ctx context.Context,
 	active *core.ActiveState,
-) (core.TraverseResult, error) {
+) (*types.KernelResult, error) {
 	// TODO: send a message indicating spawn
-	//
+	// we need to reset the active state, eg synchronise
+	// the depth
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     active.Tree,
