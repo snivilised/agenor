@@ -12,10 +12,10 @@ import (
 )
 
 type synchroniser interface {
-	core.Navigator
+	types.KernelNavigator
 	Ignite(*types.Ignition)
 	IsComplete() bool
-	Conclude(result core.TraverseResult)
+	Conclude(result *types.KernelResult)
 }
 
 type trunk struct {
@@ -40,7 +40,7 @@ func (t trunk) Ignite(ignition *types.Ignition) {
 	t.kc.Ignite(ignition)
 }
 
-func (t trunk) Conclude(result core.TraverseResult) {
+func (t trunk) Conclude(result *types.KernelResult) {
 	t.kc.Conclude(result)
 }
 
@@ -52,7 +52,7 @@ type concurrent struct {
 	inputCh   pants.SourceStreamW[*TraverseInput]
 }
 
-func (c *concurrent) Navigate(ctx context.Context) (core.TraverseResult, error) {
+func (c *concurrent) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	defer c.close()
 
 	if c.err != nil {
@@ -115,7 +115,7 @@ type sequential struct {
 	trunk
 }
 
-func (s *sequential) Navigate(ctx context.Context) (core.TraverseResult, error) {
+func (s *sequential) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	if s.err != nil {
 		return s.kc.Result(ctx, s.err), s.err
 	}

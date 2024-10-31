@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
 )
 
@@ -22,7 +21,7 @@ func (s *session) start() {
 	})
 }
 
-func (s *session) finish(result core.TraverseResult) {
+func (s *session) finish(result *types.KernelResult) {
 	s.duration = time.Since(s.started)
 	s.sync.Conclude(result)
 }
@@ -39,6 +38,6 @@ func (s *session) Elapsed() time.Duration {
 	return time.Since(s.started)
 }
 
-func (s *session) exec(ctx context.Context) (core.TraverseResult, error) {
+func (s *session) exec(ctx context.Context) (*types.KernelResult, error) {
 	return s.sync.Navigate(ctx)
 }

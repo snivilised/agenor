@@ -25,8 +25,6 @@ type walkerFac struct {
 }
 
 func (f *walkerFac) Configure() Director {
-	// Walk
-	//
 	return director(func(bs *Builders) core.Navigator {
 		// resume or prime? If resume, we need to access the hibernation
 		// wake condition on the retrieved options. But how do we know what
@@ -34,9 +32,6 @@ func (f *walkerFac) Configure() Director {
 		//
 		//
 		artefacts, err := bs.buildAll()
-
-		// we can't emit this here, because the context is not available
-		// _ = services.Broker.Emit(ctx, services.TopicInterceptNavigator, artefacts.nav)
 
 		return &driver{
 			session{
@@ -59,7 +54,6 @@ type runnerFac struct {
 	wg pants.WaitGroup
 }
 
-// Configure
 func (f *runnerFac) Configure() Director {
 	// Run: create the observable/worker-pool
 	//

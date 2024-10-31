@@ -59,9 +59,9 @@ type (
 	Mediator interface {
 		Guardian
 		Arrangeable
-		Navigate(ctx context.Context) (core.TraverseResult, error)
-		Resume(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
-		Spawn(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
+		Navigate(ctx context.Context) (*KernelResult, error)
+		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
+		Spawn(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Supervisor() *measure.Supervisor
 	}
 
@@ -96,13 +96,17 @@ type (
 		Session core.Session
 	}
 
+	KernelNavigator interface {
+		Navigate(ctx context.Context) (*KernelResult, error)
+	}
+
 	// KernelController
 	KernelController interface {
-		core.Navigator
+		KernelNavigator
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context, err error) *KernelResult
 		Mediator() Mediator
-		Resume(ctx context.Context, active *core.ActiveState) (core.TraverseResult, error)
+		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Conclude(result core.TraverseResult)
 	}
 

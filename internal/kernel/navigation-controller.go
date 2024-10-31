@@ -27,7 +27,7 @@ func (nc *NavigationController) Ignite(ignition *types.Ignition) {
 
 func (nc *NavigationController) Resume(ctx context.Context,
 	active *core.ActiveState,
-) (core.TraverseResult, error) {
+) (*types.KernelResult, error) {
 	return nc.med.Resume(ctx, active)
 }
 
@@ -40,7 +40,7 @@ func (nc *NavigationController) Impl() NavigatorImpl {
 }
 
 func (nc *NavigationController) Navigate(ctx context.Context,
-) (core.TraverseResult, error) {
+) (*types.KernelResult, error) {
 	return nc.med.Navigate(ctx)
 }
 
