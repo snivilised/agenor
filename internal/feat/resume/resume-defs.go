@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
@@ -18,19 +17,17 @@ const (
 	badge = "badge: resume"
 )
 
-type resumeStrategy interface {
+type Strategy interface {
 	types.Link
 	init(load *opts.LoadInfo) error
-	attach()
-	detach()
 	resume(context.Context, *pref.Was) (*types.KernelResult, error)
 	ifResult() bool
 	finish() error
 }
 
 type baseStrategy struct {
-	active *core.ActiveState
-	was    *pref.Was
-	kc     types.KernelController
-	impl   kernel.NavigatorImpl
+	active   *core.ActiveState
+	was      *pref.Was
+	sealer   types.GuardianSealer
+	mediator types.Mediator
 }

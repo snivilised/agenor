@@ -121,6 +121,11 @@ func (m *mediator) Resume(ctx context.Context,
 	// TODO: there is something missing here...
 	// we need to do more with the loaded active state
 	//
+	// - mute notifications
+	// - combine metrics
+	// - load the periscope with an adjusted depth from active state
+	// - we might need to define a callback param for the strategy
+	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     active.Tree,

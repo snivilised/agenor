@@ -13,13 +13,14 @@ import (
 )
 
 type TestOptions struct {
-	FS          *luna.MemFS
-	Recording   RecordingMap
-	Path        string
-	Result      core.TraverseResult
-	Err         error
-	ExpectedErr error
-	Every       func(p string) bool
+	FS            *luna.MemFS
+	Recording     RecordingMap
+	Path          string
+	Result        core.TraverseResult
+	Err           error
+	ExpectedErr   error
+	Every         func(p string) bool
+	ByPassMetrics bool
 }
 
 func AssertNavigation(entry *NaviTE, to *TestOptions) {
@@ -79,7 +80,9 @@ func AssertNavigation(entry *NaviTE, to *TestOptions) {
 		}
 	}
 
-	assertMetrics(entry, to)
+	if !to.ByPassMetrics {
+		assertMetrics(entry, to)
+	}
 }
 
 func assertMetrics(entry *NaviTE, to *TestOptions) {

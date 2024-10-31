@@ -69,10 +69,6 @@ var (
 		enums.ResumeStrategyFastward,
 		enums.ResumeStrategySpawn,
 	}
-	themes = strategyThemes{
-		enums.ResumeStrategyFastward: {label: "FASTWARD"},
-		enums.ResumeStrategySpawn:    {label: "SPAWN"},
-	}
 
 	profiles = profileThemes{
 		// === Listening (uni/folder/file) (pend/active)

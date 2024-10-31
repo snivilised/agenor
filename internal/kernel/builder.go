@@ -9,7 +9,6 @@ type (
 	Artefacts struct {
 		Kontroller types.KernelController
 		Mediator   types.Mediator
-		Facilities types.Facilities
 		Resources  *types.Resources
 		IfResult   core.Completion
 	}
@@ -17,16 +16,16 @@ type (
 	NavigatorBuilder interface {
 		Build(artefacts types.OptionHarvest,
 			resources *types.Resources,
-		) (*Artefacts, error)
+		) *Artefacts
 	}
 
 	Builder func(artefacts types.OptionHarvest,
 		resources *types.Resources,
-	) (*Artefacts, error)
+	) *Artefacts
 )
 
 func (fn Builder) Build(artefacts types.OptionHarvest,
 	resources *types.Resources,
-) (*Artefacts, error) {
+) *Artefacts {
 	return fn(artefacts, resources)
 }

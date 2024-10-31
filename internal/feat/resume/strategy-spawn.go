@@ -33,16 +33,10 @@ func (s *spawnStrategy) Role() enums.Role {
 	return enums.RoleFastward
 }
 
-func (s *spawnStrategy) attach() {
-
-}
-
-func (s *spawnStrategy) detach() {
-
-}
-
-func (s *spawnStrategy) resume(ctx context.Context, _ *pref.Was) (*types.KernelResult, error) {
-	return s.impl.Result(ctx, nil), nil
+func (s *spawnStrategy) resume(_ context.Context,
+	_ *pref.Was,
+) (*types.KernelResult, error) {
+	return nil, nil
 }
 
 func (s *spawnStrategy) finish() error {

@@ -65,9 +65,7 @@ func (g *fastwardGuardianSealer) Seal(top types.Link) error {
 	return nil
 }
 
-func (g *fastwardGuardianSealer) IsSealed(top types.Link) bool {
-	_ = top
-
+func (g *fastwardGuardianSealer) IsSealed(types.Link) bool {
 	return false
 }
 
@@ -78,8 +76,6 @@ type fastwardStrategy struct {
 }
 
 func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
-	fmt.Printf("🍋🍋🍋 fastwardStrategy.init - at %q\n", load.State.CurrentPath)
-
 	// We don't use the Hibernate.Wake/Sleep-At, as those are defined bt the client.
 	// Instead we just need to create a filter on the fly from the load state...
 	//
@@ -107,6 +103,10 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 		},
 	)
 
+	if err := s.mediator.Decorate(s); err != nil {
+		return err
+	}
+
 	return err
 }
 
@@ -119,7 +119,7 @@ func (s *fastwardStrategy) Next(servant core.Servant,
 	match = s.filter.IsMatch(servant.Node())
 
 	if match {
-		err = s.kc.Mediator().Unwind(s.role)
+		err = s.mediator.Unwind(s.role)
 	}
 
 	return match, err
@@ -130,16 +130,10 @@ func (s *fastwardStrategy) Role() enums.Role {
 	return enums.RoleFastward
 }
 
-func (s *fastwardStrategy) attach() {}
-func (s *fastwardStrategy) detach() {}
-
 func (s *fastwardStrategy) resume(ctx context.Context,
 	_ *pref.Was,
 ) (*types.KernelResult, error) {
-	// we need a resume method, so we can pass in the active
-	// state that it needs to start from
-	//
-	return s.kc.Resume(ctx, s.active)
+	return s.mediator.Resume(ctx, s.active)
 }
 
 func (s *fastwardStrategy) ifResult() bool {

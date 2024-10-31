@@ -51,7 +51,7 @@ func manifest(active []enums.Role) []enums.Role {
 	// only roles that satisfy all rules are returned
 	//
 	initial := make([]enums.Role, 0, len(active)+1)
-	return lo.Reduce(active,
+	roles := lo.Reduce(active,
 		func(acc []enums.Role, role enums.Role, _ int) []enums.Role {
 			if lo.EveryBy(lo.Keys(rules), func(name string) bool {
 				return rules[name](role, acc, all)
@@ -62,4 +62,6 @@ func manifest(active []enums.Role) []enums.Role {
 		},
 		initial,
 	)
+
+	return roles
 }

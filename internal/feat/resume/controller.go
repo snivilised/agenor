@@ -5,10 +5,8 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/types"
-	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -16,7 +14,7 @@ type Controller struct {
 	kc         types.KernelController
 	was        *pref.Was
 	load       *opts.LoadInfo
-	strategy   resumeStrategy
+	strategy   Strategy
 	facilities types.Facilities
 }
 
@@ -32,6 +30,10 @@ func (c *Controller) Mediator() types.Mediator {
 	return c.kc.Mediator()
 }
 
+func (c *Controller) Strategy() Strategy {
+	return c.strategy
+}
+
 func (c *Controller) Resume(context.Context,
 	*core.ActiveState,
 ) (*types.KernelResult, error) {
@@ -45,22 +47,19 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 func newStrategy(was *pref.Was,
 	harvest types.OptionHarvest,
 	kc types.KernelController,
-) (strategy resumeStrategy, err error) {
-	driver, ok := kc.(kernel.NavigatorDriver)
+	sealer types.GuardianSealer,
+) (strategy Strategy) {
 	active := harvest.Loaded().State
-
-	if !ok {
-		return nil, locale.ErrInternalFailedToGetNavigatorDriver
-	}
+	mediator := kc.Mediator()
 
 	switch was.Strategy {
 	case enums.ResumeStrategyFastward:
 		strategy = &fastwardStrategy{
 			baseStrategy: baseStrategy{
-				active: active,
-				was:    was,
-				kc:     kc,
-				impl:   driver.Impl(),
+				active:   active,
+				was:      was,
+				sealer:   sealer,
+				mediator: mediator,
 			},
 			role: enums.RoleFastward,
 		}
@@ -68,22 +67,16 @@ func newStrategy(was *pref.Was,
 	case enums.ResumeStrategySpawn:
 		strategy = &spawnStrategy{
 			baseStrategy: baseStrategy{
-				active: active,
-				was:    was,
-				kc:     kc,
-				impl:   driver.Impl(),
+				active:   active,
+				was:      was,
+				sealer:   sealer,
+				mediator: mediator,
 			},
 		}
 	case enums.ResumeStrategyUndefined:
 	}
 
-	// we can't do this:
-	// kc.Mediator().Decorate(strategy)
-	//
-	// ... here, because its too early; the Mediator
-	// is not fully constructed
-	//
-	return strategy, nil
+	return strategy
 }
 
 func (c *Controller) Navigate(ctx context.Context) (*types.KernelResult, error) {
