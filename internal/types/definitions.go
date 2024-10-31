@@ -50,8 +50,9 @@ type (
 
 	// PluginInit
 	PluginInit struct {
-		O        *pref.Options
-		Controls *life.Controls
+		O          *pref.Options
+		Kontroller KernelController
+		Controls   *life.Controls
 	}
 
 	// Mediator controls interactions between different entities of

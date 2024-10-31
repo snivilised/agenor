@@ -91,8 +91,9 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	artefacts.Mediator.Arrange(active, order)
 
 	pi := &types.PluginInit{
-		O:        harvest.Options(),
-		Controls: &harvest.Binder().Controls,
+		O:          harvest.Options(),
+		Kontroller: artefacts.Kontroller,
+		Controls:   &harvest.Binder().Controls,
 	}
 
 	for _, p := range plugins {
