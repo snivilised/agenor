@@ -6,6 +6,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/stock"
 )
 
 func HadesNav(o *pref.Options, err error) types.KernelController {
@@ -31,7 +32,7 @@ func (n *navigatorHades) Navigate(ctx context.Context) (*types.KernelResult, err
 }
 
 func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
-	if !IsBenignError(err) && n.o != nil {
+	if !stock.IsBenignError(err) && n.o != nil {
 		n.o.Monitor.Log.Error(err.Error())
 	}
 

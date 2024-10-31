@@ -2,8 +2,6 @@ package kernel
 
 import (
 	"context"
-	"errors"
-	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -12,6 +10,7 @@ import (
 	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/stock"
 )
 
 // mediator controls traversal events, sends notifications and emits
@@ -109,7 +108,7 @@ func (m *mediator) Navigate(ctx context.Context) (*types.KernelResult, error) {
 		tree:     m.tree,
 	})
 
-	if !IsBenignError(err) && m.o != nil {
+	if !stock.IsBenignError(err) && m.o != nil {
 		m.o.Monitor.Log.Error(err.Error())
 	}
 
@@ -148,12 +147,4 @@ func (m *mediator) Invoke(servant core.Servant,
 
 func (m *mediator) Supervisor() *measure.Supervisor {
 	return m.resources.Supervisor
-}
-
-func IsBenignError(err error) bool {
-	if err == nil {
-		return true
-	}
-
-	return errors.Is(err, fs.SkipDir) || errors.Is(err, fs.SkipAll)
 }
