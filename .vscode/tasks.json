@@ -33,6 +33,23 @@
       "problemMatcher": [
         "$go"
       ]
+    },
+    {
+      "label": "Root Venus CLI",
+      "type": "shell",
+      "command": "go",
+      "args": [
+        "run",
+        "${workspaceFolder}/test/cmd/venus/main.go",
+        "-path",
+        ".",
+        "-pattern",
+        "*|flac"
+      ],
+      "group": "build",
+      "problemMatcher": [
+        "$go"
+      ]
     }
   ]
 }

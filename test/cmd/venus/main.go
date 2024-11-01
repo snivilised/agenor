@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -143,6 +144,7 @@ func navigate(n *navigation) {
 				},
 			})
 		}),
+		tv.WithHookReadDirectory(readEntriesHook),
 	)).Navigate(ctx)
 
 	if err != nil {
@@ -167,4 +169,20 @@ func subscribe(sub string) enums.Subscription {
 	}
 
 	return subscription
+}
+
+func readEntriesHook(sys fs.ReadDirFS,
+	dirname string,
+) ([]fs.DirEntry, error) {
+	contents, err := fs.ReadDir(sys, dirname)
+	if err != nil {
+		return nil, err
+	}
+
+	filtered := lo.Filter(contents, func(item fs.DirEntry, _ int) bool {
+		name := item.Name()
+		return name != ".DS_Store" && name != "."
+	})
+
+	return filtered, nil
 }
