@@ -96,6 +96,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 					_, found := recording[p]
 					return found
 				},
+				ByPassMetrics: entry.ByPassMetrics,
 			})
 		},
 		func(entry *lab.NaviTE) string {
@@ -136,6 +137,14 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				Files:       14,
 				Directories: 8,
 			},
+		}),
+
+		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
+			Given:         "universal: Path is Root",
+			Relative:      ".",
+			Subscription:  enums.SubscribeUniversal,
+			Callback:      lab.UniversalCallback("ROOT-PATH"),
+			ByPassMetrics: true,
 		}),
 
 		// === directories ===================================================

@@ -18,6 +18,7 @@ type (
 		Callback      core.Client
 		Mandatory     []string
 		Prohibited    []string
+		ByPassMetrics bool
 		ExpectedNoOf  Quantities
 		ExpectedErr   error
 	}
