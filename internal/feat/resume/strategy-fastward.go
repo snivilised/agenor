@@ -71,6 +71,7 @@ func (g *fastwardGuardianSealer) IsSealed(types.Link) bool {
 
 type fastwardStrategy struct {
 	baseStrategy
+	types.Link
 	role   enums.Role
 	filter core.TraverseFilter
 }
@@ -119,6 +120,8 @@ func (s *fastwardStrategy) Next(servant core.Servant,
 	match = s.filter.IsMatch(servant.Node())
 
 	if match {
+		// TODO: unmute notifications
+		//
 		err = s.mediator.Unwind(s.role)
 	}
 
