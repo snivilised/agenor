@@ -49,29 +49,26 @@ func newStrategy(was *pref.Was,
 	kc types.KernelController,
 	sealer types.GuardianSealer,
 ) (strategy Strategy) {
-	active := harvest.Loaded().State
-	mediator := kc.Mediator()
+	load := harvest.Loaded()
+	base := baseStrategy{
+		o:        load.O,
+		active:   load.State,
+		was:      was,
+		sealer:   sealer,
+		kc:       kc,
+		mediator: kc.Mediator(),
+	}
 
 	switch was.Strategy {
 	case enums.ResumeStrategyFastward:
 		strategy = &fastwardStrategy{
-			baseStrategy: baseStrategy{
-				active:   active,
-				was:      was,
-				sealer:   sealer,
-				mediator: mediator,
-			},
-			role: enums.RoleFastward,
+			baseStrategy: base,
+			role:         enums.RoleFastward,
 		}
 
 	case enums.ResumeStrategySpawn:
 		strategy = &spawnStrategy{
-			baseStrategy: baseStrategy{
-				active:   active,
-				was:      was,
-				sealer:   sealer,
-				mediator: mediator,
-			},
+			baseStrategy: base,
 		}
 	case enums.ResumeStrategyUndefined:
 	}
@@ -80,10 +77,6 @@ func newStrategy(was *pref.Was,
 }
 
 func (c *Controller) Navigate(ctx context.Context) (*types.KernelResult, error) {
-	if err := c.kc.Mediator().Decorate(c.strategy); err != nil {
-		return c.Result(ctx, err), err
-	}
-
 	if err := c.strategy.init(c.load); err != nil {
 		return c.Result(ctx, err), err
 	}

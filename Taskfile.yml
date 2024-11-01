@@ -60,6 +60,10 @@ tasks:
     cmds:
       - go clean -testcache
 
+  lfs:
+    cmds:
+      - go test ./lfs
+
   t:
     cmds:
       - go test ./...
@@ -68,9 +72,9 @@ tasks:
     cmds:
       - go test ./tapable
 
-  lfs:
+  ten:
     cmds:
-      - go test ./lfs
+     - go test ./internal/types
 
   tk:
     cmds:

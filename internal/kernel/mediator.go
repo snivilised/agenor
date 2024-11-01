@@ -132,6 +132,14 @@ func (m *mediator) Resume(ctx context.Context,
 	})
 }
 
+// Connect combines information gleaned from the previous traversal that was
+// interrupted, into the resume traversal
+//
+// tree, current string
+func (m *mediator) Connect(_, _ string) {
+	// tbd...
+}
+
 func (m *mediator) Spawn(ctx context.Context,
 	active *core.ActiveState,
 ) (*types.KernelResult, error) {
