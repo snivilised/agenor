@@ -230,6 +230,14 @@ tasks:
       - go tool cover -html=./coverage.out -o {{.COVER_HTML_PATH}}
       - open {{.COVER_HTML_PATH}}
 
+  # === security =============================================
+
+  # for verbose mode:
+  # govulncheck -show verbose ./...
+  vuln:
+    cmds:
+      - govulncheck ./...
+
   # === i18n =================================================
 
   clear:
