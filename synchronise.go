@@ -6,20 +6,20 @@ import (
 	"github.com/pkg/errors"
 	"github.com/snivilised/pants"
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
 type synchroniser interface {
-	types.KernelNavigator
-	Ignite(*types.Ignition)
+	enclave.KernelNavigator
+	Ignite(*enclave.Ignition)
 	IsComplete() bool
-	Conclude(result *types.KernelResult)
+	Conclude(result *enclave.KernelResult)
 }
 
 type trunk struct {
-	kc  types.KernelController
+	kc  enclave.KernelController
 	o   *pref.Options
 	ext extent
 	err error
@@ -36,11 +36,11 @@ func (t trunk) IsComplete() bool {
 	return t.ext.complete()
 }
 
-func (t trunk) Ignite(ignition *types.Ignition) {
+func (t trunk) Ignite(ignition *enclave.Ignition) {
 	t.kc.Ignite(ignition)
 }
 
-func (t trunk) Conclude(result *types.KernelResult) {
+func (t trunk) Conclude(result *enclave.KernelResult) {
 	t.kc.Conclude(result)
 }
 
@@ -52,7 +52,7 @@ type concurrent struct {
 	inputCh   pants.SourceStreamW[*TraverseInput]
 }
 
-func (c *concurrent) Navigate(ctx context.Context) (*types.KernelResult, error) {
+func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	defer c.close()
 
 	if c.err != nil {
@@ -115,7 +115,7 @@ type sequential struct {
 	trunk
 }
 
-func (s *sequential) Navigate(ctx context.Context) (*types.KernelResult, error) {
+func (s *sequential) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	if s.err != nil {
 		return s.kc.Result(ctx, s.err), s.err
 	}

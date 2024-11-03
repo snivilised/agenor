@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -22,7 +22,7 @@ const (
 type (
 	Strategy interface {
 		init(load *opts.LoadInfo) error
-		resume(context.Context, *pref.Was) (*types.KernelResult, error)
+		resume(context.Context, *pref.Was) (*enclave.KernelResult, error)
 		ifResult() bool
 		finish() error
 	}
@@ -31,9 +31,9 @@ type (
 		o        *pref.Options
 		active   *core.ActiveState
 		was      *pref.Was
-		sealer   types.GuardianSealer
-		kc       types.KernelController
-		mediator types.Mediator
+		sealer   enclave.GuardianSealer
+		kc       enclave.KernelController
+		mediator enclave.Mediator
 		forest   *core.Forest
 	}
 

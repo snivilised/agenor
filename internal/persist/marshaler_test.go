@@ -14,12 +14,12 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/opts/json"
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
@@ -90,7 +90,7 @@ func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 func unmarshal(entry *marshalTE, tfs tv.TraverseFS, restorePath string, t *tampered) {
 	// success:
 	request := &persist.UnmarshalRequest{
-		Restore: &types.RestoreState{
+		Restore: &enclave.RestoreState{
 			Path:   restorePath,
 			FS:     tfs,
 			Resume: enums.ResumeStrategySpawn,

@@ -4,9 +4,9 @@ import (
 	"io/fs"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -37,12 +37,12 @@ func (a *optionHarvest) Loaded() *opts.LoadInfo {
 
 // optionsBuilder
 type optionsBuilder interface {
-	build(ext extent) (types.OptionHarvest, error)
+	build(ext extent) (enclave.OptionHarvest, error)
 }
 
-type optionBuilder func(ext extent) (types.OptionHarvest, error)
+type optionBuilder func(ext extent) (enclave.OptionHarvest, error)
 
-func (fn optionBuilder) build(ext extent) (types.OptionHarvest, error) {
+func (fn optionBuilder) build(ext extent) (enclave.OptionHarvest, error) {
 	return fn(ext)
 }
 
@@ -50,25 +50,25 @@ func (fn optionBuilder) build(ext extent) (types.OptionHarvest, error) {
 type pluginsBuilder interface {
 	build(o *pref.Options,
 		using *pref.Using,
-		mediator types.Mediator,
-		kc types.KernelController,
-		others ...types.Plugin,
-	) ([]types.Plugin, error)
+		mediator enclave.Mediator,
+		kc enclave.KernelController,
+		others ...enclave.Plugin,
+	) ([]enclave.Plugin, error)
 }
 
 type activated func(*pref.Options,
 	*pref.Using,
-	types.Mediator,
-	types.KernelController,
-	...types.Plugin,
-) ([]types.Plugin, error)
+	enclave.Mediator,
+	enclave.KernelController,
+	...enclave.Plugin,
+) ([]enclave.Plugin, error)
 
 func (fn activated) build(o *pref.Options,
 	using *pref.Using,
-	mediator types.Mediator,
-	kc types.KernelController,
-	others ...types.Plugin,
-) ([]types.Plugin, error) {
+	mediator enclave.Mediator,
+	kc enclave.KernelController,
+	others ...enclave.Plugin,
+) ([]enclave.Plugin, error) {
 	return fn(o, using, mediator, kc, others...)
 }
 

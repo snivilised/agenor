@@ -5,9 +5,9 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/level"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/stock"
@@ -23,7 +23,7 @@ type mediator struct {
 	guardian     *guardian
 	periscope    *level.Periscope
 	o            *pref.Options
-	resources    *types.Resources
+	resources    *enclave.Resources
 	mums         measure.MutableMetrics
 	order        []enums.Role
 }
@@ -32,8 +32,8 @@ type mediatorInfo struct {
 	using     *pref.Using
 	o         *pref.Options
 	impl      NavigatorImpl
-	sealer    types.GuardianSealer
-	resources *types.Resources
+	sealer    enclave.GuardianSealer
+	resources *enclave.Resources
 }
 
 func newMediator(info *mediatorInfo) *mediator {
@@ -78,7 +78,7 @@ func (m *mediator) ascend(node *core.Node, permit bool) {
 	}
 }
 
-func (m *mediator) Decorate(link types.Link) error {
+func (m *mediator) Decorate(link enclave.Link) error {
 	return m.guardian.Decorate(link)
 }
 
@@ -91,7 +91,7 @@ func (m *mediator) Arrange(active, order []enums.Role) {
 	m.guardian.arrange(active, order)
 }
 
-func (m *mediator) Ignite(ignition *types.Ignition) {
+func (m *mediator) Ignite(ignition *enclave.Ignition) {
 	m.impl.Ignite(ignition)
 	m.resources.Binder.Controls.Begin.Dispatch()(&life.BeginState{
 		Tree: m.tree,
@@ -102,7 +102,7 @@ func (m *mediator) Conclude(result core.TraverseResult) {
 	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 
-func (m *mediator) Navigate(ctx context.Context) (*types.KernelResult, error) {
+func (m *mediator) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	result, err := m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     m.tree,
@@ -118,7 +118,7 @@ func (m *mediator) Navigate(ctx context.Context) (*types.KernelResult, error) {
 
 func (m *mediator) Resume(ctx context.Context,
 	active *core.ActiveState,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	// TODO: there is something missing here...
 	// we need to do more with the loaded active state
 	//
@@ -144,7 +144,7 @@ func (m *mediator) Connect(_, _ string) {
 
 func (m *mediator) Spawn(ctx context.Context,
 	active *core.ActiveState,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	// TODO: send a message indicating spawn
 	// we need to reset the active state, eg synchronise
 	// the depth
@@ -156,7 +156,7 @@ func (m *mediator) Spawn(ctx context.Context,
 }
 
 func (m *mediator) Invoke(servant core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) error {
 	return m.guardian.Invoke(servant, inspection)
 }

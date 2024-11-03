@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/stock"
 )
 
-func HadesNav(o *pref.Options, err error) types.KernelController {
+func HadesNav(o *pref.Options, err error) enclave.KernelController {
 	return &navigatorHades{
 		o:   o,
 		err: err,
@@ -24,29 +24,29 @@ type navigatorHades struct {
 func (n *navigatorHades) Rank() {
 }
 
-func (n *navigatorHades) Ignite(*types.Ignition) {
+func (n *navigatorHades) Ignite(*enclave.Ignition) {
 }
 
-func (n *navigatorHades) Navigate(ctx context.Context) (*types.KernelResult, error) {
+func (n *navigatorHades) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	return n.Result(ctx, n.err), n.err
 }
 
-func (n *navigatorHades) Result(_ context.Context, err error) *types.KernelResult {
+func (n *navigatorHades) Result(_ context.Context, err error) *enclave.KernelResult {
 	if !stock.IsBenignError(err) && n.o != nil {
 		n.o.Monitor.Log.Error(err.Error())
 	}
 
-	return types.NewFailed(err)
+	return enclave.NewFailed(err)
 }
 
-func (n *navigatorHades) Mediator() types.Mediator {
+func (n *navigatorHades) Mediator() enclave.Mediator {
 	return nil
 }
 
 func (n *navigatorHades) Resume(context.Context,
 	*core.ActiveState,
-) (*types.KernelResult, error) {
-	return &types.KernelResult{}, nil
+) (*enclave.KernelResult, error) {
+	return &enclave.KernelResult{}, nil
 }
 
 func (n *navigatorHades) Conclude(_ core.TraverseResult) {

@@ -1,4 +1,4 @@
-package types_test
+package enclave_test
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 func TestEnclave(t *testing.T) {
@@ -33,7 +33,7 @@ func (s *session) start() {
 	s.started = time.Now()
 }
 
-func (s *session) finish(_ *types.KernelResult) {
+func (s *session) finish(_ *enclave.KernelResult) {
 
 }
 
@@ -49,8 +49,8 @@ func (s *session) Elapsed() time.Duration {
 	return time.Since(s.started)
 }
 
-func (s *session) exec(_ context.Context) (*types.KernelResult, error) {
-	return &types.KernelResult{}, nil
+func (s *session) exec(_ context.Context) (*enclave.KernelResult, error) {
+	return &enclave.KernelResult{}, nil
 }
 
 type trigger struct {
@@ -64,7 +64,7 @@ func (t *trigger) times(m enums.Metric, n uint) *trigger {
 }
 
 type asserter struct {
-	result *types.KernelResult
+	result *enclave.KernelResult
 }
 
 func (a *asserter) equals(m enums.Metric, n uint) *asserter {

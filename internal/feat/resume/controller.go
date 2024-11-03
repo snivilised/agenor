@@ -5,28 +5,28 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 type Controller struct {
-	kc         types.KernelController
+	kc         enclave.KernelController
 	was        *pref.Was
 	load       *opts.LoadInfo
 	strategy   Strategy
-	facilities types.Facilities
+	facilities enclave.Facilities
 }
 
-func (c *Controller) Ignite(ignition *types.Ignition) {
+func (c *Controller) Ignite(ignition *enclave.Ignition) {
 	c.kc.Ignite(ignition)
 }
 
-func (c *Controller) Result(ctx context.Context, err error) *types.KernelResult {
+func (c *Controller) Result(ctx context.Context, err error) *enclave.KernelResult {
 	return c.kc.Result(ctx, err)
 }
 
-func (c *Controller) Mediator() types.Mediator {
+func (c *Controller) Mediator() enclave.Mediator {
 	return c.kc.Mediator()
 }
 
@@ -36,8 +36,8 @@ func (c *Controller) Strategy() Strategy {
 
 func (c *Controller) Resume(context.Context,
 	*core.ActiveState,
-) (*types.KernelResult, error) {
-	return &types.KernelResult{}, nil
+) (*enclave.KernelResult, error) {
+	return &enclave.KernelResult{}, nil
 }
 
 func (c *Controller) Conclude(result core.TraverseResult) {
@@ -45,10 +45,10 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 }
 
 func newStrategy(was *pref.Was,
-	harvest types.OptionHarvest,
-	kc types.KernelController,
-	sealer types.GuardianSealer,
-	resources *types.Resources,
+	harvest enclave.OptionHarvest,
+	kc enclave.KernelController,
+	sealer enclave.GuardianSealer,
+	resources *enclave.Resources,
 ) (strategy Strategy) {
 	load := harvest.Loaded()
 	base := baseStrategy{
@@ -78,7 +78,7 @@ func newStrategy(was *pref.Was,
 	return strategy
 }
 
-func (c *Controller) Navigate(ctx context.Context) (*types.KernelResult, error) {
+func (c *Controller) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	if err := c.strategy.init(c.load); err != nil {
 		return c.Result(ctx, err), err
 	}

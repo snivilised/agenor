@@ -2,8 +2,8 @@ package filter
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 // hybridScheme required because node based filtering can be active at
@@ -40,7 +40,7 @@ func (s *hybridScheme) create() error {
 	return nil
 }
 
-func (s *hybridScheme) init(pi *types.PluginInit, crate *measure.Crate) {
+func (s *hybridScheme) init(pi *enclave.PluginInit, crate *measure.Crate) {
 	s.common.init(pi, crate)
 
 	if s.primary != nil {
@@ -53,7 +53,7 @@ func (s *hybridScheme) init(pi *types.PluginInit, crate *measure.Crate) {
 }
 
 func (s *hybridScheme) next(servant core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) (bool, error) {
 	if s.primary != nil {
 		invokeNext, err := s.primary.next(servant, inspection)

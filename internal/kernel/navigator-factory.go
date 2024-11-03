@@ -2,13 +2,13 @@ package kernel
 
 import (
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/pref"
 )
 
 func WithArtefacts(using *pref.Using, o *pref.Options,
-	resources *types.Resources,
-	sealer types.GuardianSealer,
+	resources *enclave.Resources,
+	sealer enclave.GuardianSealer,
 ) *Artefacts {
 	controller := New(using, o, resources, sealer)
 	mediator := controller.Mediator()
@@ -21,8 +21,8 @@ func WithArtefacts(using *pref.Using, o *pref.Options,
 }
 
 func New(using *pref.Using, o *pref.Options,
-	resources *types.Resources,
-	sealer types.GuardianSealer,
+	resources *enclave.Resources,
+	sealer enclave.GuardianSealer,
 ) *NavigationController {
 	impl := newImpl(using, o, resources)
 	mediator := newMediator(&mediatorInfo{
@@ -38,7 +38,7 @@ func New(using *pref.Using, o *pref.Options,
 
 func newImpl(using *pref.Using,
 	o *pref.Options,
-	resources *types.Resources,
+	resources *enclave.Resources,
 ) (impl NavigatorImpl) {
 	agent := navigatorAgent{
 		using: using,

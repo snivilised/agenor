@@ -3,9 +3,9 @@ package filter
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -31,12 +31,12 @@ func (s *nannyScheme) create() error {
 	return nil
 }
 
-func (s *nannyScheme) init(pi *types.PluginInit, crate *measure.Crate) {
+func (s *nannyScheme) init(pi *enclave.PluginInit, crate *measure.Crate) {
 	s.common.init(pi, crate)
 }
 
 func (s *nannyScheme) next(_ core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) (bool, error) {
 	files := inspection.Sort(enums.EntryTypeFile)
 	matching := s.filter.Matching(files)

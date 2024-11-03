@@ -4,24 +4,24 @@ import (
 	"context"
 	"time"
 
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 )
 
 type session struct {
 	sync     synchroniser
 	started  time.Time
 	duration time.Duration
-	plugins  []types.Plugin
+	plugins  []enclave.Plugin
 }
 
 func (s *session) start() {
 	s.started = time.Now()
-	s.sync.Ignite(&types.Ignition{
+	s.sync.Ignite(&enclave.Ignition{
 		Session: s,
 	})
 }
 
-func (s *session) finish(result *types.KernelResult) {
+func (s *session) finish(result *enclave.KernelResult) {
 	s.duration = time.Since(s.started)
 	s.sync.Conclude(result)
 }
@@ -38,6 +38,6 @@ func (s *session) Elapsed() time.Duration {
 	return time.Since(s.started)
 }
 
-func (s *session) exec(ctx context.Context) (*types.KernelResult, error) {
+func (s *session) exec(ctx context.Context) (*enclave.KernelResult, error) {
 	return s.sync.Navigate(ctx)
 }

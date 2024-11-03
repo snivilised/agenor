@@ -3,18 +3,18 @@ package resume
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 type (
 	From struct {
 		Active   *core.ActiveState
-		Mediator types.Mediator
+		Mediator enclave.Mediator
 		Strategy enums.ResumeStrategy
 		IfResult core.ResultCompletion
 	}
@@ -23,7 +23,7 @@ type (
 		kernel.BasePlugin
 		IfResult   core.ResultCompletion
 		Active     *core.ActiveState
-		kontroller types.KernelController
+		kontroller enclave.KernelController
 	}
 )
 
@@ -41,7 +41,7 @@ func New(from *From,
 	}
 }
 
-func (p *Plugin) Init(pi *types.PluginInit) error {
+func (p *Plugin) Init(pi *enclave.PluginInit) error {
 	p.kontroller = pi.Kontroller
 
 	return nil
@@ -51,7 +51,7 @@ func (p *Plugin) IsComplete() bool {
 	return p.IfResult.IsComplete()
 }
 
-func Load(restoration *types.RestoreState,
+func Load(restoration *enclave.RestoreState,
 	settings ...pref.Option,
 ) (*opts.LoadInfo, *opts.Binder, error) {
 	result, err := persist.Unmarshal(&persist.UnmarshalRequest{
@@ -63,12 +63,12 @@ func Load(restoration *types.RestoreState,
 	return opts.Bind(result.O, result.Active, settings...)
 }
 
-func WithArtefacts(was *pref.Was, harvest types.OptionHarvest,
-	resources *types.Resources,
+func WithArtefacts(was *pref.Was, harvest enclave.OptionHarvest,
+	resources *enclave.Resources,
 ) *kernel.Artefacts {
 	sealer := lo.Ternary(was.Strategy == enums.ResumeStrategyFastward,
-		types.GuardianSealer(&fastwardGuardianSealer{}),
-		types.GuardianSealer(&kernel.Benign{}),
+		enclave.GuardianSealer(&fastwardGuardianSealer{}),
+		enclave.GuardianSealer(&kernel.Benign{}),
 	)
 
 	// TODO: create a general type that carries all this info; pass

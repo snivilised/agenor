@@ -5,7 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 )
 
 type navigatorDirectories struct {
@@ -14,7 +14,7 @@ type navigatorDirectories struct {
 
 func (n *navigatorDirectories) Top(ctx context.Context,
 	ns *navigationStatic,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	return n.top(ctx, ns)
 }
 

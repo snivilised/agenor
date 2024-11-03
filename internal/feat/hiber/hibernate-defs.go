@@ -3,7 +3,7 @@ package hiber
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
 )
@@ -30,7 +30,7 @@ func RestoreOptions() {
 
 type (
 	nextFn func(servant core.Servant, node *core.Node,
-		inspection types.Inspection,
+		inspection enclave.Inspection,
 	) (bool, error)
 
 	state struct {
@@ -46,7 +46,7 @@ type (
 	profile interface {
 		init(controls *life.Controls) error
 		next(servant core.Servant, node *core.Node,
-			inspection types.Inspection,
+			inspection enclave.Inspection,
 		) (bool, error)
 	}
 

@@ -81,7 +81,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 			XIt("🧪 should: translate from json", func() {
 				/*
 					o, _, _ := opts.Get()
-					marshaller = persist.NewReader(o, &types.ActiveState{
+					marshaller = persist.NewReader(o, &enclave.ActiveState{
 						Root:        "some-root-path",
 						Hibernation: enums.HibernationPending,
 						CurrentPath:    "/top/a/b/c",
@@ -89,7 +89,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 					})
 				*/
 				// readerFS := nef.NewReadFileFS("/some-path")
-				// state, err := persist.Unmarshal(&types.RestoreState{
+				// state, err := persist.Unmarshal(&enclave.RestoreState{
 				// 	Path:   "some-restore-path",
 				// 	Resume: enums.ResumeStrategySpawn,
 				// }, "/some-path", readerFS)

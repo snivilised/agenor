@@ -2,12 +2,12 @@ package sampling
 
 import (
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, _ *pref.Using, mediator types.Mediator) types.Plugin {
+func IfActive(o *pref.Options, _ *pref.Using, mediator enclave.Mediator) enclave.Plugin {
 	if o.Sampling.IsSamplingActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{
@@ -33,7 +33,7 @@ type plugin struct {
 	ctrl controller
 }
 
-func (p *plugin) Init(_ *types.PluginInit) error {
+func (p *plugin) Init(_ *enclave.PluginInit) error {
 	p.O.Hooks.ReadDirectory.Chain(
 		p.ctrl.sample,
 	)

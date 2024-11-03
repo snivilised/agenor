@@ -6,8 +6,8 @@ import (
 
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -34,7 +34,7 @@ type (
 	}
 
 	UnmarshalRequest struct {
-		Restore *types.RestoreState
+		Restore *enclave.RestoreState
 	}
 
 	UnmarshalResult struct {
