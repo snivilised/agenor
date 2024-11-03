@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/nefilim/luna"
+	"github.com/snivilised/nefilim/test/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
