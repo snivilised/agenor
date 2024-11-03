@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/nefilim/luna"
+	"github.com/snivilised/nefilim/test/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	lab "github.com/snivilised/traverse/internal/laboratory"

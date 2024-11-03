@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing/fstest"
 
-	"github.com/snivilised/nefilim/luna"
+	"github.com/snivilised/nefilim/test/luna"
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
