@@ -48,6 +48,7 @@ func newStrategy(was *pref.Was,
 	harvest types.OptionHarvest,
 	kc types.KernelController,
 	sealer types.GuardianSealer,
+	resources *types.Resources,
 ) (strategy Strategy) {
 	load := harvest.Loaded()
 	base := baseStrategy{
@@ -57,6 +58,7 @@ func newStrategy(was *pref.Was,
 		sealer:   sealer,
 		kc:       kc,
 		mediator: kc.Mediator(),
+		forest:   resources.Forest,
 	}
 
 	switch was.Strategy {

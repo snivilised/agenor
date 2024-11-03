@@ -3,6 +3,7 @@ package kernel
 import (
 	"context"
 
+	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/types"
@@ -103,6 +104,7 @@ type (
 	navigationStatic struct {
 		mediator *mediator
 		tree     string
+		calc     nef.PathCalc
 	}
 
 	navigationInfo struct { // pre content read

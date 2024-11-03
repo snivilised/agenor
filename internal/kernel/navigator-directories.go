@@ -65,7 +65,7 @@ func (n *navigatorDirectories) inspect(ns *navigationStatic,
 	// interested in directories and therefore forced to use
 	// NavigationBehaviours.SortBehaviour.SortFilesFirst=true instead.
 	//
-	vapour.cargo, err = read(ns.mediator.resources.FS.T,
+	vapour.cargo, err = read(ns.mediator.resources.Forest.T,
 		n.ro,
 		current.Path,
 	)

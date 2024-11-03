@@ -3,7 +3,6 @@ package resume
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -80,6 +79,7 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 	// We don't use the Hibernate.Wake/Sleep-At, as those are defined bt the client.
 	// Instead we just need to create a filter on the fly from the load state...
 	//
+	calc := s.forest.T.Calc()
 	scope := lo.Ternary(load.State.IsDir, enums.ScopeDirectory, enums.ScopeFile)
 	s.filter, err = filtering.New(
 		&core.FilterDef{
@@ -92,14 +92,8 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 				),
 				scope:  scope,
 				source: load.State.CurrentPath,
-
-				// TODO: we need a global path calc, which may be
-				// relative or absolute; then delegate this line:
-				// filepath.Dir(load.State.CurrentPath)
-				// ... to the path calc
-				//
-				parent: filepath.Dir(load.State.CurrentPath),
-				name:   filepath.Base(load.State.CurrentPath),
+				parent: calc.Dir(load.State.CurrentPath),
+				name:   calc.Base(load.State.CurrentPath),
 			},
 		},
 	)

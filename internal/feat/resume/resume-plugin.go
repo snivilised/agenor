@@ -71,8 +71,11 @@ func WithArtefacts(was *pref.Was, harvest types.OptionHarvest,
 		types.GuardianSealer(&kernel.Benign{}),
 	)
 
+	// TODO: create a general type that carries all this info; pass
+	// this into WithArtefacts
+	//
 	controller := kernel.New(&was.Using, harvest.Options(), resources, sealer)
-	strategy := newStrategy(was, harvest, controller, sealer)
+	strategy := newStrategy(was, harvest, controller, sealer, resources)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{

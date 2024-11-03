@@ -34,6 +34,7 @@ type (
 		sealer   types.GuardianSealer
 		kc       types.KernelController
 		mediator types.Mediator
+		forest   *core.Forest
 	}
 
 	concludeInfo struct {
