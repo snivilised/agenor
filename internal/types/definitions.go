@@ -53,6 +53,7 @@ type (
 		O          *pref.Options
 		Kontroller KernelController
 		Controls   *life.Controls
+		Resources  *Resources
 	}
 
 	// Mediator controls interactions between different entities of
@@ -69,7 +70,7 @@ type (
 
 	// Resources are dependencies required for navigation
 	Resources struct {
-		FS         *core.Forest
+		Forest     *core.Forest
 		Supervisor *measure.Supervisor
 		Binder     *opts.Binder
 	}

@@ -106,6 +106,7 @@ func (m *mediator) Navigate(ctx context.Context) (*types.KernelResult, error) {
 	result, err := m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     m.tree,
+		calc:     m.resources.Forest.T.Calc(),
 	})
 
 	if !stock.IsBenignError(err) && m.o != nil {
@@ -129,6 +130,7 @@ func (m *mediator) Resume(ctx context.Context,
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     active.Tree,
+		calc:     m.resources.Forest.T.Calc(),
 	})
 }
 
@@ -149,6 +151,7 @@ func (m *mediator) Spawn(ctx context.Context,
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     active.Tree,
+		calc:     m.resources.Forest.T.Calc(),
 	})
 }
 

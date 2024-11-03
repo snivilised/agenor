@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"path/filepath"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/opts"
@@ -76,7 +75,7 @@ func (s *spawnStrategy) seed(ctx context.Context,
 	compoundResult := &types.KernelResult{}
 
 	for _, entry := range entries {
-		topPath := filepath.Join(parent, entry.Name()) // !!! warning need path calc
+		topPath := s.forest.T.Calc().Join(parent, entry.Name())
 
 		result, err := s.mediator.Spawn(ctx, &core.ActiveState{
 			Tree: topPath,

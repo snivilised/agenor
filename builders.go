@@ -50,7 +50,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD NAVIGATOR
 	//
 	artefacts := bs.navigator.Build(harvest, &types.Resources{
-		FS:         ext.forest(),
+		Forest:     ext.forest(),
 		Supervisor: measure.New(),
 		Binder:     harvest.Binder(),
 	})
@@ -86,6 +86,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 		O:          harvest.Options(),
 		Kontroller: artefacts.Kontroller,
 		Controls:   &harvest.Binder().Controls,
+		Resources:  artefacts.Resources,
 	}
 
 	for _, p := range plugins {
