@@ -3,9 +3,9 @@ package filter
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 type customScheme struct {
@@ -20,7 +20,7 @@ func (s *customScheme) create() error {
 }
 
 func (s *customScheme) next(servant core.Servant,
-	_ types.Inspection,
+	_ enclave.Inspection,
 ) (bool, error) {
 	return matchNext(s.filter, servant.Node(), s.crate)
 }

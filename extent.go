@@ -2,18 +2,18 @@ package tv
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 type extent interface {
 	using() *pref.Using
 	was() *pref.Was
-	plugin(*kernel.Artefacts) types.Plugin
-	options(...pref.Option) (types.OptionHarvest, error)
+	plugin(*kernel.Artefacts) enclave.Plugin
+	options(...pref.Option) (enclave.OptionHarvest, error)
 	forest() *core.Forest
 	complete() bool
 }
@@ -43,11 +43,11 @@ func (ex *primeExtent) was() *pref.Was {
 	return nil
 }
 
-func (ex *primeExtent) plugin(*kernel.Artefacts) types.Plugin {
+func (ex *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
 	return nil
 }
 
-func (ex *primeExtent) options(settings ...pref.Option) (types.OptionHarvest, error) {
+func (ex *primeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
 	o, binder, err := opts.Get(settings...)
 
 	return &optionHarvest{
@@ -75,7 +75,7 @@ func (ex *resumeExtent) was() *pref.Was {
 	return ex.w
 }
 
-func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
+func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
 	ex.pin = resume.New(&resume.From{
 		Active:   ex.loaded.State,
 		Mediator: artefacts.Mediator,
@@ -86,8 +86,8 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) types.Plugin {
 	return ex.pin
 }
 
-func (ex *resumeExtent) options(settings ...pref.Option) (types.OptionHarvest, error) {
-	loaded, binder, err := resume.Load(&types.RestoreState{
+func (ex *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
+	loaded, binder, err := resume.Load(&enclave.RestoreState{
 		Path:   ex.w.From,
 		FS:     ex.trees.R,
 		Resume: ex.w.Strategy,

@@ -5,15 +5,15 @@ package nanny
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 func IfActive(o *pref.Options,
-	using *pref.Using, mediator types.Mediator,
-) types.Plugin {
+	using *pref.Using, mediator enclave.Mediator,
+) enclave.Plugin {
 	if using.Subscription == enums.SubscribeDirectoriesWithFiles &&
 		!o.Filter.IsFilteringActive() {
 		return &plugin{
@@ -34,7 +34,7 @@ type plugin struct {
 }
 
 func (p *plugin) Next(servant core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) (bool, error) {
 	node := servant.Node()
 	files := inspection.Sort(enums.EntryTypeFile)
@@ -44,7 +44,7 @@ func (p *plugin) Next(servant core.Servant,
 	return true, nil
 }
 
-func (p *plugin) Init(_ *types.PluginInit) error {
+func (p *plugin) Init(_ *enclave.PluginInit) error {
 	p.crate.Mums = p.Mediator.Supervisor().Many(
 		enums.MetricNoChildFilesFound,
 	)

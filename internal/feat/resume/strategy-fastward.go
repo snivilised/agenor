@@ -6,10 +6,10 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -56,7 +56,7 @@ func (f *FastwardFilter) Scope() enums.FilterScope {
 type fastwardGuardianSealer struct {
 }
 
-func (g *fastwardGuardianSealer) Seal(top types.Link) error {
+func (g *fastwardGuardianSealer) Seal(top enclave.Link) error {
 	if top.Role() == enums.RoleHibernate {
 		return core.ErrGuardianCantDecorateItemSealed
 	}
@@ -64,13 +64,13 @@ func (g *fastwardGuardianSealer) Seal(top types.Link) error {
 	return nil
 }
 
-func (g *fastwardGuardianSealer) IsSealed(types.Link) bool {
+func (g *fastwardGuardianSealer) IsSealed(enclave.Link) bool {
 	return false
 }
 
 type fastwardStrategy struct {
 	baseStrategy
-	types.Link
+	enclave.Link
 	role   enums.Role
 	filter core.TraverseFilter
 }
@@ -109,7 +109,7 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 // next link in the chain can be run or false to stop
 // execution of subsequent links.
 func (s *fastwardStrategy) Next(servant core.Servant,
-	_ types.Inspection,
+	_ enclave.Inspection,
 ) (match bool, err error) {
 	match = s.filter.IsMatch(servant.Node())
 
@@ -129,7 +129,7 @@ func (s *fastwardStrategy) Role() enums.Role {
 
 func (s *fastwardStrategy) resume(ctx context.Context,
 	_ *pref.Was,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	return s.mediator.Resume(ctx, s.active)
 }
 

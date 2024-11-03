@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"
 )
@@ -35,17 +35,17 @@ type navigatorAgent struct {
 	ao        *agentOptions
 	ro        *readOptions
 	using     *pref.Using
-	resources *types.Resources
+	resources *enclave.Resources
 	session   core.Session
 }
 
-func (n *navigatorAgent) Ignite(ignition *types.Ignition) {
+func (n *navigatorAgent) Ignite(ignition *enclave.Ignition) {
 	n.session = ignition.Session
 }
 
 func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	info, ie := n.ao.hooks.QueryStatus.Invoke()(
 		ns.mediator.resources.Forest.T, ns.tree,
 	)
@@ -80,9 +80,9 @@ func (n *navigatorAgent) top(ctx context.Context,
 // is all handled by the strategy.
 func (n *navigatorAgent) Result(ctx context.Context,
 	err error,
-) *types.KernelResult {
+) *enclave.KernelResult {
 	complete := n.session.IsComplete()
-	result := types.NewResult(n.session,
+	result := enclave.NewResult(n.session,
 		n.resources.Supervisor,
 		err,
 		complete,

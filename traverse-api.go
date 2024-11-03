@@ -285,9 +285,9 @@ var (
 //
 // 🔆 central layer
 // kernel: []
-// types: [measure, pref, override]
+// enclave: [measure, pref, override]
 // opts: [pref]
-// override: [tapable], !("types")
+// override: [tapable], !("enclave")
 // ---
 //
 // 🔆 support layer

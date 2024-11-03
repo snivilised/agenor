@@ -1,4 +1,4 @@
-package types
+package enclave
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-// 📦 pkg: types - defines internal types
+// 📦 pkg: enclave - defines internal types
 
 type (
 	// Link represents a single decorator in the chain

@@ -2,8 +2,8 @@ package filter
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -30,7 +30,7 @@ func (s *nativeScheme) create() error {
 }
 
 func (s *nativeScheme) next(servant core.Servant,
-	_ types.Inspection,
+	_ enclave.Inspection,
 ) (bool, error) {
 	return matchNext(s.filter, servant.Node(), s.crate)
 }

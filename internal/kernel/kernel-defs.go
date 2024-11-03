@@ -6,7 +6,7 @@ import (
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 )
 
 // 📦 pkg: kernel - contains the core traversal functionality. Kernel
@@ -17,12 +17,12 @@ type (
 	// NavigatorImpl
 	NavigatorImpl interface {
 		// Ignite
-		Ignite(ignition *types.Ignition)
+		Ignite(ignition *enclave.Ignition)
 
 		// Top
 		Top(ctx context.Context,
 			ns *navigationStatic,
-		) (*types.KernelResult, error)
+		) (*enclave.KernelResult, error)
 
 		// Traverse
 		Traverse(ctx context.Context,
@@ -31,7 +31,7 @@ type (
 		) (bool, error)
 
 		// Result
-		Result(ctx context.Context, err error) *types.KernelResult
+		Result(ctx context.Context, err error) *enclave.KernelResult
 	}
 
 	// NavigatorDriver
@@ -75,7 +75,7 @@ type (
 		// Not all roles can be decorated. The fastward-resume decorator can
 		// not be decorated. If an attempt is made to Decorate a sealed decorator,
 		// an error is returned.
-		Decorate(link types.Link) error
+		Decorate(link enclave.Link) error
 
 		// Invoke executes the chain which may or may not end up resulting in
 		// the invocation of the client's callback, depending on the contents
@@ -89,7 +89,7 @@ type (
 
 	// Invokable
 	Invokable interface {
-		Invoke(servant core.Servant, inspection types.Inspection) error
+		Invoke(servant core.Servant, inspection enclave.Inspection) error
 	}
 
 	// Mutant represents the mutable interface to the Guardian
@@ -111,7 +111,7 @@ type (
 	}
 
 	inspection interface { // after content has been read
-		types.Inspection
+		enclave.Inspection
 		static() *navigationStatic
 		clear()
 	}

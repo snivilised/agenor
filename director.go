@@ -3,6 +3,7 @@ package tv
 import (
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
 	"github.com/snivilised/traverse/internal/feat/nanny"
@@ -11,7 +12,6 @@ import (
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -21,17 +21,17 @@ const (
 
 type (
 	ifActive func(o *pref.Options,
-		using *pref.Using, mediator types.Mediator,
-	) types.Plugin
+		using *pref.Using, mediator enclave.Mediator,
+	) enclave.Plugin
 )
 
 // features interrogates options and invokes requests on behalf of the user
 // to activate features according to option selections. other plugins will
 // be initialised after primary plugins
-func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
-	kc types.KernelController,
-	others ...types.Plugin,
-) (plugins []types.Plugin, err error) {
+func features(o *pref.Options, using *pref.Using, mediator enclave.Mediator,
+	kc enclave.KernelController,
+	others ...enclave.Plugin,
+) (plugins []enclave.Plugin, err error) {
 	var (
 		all = []ifActive{
 			// filtering must happen before sampling so that
@@ -46,20 +46,20 @@ func features(o *pref.Options, using *pref.Using, mediator types.Mediator,
 	// double reduce, the first reduce 'all' creates list of active plugins
 	// and the second, adds other plugins to the activated list.
 	plugins = lo.Reduce(others,
-		func(acc []types.Plugin, plugin types.Plugin, _ int) []types.Plugin {
+		func(acc []enclave.Plugin, plugin enclave.Plugin, _ int) []enclave.Plugin {
 			if plugin != nil {
 				acc = append(acc, plugin)
 			}
 			return acc
 		},
 		lo.Reduce(all,
-			func(acc []types.Plugin, query ifActive, _ int) []types.Plugin {
+			func(acc []enclave.Plugin, query ifActive, _ int) []enclave.Plugin {
 				if plugin := query(o, using, mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
 				return acc
 			},
-			[]types.Plugin{},
+			[]enclave.Plugin{},
 		),
 	)
 
@@ -99,9 +99,9 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 				u: using,
 			}
 		}),
-		harvest: optionBuilder(func(ext extent) (types.OptionHarvest, error) {
+		harvest: optionBuilder(func(ext extent) (enclave.OptionHarvest, error) {
 			type baggage struct {
-				harvest types.OptionHarvest
+				harvest enclave.OptionHarvest
 				err     error
 			}
 
@@ -129,8 +129,8 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 
 			return b.harvest, b.err
 		}),
-		navigator: kernel.Builder(func(harvest types.OptionHarvest,
-			resources *types.Resources,
+		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
+			resources *enclave.Resources,
 		) *kernel.Artefacts {
 			return kernel.WithArtefacts(
 				using,
@@ -173,7 +173,7 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 		// TODO: we need state; record the hibernation wake point, so
 		// using a func here is probably not optimal.
 		//
-		harvest: optionBuilder(func(ext extent) (harvest types.OptionHarvest, err error) {
+		harvest: optionBuilder(func(ext extent) (harvest enclave.OptionHarvest, err error) {
 			harvest, err = ext.options(settings...)
 
 			if err != nil {
@@ -184,8 +184,8 @@ func Resume(was *Was, settings ...pref.Option) *Builders {
 
 			return harvest, err
 		}),
-		navigator: kernel.Builder(func(harvest types.OptionHarvest,
-			resources *types.Resources,
+		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
+			resources *enclave.Resources,
 		) *kernel.Artefacts {
 			return resume.WithArtefacts(
 				was,

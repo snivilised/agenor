@@ -2,17 +2,17 @@ package tv
 
 import (
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
 type buildArtefacts struct {
 	o       *pref.Options
-	kc      types.KernelController
-	plugins []types.Plugin
+	kc      enclave.KernelController
+	plugins []enclave.Plugin
 	ext     extent
 }
 
@@ -49,7 +49,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
-	artefacts := bs.navigator.Build(harvest, &types.Resources{
+	artefacts := bs.navigator.Build(harvest, &enclave.Resources{
 		Forest:     ext.forest(),
 		Supervisor: measure.New(),
 		Binder:     harvest.Binder(),
@@ -75,14 +75,14 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// INIT PLUGINS
 	//
 	active := lo.Map(plugins,
-		func(plugin types.Plugin, _ int) enums.Role {
+		func(plugin enclave.Plugin, _ int) enums.Role {
 			return plugin.Role()
 		},
 	)
 	order := manifest(active)
 	artefacts.Mediator.Arrange(active, order)
 
-	pi := &types.PluginInit{
+	pi := &enclave.PluginInit{
 		O:          harvest.Options(),
 		Kontroller: artefacts.Kontroller,
 		Controls:   &harvest.Binder().Controls,

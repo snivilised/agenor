@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 )
 
 type NavigationController struct {
@@ -17,17 +17,17 @@ func newNavigationController(med *mediator) *NavigationController {
 	}
 }
 
-func (nc *NavigationController) Register(types.Plugin) error {
+func (nc *NavigationController) Register(enclave.Plugin) error {
 	return nil
 }
 
-func (nc *NavigationController) Ignite(ignition *types.Ignition) {
+func (nc *NavigationController) Ignite(ignition *enclave.Ignition) {
 	nc.med.Ignite(ignition)
 }
 
 func (nc *NavigationController) Resume(ctx context.Context,
 	active *core.ActiveState,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	return nc.med.Resume(ctx, active)
 }
 
@@ -40,16 +40,16 @@ func (nc *NavigationController) Impl() NavigatorImpl {
 }
 
 func (nc *NavigationController) Navigate(ctx context.Context,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	return nc.med.Navigate(ctx)
 }
 
 func (nc *NavigationController) Result(ctx context.Context,
 	err error,
-) *types.KernelResult {
+) *enclave.KernelResult {
 	return nc.med.impl.Result(ctx, err)
 }
 
-func (nc *NavigationController) Mediator() types.Mediator {
+func (nc *NavigationController) Mediator() enclave.Mediator {
 	return nc.med
 }

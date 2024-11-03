@@ -5,12 +5,12 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 var _ = Describe("event", func() {
-	var result types.KernelResult
+	var result enclave.KernelResult
 
 	Context("end", func() {
 		Context("single", func() {

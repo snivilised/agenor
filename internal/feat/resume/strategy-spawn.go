@@ -7,8 +7,8 @@ import (
 	"io/fs"
 
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -22,7 +22,7 @@ func (s *spawnStrategy) init(*opts.LoadInfo) error {
 
 func (s *spawnStrategy) resume(ctx context.Context,
 	_ *pref.Was,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	// what is the equivalent of this?:
 	// s.nc.frame.root.Set(info.ps.Active.Root)
 	//
@@ -44,7 +44,7 @@ func (s *spawnStrategy) ifResult() bool {
 
 func (s *spawnStrategy) conclude(ctx context.Context,
 	conclusion *concludeInfo,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	if conclusion.current == conclusion.active.Tree {
 		// reach the top, so we're done
 		//
@@ -54,7 +54,7 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 
 	// TODO: impl pending:
 
-	return &types.KernelResult{
+	return &enclave.KernelResult{
 		// spawn not complete yet
 	}, nil
 }
@@ -69,10 +69,10 @@ func (s *spawnStrategy) seed(ctx context.Context,
 	parent string,
 	entries []fs.DirEntry,
 	conclusion *concludeInfo,
-) (*types.KernelResult, error) {
+) (*enclave.KernelResult, error) {
 	s.mediator.Connect(conclusion.tree, conclusion.current)
 
-	compoundResult := &types.KernelResult{}
+	compoundResult := &enclave.KernelResult{}
 
 	for _, entry := range entries {
 		topPath := s.forest.T.Calc().Join(parent, entry.Name())

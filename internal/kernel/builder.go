@@ -2,30 +2,30 @@ package kernel
 
 import (
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/types"
+	"github.com/snivilised/traverse/internal/enclave"
 )
 
 type (
 	Artefacts struct {
-		Kontroller types.KernelController
-		Mediator   types.Mediator
-		Resources  *types.Resources
+		Kontroller enclave.KernelController
+		Mediator   enclave.Mediator
+		Resources  *enclave.Resources
 		IfResult   core.Completion
 	}
 
 	NavigatorBuilder interface {
-		Build(artefacts types.OptionHarvest,
-			resources *types.Resources,
+		Build(artefacts enclave.OptionHarvest,
+			resources *enclave.Resources,
 		) *Artefacts
 	}
 
-	Builder func(artefacts types.OptionHarvest,
-		resources *types.Resources,
+	Builder func(artefacts enclave.OptionHarvest,
+		resources *enclave.Resources,
 	) *Artefacts
 )
 
-func (fn Builder) Build(artefacts types.OptionHarvest,
-	resources *types.Resources,
+func (fn Builder) Build(artefacts enclave.OptionHarvest,
+	resources *enclave.Resources,
 ) *Artefacts {
 	return fn(artefacts, resources)
 }

@@ -6,8 +6,8 @@ import (
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 )
@@ -65,14 +65,14 @@ func (p *simple) transition(en enums.Hibernation) {
 	p.current = p.states[en]
 }
 
-func (p *simple) next(servant core.Servant, node *core.Node, inspection types.Inspection) (bool, error) {
+func (p *simple) next(servant core.Servant, node *core.Node, inspection enclave.Inspection) (bool, error) {
 	return p.current.next(servant, node, inspection)
 }
 
 func (p *simple) create() hibernateStates {
 	return hibernateStates{
 		enums.HibernationPending: state{
-			next: func(_ core.Servant, node *core.Node, _ types.Inspection) (bool, error) {
+			next: func(_ core.Servant, node *core.Node, _ enclave.Inspection) (bool, error) {
 				if p.common.triggers.wake.IsMatch(node) {
 					p.controls.Wake.Dispatch()(p.common.triggers.wake.Description())
 					p.transition(enums.HibernationActive)
@@ -87,7 +87,7 @@ func (p *simple) create() hibernateStates {
 		},
 
 		enums.HibernationActive: state{
-			next: func(_ core.Servant, node *core.Node, _ types.Inspection) (bool, error) {
+			next: func(_ core.Servant, node *core.Node, _ enclave.Inspection) (bool, error) {
 				if p.common.triggers.sleep.IsMatch(node) {
 					p.controls.Sleep.Dispatch()(p.common.triggers.sleep.Description())
 					p.transition(enums.HibernationRetired)
@@ -103,7 +103,7 @@ func (p *simple) create() hibernateStates {
 		},
 
 		enums.HibernationRetired: state{
-			next: func(_ core.Servant, _ *core.Node, _ types.Inspection) (bool, error) {
+			next: func(_ core.Servant, _ *core.Node, _ enclave.Inspection) (bool, error) {
 				return false, fs.SkipAll
 			},
 		},

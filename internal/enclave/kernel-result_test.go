@@ -1,13 +1,13 @@
-package types_test
+package enclave_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 var _ = Describe("KernelResult", func() {
@@ -37,7 +37,7 @@ var _ = Describe("KernelResult", func() {
 		DescribeTable("Times",
 			func(entry *resultTE) {
 				entry.arrange(trig)
-				result := types.NewResult(sess,
+				result := enclave.NewResult(sess,
 					reporter,
 					err,
 					complete,

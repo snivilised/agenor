@@ -4,13 +4,13 @@ import (
 	"github.com/snivilised/traverse/collections"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/internal/types"
 )
 
 type (
-	invocationChain    = map[enums.Role]types.Link
+	invocationChain    = map[enums.Role]enclave.Link
 	positionalRoleSet  = collections.PositionalSet[enums.Role]
 	iterationContainer struct {
 		invoker   Invokable
@@ -20,11 +20,11 @@ type (
 )
 
 type (
-	NodeInvoker func(servant core.Servant, inspection types.Inspection) error
+	NodeInvoker func(servant core.Servant, inspection enclave.Inspection) error
 )
 
 func (fn NodeInvoker) Invoke(servant core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) error {
 	return fn(servant, inspection)
 }
@@ -37,7 +37,7 @@ type anchor struct {
 	crate        measure.Crate
 }
 
-func (a *anchor) Next(servant core.Servant, _ types.Inspection) (bool, error) {
+func (a *anchor) Next(servant core.Servant, _ enclave.Inspection) (bool, error) {
 	node := servant.Node()
 	if metric := lo.Ternary(node.IsDirectory(),
 		a.crate.Mums[enums.MetricNoDirectoriesInvoked],
@@ -56,14 +56,14 @@ func (a *anchor) Role() enums.Role {
 // guardian controls access to the client callback
 type guardian struct {
 	container iterationContainer
-	master    types.GuardianSealer
+	master    enclave.GuardianSealer
 	anchor    *anchor
 }
 
 type guardianInfo struct {
 	subscription enums.Subscription
 	client       core.Client
-	master       types.GuardianSealer
+	master       enclave.GuardianSealer
 	mums         measure.MutableMetrics
 }
 
@@ -88,7 +88,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 
 	if len(active) == 0 {
 		g.container.invoker = NodeInvoker(func(servant core.Servant,
-			inspection types.Inspection,
+			inspection enclave.Inspection,
 		) error {
 			_, err := g.anchor.Next(servant, inspection)
 			return err
@@ -99,7 +99,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 
 	g.container.positions = collections.NewPositionalSet(order, enums.RoleAnchor)
 	g.container.invoker = NodeInvoker(func(servant core.Servant,
-		inspection types.Inspection,
+		inspection enclave.Inspection,
 	) error {
 		return g.iterate(servant, inspection)
 	})
@@ -109,7 +109,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 // Not all roles can be decorated (sealed). The fastward-resume decorator is
 // sealed. If an attempt is made to Decorate a sealed decorator,
 // an error is returned.
-func (g *guardian) Decorate(link types.Link) error {
+func (g *guardian) Decorate(link enclave.Link) error {
 	top := g.container.chain[g.container.positions.Top()]
 
 	if g.master.IsSealed(top) {
@@ -139,11 +139,11 @@ func (g *guardian) Unwind(role enums.Role) error {
 // Invoke executes the chain which may or may not end up resulting in
 // the invocation of the client's callback, depending on the contents
 // of the chain.
-func (g *guardian) Invoke(servant core.Servant, inspection types.Inspection) error {
+func (g *guardian) Invoke(servant core.Servant, inspection enclave.Inspection) error {
 	return g.container.invoker.Invoke(servant, inspection)
 }
 
-func (g *guardian) iterate(servant core.Servant, inspection types.Inspection) error {
+func (g *guardian) iterate(servant core.Servant, inspection enclave.Inspection) error {
 	for _, role := range g.container.positions.Items() {
 		link := g.container.chain[role]
 
@@ -160,10 +160,10 @@ func (g *guardian) iterate(servant core.Servant, inspection types.Inspection) er
 type Benign struct {
 }
 
-func (m *Benign) Seal(types.Link) error {
+func (m *Benign) Seal(enclave.Link) error {
 	return nil
 }
 
-func (m *Benign) IsSealed(types.Link) bool {
+func (m *Benign) IsSealed(enclave.Link) bool {
 	return false
 }

@@ -5,13 +5,13 @@ package filter
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/measure"
-	"github.com/snivilised/traverse/internal/types"
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, _ *pref.Using, mediator types.Mediator) types.Plugin {
+func IfActive(o *pref.Options, _ *pref.Using, mediator enclave.Mediator) enclave.Plugin {
 	if o.Filter.IsFilteringActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{
@@ -35,7 +35,7 @@ type plugin struct {
 	scheme scheme
 }
 
-func (p *plugin) Register(kc types.KernelController) error {
+func (p *plugin) Register(kc enclave.KernelController) error {
 	if err := p.BasePlugin.Register(kc); err != nil {
 		return err
 	}
@@ -44,12 +44,12 @@ func (p *plugin) Register(kc types.KernelController) error {
 }
 
 func (p *plugin) Next(servant core.Servant,
-	inspection types.Inspection,
+	inspection enclave.Inspection,
 ) (bool, error) {
 	return p.scheme.next(servant, inspection)
 }
 
-func (p *plugin) Init(pi *types.PluginInit) error {
+func (p *plugin) Init(pi *enclave.PluginInit) error {
 	p.crate.Mums = p.Mediator.Supervisor().Many(
 		enums.MetricNoDirectoriesFilteredOut,
 		enums.MetricNoFilesFilteredOut,
