@@ -50,8 +50,8 @@ func (s *samplerScheme) next(servant core.Servant,
 		result := len(matching) > 0
 
 		lo.Ternary(result,
-			s.crate.Mums[enums.MetricNoChildFilesFound],
-			s.crate.Mums[enums.MetricNoChildFilesFilteredOut],
+			s.crate.Metrics[enums.MetricNoChildFilesFound],
+			s.crate.Metrics[enums.MetricNoChildFilesFilteredOut],
 		).Times(uint(len(inspection.Contents().Files())))
 
 		return result, nil

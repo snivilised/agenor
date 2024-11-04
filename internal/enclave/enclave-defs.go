@@ -7,7 +7,6 @@ import (
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
@@ -62,16 +61,17 @@ type (
 		Guardian
 		Arrangeable
 		Navigate(ctx context.Context) (*KernelResult, error)
+		Read(path string) ([]fs.DirEntry, error)
 		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Spawn(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
-		Connect(tree, current string)
-		Supervisor() *measure.Supervisor
+		Bridge(tree, current string)
+		Supervisor() *core.Supervisor
 	}
 
 	// Resources are dependencies required for navigation
 	Resources struct {
 		Forest     *core.Forest
-		Supervisor *measure.Supervisor
+		Supervisor *core.Supervisor
 		Binder     *opts.Binder
 	}
 
@@ -91,7 +91,7 @@ type (
 	// to initialise successfully.
 	Facilities interface {
 		Restoration
-		Metrics() *measure.Supervisor
+		Metrics() *core.Supervisor
 	}
 
 	// Ignition

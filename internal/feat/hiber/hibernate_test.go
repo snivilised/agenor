@@ -114,11 +114,11 @@ var _ = Describe("feature", Ordered, func() {
 
 	DescribeTable("simple hibernate",
 		func(ctx SpecContext, entry *hibernateTE) {
-			recording := make(lab.RecordingMap)
+			recall := make(lab.Recall)
 			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
-				_, found := recording[node.Extension.Name]
+				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
-				recording[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = len(node.Children)
 
 				return nil
 			}
@@ -173,7 +173,7 @@ var _ = Describe("feature", Ordered, func() {
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:          fS,
-				Recording:   recording,
+				Recording:   recall,
 				Path:        path,
 				Result:      result,
 				Err:         err,

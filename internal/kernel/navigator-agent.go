@@ -8,7 +8,6 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"
@@ -78,19 +77,14 @@ func (n *navigatorAgent) top(ctx context.Context,
 // Result that occurs prior to completion are as a result of child
 // navigation whose result should be combined in the final Result. This
 // is all handled by the strategy.
-func (n *navigatorAgent) Result(ctx context.Context,
+func (n *navigatorAgent) Result(_ context.Context,
 	err error,
 ) *enclave.KernelResult {
-	complete := n.session.IsComplete()
 	result := enclave.NewResult(n.session,
 		n.resources.Supervisor,
 		err,
-		complete,
+		n.session.IsComplete(),
 	)
-
-	if complete {
-		_ = services.Broker.Emit(ctx, services.TopicNavigationComplete, result)
-	}
 
 	return result
 }

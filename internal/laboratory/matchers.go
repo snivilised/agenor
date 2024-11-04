@@ -69,7 +69,7 @@ func HaveInvokedNode(expected interface{}) GomegaMatcher {
 }
 
 func (m *InvokeNodeMatcher) Match(actual interface{}) (bool, error) {
-	recording, ok := actual.(RecordingMap)
+	recall, ok := actual.(Recall)
 	if !ok {
 		return false, fmt.Errorf(
 			"InvokeNodeMatcher expected actual to be a RecordingMap (%T)",
@@ -83,7 +83,7 @@ func (m *InvokeNodeMatcher) Match(actual interface{}) (bool, error) {
 	}
 	m.mandatory = mandatory
 
-	_, found := recording[m.mandatory]
+	_, found := recall[m.mandatory]
 
 	return found, nil
 }
@@ -112,7 +112,7 @@ func HaveNotInvokedNode(expected interface{}) GomegaMatcher {
 }
 
 func (m *NotInvokeNodeMatcher) Match(actual interface{}) (bool, error) {
-	recording, ok := actual.(RecordingMap)
+	recall, ok := actual.(Recall)
 	if !ok {
 		return false, fmt.Errorf("matcher expected actual to be a RecordingMap (%T)", actual)
 	}
@@ -123,7 +123,7 @@ func (m *NotInvokeNodeMatcher) Match(actual interface{}) (bool, error) {
 	}
 	m.mandatory = mandatory
 
-	_, found := recording[m.mandatory]
+	_, found := recall[m.mandatory]
 
 	return !found, nil
 }
@@ -160,7 +160,7 @@ func HaveChildCountOf(expected interface{}) GomegaMatcher {
 }
 
 func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
-	recording, ok := actual.(RecordingMap)
+	recall, ok := actual.(Recall)
 	if !ok {
 		return false, fmt.Errorf("ChildCountMatcher expected actual to be a RecordingMap (%T)", actual)
 	}
@@ -170,7 +170,7 @@ func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("ChildCountMatcher expected ExpectedCount (%T)", actual)
 	}
 
-	count, ok := recording[expected.Name]
+	count, ok := recall[expected.Name]
 	if !ok {
 		return false, fmt.Errorf("🔥 not found: '%v'", expected.Name)
 	}

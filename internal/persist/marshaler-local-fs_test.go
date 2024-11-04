@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/persist"
@@ -19,7 +20,11 @@ import (
 )
 
 var _ = Describe("Marshaler", Ordered, func() {
-	var testPath string
+	var (
+		testPath string
+		reporter *core.Supervisor
+		trig     *lab.Trigger
+	)
 
 	BeforeAll(func() {
 		Expect(li18ngo.Use()).To(Succeed())
@@ -40,6 +45,16 @@ var _ = Describe("Marshaler", Ordered, func() {
 		if err := os.MkdirAll(fromPath, lab.Perms.Dir|os.ModeDir); err != nil {
 			Fail(err.Error())
 		}
+
+		reporter = core.NewSupervisor()
+		trig = &lab.Trigger{
+			Metrics: reporter.Many(
+				enums.MetricNoFilesInvoked,
+				enums.MetricNoFilesFilteredOut,
+				enums.MetricNoDirectoriesInvoked,
+				enums.MetricNoDirectoriesFilteredOut,
+			),
+		}
 	})
 
 	Context("local-fs", func() {
@@ -50,6 +65,13 @@ var _ = Describe("Marshaler", Ordered, func() {
 						pref.WithDepth(4),
 					)
 					Expect(err).To(Succeed())
+
+					trig.Times(
+						enums.MetricNoFilesInvoked, 1).Times(
+						enums.MetricNoFilesFilteredOut, 2).Times(
+						enums.MetricNoDirectoriesInvoked, 3).Times(
+						enums.MetricNoDirectoriesFilteredOut, 4,
+					)
 
 					writerFS := nef.NewWriteFileFS(tv.Rel{
 						Root:      testPath,
@@ -63,6 +85,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 							Hibernation: enums.HibernationPending,
 							CurrentPath: "/top/a/b/c",
 							Depth:       3,
+							Metrics:     trig.Metrics,
 						},
 						Path: writePath,
 						Perm: lab.Perms.File,
@@ -78,24 +101,20 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 	When("given json.Options", func() {
 		Context("unmarshal", func() {
-			XIt("🧪 should: translate from json", func() {
-				/*
-					o, _, _ := opts.Get()
-					marshaller = persist.NewReader(o, &enclave.ActiveState{
-						Root:        "some-root-path",
-						Hibernation: enums.HibernationPending,
-						CurrentPath:    "/top/a/b/c",
-						Depth:       3,
-					})
-				*/
-				// readerFS := nef.NewReadFileFS("/some-path")
-				// state, err := persist.Unmarshal(&enclave.RestoreState{
-				// 	Path:   "some-restore-path",
-				// 	Resume: enums.ResumeStrategySpawn,
-				// }, "/some-path", readerFS)
-				// _ = state
+			It("🧪 should: translate from json", func() {
+				fS := nef.NewReadFileFS(nef.Rel{
+					Root: testPath,
+				})
+				result, err := persist.Unmarshal(&persist.UnmarshalRequest{
+					Restore: &enclave.RestoreState{
+						Path:   lab.Static.JSONSubPath,
+						FS:     fS,
+						Resume: enums.ResumeStrategySpawn,
+					},
+				})
 
-				// Expect(err).To(Succeed())
+				Expect(err).To(Succeed())
+				Expect(result).NotTo(BeNil())
 			})
 		})
 	})

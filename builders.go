@@ -1,10 +1,10 @@
 package tv
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 )
@@ -51,7 +51,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	//
 	artefacts := bs.navigator.Build(harvest, &enclave.Resources{
 		Forest:     ext.forest(),
-		Supervisor: measure.New(),
+		Supervisor: core.NewSupervisor(),
 		Binder:     harvest.Binder(),
 	})
 

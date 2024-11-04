@@ -88,7 +88,7 @@ var _ = Describe("filtering", Ordered, func() {
 				traverseFilter core.TraverseFilter
 			)
 
-			recording := make(lab.RecordingMap)
+			recall := make(lab.Recall)
 			filterDefs := &pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:            enums.FilterTypeGlobEx,
@@ -120,7 +120,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Expect(node).Should(MatchCurrentExtendedFilter(traverseFilter))
 				}
 
-				recording[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
@@ -143,7 +143,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:        fS,
-				Recording: recording,
+				Recording: recall,
 				Path:      path,
 				Result:    result,
 				Err:       err,

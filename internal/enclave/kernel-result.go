@@ -1,10 +1,7 @@
 package enclave
 
 import (
-	"errors"
-
 	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/measure"
 )
 
 // KernelResult is the internal representation of core.TraverseResult
@@ -16,7 +13,7 @@ type KernelResult struct {
 }
 
 func NewResult(session core.Session,
-	supervisor *measure.Supervisor,
+	supervisor *core.Supervisor,
 	err error,
 	complete bool,
 ) *KernelResult {
@@ -48,8 +45,4 @@ func (r *KernelResult) Metrics() core.Reporter {
 
 func (r *KernelResult) Error() error {
 	return r.err
-}
-
-func (r *KernelResult) Merge(other *KernelResult) (*KernelResult, error) {
-	return other, errors.New("NOT-IMPL: KernelResult.Merge")
 }

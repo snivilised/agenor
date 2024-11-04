@@ -2,6 +2,7 @@ package resume_test
 
 import (
 	"fmt"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
@@ -25,11 +26,10 @@ const (
 
 var noOp = func(string) {}
 
-var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
+var _ = Describe("Resume", Ordered, func() {
 	var (
 		jsonPath string
-		// tree     string
-		fS *luna.MemFS
+		fS       *luna.MemFS
 	)
 
 	BeforeAll(func() {
@@ -55,9 +55,9 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 
 			for _, strategy := range []enums.ResumeStrategy{
 				enums.ResumeStrategyFastward,
-				// enums.ResumeStrategySpawn,
+				enums.ResumeStrategySpawn,
 			} {
-				recording := make(lab.RecordingMap)
+				recall := make(lab.Recall)
 				profile, ok := profiles[entry.profile]
 
 				if !ok {
@@ -95,9 +95,9 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 				}
 
 				once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
-					_, found := recording[node.Extension.Name]
+					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
-					recording[node.Extension.Name] = len(node.Children)
+					recall[node.Extension.Name] = len(node.Children)
 
 					return nil
 				}
@@ -113,16 +113,14 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 					)
 					Expect(entry.Prohibited).ToNot(ContainElement(node.Extension.Name), msg)
 
-					// TODO: restore this check
-					//
-					// if strategy == enums.ResumeStrategyFastward {
-					// 	segments := strings.Split(node.Path, "/")
-					// 	last := segments[len(segments)-1]
+					if strategy == enums.ResumeStrategyFastward {
+						segments := strings.Split(node.Path, "/")
+						last := segments[len(segments)-1]
 
-					// 	if _, found := prohibited[last]; found {
-					// 		Fail(fmt.Sprintf("item: '%v' should have been fast forwarded over", node.Path))
-					// 	}
-					// }
+						if _, found := prohibited[last]; found {
+							Fail(fmt.Sprintf("item: '%v' should have been fast forwarded over", node.Path))
+						}
+					}
 
 					return once(node)
 				}
@@ -140,7 +138,8 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 				result, err := tv.Walk().Configure().Extent(tv.Resume(
 					&tv.Was{
 						Using: pref.Using{
-							// Tree:         entry.Relative, // we should not be able to set this for resume
+							// we should not be able to set this for resume; see issue #292
+							// Tree:         entry.Relative,
 							Subscription: entry.Subscription,
 							Handler:      callback,
 							GetForest: func(_ string) *core.Forest {
@@ -158,7 +157,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 
 				if profile.mandatory != nil {
 					for _, name := range profile.mandatory {
-						_, found := recording[name]
+						_, found := recall[name]
 						Expect(found).To(BeTrue(),
 							fmt.Sprintf("mandatory item failure -> %v", lab.Reasons.Node(name)),
 						)
@@ -172,7 +171,7 @@ var _ = Describe("Resume", Ordered, func() { // formerly resume-strategy_test
 
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 					FS:            fS,
-					Recording:     recording,
+					Recording:     recall,
 					Path:          entry.Relative,
 					Result:        result,
 					Err:           err,

@@ -136,7 +136,3 @@ func (s *fastwardStrategy) resume(ctx context.Context,
 func (s *fastwardStrategy) ifResult() bool {
 	return true
 }
-
-func (s *fastwardStrategy) finish() error {
-	return nil
-}

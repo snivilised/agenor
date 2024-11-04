@@ -198,3 +198,9 @@ func IsBrokerTopicNotFoundError(err error) bool {
 var errBrokerTopicNotFound = errors.New(
 	"broker topic not found",
 )
+
+// ❌ DetectedSpawnStackOverflow error
+
+var ErrDetectedSpawnStackOverflow = errors.New(
+	"spawn resume stack-overflow protection",
+)

@@ -65,6 +65,7 @@ type (
 		CurrentPath string
 		IsDir       bool
 		Depth       int
+		Metrics     Metrics
 	}
 
 	// SimpleHandler is a function that takes no parameters and can

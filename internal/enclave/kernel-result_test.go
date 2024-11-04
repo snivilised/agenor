@@ -4,27 +4,27 @@ import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/measure"
 )
 
 var _ = Describe("KernelResult", func() {
 	Context("Metrics", Ordered, func() {
 		var (
 			sess     *session
-			reporter *measure.Supervisor
-			trig     *trigger
+			reporter *core.Supervisor
+			trig     *lab.Trigger
 			err      error
 			complete bool
 		)
 
 		BeforeEach(func() {
 			sess = &session{}
-			reporter = measure.New()
-			trig = &trigger{
-				mums: reporter.Many(
+			reporter = core.NewSupervisor()
+			trig = &lab.Trigger{
+				Metrics: reporter.Many(
 					enums.MetricNoFilesInvoked,
 					enums.MetricNoFilesFilteredOut,
 					enums.MetricNoDirectoriesInvoked,
@@ -55,11 +55,11 @@ var _ = Describe("KernelResult", func() {
 					Given:  "metrics populated",
 					Should: "count metrics",
 				},
-				arrange: func(trig *trigger) {
-					trig.times(
-						enums.MetricNoFilesInvoked, 10).times(
-						enums.MetricNoFilesFilteredOut, 20).times(
-						enums.MetricNoDirectoriesInvoked, 30).times(
+				arrange: func(trig *lab.Trigger) {
+					trig.Times(
+						enums.MetricNoFilesInvoked, 10).Times(
+						enums.MetricNoFilesFilteredOut, 20).Times(
+						enums.MetricNoDirectoriesInvoked, 30).Times(
 						enums.MetricNoDirectoriesFilteredOut, 40,
 					)
 				},
