@@ -14,7 +14,7 @@ import (
 
 type TestOptions struct {
 	FS            *luna.MemFS
-	Recording     RecordingMap
+	Recording     Recall
 	Path          string
 	Result        core.TraverseResult
 	Err           error

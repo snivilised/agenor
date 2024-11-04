@@ -45,12 +45,12 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 	Context("glob", func() {
 		DescribeTable("Filter Children (glob)",
 			func(ctx SpecContext, entry *lab.FilterTE) {
-				recording := make(lab.RecordingMap)
+				recall := make(lab.Recall)
 				once := func(servant tv.Servant) error {
 					node := servant.Node()
-					_, found := recording[node.Extension.Name]
+					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
-					recording[node.Extension.Name] = len(node.Children)
+					recall[node.Extension.Name] = len(node.Children)
 
 					return entry.Callback(servant)
 				}
@@ -74,7 +74,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 				)).Navigate(ctx)
 
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
-					Recording: recording,
+					Recording: recall,
 					Path:      path,
 					Result:    result,
 					Err:       err,

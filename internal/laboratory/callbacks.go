@@ -73,11 +73,11 @@ func FilesCallback(name string) core.Client {
 }
 
 func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
-	recording := make(RecordingMap)
+	recall := make(Recall)
 
 	return func(servant tv.Servant) error {
 		node := servant.Node()
-		recording[node.Path] = len(node.Children)
+		recall[node.Path] = len(node.Children)
 
 		GinkgoWriter.Printf("---> 🔆 CASE-SENSITIVE-CALLBACK: '%v'\n", node.Path)
 		Expect(node.IsDirectory()).To(BeTrue())
@@ -85,7 +85,7 @@ func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 		if strings.HasSuffix(node.Path, second) {
 			GinkgoWriter.Printf("---> 💧 FIRST: '%v', 💧 SECOND: '%v'\n", first, second)
 
-			paths := lo.Keys(recording)
+			paths := lo.Keys(recall)
 			_, found := lo.Find(paths, func(s string) bool {
 				return strings.HasSuffix(s, first)
 			})

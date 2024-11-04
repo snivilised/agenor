@@ -2,12 +2,13 @@ package kernel
 
 import (
 	"context"
+	"fmt"
+	"io/fs"
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/level"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/stock"
@@ -24,7 +25,7 @@ type mediator struct {
 	periscope    *level.Periscope
 	o            *pref.Options
 	resources    *enclave.Resources
-	mums         measure.MutableMetrics
+	metrics      core.Metrics
 	order        []enums.Role
 }
 
@@ -37,7 +38,7 @@ type mediatorInfo struct {
 }
 
 func newMediator(info *mediatorInfo) *mediator {
-	mums := info.resources.Supervisor.Many(
+	metrics := info.resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
 		enums.MetricNoDirectoriesInvoked,
 		enums.MetricNoChildFilesFound,
@@ -52,12 +53,12 @@ func newMediator(info *mediatorInfo) *mediator {
 			subscription: info.using.Subscription,
 			client:       info.using.Handler,
 			master:       info.sealer,
-			mums:         mums,
+			metrics:      metrics,
 		}),
 		periscope: level.New(),
 		o:         info.o,
 		resources: info.resources,
-		mums:      mums,
+		metrics:   metrics,
 	}
 }
 
@@ -116,6 +117,10 @@ func (m *mediator) Navigate(ctx context.Context) (*enclave.KernelResult, error) 
 	return result, err
 }
 
+func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
+	return m.o.Hooks.ReadDirectory.Invoke()(m.resources.Forest.T, path)
+}
+
 func (m *mediator) Resume(ctx context.Context,
 	active *core.ActiveState,
 ) (*enclave.KernelResult, error) {
@@ -123,9 +128,7 @@ func (m *mediator) Resume(ctx context.Context,
 	// we need to do more with the loaded active state
 	//
 	// - mute notifications
-	// - combine metrics
 	// - load the periscope with an adjusted depth from active state
-	// - we might need to define a callback param for the strategy
 	//
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
@@ -134,20 +137,20 @@ func (m *mediator) Resume(ctx context.Context,
 	})
 }
 
-// Connect combines information gleaned from the previous traversal that was
+// Bridge combines information gleaned from the previous traversal that was
 // interrupted, into the resume traversal
 //
 // tree, current string
-func (m *mediator) Connect(_, _ string) {
-	// tbd...
+func (m *mediator) Bridge(tree, current string) {
+	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n", tree, current)
 }
 
 func (m *mediator) Spawn(ctx context.Context,
 	active *core.ActiveState,
 ) (*enclave.KernelResult, error) {
-	// TODO: send a message indicating spawn
-	// we need to reset the active state, eg synchronise
-	// the depth
+	offset := 0 // TODO: not sure what to set this to yet
+	m.periscope = level.Restore(offset, active.Depth)
+
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator: m,
 		tree:     active.Tree,
@@ -161,6 +164,6 @@ func (m *mediator) Invoke(servant core.Servant,
 	return m.guardian.Invoke(servant, inspection)
 }
 
-func (m *mediator) Supervisor() *measure.Supervisor {
+func (m *mediator) Supervisor() *core.Supervisor {
 	return m.resources.Supervisor
 }

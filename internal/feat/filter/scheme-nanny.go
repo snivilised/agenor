@@ -5,7 +5,6 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/pref"
 )
 
@@ -31,7 +30,7 @@ func (s *nannyScheme) create() error {
 	return nil
 }
 
-func (s *nannyScheme) init(pi *enclave.PluginInit, crate *measure.Crate) {
+func (s *nannyScheme) init(pi *enclave.PluginInit, crate *core.Crate) {
 	s.common.init(pi, crate)
 }
 
@@ -42,10 +41,10 @@ func (s *nannyScheme) next(_ core.Servant,
 	matching := s.filter.Matching(files)
 
 	inspection.AssignChildren(matching)
-	s.crate.Mums[enums.MetricNoChildFilesFound].Times(uint(len(matching)))
+	s.crate.Metrics[enums.MetricNoChildFilesFound].Times(uint(len(matching)))
 
 	filteredOut := len(files) - len(matching)
-	s.crate.Mums[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut))
+	s.crate.Metrics[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut))
 
 	return true, nil
 }

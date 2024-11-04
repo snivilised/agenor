@@ -285,7 +285,7 @@ var (
 //
 // 🔆 central layer
 // kernel: []
-// enclave: [measure, pref, override]
+// enclave: [pref, override]
 // opts: [pref]
 // override: [tapable], !("enclave")
 // ---
@@ -304,7 +304,6 @@ var (
 // tapable: [core]
 // core: []
 // enums: [none]
-// measure: []
 // lfs:
 // ---
 // ============================================================================

@@ -24,7 +24,6 @@ type (
 		init(load *opts.LoadInfo) error
 		resume(context.Context, *pref.Was) (*enclave.KernelResult, error)
 		ifResult() bool
-		finish() error
 	}
 
 	baseStrategy struct {
@@ -37,7 +36,7 @@ type (
 		forest   *core.Forest
 	}
 
-	concludeInfo struct {
+	conclusion struct {
 		active    *core.ActiveState
 		tree      string
 		current   string

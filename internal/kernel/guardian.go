@@ -5,7 +5,6 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
@@ -34,14 +33,14 @@ func (fn NodeInvoker) Invoke(servant core.Servant,
 type anchor struct {
 	subscription enums.Subscription
 	client       core.Client
-	crate        measure.Crate
+	crate        core.Crate
 }
 
 func (a *anchor) Next(servant core.Servant, _ enclave.Inspection) (bool, error) {
 	node := servant.Node()
 	if metric := lo.Ternary(node.IsDirectory(),
-		a.crate.Mums[enums.MetricNoDirectoriesInvoked],
-		a.crate.Mums[enums.MetricNoFilesInvoked],
+		a.crate.Metrics[enums.MetricNoDirectoriesInvoked],
+		a.crate.Metrics[enums.MetricNoFilesInvoked],
 	); metric != nil {
 		metric.Tick()
 	}
@@ -64,7 +63,7 @@ type guardianInfo struct {
 	subscription enums.Subscription
 	client       core.Client
 	master       enclave.GuardianSealer
-	mums         measure.MutableMetrics
+	metrics      core.Metrics
 }
 
 func newGuardian(info *guardianInfo) *guardian {
@@ -76,8 +75,8 @@ func newGuardian(info *guardianInfo) *guardian {
 		anchor: &anchor{
 			subscription: info.subscription,
 			client:       info.client,
-			crate: measure.Crate{
-				Mums: info.mums,
+			crate: core.Crate{
+				Metrics: info.metrics,
 			},
 		},
 	}

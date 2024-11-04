@@ -4,7 +4,6 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 )
 
@@ -26,7 +25,7 @@ func (s *customScheme) next(servant core.Servant,
 }
 
 func matchNext(filter core.TraverseFilter,
-	node *core.Node, crate *measure.Crate,
+	node *core.Node, crate *core.Crate,
 ) (bool, error) {
 	matched := filter.IsMatch(node)
 
@@ -35,7 +34,7 @@ func matchNext(filter core.TraverseFilter,
 			enums.MetricNoDirectoriesFilteredOut,
 			enums.MetricNoFilesFilteredOut,
 		)
-		crate.Mums[filteredOutMetric].Tick()
+		crate.Metrics[filteredOutMetric].Tick()
 	}
 
 	return matched, nil

@@ -42,6 +42,25 @@
     "Tree": "json/marshal",
     "Hibernation": 1,
     "CurrentPath": "/top/a/b/c",
-    "Depth": 3
+    "IsDir": true,
+    "Depth": 3,
+    "Metrics": {
+      "1": {
+        "T": 1,
+        "Counter": 10
+      },
+      "2": {
+        "T": 2,
+        "Counter": 20
+      },
+      "3": {
+        "T": 3,
+        "Counter": 30
+      },
+      "4": {
+        "T": 4,
+        "Counter": 40
+      }
+    }
   }
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/snivilised/traverse/tapable"
 )
 
-func newContents(behaviour *pref.SortBehaviour,
+func NewContents(behaviour *pref.SortBehaviour,
 	hook tapable.Hook[core.SortHook, core.ChainSortHook],
 	entries []fs.DirEntry,
 ) *Contents {

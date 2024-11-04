@@ -74,12 +74,21 @@ type (
 		Actual   T
 	}
 
-	// Recall?
-	RecordingMap      map[string]int
-	RecordingScopeMap map[string]enums.FilterScope
-	RecordingOrderMap map[string]int
+	Recall      map[string]int
+	RecallScope map[string]enums.FilterScope
+	RecallOrder map[string]int
 )
 
 func (x MatcherExpectation[T]) IsEqual() bool {
 	return x.Actual == x.Expected
+}
+
+type Trigger struct {
+	Metrics core.Metrics
+}
+
+func (t *Trigger) Times(m enums.Metric, n uint) *Trigger {
+	t.Metrics[m].Times(n)
+
+	return t
 }

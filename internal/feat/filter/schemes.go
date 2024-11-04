@@ -3,7 +3,6 @@ package filter
 import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/measure"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 )
@@ -11,17 +10,17 @@ import (
 type (
 	scheme interface {
 		create() error
-		init(pi *enclave.PluginInit, crate *measure.Crate)
+		init(pi *enclave.PluginInit, crate *core.Crate)
 		next(servant core.Servant, inspection enclave.Inspection) (bool, error)
 	}
 )
 
 type common struct {
 	o     *pref.Options
-	crate *measure.Crate
+	crate *core.Crate
 }
 
-func (f *common) init(_ *enclave.PluginInit, crate *measure.Crate) {
+func (f *common) init(_ *enclave.PluginInit, crate *core.Crate) {
 	f.crate = crate
 }
 

@@ -49,12 +49,12 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 	DescribeTable("Ensure Callback Invoked Once", Label("vanilla"),
 		func(ctx SpecContext, entry *lab.NaviTE) {
-			recording := make(lab.RecordingMap)
+			recall := make(lab.Recall)
 			once := func(servant tv.Servant) error {
 				node := servant.Node()
-				_, found := recording[node.Path] // TODO: should this be name not path?
+				_, found := recall[node.Path] // TODO: should this be name not path?
 				Expect(found).To(BeFalse())
-				recording[node.Path] = len(node.Children)
+				recall[node.Path] = len(node.Children)
 
 				return entry.Callback(servant)
 			}
@@ -88,12 +88,12 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 			lab.AssertNavigation(entry, &lab.TestOptions{
 				FS:        fS,
-				Recording: recording,
+				Recording: recall,
 				Path:      path,
 				Result:    result,
 				Err:       err,
 				Every: func(p string) bool {
-					_, found := recording[p]
+					_, found := recall[p]
 					return found
 				},
 				ByPassMetrics: entry.ByPassMetrics,

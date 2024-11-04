@@ -49,7 +49,7 @@ var _ = Describe("feature", Ordered, func() {
 				childFilter core.ChildTraverseFilter
 			)
 
-			recording := make(lab.RecordingMap)
+			recall := make(lab.Recall)
 			filterDefs := &pref.FilterOptions{
 				Node:  &entry.NodeDef,
 				Child: &entry.ChildDef,
@@ -73,7 +73,7 @@ var _ = Describe("feature", Ordered, func() {
 					node.Extension.Depth,
 				)
 
-				recording[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 
@@ -97,7 +97,7 @@ var _ = Describe("feature", Ordered, func() {
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:          fS,
-				Recording:   recording,
+				Recording:   recall,
 				Path:        path,
 				Result:      result,
 				Err:         err,

@@ -11,7 +11,6 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/measure"
 )
 
 func TestEnclave(t *testing.T) {
@@ -21,7 +20,7 @@ func TestEnclave(t *testing.T) {
 
 type resultTE struct {
 	lab.NaviTE
-	arrange func(trig *trigger)
+	arrange func(trig *lab.Trigger)
 	assert  func(a *asserter)
 }
 
@@ -51,16 +50,6 @@ func (s *session) Elapsed() time.Duration {
 
 func (s *session) exec(_ context.Context) (*enclave.KernelResult, error) {
 	return &enclave.KernelResult{}, nil
-}
-
-type trigger struct {
-	mums measure.MutableMetrics
-}
-
-func (t *trigger) times(m enums.Metric, n uint) *trigger {
-	t.mums[m].Times(n)
-
-	return t
 }
 
 type asserter struct {

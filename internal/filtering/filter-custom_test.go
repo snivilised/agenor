@@ -38,7 +38,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 
 	DescribeTable("custom-filter (glob)",
 		func(ctx SpecContext, entry *lab.FilterTE) {
-			recording := make(lab.RecordingMap)
+			recall := make(lab.Recall)
 			customFilter := &customFilter{
 				name:    entry.Description,
 				pattern: entry.Pattern,
@@ -63,7 +63,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					Expect(node).Should(MatchCurrentCustomFilter(customFilter))
 				}
 
-				recording[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = len(node.Children)
 				return nil
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
@@ -88,7 +88,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:          fS,
-				Recording:   recording,
+				Recording:   recall,
 				Path:        path,
 				Result:      result,
 				Err:         err,

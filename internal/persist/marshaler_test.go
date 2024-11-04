@@ -126,7 +126,7 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		FS tv.TraverseFS
+		fS tv.TraverseFS
 
 		sourceNodeFilterDef *core.FilterDef
 		jsonNodeFilterDef   json.FilterDef
@@ -143,7 +143,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		FS = &luna.MemFS{
+		fS = &luna.MemFS{
 			MapFS: fstest.MapFS{
 				home: &fstest.MapFile{
 					Mode: os.ModeDir,
@@ -151,9 +151,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 			},
 		}
 
-		Expect(FS.MakeDirAll(destination, lab.Perms.Dir|os.ModeDir)).To(Succeed())
-		Expect(FS.MakeDirAll(source, lab.Perms.Dir|os.ModeDir)).To(Succeed())
-		Expect(FS.WriteFile(readPath, content, lab.Perms.File)).To(Succeed())
+		Expect(fS.MakeDirAll(destination, lab.Perms.Dir|os.ModeDir)).To(Succeed())
+		Expect(fS.MakeDirAll(source, lab.Perms.Dir|os.ModeDir)).To(Succeed())
+		Expect(fS.WriteFile(readPath, content, lab.Perms.File)).To(Succeed())
 
 		sourceNodeFilterDef = &core.FilterDef{
 			Type:            enums.FilterTypeGlob,
@@ -189,7 +189,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				// without having to invoke unmarshal specific functionality.
 				// The result of marshal can be passed into unmarshal.
 				//
-				unmarshal(entry, FS, readPath, marshal(entry, FS))
+				unmarshal(entry, fS, readPath, marshal(entry, fS))
 			},
 			func(entry *marshalTE) string {
 				return fmt.Sprintf("given: %v, 🧪 should: marshal successfully", entry.given)
