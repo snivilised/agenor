@@ -33,7 +33,6 @@ type agentOptions struct {
 type navigatorAgent struct {
 	ao        *agentOptions
 	ro        *readOptions
-	using     *pref.Using
 	resources *enclave.Resources
 	session   core.Session
 }

@@ -1,8 +1,6 @@
 package tv
 
 import (
-	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
@@ -10,7 +8,6 @@ import (
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/feat/sampling"
 	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 )
@@ -21,14 +18,14 @@ const (
 
 type (
 	ifActive func(o *pref.Options,
-		using *pref.Using, mediator enclave.Mediator,
+		facade pref.Facade, mediator enclave.Mediator,
 	) enclave.Plugin
 )
 
 // features interrogates options and invokes requests on behalf of the user
 // to activate features according to option selections. other plugins will
 // be initialised after primary plugins
-func features(o *pref.Options, using *pref.Using, mediator enclave.Mediator,
+func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
 	kc enclave.KernelController,
 	others ...enclave.Plugin,
 ) (plugins []enclave.Plugin, err error) {
@@ -54,7 +51,7 @@ func features(o *pref.Options, using *pref.Using, mediator enclave.Mediator,
 		},
 		lo.Reduce(all,
 			func(acc []enclave.Plugin, query ifActive, _ int) []enclave.Plugin {
-				if plugin := query(o, using, mediator); plugin != nil {
+				if plugin := query(o, facade, mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
 				return acc
@@ -76,58 +73,13 @@ func features(o *pref.Options, using *pref.Using, mediator enclave.Mediator,
 
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
-func Prime(using *pref.Using, settings ...pref.Option) *Builders {
+func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
+	using, _ := facade.(*pref.Using) // TODO: Create a test that accidentally sets relic facade
+
 	return &Builders{
-		using: using,
-		forest: pref.CreateForest(func(root string) *core.Forest {
-			if using.GetForest != nil {
-				return using.GetForest(root)
-			}
-			return &core.Forest{
-				T: nef.NewTraverseFS(Rel{
-					Root:      root,
-					Overwrite: noOverwrite,
-				}),
-				R: nef.NewTraverseABS(),
-			}
-		}),
-		extent: extension(func(forest *core.Forest) extent {
-			return &primeExtent{
-				baseExtent: baseExtent{
-					trees: forest,
-				},
-				u: using,
-			}
-		}),
-		harvest: optionBuilder(func(ext extent) (enclave.OptionHarvest, error) {
-			type baggage struct {
-				harvest enclave.OptionHarvest
-				err     error
-			}
-
-			b := func(ve error) *baggage {
-				return lo.TernaryF(using.O != nil,
-					func() *baggage {
-						return &baggage{
-							harvest: &optionHarvest{
-								o:      using.O,
-								binder: opts.Push(using.O),
-							},
-							err: ve,
-						}
-					},
-					func() *baggage {
-						harvest, err := ext.options(settings...)
-
-						return &baggage{
-							harvest: harvest,
-							err:     lo.Ternary(ve != nil, ve, err),
-						}
-					},
-				)
-			}(using.Validate())
-
-			return b.harvest, b.err
+		facade: facade,
+		scaffold: scaffolding(func(facade pref.Facade) (scaffold, error) {
+			return newPrimaryPlatform(facade, settings...)
 		}),
 		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
 			resources *enclave.Resources,
@@ -147,48 +99,19 @@ func Prime(using *pref.Using, settings ...pref.Option) *Builders {
 // traversal, loading state from a previously saved session
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
-func Resume(was *Was, settings ...pref.Option) *Builders {
+func Resume(facade pref.Facade, settings ...pref.Option) *Builders {
+	relic, _ := facade.(*pref.Relic) // TODO: Create a test that accidentally sets using facade
+
 	return &Builders{
-		using: &was.Using,
-		forest: pref.CreateForest(func(root string) *core.Forest {
-			if was.Using.GetForest != nil {
-				return was.Using.GetForest(root)
-			}
-			return &core.Forest{
-				T: nef.NewTraverseFS(Rel{
-					Root:      root,
-					Overwrite: noOverwrite,
-				}),
-				R: nef.NewTraverseABS(),
-			}
-		}),
-		extent: extension(func(forest *core.Forest) extent {
-			return &resumeExtent{
-				baseExtent: baseExtent{
-					trees: forest,
-				},
-				w: was,
-			}
-		}),
-		// TODO: we need state; record the hibernation wake point, so
-		// using a func here is probably not optimal.
-		//
-		harvest: optionBuilder(func(ext extent) (harvest enclave.OptionHarvest, err error) {
-			harvest, err = ext.options(settings...)
-
-			if err != nil {
-				return harvest, err
-			}
-
-			err = was.Validate()
-
-			return harvest, err
+		facade: facade,
+		scaffold: scaffolding(func(pref.Facade) (scaffold, error) {
+			return newResumePlatform(facade, settings...)
 		}),
 		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
 			resources *enclave.Resources,
 		) *kernel.Artefacts {
-			return resume.WithArtefacts(
-				was,
+			return resume.Artefacts(
+				relic,
 				harvest,
 				resources,
 			)

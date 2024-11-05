@@ -11,9 +11,9 @@ import (
 )
 
 func IfActive(o *pref.Options,
-	using *pref.Using, mediator enclave.Mediator,
+	facade pref.Facade, mediator enclave.Mediator,
 ) enclave.Plugin {
-	if using.Subscription == enums.SubscribeDirectoriesWithFiles &&
+	if facade.Sub() == enums.SubscribeDirectoriesWithFiles &&
 		!o.Filter.IsFilteringActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{

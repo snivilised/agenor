@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("NavigatorFiles", Ordered, func() {
@@ -37,12 +38,14 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 				defer cancel()
 
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
-					&tv.Using{
-						Tree:         RootPath,
-						Subscription: tv.SubscribeFiles,
-						Handler: func(_ tv.Servant) error {
-							return nil
+					&pref.Using{
+						Head: pref.Head{
+							Subscription: tv.SubscribeFiles,
+							Handler: func(_ tv.Servant) error {
+								return nil
+							},
 						},
+						Tree: RootPath,
 					},
 				)).Navigate(ctx)
 

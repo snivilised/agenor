@@ -36,7 +36,7 @@ func (f *walkerFac) Configure() Director {
 		return &driver{
 			session{
 				sync: &sequential{
-					trunk: trunk{
+					trunk: trunk{ // TODO: why dont we just store the artefacts here?
 						kc:  artefacts.kc,
 						o:   artefacts.o,
 						ext: artefacts.ext,
@@ -63,7 +63,7 @@ func (f *runnerFac) Configure() Director {
 		return &driver{
 			session{
 				sync: &concurrent{
-					trunk: trunk{
+					trunk: trunk{ // TODO: why dont we just store the artefacts here?
 						kc:  artefacts.kc,
 						o:   artefacts.o,
 						ext: artefacts.ext,

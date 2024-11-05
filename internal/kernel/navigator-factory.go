@@ -3,10 +3,12 @@ package kernel
 import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 )
 
-func WithArtefacts(using *pref.Using, o *pref.Options,
+func WithArtefacts(using *pref.Using,
+	o *pref.Options,
 	resources *enclave.Resources,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {
@@ -20,13 +22,13 @@ func WithArtefacts(using *pref.Using, o *pref.Options,
 	}
 }
 
-func New(using *pref.Using, o *pref.Options,
+func New(facade pref.Facade, o *pref.Options,
 	resources *enclave.Resources,
 	sealer enclave.GuardianSealer,
 ) *NavigationController {
-	impl := newImpl(using, o, resources)
+	impl, _ := newImpl(facade, o, resources)
 	mediator := newMediator(&mediatorInfo{
-		using:     using,
+		facade:    facade,
 		o:         o,
 		impl:      impl,
 		sealer:    sealer,
@@ -36,12 +38,13 @@ func New(using *pref.Using, o *pref.Options,
 	return newNavigationController(mediator)
 }
 
-func newImpl(using *pref.Using,
+func newImpl(facade pref.Facade,
 	o *pref.Options,
 	resources *enclave.Resources,
-) (impl NavigatorImpl) {
+) (impl NavigatorImpl, err error) {
+	subscription := facade.Sub()
+
 	agent := navigatorAgent{
-		using: using,
 		ao: &agentOptions{
 			hooks:   &o.Hooks,
 			defects: &o.Defects,
@@ -56,7 +59,7 @@ func newImpl(using *pref.Using,
 		resources: resources,
 	}
 
-	switch using.Subscription {
+	switch subscription {
 	case enums.SubscribeFiles:
 		impl = &navigatorFiles{
 			navigatorAgent: agent,
@@ -73,7 +76,8 @@ func newImpl(using *pref.Using,
 		}
 
 	case enums.SubscribeUndefined:
+		err = locale.ErrUsageMissingSubscription
 	}
 
-	return impl
+	return impl, err
 }

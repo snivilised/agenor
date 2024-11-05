@@ -67,16 +67,18 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				return nil
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
-				&tv.Using{
-					Tree:         path,
-					Subscription: entry.Subscription,
-					Handler:      callback,
-					GetForest: func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: nef.NewTraverseABS(),
-						}
+				&pref.Using{
+					Head: pref.Head{
+						Subscription: entry.Subscription,
+						Handler:      callback,
+						GetForest: func(_ string) *core.Forest {
+							return &core.Forest{
+								T: fS,
+								R: nef.NewTraverseABS(),
+							}
+						},
 					},
+					Tree: path,
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
 				tv.WithOnEnd(lab.End("🏁")),

@@ -19,7 +19,6 @@ import (
 type mediator struct {
 	tree         string
 	subscription enums.Subscription
-	using        *pref.Using
 	impl         NavigatorImpl
 	guardian     *guardian
 	periscope    *level.Periscope
@@ -30,7 +29,7 @@ type mediator struct {
 }
 
 type mediatorInfo struct {
-	using     *pref.Using
+	facade    pref.Facade
 	o         *pref.Options
 	impl      NavigatorImpl
 	sealer    enclave.GuardianSealer
@@ -45,13 +44,12 @@ func newMediator(info *mediatorInfo) *mediator {
 	)
 
 	return &mediator{
-		tree:         info.using.Tree,
-		subscription: info.using.Subscription,
-		using:        info.using,
+		tree:         info.facade.Path(), // TODO: ??? is this right for resume?
+		subscription: info.facade.Sub(),
 		impl:         info.impl,
 		guardian: newGuardian(&guardianInfo{
-			subscription: info.using.Subscription,
-			client:       info.using.Handler,
+			subscription: info.facade.Sub(),
+			client:       info.facade.Client(),
 			master:       info.sealer,
 			metrics:      metrics,
 		}),
@@ -124,6 +122,7 @@ func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
 func (m *mediator) Resume(ctx context.Context,
 	active *core.ActiveState,
 ) (*enclave.KernelResult, error) {
+	m.tree = active.Tree
 	// TODO: there is something missing here...
 	// we need to do more with the loaded active state
 	//
@@ -142,12 +141,14 @@ func (m *mediator) Resume(ctx context.Context,
 //
 // tree, current string
 func (m *mediator) Bridge(tree, current string) {
+	m.tree = tree
 	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n", tree, current)
 }
 
 func (m *mediator) Spawn(ctx context.Context,
-	active *core.ActiveState,
+	active *core.ActiveState, // TODO: this should not be ActiveState, ActiveState is being abused
 ) (*enclave.KernelResult, error) {
+	m.tree = active.Tree
 	offset := 0 // TODO: not sure what to set this to yet
 	m.periscope = level.Restore(offset, active.Depth)
 

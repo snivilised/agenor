@@ -17,6 +17,7 @@ import (
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
 )
 
@@ -69,16 +70,18 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			path := entry.Relative
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
-				&tv.Using{
-					Tree:         path,
-					Subscription: entry.Subscription,
-					Handler:      callback,
-					GetForest: func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: nef.NewTraverseABS(),
-						}
+				&pref.Using{
+					Head: pref.Head{
+						Subscription: entry.Subscription,
+						Handler:      callback,
+						GetForest: func(_ string) *core.Forest {
+							return &core.Forest{
+								T: fS,
+								R: nef.NewTraverseABS(),
+							}
+						},
 					},
+					Tree: path,
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
 				tv.WithOnEnd(lab.End("🏁")),

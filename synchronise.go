@@ -23,24 +23,21 @@ type trunk struct {
 	o   *pref.Options
 	ext extent
 	err error
-	u   *pref.Using
-	// TODO: w => !!! code-smell: argh, this does not look right (only required for resume)
-	w *pref.Was
 }
 
-func (t trunk) extent() extent {
+func (t *trunk) extent() extent {
 	return t.ext
 }
 
-func (t trunk) IsComplete() bool {
+func (t *trunk) IsComplete() bool {
 	return t.ext.complete()
 }
 
-func (t trunk) Ignite(ignition *enclave.Ignition) {
+func (t *trunk) Ignite(ignition *enclave.Ignition) {
 	t.kc.Ignite(ignition)
 }
 
-func (t trunk) Conclude(result *enclave.KernelResult) {
+func (t *trunk) Conclude(result *enclave.KernelResult) {
 	t.kc.Conclude(result)
 }
 
@@ -71,7 +68,7 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 		//
 		input := &TraverseInput{
 			Servant: servant,
-			Handler: c.ext.using().Handler,
+			Handler: c.ext.facade().Client(),
 		}
 
 		c.inputCh <- input // support for timeout (TimeoutOnSendInput) ???

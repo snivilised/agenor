@@ -127,9 +127,7 @@ func (s *fastwardStrategy) Role() enums.Role {
 	return enums.RoleFastward
 }
 
-func (s *fastwardStrategy) resume(ctx context.Context,
-	_ *pref.Was,
-) (*enclave.KernelResult, error) {
+func (s *fastwardStrategy) resume(ctx context.Context) (*enclave.KernelResult, error) {
 	return s.mediator.Resume(ctx, s.active)
 }
 

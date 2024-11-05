@@ -50,10 +50,12 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         tree,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: tree,
 						},
 						tv.WithOnAscend(func(_ *core.Node) {}),
 						tv.WithNoRecurse(),
@@ -72,11 +74,13 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					o, _, _ := opts.Get()
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
-							O:            o,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
+							O:    o,
 						},
 						tv.WithOnDescend(func(_ *core.Node) {}),
 					)).Navigate(ctx)
@@ -108,10 +112,12 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					//
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
 						},
 						tv.WithOnBegin(func(_ *life.BeginState) {}),
 						tv.WithCPU(),
@@ -133,11 +139,13 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					o, _, _ := opts.Get()
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
-							O:            o,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
+							O:    o,
 						},
 						tv.WithOnEnd(func(_ core.TraverseResult) {}),
 					)).Navigate(ctx)
@@ -159,10 +167,12 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
 						},
 						tv.WithFilter(&pref.FilterOptions{}),
 						tv.WithOnWake(func(_ string) {}),
@@ -180,10 +190,12 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
 						},
 						tv.WithHibernationFilterWake(&core.FilterDef{
 							Description: "nonsense",
@@ -205,10 +217,12 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
-						&tv.Using{
-							Tree:         TreePath,
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+						&pref.Using{
+							Head: pref.Head{
+								Subscription: tv.SubscribeFiles,
+								Handler:      noOpHandler,
+							},
+							Tree: TreePath,
 						},
 						tv.WithHibernationFilterSleep(&core.FilterDef{
 							Description: "nonsense",

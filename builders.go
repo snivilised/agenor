@@ -21,31 +21,34 @@ type buildArtefacts struct {
 // for Walk and one for Run. The Prime/Resume extents create the Builders
 // instance.
 type Builders struct {
-	using     *pref.Using
-	forest    pref.ForestBuilder
-	harvest   optionsBuilder
+	facade    pref.Facade
+	scaffold  scaffoldBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
 	extent    extentBuilder
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	// BUILD FILE SYSTEM & EXTENT
-	//
-	ext := bs.extent.build(
-		bs.forest.Build(bs.using.Tree),
+	var (
+		ext     extent
+		harvest enclave.OptionHarvest
 	)
 
-	// BUILD OPTIONS
+	// BUILD SCAFFOLD
 	//
-	harvest, optionsErr := bs.harvest.build(ext)
-	if optionsErr != nil {
+	scaffold, err := bs.scaffold.build(bs.facade)
+	o := scaffold.harvest().Options()
+
+	if err != nil {
 		return &buildArtefacts{
-			o:   harvest.Options(),
-			kc:  kernel.HadesNav(harvest.Options(), optionsErr),
+			o:   o,
+			kc:  kernel.HadesNav(o, err),
 			ext: ext,
-		}, optionsErr
+		}, err
 	}
+
+	ext = scaffold.extent()
+	harvest = scaffold.harvest()
 
 	// BUILD NAVIGATOR
 	//
@@ -58,7 +61,7 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 	// BUILD PLUGINS
 	//
 	plugins, pluginsErr := bs.plugins.build(harvest.Options(),
-		bs.using,
+		ext.facade(),
 		artefacts.Mediator,
 		artefacts.Kontroller,
 		ext.plugin(artefacts),
