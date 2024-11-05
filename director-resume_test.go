@@ -62,8 +62,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				const depth = 2
 
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
-					&tv.Was{
-						Using: tv.Using{
+					&pref.Relic{
+						Head: pref.Head{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 							GetForest: func(_ string) *core.Forest {
@@ -95,20 +95,13 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				var wg sync.WaitGroup
 
 				_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-					&tv.Was{
-						Using: tv.Using{
+					&pref.Relic{
+						Head: pref.Head{
 							Subscription: tv.SubscribeFiles,
 							Handler:      noOpHandler,
 						},
 						From:     jsonPath,                  // TODO: need to fake out the resume path
 						Strategy: tv.ResumeStrategyFastward, // revert to Spawn
-						// Restorer: func(_ *pref.Options, active *core.ActiveState) error {
-						// 	// fake restore
-						// 	active.Tree = "tbd/fake-tree"
-						// 	active.CurrentPath = "restore-from/current-path"
-
-						// 	return nil
-						// },
 					},
 					tv.WithOnDescend(func(_ *core.Node) {}),
 					restore,
@@ -133,8 +126,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						&tv.Was{
-							Using: tv.Using{
+						&pref.Relic{
+							Head: pref.Head{
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
@@ -160,8 +153,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						&tv.Was{
-							Using: tv.Using{
+						&pref.Relic{
+							Head: pref.Head{
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},
@@ -191,8 +184,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
-						&tv.Was{
-							Using: tv.Using{
+						&pref.Relic{
+							Head: pref.Head{
 								Subscription: tv.SubscribeFiles,
 								Handler:      noOpHandler,
 							},

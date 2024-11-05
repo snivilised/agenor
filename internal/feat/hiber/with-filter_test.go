@@ -41,18 +41,19 @@ var _ = Describe("feature", Ordered, func() {
 		func(ctx SpecContext, entry *hibernateTE) {
 			path := lab.Static.RetroWave
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
-				&tv.Using{
-					Tree:         path,
-					Subscription: entry.Subscription,
-					Handler:      entry.Callback,
-					GetForest: func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: nef.NewTraverseABS(),
-						}
+				&pref.Using{
+					Head: pref.Head{
+						Subscription: entry.Subscription,
+						Handler:      entry.Callback,
+						GetForest: func(_ string) *core.Forest {
+							return &core.Forest{
+								T: fS,
+								R: nef.NewTraverseABS(),
+							}
+						},
 					},
+					Tree: path,
 				},
-
 				tv.WithOnBegin(lab.Begin("🛡️")),
 				tv.WithOnEnd(lab.End("🏁")),
 

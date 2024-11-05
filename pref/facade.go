@@ -1,0 +1,173 @@
+package pref
+
+import (
+	nef "github.com/snivilised/nefilim"
+	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/locale"
+)
+
+type (
+	// Facade
+	Facade interface {
+		Sub() enums.Subscription
+		Path() string
+		Client() core.Client
+		Forest() BuildForest
+		Validate() error
+	}
+
+	// Head contains information common to both primary and resume
+	// navigation sessions.
+	Head struct {
+		// Subscription indicates which file system nodes the client's
+		// callback function will be invoked for.
+		Subscription enums.Subscription
+
+		// Handler is the callback function invoked for each encountered
+		// file system node.
+		Handler core.Client
+
+		// GetForest is optional and enables the client to specify how the
+		// file systems for a path is created. Typically used by unit tests,
+		// but can be used by client to specify a different file systems
+		// than the default; eg if the client needs to integrate with a
+		// file system like afero, they can do so by providing the required
+		// adapters.
+		GetForest BuildForest
+	}
+
+	// Using contains information required to instigate a primary
+	// navigation.
+	Using struct {
+		Head
+		// Tree is the root of the directory tree to be traversed and
+		// should not be confused with the Root of the file system when
+		// the file system in use is relative.
+		Tree string
+
+		// O is the optional Options entity. If provided, then these
+		// options will be used verbatim, without requiring WithXXX
+		// options setters. This is useful if multiple traversals are
+		// required, eg a preview traversal followed by a full
+		// traversal; in this case the full traversal can reuse the
+		// same options that was used in the preview, by setting this
+		// property.
+		O *Options
+	}
+
+	// Relic contains information required to instigate a resume
+	Relic struct {
+		Head
+		// From is the path to the resumption file from which a prior
+		// traverse session is loaded.
+		From string
+
+		// Strategy represent what type of resume is run.
+		Strategy enums.ResumeStrategy
+
+		// Restorer function defined by client invoked as part of the resume
+		// process
+		Restorer Restorer
+	}
+)
+
+type (
+	TraverseFileSystemBuilder interface {
+		Build(root string) nef.TraverseFS
+	}
+
+	CreateTraverseFS func(root string) nef.TraverseFS
+)
+
+func (fn CreateTraverseFS) Build(root string) nef.TraverseFS {
+	return fn(root)
+}
+
+type (
+	ResumeFileSystemBuilder interface {
+		Build() nef.TraverseFS
+	}
+
+	CreateResumeFS func() nef.TraverseFS
+)
+
+func (fn CreateResumeFS) Build() nef.TraverseFS {
+	return fn()
+}
+
+type (
+	ForestBuilder interface {
+		Build(root string) *core.Forest
+	}
+
+	BuildForest func(root string) *core.Forest
+)
+
+func (fn BuildForest) Build(root string) *core.Forest {
+	return fn(root)
+}
+
+func (f *Head) Validate() error {
+	if f.Subscription == enums.SubscribeUndefined {
+		return locale.ErrUsageMissingSubscription
+	}
+
+	if f.Handler == nil {
+		return locale.ErrUsageMissingHandler
+	}
+
+	return nil
+}
+
+func (f *Using) Sub() enums.Subscription {
+	return f.Subscription
+}
+
+func (f *Using) Path() string {
+	return f.Tree
+}
+
+func (f *Using) Client() core.Client {
+	return f.Handler
+}
+
+func (f *Using) Forest() BuildForest {
+	return f.GetForest
+}
+
+func (f *Using) Validate() error {
+	if f.Tree == "" {
+		return locale.ErrUsageMissingTreePath
+	}
+
+	return f.Head.Validate()
+}
+
+func (f *Relic) Sub() enums.Subscription {
+	return f.Subscription
+}
+
+func (f *Relic) Path() string {
+	return f.From
+}
+
+func (f *Relic) Client() core.Client {
+	return f.Handler
+}
+
+func (f *Relic) Forest() BuildForest {
+	return f.GetForest
+}
+
+func (f *Relic) Validate() error {
+	if f.From == "" {
+		return locale.ErrUsageMissingRestorePath
+	}
+
+	if f.Strategy == enums.ResumeStrategyUndefined {
+		return locale.ErrUsageMissingSubscription // TODO: THIS IS WRONG ERROR
+	}
+
+	return f.Head.Validate()
+}

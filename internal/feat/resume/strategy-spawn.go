@@ -12,7 +12,6 @@ import (
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
 )
 
 type spawnStrategy struct {
@@ -32,9 +31,7 @@ func (s *spawnStrategy) init(load *opts.LoadInfo) error {
 	return nil
 }
 
-func (s *spawnStrategy) resume(ctx context.Context,
-	_ *pref.Was,
-) (result *enclave.KernelResult, err error) {
+func (s *spawnStrategy) resume(ctx context.Context) (result *enclave.KernelResult, err error) {
 	fmt.Printf("\t💙 resume, tree: '%v', current path: '%v'\n",
 		s.active.Tree, s.active.CurrentPath)
 

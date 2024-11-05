@@ -136,10 +136,8 @@ var _ = Describe("Resume", Ordered, func() {
 				// the resume process starts off at the plugin
 				//
 				result, err := tv.Walk().Configure().Extent(tv.Resume(
-					&tv.Was{
-						Using: pref.Using{
-							// we should not be able to set this for resume; see issue #292
-							// Tree:         entry.Relative,
+					&pref.Relic{
+						Head: pref.Head{
 							Subscription: entry.Subscription,
 							Handler:      callback,
 							GetForest: func(_ string) *core.Forest {

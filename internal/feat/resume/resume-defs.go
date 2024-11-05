@@ -22,14 +22,14 @@ const (
 type (
 	Strategy interface {
 		init(load *opts.LoadInfo) error
-		resume(context.Context, *pref.Was) (*enclave.KernelResult, error)
+		resume(context.Context) (*enclave.KernelResult, error)
 		ifResult() bool
 	}
 
 	baseStrategy struct {
 		o        *pref.Options
 		active   *core.ActiveState
-		was      *pref.Was
+		relic    *pref.Relic
 		sealer   enclave.GuardianSealer
 		kc       enclave.KernelController
 		mediator enclave.Mediator

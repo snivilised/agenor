@@ -12,7 +12,7 @@ import (
 
 type Controller struct {
 	kc         enclave.KernelController
-	was        *pref.Was
+	relic      *pref.Relic
 	load       *opts.LoadInfo
 	strategy   Strategy
 	facilities enclave.Facilities
@@ -44,8 +44,7 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 	c.kc.Conclude(result)
 }
 
-func newStrategy(was *pref.Was,
-	harvest enclave.OptionHarvest,
+func newStrategy(relic *pref.Relic, harvest enclave.OptionHarvest,
 	kc enclave.KernelController,
 	sealer enclave.GuardianSealer,
 	resources *enclave.Resources,
@@ -54,14 +53,14 @@ func newStrategy(was *pref.Was,
 	base := baseStrategy{
 		o:        load.O,
 		active:   load.State,
-		was:      was,
+		relic:    relic,
 		sealer:   sealer,
 		kc:       kc,
 		mediator: kc.Mediator(),
 		forest:   resources.Forest,
 	}
 
-	switch was.Strategy {
+	switch relic.Strategy {
 	case enums.ResumeStrategyFastward:
 		strategy = &fastwardStrategy{
 			baseStrategy: base,
@@ -83,5 +82,5 @@ func (c *Controller) Navigate(ctx context.Context) (*enclave.KernelResult, error
 		return c.Result(ctx, err), err
 	}
 
-	return c.strategy.resume(ctx, c.was)
+	return c.strategy.resume(ctx)
 }

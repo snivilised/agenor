@@ -10,8 +10,7 @@ import (
 )
 
 type extent interface {
-	using() *pref.Using
-	was() *pref.Was
+	facade() pref.Facade
 	plugin(*kernel.Artefacts) enclave.Plugin
 	options(...pref.Option) (enclave.OptionHarvest, error)
 	forest() *core.Forest
@@ -24,23 +23,20 @@ type fileSystems struct {
 
 type baseExtent struct {
 	trees *core.Forest
+	fac   pref.Facade
 }
 
 func (ex *baseExtent) forest() *core.Forest {
 	return ex.trees
 }
 
+func (ex *baseExtent) facade() pref.Facade {
+	return ex.fac
+}
+
 type primeExtent struct {
 	baseExtent
-	u *pref.Using
-}
-
-func (ex *primeExtent) using() *pref.Using {
-	return ex.u
-}
-
-func (ex *primeExtent) was() *pref.Was {
-	return nil
+	using *pref.Using
 }
 
 func (ex *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
@@ -62,24 +58,16 @@ func (ex *primeExtent) complete() bool {
 
 type resumeExtent struct {
 	baseExtent
-	w      *pref.Was
+	relic  *pref.Relic
 	loaded *opts.LoadInfo
 	pin    *resume.Plugin
-}
-
-func (ex *resumeExtent) using() *pref.Using {
-	return &ex.w.Using
-}
-
-func (ex *resumeExtent) was() *pref.Was {
-	return ex.w
 }
 
 func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
 	ex.pin = resume.New(&resume.From{
 		Active:   ex.loaded.State,
 		Mediator: artefacts.Mediator,
-		Strategy: ex.w.Strategy,
+		Strategy: ex.relic.Strategy,
 		IfResult: artefacts.IfResult,
 	})
 
@@ -88,15 +76,15 @@ func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
 
 func (ex *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
 	loaded, binder, err := resume.Load(&enclave.RestoreState{
-		Path:   ex.w.From,
+		Path:   ex.relic.From,
 		FS:     ex.trees.R,
-		Resume: ex.w.Strategy,
+		Resume: ex.relic.Strategy,
 	}, settings...)
 
 	ex.loaded = loaded
 
-	if ex.w.Restorer != nil {
-		err = ex.w.Restorer(ex.loaded.O, ex.loaded.State)
+	if ex.relic.Restorer != nil {
+		err = ex.relic.Restorer(ex.loaded.O, ex.loaded.State)
 	}
 
 	return &optionHarvest{

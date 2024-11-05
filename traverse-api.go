@@ -61,10 +61,11 @@ type (
 	WriterFS    = nef.WriterFS
 
 	// 🌀 pref
+	Head    = pref.Head
 	Option  = pref.Option
 	Options = pref.Options
+	Relic   = pref.Relic
 	Using   = pref.Using
-	Was     = pref.Was
 )
 
 const (

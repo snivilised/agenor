@@ -99,37 +99,39 @@ func navigate(n *navigation) {
 	fS := hydra.Nuxx(verbose, strings.Split(n.filters, ",")...)
 
 	result, err := tv.Walk().Configure().Extent(tv.Prime(
-		&tv.Using{
-			Tree:         n.path,
-			Subscription: n.subscription,
-			Handler: func(servant tv.Servant) error {
-				node := servant.Node()
-				indicator := lo.Ternary(node.IsDirectory(), "📂", "🏷️")
+		&pref.Using{
+			Tree: n.path,
+			Head: pref.Head{
+				Subscription: tv.SubscribeFiles,
+				Handler: func(servant tv.Servant) error {
+					node := servant.Node()
+					indicator := lo.Ternary(node.IsDirectory(), "📂", "🏷️")
 
-				fmt.Print(
-					lo.TernaryF(node.IsDirectory(),
-						func() string {
-							return fmt.Sprintf(
-								"\t%v  %v\n",
-								indicator, node.Path,
-							)
-						},
-						func() string {
-							return fmt.Sprintf(
-								"\t\t%v  %v\n",
-								indicator, node.Extension.Name,
-							)
-						},
-					),
-				)
+					fmt.Print(
+						lo.TernaryF(node.IsDirectory(),
+							func() string {
+								return fmt.Sprintf(
+									"\t%v  %v\n",
+									indicator, node.Path,
+								)
+							},
+							func() string {
+								return fmt.Sprintf(
+									"\t\t%v  %v\n",
+									indicator, node.Extension.Name,
+								)
+							},
+						),
+					)
 
-				return nil
-			},
-			GetForest: func(_ string) *core.Forest {
-				return &core.Forest{
-					T: fS,
-					R: nef.NewTraverseABS(),
-				}
+					return nil
+				},
+				GetForest: func(_ string) *core.Forest {
+					return &core.Forest{
+						T: fS,
+						R: nef.NewTraverseABS(),
+					}
+				},
 			},
 		},
 		tv.WithOnBegin(lab.Begin("🔊")),

@@ -63,10 +63,10 @@ func Load(restoration *enclave.RestoreState,
 	return opts.Bind(result.O, result.Active, settings...)
 }
 
-func WithArtefacts(was *pref.Was, harvest enclave.OptionHarvest,
+func Artefacts(relic *pref.Relic, harvest enclave.OptionHarvest,
 	resources *enclave.Resources,
 ) *kernel.Artefacts {
-	sealer := lo.Ternary(was.Strategy == enums.ResumeStrategyFastward,
+	sealer := lo.Ternary(relic.Strategy == enums.ResumeStrategyFastward,
 		enclave.GuardianSealer(&fastwardGuardianSealer{}),
 		enclave.GuardianSealer(&kernel.Benign{}),
 	)
@@ -74,13 +74,13 @@ func WithArtefacts(was *pref.Was, harvest enclave.OptionHarvest,
 	// TODO: create a general type that carries all this info; pass
 	// this into WithArtefacts
 	//
-	controller := kernel.New(&was.Using, harvest.Options(), resources, sealer)
-	strategy := newStrategy(was, harvest, controller, sealer, resources)
+	controller := kernel.New(relic, harvest.Options(), resources, sealer)
+	strategy := newStrategy(relic, harvest, controller, sealer, resources)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{
 			kc:       controller,
-			was:      was,
+			relic:    relic,
 			load:     harvest.Loaded(),
 			strategy: strategy,
 		},

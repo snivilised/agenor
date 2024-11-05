@@ -8,7 +8,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, _ *pref.Using, mediator enclave.Mediator) enclave.Plugin {
+func IfActive(o *pref.Options, _ pref.Facade, mediator enclave.Mediator) enclave.Plugin {
 	if o.Hibernate.IsHibernateActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{

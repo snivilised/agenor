@@ -49,7 +49,7 @@ func (fn optionBuilder) build(ext extent) (enclave.OptionHarvest, error) {
 // pluginsBuilder
 type pluginsBuilder interface {
 	build(o *pref.Options,
-		using *pref.Using,
+		facade pref.Facade,
 		mediator enclave.Mediator,
 		kc enclave.KernelController,
 		others ...enclave.Plugin,
@@ -57,19 +57,19 @@ type pluginsBuilder interface {
 }
 
 type activated func(*pref.Options,
-	*pref.Using,
+	pref.Facade,
 	enclave.Mediator,
 	enclave.KernelController,
 	...enclave.Plugin,
 ) ([]enclave.Plugin, error)
 
 func (fn activated) build(o *pref.Options,
-	using *pref.Using,
+	facade pref.Facade,
 	mediator enclave.Mediator,
 	kc enclave.KernelController,
 	others ...enclave.Plugin,
 ) ([]enclave.Plugin, error) {
-	return fn(o, using, mediator, kc, others...)
+	return fn(o, facade, mediator, kc, others...)
 }
 
 type fsBuilder interface {
@@ -90,6 +90,16 @@ type extension func(forest *core.Forest) extent
 
 func (fn extension) build(forest *core.Forest) extent {
 	return fn(forest)
+}
+
+type scaffoldBuilder interface {
+	build(facade pref.Facade) (scaffold, error)
+}
+
+type scaffolding func(facade pref.Facade) (scaffold, error)
+
+func (fn scaffolding) build(facade pref.Facade) (scaffold, error) {
+	return fn(facade)
 }
 
 // We need an entity that manages the decoration of the client handler. The

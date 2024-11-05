@@ -42,22 +42,24 @@ var _ = Describe("feature", Ordered, func() {
 			It("🧪 should: foo", Label("example"), func(ctx SpecContext) {
 				path := lab.Static.RetroWave
 				result, _ := tv.Walk().Configure().Extent(tv.Prime(
-					&tv.Using{
-						Tree:         path,
-						Subscription: enums.SubscribeUniversal,
-						Handler: func(servant tv.Servant) error {
-							node := servant.Node()
-							GinkgoWriter.Printf(
-								"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
-							)
-							return nil
+					&pref.Using{
+						Head: pref.Head{
+							Subscription: enums.SubscribeUniversal,
+							Handler: func(servant tv.Servant) error {
+								node := servant.Node()
+								GinkgoWriter.Printf(
+									"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
+								)
+								return nil
+							},
+							GetForest: func(_ string) *core.Forest {
+								return &core.Forest{
+									T: fS,
+									R: nef.NewTraverseABS(),
+								}
+							},
 						},
-						GetForest: func(_ string) *core.Forest {
-							return &core.Forest{
-								T: fS,
-								R: nef.NewTraverseABS(),
-							}
-						},
+						Tree: path,
 					},
 					tv.WithOnBegin(lab.Begin("🛡️")),
 					tv.WithOnEnd(lab.End("🏁")),
@@ -109,16 +111,18 @@ var _ = Describe("feature", Ordered, func() {
 			}
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
-				&tv.Using{
-					Tree:         path,
-					Subscription: entry.Subscription,
-					Handler:      callback,
-					GetForest: func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: nef.NewTraverseABS(),
-						}
+				&pref.Using{
+					Head: pref.Head{
+						Subscription: entry.Subscription,
+						Handler:      callback,
+						GetForest: func(_ string) *core.Forest {
+							return &core.Forest{
+								T: fS,
+								R: nef.NewTraverseABS(),
+							}
+						},
 					},
+					Tree: path,
 				},
 				tv.WithOnBegin(lab.Begin("🛡️")),
 				tv.WithOnEnd(lab.End("🏁")),
