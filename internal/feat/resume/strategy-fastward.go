@@ -111,7 +111,8 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 func (s *fastwardStrategy) Next(servant core.Servant,
 	_ enclave.Inspection,
 ) (match bool, err error) {
-	match = s.filter.IsMatch(servant.Node())
+	node := servant.Node()
+	match = s.filter.IsMatch(node)
 
 	if match {
 		// TODO: unmute notifications

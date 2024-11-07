@@ -140,6 +140,13 @@ type (
 		Binder() *opts.Binder
 		Loaded() *opts.LoadInfo
 	}
+
+	ControllerInfo struct {
+		Facade    pref.Facade
+		Harvest   OptionHarvest
+		Resources *Resources
+		Sealer    GuardianSealer
+	}
 )
 
 type (

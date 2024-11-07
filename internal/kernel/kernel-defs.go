@@ -92,12 +92,6 @@ type (
 		Invoke(servant core.Servant, inspection enclave.Inspection) error
 	}
 
-	// Mutant represents the mutable interface to the Guardian
-	Mutant interface {
-		Gateway
-		Invokable
-	}
-
 	// navigationStatic contains static info, ie info that is established during
 	// bootstrap and doesn't change after navigation begins. Used to help
 	// minimise allocations.
@@ -105,9 +99,6 @@ type (
 		mediator *mediator
 		tree     string
 		calc     nef.PathCalc
-	}
-
-	navigationInfo struct { // pre content read
 	}
 
 	inspection interface { // after content has been read

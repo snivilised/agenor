@@ -28,8 +28,8 @@ var noOp = func(string) {}
 
 var _ = Describe("Resume", Ordered, func() {
 	var (
-		jsonPath string
-		fS       *luna.MemFS
+		from string
+		fS   *luna.MemFS
 	)
 
 	BeforeAll(func() {
@@ -42,7 +42,7 @@ var _ = Describe("Resume", Ordered, func() {
 		)).To(Succeed())
 
 		fS = hydra.Nuxx(verbose, lab.Static.RetroWave)
-		jsonPath = lab.GetJSONPath()
+		from = lab.GetJSONPath()
 	})
 
 	BeforeEach(func() {
@@ -70,15 +70,17 @@ var _ = Describe("Resume", Ordered, func() {
 					// to avoid the need to create many restore files
 					// (eg resume-state.json) for different test cases.
 					//
-
-					// this is akin to tampering for testing purpose; needs to be re-thought
+					// The client doesn't need to use the Restorer, then can just
+					// use the With operators in the same manner as a Prime
+					// navigation. In fact, perhaps we should remove the restorer and
+					// replace it with another mechanism that is internal only, so
+					// not available to the client:
+					//
+					// => OnLoad(o *pref.Options, active *core.ActiveState)
 					//
 					active.Tree = entry.Relative
 					active.CurrentPath = entry.active.resumeAt
 					active.Hibernation = entry.active.listenState
-
-					o.Events.Begin.On(lab.Begin("🛡️"))
-					o.Events.End.On(lab.End("🏁"))
 					//
 					// end of synthetic assignments
 
@@ -147,10 +149,12 @@ var _ = Describe("Resume", Ordered, func() {
 								}
 							},
 						},
-						From:     jsonPath,
+						From:     from,
 						Strategy: strategy,
 						Restorer: restorer,
 					},
+					tv.WithOnBegin(lab.Begin("🛡️")),
+					tv.WithOnEnd(lab.End("🏁")),
 				)).Navigate(ctx)
 
 				if profile.mandatory != nil {

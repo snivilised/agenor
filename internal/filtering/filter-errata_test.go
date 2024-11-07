@@ -37,7 +37,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 	})
 
 	// TODO: need to return error from multiple places
-	XDescribeTable("filtering errata", Label("BROKEN"),
+	DescribeTable("filtering errata", Label("BROKEN"),
 		func(ctx SpecContext, entry *lab.FilterErrataTE) {
 			path := entry.Relative
 			callback := func(servant tv.Servant) error {
@@ -79,7 +79,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 			)
 		},
 
-		Entry(nil, &lab.FilterErrataTE{
+		XEntry(nil, &lab.FilterErrataTE{
 			NaviTE: lab.NaviTE{
 				Given:        "missing type",
 				Should:       "fail",

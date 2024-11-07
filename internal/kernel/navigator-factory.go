@@ -7,12 +7,18 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func WithArtefacts(using *pref.Using,
-	o *pref.Options,
+func PrimeArtefacts(using *pref.Using,
+	harvest enclave.OptionHarvest,
 	resources *enclave.Resources,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {
-	controller := New(using, o, resources, sealer)
+	ci := &enclave.ControllerInfo{
+		Facade:    using,
+		Harvest:   harvest,
+		Resources: resources,
+		Sealer:    sealer,
+	}
+	controller := New(ci)
 	mediator := controller.Mediator()
 
 	return &Artefacts{
@@ -22,16 +28,16 @@ func WithArtefacts(using *pref.Using,
 	}
 }
 
-func New(facade pref.Facade, o *pref.Options,
-	resources *enclave.Resources,
-	sealer enclave.GuardianSealer,
-) *NavigationController {
+func New(ci *enclave.ControllerInfo) *NavigationController {
+	o := ci.Harvest.Options()
+	facade := ci.Facade
+	resources := ci.Resources
 	impl, _ := newImpl(facade, o, resources)
 	mediator := newMediator(&mediatorInfo{
 		facade:    facade,
 		o:         o,
 		impl:      impl,
-		sealer:    sealer,
+		sealer:    ci.Sealer,
 		resources: resources,
 	})
 
