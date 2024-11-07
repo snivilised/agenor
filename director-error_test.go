@@ -12,6 +12,7 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
@@ -23,7 +24,7 @@ type traverseErrorTE struct {
 	relic *tv.Relic
 }
 
-var _ = XDescribe("director error", Ordered, func() {
+var _ = Describe("director error", Ordered, func() {
 	var handler tv.Client
 
 	BeforeAll(func() {
@@ -115,7 +116,7 @@ var _ = XDescribe("director error", Ordered, func() {
 		}),
 	)
 
-	When("Prime with subscription error", Label("BROKEN"), func() {
+	When("Prime with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
 			defer leaktest.Check(GinkgoT())()
 
@@ -125,14 +126,13 @@ var _ = XDescribe("director error", Ordered, func() {
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
 				&pref.Using{
 					Head: pref.Head{
-						Subscription: tv.SubscribeFiles,
-						Handler:      noOpHandler,
+						Handler: noOpHandler,
 					},
 					Tree: TreePath,
 				},
 			)).Navigate(ctx)
 
-			Expect(err).NotTo(Succeed())
+			Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
 		})
 	})
 
@@ -206,6 +206,50 @@ var _ = XDescribe("director error", Ordered, func() {
 			)).Navigate(ctx)
 
 			Expect(invoked).To(BeTrue(), "validation error not logged")
+		})
+	})
+
+	When("incorrect facade", func() {
+		Context("primary (expected using)", func() {
+			It("🧪 should: return error", func(specCtx SpecContext) {
+				defer leaktest.Check(GinkgoT())()
+
+				ctx, cancel := context.WithCancel(specCtx)
+				defer cancel()
+
+				_, err := tv.Walk().Configure().Extent(tv.Prime(
+					&pref.Relic{
+						Head: pref.Head{
+							Subscription: tv.SubscribeFiles,
+							Handler:      noOpHandler,
+						},
+						From: "/from-path/wrong-facade/primary/relic",
+					},
+				)).Navigate(ctx)
+
+				Expect(err).To(MatchError(core.ErrWrongPrimaryFacade))
+			})
+		})
+
+		Context("resume (expected relic)", func() {
+			It("🧪 should: return error", func(specCtx SpecContext) {
+				defer leaktest.Check(GinkgoT())()
+
+				ctx, cancel := context.WithCancel(specCtx)
+				defer cancel()
+
+				_, err := tv.Walk().Configure().Extent(tv.Resume(
+					&pref.Using{
+						Head: pref.Head{
+							Subscription: tv.SubscribeFiles,
+							Handler:      noOpHandler,
+						},
+						Tree: "/tree-path/wrong-facade/resume/using",
+					},
+				)).Navigate(ctx)
+
+				Expect(err).To(MatchError(core.ErrWrongResumeFacade))
+			})
 		})
 	})
 })

@@ -44,24 +44,23 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 	c.kc.Conclude(result)
 }
 
-func newStrategy(relic *pref.Relic, harvest enclave.OptionHarvest,
+func newStrategy(ci *enclave.ControllerInfo,
 	kc enclave.KernelController,
-	sealer enclave.GuardianSealer,
-	resources *enclave.Resources,
 ) (strategy Strategy) {
-	load := harvest.Loaded()
+	load := ci.Harvest.Loaded()
+	relic, _ := ci.Facade.(*pref.Relic)
 	base := baseStrategy{
 		o:        load.O,
 		active:   load.State,
 		relic:    relic,
-		sealer:   sealer,
+		sealer:   ci.Sealer,
 		kc:       kc,
 		mediator: kc.Mediator(),
-		forest:   resources.Forest,
+		forest:   ci.Resources.Forest,
 	}
 
 	switch relic.Strategy {
-	case enums.ResumeStrategyFastward:
+	case enums.ResumeStrategyFastward, enums.ResumeStrategyUndefined:
 		strategy = &fastwardStrategy{
 			baseStrategy: base,
 			role:         enums.RoleFastward,
@@ -71,7 +70,6 @@ func newStrategy(relic *pref.Relic, harvest enclave.OptionHarvest,
 		strategy = &spawnStrategy{
 			baseStrategy: base,
 		}
-	case enums.ResumeStrategyUndefined:
 	}
 
 	return strategy

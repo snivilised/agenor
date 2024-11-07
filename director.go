@@ -22,11 +22,9 @@ type (
 	) enclave.Plugin
 )
 
-// features interrogates options and invokes requests on behalf of the user
-// to activate features according to option selections. other plugins will
-// be initialised after primary plugins
-func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
-	kc enclave.KernelController,
+func features(o *pref.Options,
+	ext extent,
+	artefacts *kernel.Artefacts,
 	others ...enclave.Plugin,
 ) (plugins []enclave.Plugin, err error) {
 	var (
@@ -40,8 +38,8 @@ func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
 		}
 	)
 
-	// double reduce, the first reduce 'all' creates list of active plugins
-	// and the second, adds other plugins to the activated list.
+	// double reduce, the inner reduce 'all' creates list of active plugins
+	// and the outer, adds other plugins to the activated list.
 	plugins = lo.Reduce(others,
 		func(acc []enclave.Plugin, plugin enclave.Plugin, _ int) []enclave.Plugin {
 			if plugin != nil {
@@ -51,7 +49,7 @@ func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
 		},
 		lo.Reduce(all,
 			func(acc []enclave.Plugin, query ifActive, _ int) []enclave.Plugin {
-				if plugin := query(o, facade, mediator); plugin != nil {
+				if plugin := query(o, ext.facade(), artefacts.Mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
 				return acc
@@ -61,7 +59,7 @@ func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
 	)
 
 	for _, plugin := range plugins {
-		err = plugin.Register(kc)
+		err = plugin.Register(artefacts.Kontroller)
 
 		if err != nil {
 			return nil, err
@@ -74,19 +72,22 @@ func features(o *pref.Options, facade pref.Facade, mediator enclave.Mediator,
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
 func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
-	using, _ := facade.(*pref.Using) // TODO: Create a test that accidentally sets relic facade
+	// 🧿 the error from the following facade typecast is ignored, because
+	// this is checked by the creation of the scaffolding.
+	//
+	using, _ := facade.(*pref.Using)
 
 	return &Builders{
 		facade: facade,
-		scaffold: scaffolding(func(facade pref.Facade) (scaffold, error) {
+		scaffold: scaffolding(func() (scaffold, error) {
 			return newPrimaryPlatform(facade, settings...)
 		}),
 		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
 			resources *enclave.Resources,
 		) *kernel.Artefacts {
-			return kernel.WithArtefacts(
+			return kernel.PrimeArtefacts(
 				using,
-				harvest.Options(),
+				harvest,
 				resources,
 				&kernel.Benign{},
 			)
@@ -100,11 +101,11 @@ func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
 func Resume(facade pref.Facade, settings ...pref.Option) *Builders {
-	relic, _ := facade.(*pref.Relic) // TODO: Create a test that accidentally sets using facade
+	relic, _ := facade.(*pref.Relic) // 🧿
 
 	return &Builders{
 		facade: facade,
-		scaffold: scaffolding(func(pref.Facade) (scaffold, error) {
+		scaffold: scaffolding(func() (scaffold, error) {
 			return newResumePlatform(facade, settings...)
 		}),
 		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,

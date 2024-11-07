@@ -204,3 +204,15 @@ var errBrokerTopicNotFound = errors.New(
 var ErrDetectedSpawnStackOverflow = errors.New(
 	"spawn resume stack-overflow protection",
 )
+
+// ❌ WrongPrimaryFacade error
+
+var ErrWrongPrimaryFacade = errors.New(
+	"wrong primary facade",
+)
+
+// ❌ WrongResumeFacade error
+
+var ErrWrongResumeFacade = errors.New(
+	"wrong resume facade",
+)

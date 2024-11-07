@@ -26,12 +26,12 @@ type baseExtent struct {
 	fac   pref.Facade
 }
 
-func (ex *baseExtent) forest() *core.Forest {
-	return ex.trees
+func (x *baseExtent) forest() *core.Forest {
+	return x.trees
 }
 
-func (ex *baseExtent) facade() pref.Facade {
-	return ex.fac
+func (x *baseExtent) facade() pref.Facade {
+	return x.fac
 }
 
 type primeExtent struct {
@@ -39,11 +39,11 @@ type primeExtent struct {
 	using *pref.Using
 }
 
-func (ex *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
+func (x *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
 	return nil
 }
 
-func (ex *primeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
+func (x *primeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
 	o, binder, err := opts.Get(settings...)
 
 	return &optionHarvest{
@@ -52,7 +52,7 @@ func (ex *primeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, 
 	}, err
 }
 
-func (ex *primeExtent) complete() bool {
+func (x *primeExtent) complete() bool {
 	return true
 }
 
@@ -63,28 +63,28 @@ type resumeExtent struct {
 	pin    *resume.Plugin
 }
 
-func (ex *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
-	ex.pin = resume.New(&resume.From{
-		Active:   ex.loaded.State,
+func (x *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
+	x.pin = resume.New(&resume.From{
+		Active:   x.loaded.State,
 		Mediator: artefacts.Mediator,
-		Strategy: ex.relic.Strategy,
+		Strategy: x.relic.Strategy,
 		IfResult: artefacts.IfResult,
 	})
 
-	return ex.pin
+	return x.pin
 }
 
-func (ex *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
+func (x *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
 	loaded, binder, err := resume.Load(&enclave.RestoreState{
-		Path:   ex.relic.From,
-		FS:     ex.trees.R,
-		Resume: ex.relic.Strategy,
+		Path:   x.relic.From,
+		FS:     x.trees.R,
+		Resume: x.relic.Strategy,
 	}, settings...)
 
-	ex.loaded = loaded
+	x.loaded = loaded
 
-	if ex.relic.Restorer != nil {
-		err = ex.relic.Restorer(ex.loaded.O, ex.loaded.State)
+	if x.relic.Restorer != nil {
+		err = x.relic.Restorer(x.loaded.O, x.loaded.State)
 	}
 
 	return &optionHarvest{
@@ -94,6 +94,6 @@ func (ex *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest,
 	}, err
 }
 
-func (ex *resumeExtent) complete() bool {
-	return ex.pin.IfResult.IsComplete()
+func (x *resumeExtent) complete() bool {
+	return x.pin.IfResult.IsComplete()
 }

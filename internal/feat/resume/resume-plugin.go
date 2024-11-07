@@ -58,7 +58,11 @@ func Load(restoration *enclave.RestoreState,
 		Restore: restoration,
 	})
 
-	_ = err // TODO: don't forget to handle this
+	if err != nil {
+		return &opts.LoadInfo{
+			//
+		}, nil, err
+	}
 
 	return opts.Bind(result.O, result.Active, settings...)
 }
@@ -71,11 +75,15 @@ func Artefacts(relic *pref.Relic, harvest enclave.OptionHarvest,
 		enclave.GuardianSealer(&kernel.Benign{}),
 	)
 
-	// TODO: create a general type that carries all this info; pass
-	// this into WithArtefacts
-	//
-	controller := kernel.New(relic, harvest.Options(), resources, sealer)
-	strategy := newStrategy(relic, harvest, controller, sealer, resources)
+	ci := &enclave.ControllerInfo{
+		Facade:    relic,
+		Harvest:   harvest,
+		Resources: resources,
+		Sealer:    sealer,
+	}
+
+	controller := kernel.New(ci)
+	strategy := newStrategy(ci, controller)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{

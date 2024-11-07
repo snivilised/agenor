@@ -29,15 +29,12 @@ type Builders struct {
 }
 
 func (bs *Builders) buildAll() (*buildArtefacts, error) {
-	var (
-		ext     extent
-		harvest enclave.OptionHarvest
-	)
-
 	// BUILD SCAFFOLD
 	//
-	scaffold, err := bs.scaffold.build(bs.facade)
-	o := scaffold.harvest().Options()
+	scaffold, err := bs.scaffold.build()
+	harvest := scaffold.harvest()
+	ext := scaffold.extent()
+	o := harvest.Options()
 
 	if err != nil {
 		return &buildArtefacts{
@@ -46,9 +43,6 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 			ext: ext,
 		}, err
 	}
-
-	ext = scaffold.extent()
-	harvest = scaffold.harvest()
 
 	// BUILD NAVIGATOR
 	//
@@ -60,51 +54,50 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD PLUGINS
 	//
-	plugins, pluginsErr := bs.plugins.build(harvest.Options(),
-		ext.facade(),
-		artefacts.Mediator,
-		artefacts.Kontroller,
+	plugins, err := bs.plugins.build(o,
+		ext,
+		artefacts,
 		ext.plugin(artefacts),
 	)
 
-	if pluginsErr != nil {
+	if err != nil {
 		return &buildArtefacts{
-			o:   harvest.Options(),
-			kc:  kernel.HadesNav(harvest.Options(), pluginsErr),
+			o:   o,
+			kc:  kernel.HadesNav(o, err),
 			ext: ext,
-		}, pluginsErr
+		}, err
 	}
 
 	// INIT PLUGINS
 	//
-	active := lo.Map(plugins,
+	activeRoles := lo.Map(plugins,
 		func(plugin enclave.Plugin, _ int) enums.Role {
 			return plugin.Role()
 		},
 	)
-	order := manifest(active)
-	artefacts.Mediator.Arrange(active, order)
+	order := manifest(activeRoles)
+	artefacts.Mediator.Arrange(activeRoles, order)
 
 	pi := &enclave.PluginInit{
-		O:          harvest.Options(),
+		O:          o,
 		Kontroller: artefacts.Kontroller,
 		Controls:   &harvest.Binder().Controls,
 		Resources:  artefacts.Resources,
 	}
 
 	for _, p := range plugins {
-		if bindErr := p.Init(pi); bindErr != nil {
+		if err := p.Init(pi); err != nil {
 			return &buildArtefacts{
-				o:       harvest.Options(),
+				o:       o,
 				kc:      artefacts.Kontroller,
 				plugins: plugins,
 				ext:     ext,
-			}, bindErr
+			}, err
 		}
 	}
 
 	return &buildArtefacts{
-		o:       harvest.Options(),
+		o:       o,
 		kc:      artefacts.Kontroller,
 		plugins: plugins,
 		ext:     ext,

@@ -33,7 +33,7 @@ func (fn director) Extent(bs *Builders) core.Navigator {
 
 // NavigatorFactory
 type NavigatorFactory interface {
-	// ConfigureL is a factory function that creates a navigator.
+	// Configure is a factory function that creates a navigator.
 	// We don't return an error here as that would make using the factory
 	// awkward. Instead, if there is an error during the build process,
 	// we return a fake navigator that when invoked immediately returns
@@ -61,11 +61,12 @@ type (
 	WriterFS    = nef.WriterFS
 
 	// 🌀 pref
-	Head    = pref.Head
-	Option  = pref.Option
-	Options = pref.Options
-	Relic   = pref.Relic
-	Using   = pref.Using
+	Accepter = pref.Accepter
+	Head     = pref.Head
+	Option   = pref.Option
+	Options  = pref.Options
+	Relic    = pref.Relic
+	Using    = pref.Using
 )
 
 const (

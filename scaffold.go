@@ -1,8 +1,6 @@
 package tv
 
 import (
-	"errors"
-
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
@@ -15,25 +13,25 @@ type (
 	scaffold interface {
 		extent() extent
 		harvest() enclave.OptionHarvest
-		forest() *core.Forest
 	}
 
 	platform struct {
-		ext   extent
-		oh    enclave.OptionHarvest
-		trees *core.Forest
+		ext extent
+		oh  enclave.OptionHarvest
 	}
 )
 
-func newPrimaryPlatform(facade pref.Facade, settings ...pref.Option) (*platform, error) {
+func newPrimaryPlatform(facade pref.Facade,
+	settings ...pref.Option,
+) (*platform, error) {
+	primary := primaryPlatform{}
 	using, ok := facade.(*pref.Using)
+
 	if !ok {
-		// TODO: Create a test that accidentally sets relic facade
-		//
-		return nil, errors.New("incorrect facade") // TODO: create a proper error
+		return primary.base.pacify(facade, settings...),
+			core.ErrWrongPrimaryFacade
 	}
 
-	primary := primaryPlatform{}
 	ext := &primeExtent{
 		baseExtent: baseExtent{
 			fac:   using,
@@ -43,21 +41,22 @@ func newPrimaryPlatform(facade pref.Facade, settings ...pref.Option) (*platform,
 	harvest, err := primary.buildOptions(using, ext, settings...)
 
 	return &platform{
-		ext:   ext,
-		oh:    harvest,
-		trees: ext.trees,
+		ext: ext,
+		oh:  harvest,
 	}, err
 }
 
-func newResumePlatform(facade pref.Facade, settings ...pref.Option) (*platform, error) {
+func newResumePlatform(facade pref.Facade,
+	settings ...pref.Option,
+) (*platform, error) {
+	resume := resumePlatform{}
 	relic, ok := facade.(*pref.Relic)
+
 	if !ok {
-		// TODO: Create a test that accidentally sets using facade
-		//
-		return nil, errors.New("incorrect facade") // TODO: create a proper error
+		return resume.base.pacify(facade, settings...),
+			core.ErrWrongResumeFacade
 	}
 
-	resume := resumePlatform{}
 	ext := &resumeExtent{
 		baseExtent: baseExtent{
 			fac: facade,
@@ -68,12 +67,16 @@ func newResumePlatform(facade pref.Facade, settings ...pref.Option) (*platform, 
 		relic: relic,
 	}
 	harvest, err := ext.options(settings...)
+	if err != nil {
+		return resume.base.pacify(facade, settings...),
+			err
+	}
+
 	ext.trees = resume.buildForest(relic, harvest.Loaded().State.Tree)
 
 	return &platform{
-		ext:   ext,
-		oh:    harvest,
-		trees: ext.trees,
+		ext: ext,
+		oh:  harvest,
 	}, err
 }
 
@@ -97,6 +100,26 @@ func (p *basePlatform) buildForest(facade pref.Facade, tree string) *core.Forest
 			}
 		},
 	)
+}
+
+func (p *basePlatform) pacify(facade pref.Facade,
+	settings ...pref.Option,
+) *platform {
+	// this error doesn't matter because pacify is being called
+	// in the presence of a prior error
+	o, binder, _ := opts.Get(settings...)
+
+	return &platform{
+		ext: &primeExtent{
+			baseExtent: baseExtent{
+				fac: facade,
+			},
+		},
+		oh: &optionHarvest{
+			o:      o,
+			binder: binder,
+		},
+	}
 }
 
 type primaryPlatform struct {
@@ -155,8 +178,4 @@ func (p *platform) extent() extent {
 
 func (p *platform) harvest() enclave.OptionHarvest {
 	return p.oh
-}
-
-func (p *platform) forest() *core.Forest {
-	return p.trees
 }

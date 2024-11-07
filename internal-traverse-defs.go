@@ -5,6 +5,7 @@ import (
 
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
@@ -46,30 +47,26 @@ func (fn optionBuilder) build(ext extent) (enclave.OptionHarvest, error) {
 	return fn(ext)
 }
 
-// pluginsBuilder
 type pluginsBuilder interface {
 	build(o *pref.Options,
-		facade pref.Facade,
-		mediator enclave.Mediator,
-		kc enclave.KernelController,
+		ext extent,
+		artefacts *kernel.Artefacts,
 		others ...enclave.Plugin,
 	) ([]enclave.Plugin, error)
 }
 
 type activated func(*pref.Options,
-	pref.Facade,
-	enclave.Mediator,
-	enclave.KernelController,
+	extent,
+	*kernel.Artefacts,
 	...enclave.Plugin,
 ) ([]enclave.Plugin, error)
 
 func (fn activated) build(o *pref.Options,
-	facade pref.Facade,
-	mediator enclave.Mediator,
-	kc enclave.KernelController,
+	ext extent,
+	artefacts *kernel.Artefacts,
 	others ...enclave.Plugin,
 ) ([]enclave.Plugin, error) {
-	return fn(o, facade, mediator, kc, others...)
+	return fn(o, ext, artefacts, others...)
 }
 
 type fsBuilder interface {
@@ -93,13 +90,13 @@ func (fn extension) build(forest *core.Forest) extent {
 }
 
 type scaffoldBuilder interface {
-	build(facade pref.Facade) (scaffold, error)
+	build() (scaffold, error)
 }
 
-type scaffolding func(facade pref.Facade) (scaffold, error)
+type scaffolding func() (scaffold, error)
 
-func (fn scaffolding) build(facade pref.Facade) (scaffold, error) {
-	return fn(facade)
+func (fn scaffolding) build() (scaffold, error) {
+	return fn()
 }
 
 // We need an entity that manages the decoration of the client handler. The
