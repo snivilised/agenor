@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tfs"
 )
 
 type extent interface {
@@ -18,7 +19,7 @@ type extent interface {
 }
 
 type fileSystems struct {
-	fS TraverseFS
+	fS tfs.TraversalFS
 }
 
 type baseExtent struct {

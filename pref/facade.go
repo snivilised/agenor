@@ -1,10 +1,10 @@
 package pref
 
 import (
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/traverse/tfs"
 )
 
 type (
@@ -74,25 +74,25 @@ type (
 
 type (
 	TraverseFileSystemBuilder interface {
-		Build(root string) nef.TraverseFS
+		Build(root string) tfs.TraversalFS
 	}
 
-	CreateTraverseFS func(root string) nef.TraverseFS
+	CreateTraverseFS func(root string) tfs.TraversalFS
 )
 
-func (fn CreateTraverseFS) Build(root string) nef.TraverseFS {
+func (fn CreateTraverseFS) Build(root string) tfs.TraversalFS {
 	return fn(root)
 }
 
 type (
 	ResumeFileSystemBuilder interface {
-		Build() nef.TraverseFS
+		Build() tfs.TraversalFS
 	}
 
-	CreateResumeFS func() nef.TraverseFS
+	CreateResumeFS func() tfs.TraversalFS
 )
 
-func (fn CreateResumeFS) Build() nef.TraverseFS {
+func (fn CreateResumeFS) Build() tfs.TraversalFS {
 	return fn()
 }
 
