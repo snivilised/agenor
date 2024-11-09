@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tfs"
 )
 
 type (
@@ -92,7 +93,7 @@ func (p *basePlatform) buildForest(facade pref.Facade, tree string) *core.Forest
 		},
 		func() *core.Forest {
 			return &core.Forest{
-				T: nef.NewTraverseFS(Rel{
+				T: tfs.NewFS(Rel{
 					Root:      tree,
 					Overwrite: noOverwrite,
 				}),

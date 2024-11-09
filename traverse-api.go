@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/filtering"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tfs"
 )
 
 // 📦 pkg: traverse - is the front line user facing interface to this module. It sits
@@ -56,7 +57,6 @@ type (
 	ExistsInFS  = nef.ExistsInFS
 	Rel         = nef.Rel
 	RenameFS    = nef.RenameFS
-	TraverseFS  = nef.TraverseFS
 	WriteFileFS = nef.WriteFileFS
 	WriterFS    = nef.WriterFS
 
@@ -67,6 +67,9 @@ type (
 	Options  = pref.Options
 	Relic    = pref.Relic
 	Using    = pref.Using
+
+	// 🌀 tfs
+	TraversalFS = tfs.TraversalFS
 )
 
 const (
@@ -99,13 +102,6 @@ var (
 
 	// NewStatFS creates a file system with Stat method
 	NewStatFS = nef.NewStatFS
-
-	// NewTraverseFS creates a file system that implements functionality required
-	// by the traverse
-	NewTraverseFS = nef.NewTraverseFS
-
-	// NewUniversalFS creates a file system that's got it all
-	NewUniversalFS = nef.NewUniversalFS
 
 	// NewWriteFileFS creates a file system with write file capability
 	NewWriteFileFS = nef.NewWriteFileFS
@@ -306,7 +302,7 @@ var (
 // tapable: [core]
 // core: []
 // enums: [none]
-// lfs:
+// tfs:
 // ---
 // ============================================================================
 //

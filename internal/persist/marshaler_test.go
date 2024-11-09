@@ -39,7 +39,7 @@ func check[T any](entry *checkerTE, err error) error {
 	}
 }
 
-func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
+func marshal(entry *marshalTE, fS tv.TraversalFS) *tampered {
 	// success:
 	o, _, err := opts.Get(
 		pref.IfOptionF(entry.option != nil, func() pref.Option {
@@ -59,7 +59,7 @@ func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 		},
 		Path: writePath,
 		Perm: lab.Perms.File,
-		FS:   tfs,
+		FS:   fS,
 	}
 	result, err := persist.Marshal(request)
 
@@ -87,12 +87,12 @@ func marshal(entry *marshalTE, tfs tv.TraverseFS) *tampered {
 	}
 }
 
-func unmarshal(entry *marshalTE, tfs tv.TraverseFS, restorePath string, t *tampered) {
+func unmarshal(entry *marshalTE, fS tv.TraversalFS, restorePath string, t *tampered) {
 	// success:
 	request := &persist.UnmarshalRequest{
 		Restore: &enclave.RestoreState{
 			Path:   restorePath,
-			FS:     tfs,
+			FS:     fS,
 			Resume: enums.ResumeStrategySpawn,
 		},
 	}
@@ -126,7 +126,7 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		fS tv.TraverseFS
+		fS tv.TraversalFS
 
 		sourceNodeFilterDef *core.FilterDef
 		jsonNodeFilterDef   json.FilterDef

@@ -17,7 +17,7 @@ import (
 
 var _ = Describe("Convert Options via JSON", Ordered, func() {
 	var (
-		FS tv.TraverseFS
+		fS tv.TraversalFS
 	)
 
 	BeforeAll(func() {
@@ -25,7 +25,7 @@ var _ = Describe("Convert Options via JSON", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		FS = &luna.MemFS{
+		fS = &luna.MemFS{
 			MapFS: fstest.MapFS{
 				home: &fstest.MapFile{
 					Mode: os.ModeDir,
@@ -33,7 +33,7 @@ var _ = Describe("Convert Options via JSON", Ordered, func() {
 			},
 		}
 
-		_ = FS.MakeDirAll(destination, lab.Perms.Dir|os.ModeDir)
+		_ = fS.MakeDirAll(destination, lab.Perms.Dir|os.ModeDir)
 	})
 
 	Context("ToJSON", func() {

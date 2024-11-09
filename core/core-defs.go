@@ -3,8 +3,8 @@ package core
 import (
 	"time"
 
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/tfs"
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
@@ -47,12 +47,12 @@ type (
 		// T is the file system that contains just the functionality required
 		// for traversal. It can also represent other file systems including afero,
 		// providing the appropriate adapters are in place.
-		T nef.TraverseFS
+		T tfs.TraversalFS
 
 		// R is the file system required for resume operations, ie we load
 		// and save resume state via this file system instance, which is
 		// distinct from the traversal file system.
-		R nef.TraverseFS
+		R tfs.TraversalFS
 	}
 
 	// Client is the callback invoked for each file system node found
