@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/life"
@@ -59,6 +60,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 						},
 						tv.WithOnAscend(func(_ *core.Node) {}),
 						tv.WithNoRecurse(),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -73,6 +75,8 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					o, _, _ := opts.Get()
+					o.Defects.Fault = tv.Accepter(lab.IgnoreFault)
+
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
 							Head: pref.Head{
@@ -121,6 +125,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 						},
 						tv.WithOnBegin(func(_ *life.BeginState) {}),
 						tv.WithCPU(),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					wg.Wait()
@@ -138,6 +143,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					o, _, _ := opts.Get()
+					o.Defects.Fault = tv.Accepter(lab.IgnoreFault)
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						&pref.Using{
 							Head: pref.Head{
@@ -176,6 +182,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 						},
 						tv.WithFilter(&pref.FilterOptions{}),
 						tv.WithOnWake(func(_ string) {}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -203,6 +210,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Pattern:     "*",
 						}),
 						tv.WithOnSleep(func(_ string) {}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -230,6 +238,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 							Pattern:     "*",
 						}),
 						tv.WithOnSleep(func(_ string) {}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())

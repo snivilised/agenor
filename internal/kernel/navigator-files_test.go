@@ -9,6 +9,7 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	tv "github.com/snivilised/traverse"
+	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
@@ -47,6 +48,7 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 						},
 						Tree: RootPath,
 					},
+					tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())

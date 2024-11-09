@@ -78,6 +78,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					},
 					tv.WithDepth(depth),
 					tv.WithOnDescend(func(_ *core.Node) {}),
+					tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 					restore,
 				)).Navigate(ctx)
 
@@ -135,6 +136,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							Strategy: tv.ResumeStrategyFastward,
 						},
 						tv.WithFilter(&pref.FilterOptions{}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 
@@ -166,6 +168,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 
@@ -203,6 +206,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								While: func(_ *pref.FilteredInfo) bool { return false },
 							},
 						}),
+						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 
