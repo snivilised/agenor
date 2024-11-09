@@ -54,8 +54,8 @@ var _ = Describe("feature", Ordered, func() {
 					path := lab.Static.RetroWave
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: enums.SubscribeDirectories,
 							Head: pref.Head{
-								Subscription: enums.SubscribeDirectories,
 								Handler: func(servant tv.Servant) error {
 									node := servant.Node()
 									GinkgoWriter.Printf(
@@ -142,9 +142,9 @@ var _ = Describe("feature", Ordered, func() {
 
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&pref.Using{
+					Subscription: entry.Subscription,
 					Head: pref.Head{
-						Subscription: entry.Subscription,
-						Handler:      client,
+						Handler: client,
 						GetForest: func(_ string) *core.Forest {
 							return &core.Forest{
 								T: fS,

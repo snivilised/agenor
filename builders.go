@@ -46,10 +46,16 @@ func (bs *Builders) buildAll() (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
-	artefacts := bs.navigator.Build(harvest, &enclave.Resources{
-		Forest:     ext.forest(),
-		Supervisor: core.NewSupervisor(),
-		Binder:     harvest.Binder(),
+	subscription := ext.subscription()
+	artefacts := bs.navigator.Build(&kernel.Creation{
+		Facade:       ext.facade(),
+		Subscription: subscription,
+		Harvest:      harvest,
+		Resources: &enclave.Resources{
+			Forest:     ext.forest(),
+			Supervisor: core.NewSupervisor(),
+			Binder:     harvest.Binder(),
+		},
 	})
 
 	// BUILD PLUGINS

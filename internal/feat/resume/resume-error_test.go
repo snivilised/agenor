@@ -48,7 +48,6 @@ var _ = Describe("Resume Error", Ordered, func() {
 			_, err := tv.Walk().Configure().Extent(tv.Resume(
 				&pref.Relic{
 					Head: pref.Head{
-						Subscription: enums.SubscribeUniversal,
 						Handler: func(_ tv.Servant) error {
 							return nil
 						},

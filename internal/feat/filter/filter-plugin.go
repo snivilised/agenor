@@ -10,7 +10,7 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func IfActive(o *pref.Options, _ pref.Facade, mediator enclave.Mediator) enclave.Plugin {
+func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) enclave.Plugin {
 	if o.Filter.IsFilteringActive() {
 		return &plugin{
 			BasePlugin: kernel.BasePlugin{

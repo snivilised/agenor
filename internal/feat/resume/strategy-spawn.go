@@ -113,6 +113,7 @@ func (s *spawnStrategy) seed(ctx context.Context,
 
 		intermediate, err := s.mediator.Spawn(ctx, &core.ActiveState{
 			Tree: top,
+			// Subscription: tbd,
 		})
 
 		if err != nil {

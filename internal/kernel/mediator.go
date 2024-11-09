@@ -29,11 +29,12 @@ type mediator struct {
 }
 
 type mediatorInfo struct {
-	facade    pref.Facade
-	o         *pref.Options
-	impl      NavigatorImpl
-	sealer    enclave.GuardianSealer
-	resources *enclave.Resources
+	facade       pref.Facade
+	subscription enums.Subscription
+	o            *pref.Options
+	impl         NavigatorImpl
+	sealer       enclave.GuardianSealer
+	resources    *enclave.Resources
 }
 
 func newMediator(info *mediatorInfo) *mediator {
@@ -45,10 +46,10 @@ func newMediator(info *mediatorInfo) *mediator {
 
 	return &mediator{
 		tree:         info.facade.Path(), // TODO: ??? is this right for resume?
-		subscription: info.facade.Sub(),
+		subscription: info.subscription,
 		impl:         info.impl,
 		guardian: newGuardian(&guardianInfo{
-			subscription: info.facade.Sub(),
+			subscription: info.subscription,
 			client:       info.facade.Client(),
 			master:       info.sealer,
 			metrics:      metrics,

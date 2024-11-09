@@ -7,48 +7,42 @@ import (
 	"github.com/snivilised/traverse/pref"
 )
 
-func PrimeArtefacts(using *pref.Using,
-	harvest enclave.OptionHarvest,
-	resources *enclave.Resources,
+func PrimeArtefacts(creation *Creation,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {
-	ci := &enclave.ControllerInfo{
-		Facade:    using,
-		Harvest:   harvest,
-		Resources: resources,
-		Sealer:    sealer,
-	}
-	controller := New(ci)
+	controller := New(creation, sealer)
 	mediator := controller.Mediator()
 
 	return &Artefacts{
 		Kontroller: controller,
 		Mediator:   mediator,
-		Resources:  resources,
+		Resources:  creation.Resources,
 	}
 }
 
-func New(ci *enclave.ControllerInfo) *NavigationController {
-	o := ci.Harvest.Options()
-	facade := ci.Facade
-	resources := ci.Resources
-	impl, _ := newImpl(facade, o, resources)
+func New(creation *Creation,
+	sealer enclave.GuardianSealer,
+) *NavigationController {
+	o := creation.Harvest.Options()
+	facade := creation.Facade
+	resources := creation.Resources
+	impl, _ := newImpl(o, creation)
 	mediator := newMediator(&mediatorInfo{
-		facade:    facade,
-		o:         o,
-		impl:      impl,
-		sealer:    ci.Sealer,
-		resources: resources,
+		facade:       facade,
+		subscription: creation.Subscription,
+		o:            o,
+		impl:         impl,
+		sealer:       sealer,
+		resources:    resources,
 	})
 
 	return newNavigationController(mediator)
 }
 
-func newImpl(facade pref.Facade,
-	o *pref.Options,
-	resources *enclave.Resources,
+func newImpl(o *pref.Options,
+	creation *Creation,
 ) (impl NavigatorImpl, err error) {
-	subscription := facade.Sub()
+	subscription := creation.Subscription
 
 	agent := navigatorAgent{
 		ao: &agentOptions{
@@ -62,7 +56,7 @@ func newImpl(facade pref.Facade,
 			},
 			behaviour: &o.Behaviours.Sort,
 		},
-		resources: resources,
+		resources: creation.Resources,
 	}
 
 	switch subscription {

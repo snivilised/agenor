@@ -65,9 +65,9 @@ var _ = Describe("director error", Ordered, func() {
 		Entry(nil, &traverseErrorTE{
 			given: "using missing tree path",
 			using: &tv.Using{
+				Subscription: tv.SubscribeFiles,
 				Head: tv.Head{
-					Subscription: tv.SubscribeFiles,
-					Handler:      handler,
+					Handler: handler,
 				},
 			},
 		}),
@@ -85,10 +85,9 @@ var _ = Describe("director error", Ordered, func() {
 		Entry(nil, &traverseErrorTE{
 			given: "using missing handler",
 			using: &tv.Using{
-				Head: tv.Head{
-					Subscription: tv.SubscribeFiles,
-				},
-				Tree: "/tree-traverse-path",
+				Subscription: tv.SubscribeFiles,
+				Head:         tv.Head{},
+				Tree:         "/tree-traverse-path",
 			},
 		}),
 
@@ -96,8 +95,7 @@ var _ = Describe("director error", Ordered, func() {
 			given: "as missing restore from path",
 			relic: &tv.Relic{
 				Head: tv.Head{
-					Subscription: tv.SubscribeFiles,
-					Handler:      handler,
+					Handler: handler,
 				},
 				From:     "/resume-from-path",
 				Strategy: tv.ResumeStrategySpawn,
@@ -108,8 +106,7 @@ var _ = Describe("director error", Ordered, func() {
 			given: "as missing resume strategy",
 			relic: &tv.Relic{
 				Head: tv.Head{
-					Subscription: tv.SubscribeFiles,
-					Handler:      handler,
+					Handler: handler,
 				},
 				From: "/resume-from-path",
 			},
@@ -145,9 +142,9 @@ var _ = Describe("director error", Ordered, func() {
 
 			_, err := tv.Walk().Configure().Extent(tv.Prime(
 				&pref.Using{
+					Subscription: tv.SubscribeFiles,
 					Head: pref.Head{
-						Subscription: tv.SubscribeFiles,
-						Handler:      noOpHandler,
+						Handler: noOpHandler,
 					},
 					Tree: TreePath,
 				},
@@ -220,8 +217,7 @@ var _ = Describe("director error", Ordered, func() {
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
 					&pref.Relic{
 						Head: pref.Head{
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+							Handler: noOpHandler,
 						},
 						From: "/from-path/wrong-facade/primary/relic",
 					},
@@ -240,9 +236,9 @@ var _ = Describe("director error", Ordered, func() {
 
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
 					&pref.Using{
+						Subscription: tv.SubscribeFiles,
 						Head: pref.Head{
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+							Handler: noOpHandler,
 						},
 						Tree: "/tree-path/wrong-facade/resume/using",
 					},

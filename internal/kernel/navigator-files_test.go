@@ -40,8 +40,8 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 
 				_, err := tv.Walk().Configure().Extent(tv.Prime(
 					&pref.Using{
+						Subscription: tv.SubscribeFiles,
 						Head: pref.Head{
-							Subscription: tv.SubscribeFiles,
 							Handler: func(_ tv.Servant) error {
 								return nil
 							},

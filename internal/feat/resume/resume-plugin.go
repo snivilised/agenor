@@ -27,8 +27,7 @@ type (
 	}
 )
 
-func New(from *From,
-) *Plugin {
+func New(from *From) *Plugin {
 	return &Plugin{
 		Active: from.Active,
 		BasePlugin: kernel.BasePlugin{
@@ -59,41 +58,35 @@ func Load(restoration *enclave.RestoreState,
 	})
 
 	if err != nil {
-		return &opts.LoadInfo{
-			//
-		}, nil, err
+		return &opts.LoadInfo{}, nil, err
 	}
 
 	return opts.Bind(result.O, result.Active, settings...)
 }
 
-func Artefacts(relic *pref.Relic, harvest enclave.OptionHarvest,
-	resources *enclave.Resources,
-) *kernel.Artefacts {
+func Artefacts(creation *kernel.Creation) *kernel.Artefacts {
+	// the error from the following facade typecast is ignored, because
+	// this is already checked by the creation of the scaffolding.
+	//
+	relic, _ := creation.Facade.(*pref.Relic)
+
 	sealer := lo.Ternary(relic.Strategy == enums.ResumeStrategyFastward,
-		enclave.GuardianSealer(&fastwardGuardianSealer{}),
+		enclave.GuardianSealer(&FastwardGuardianSealer{}),
 		enclave.GuardianSealer(&kernel.Benign{}),
 	)
 
-	ci := &enclave.ControllerInfo{
-		Facade:    relic,
-		Harvest:   harvest,
-		Resources: resources,
-		Sealer:    sealer,
-	}
-
-	controller := kernel.New(ci)
-	strategy := newStrategy(ci, controller)
+	controller := kernel.New(creation, sealer)
+	strategy := newStrategy(creation, sealer, controller)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{
 			kc:       controller,
 			relic:    relic,
-			load:     harvest.Loaded(),
+			load:     creation.Harvest.Loaded(),
 			strategy: strategy,
 		},
 		Mediator:  controller.Mediator(),
-		Resources: resources,
+		Resources: creation.Resources,
 		IfResult:  strategy.ifResult,
 	}
 }

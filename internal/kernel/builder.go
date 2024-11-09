@@ -2,7 +2,9 @@ package kernel
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/traverse/pref"
 )
 
 type (
@@ -13,19 +15,20 @@ type (
 		IfResult   core.Completion
 	}
 
-	NavigatorBuilder interface {
-		Build(artefacts enclave.OptionHarvest,
-			resources *enclave.Resources,
-		) *Artefacts
+	Creation struct {
+		Facade       pref.Facade
+		Subscription enums.Subscription
+		Harvest      enclave.OptionHarvest
+		Resources    *enclave.Resources
 	}
 
-	Builder func(artefacts enclave.OptionHarvest,
-		resources *enclave.Resources,
-	) *Artefacts
+	NavigatorBuilder interface {
+		Build(creation *Creation) *Artefacts
+	}
+
+	Builder func(creation *Creation) *Artefacts
 )
 
-func (fn Builder) Build(artefacts enclave.OptionHarvest,
-	resources *enclave.Resources,
-) *Artefacts {
-	return fn(artefacts, resources)
+func (fn Builder) Build(creation *Creation) *Artefacts {
+	return fn(creation)
 }

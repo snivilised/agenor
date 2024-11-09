@@ -42,9 +42,9 @@ var _ = Describe("feature", Ordered, func() {
 			path := lab.Static.RetroWave
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&pref.Using{
+					Subscription: entry.Subscription,
 					Head: pref.Head{
-						Subscription: entry.Subscription,
-						Handler:      entry.Callback,
+						Handler: entry.Callback,
 						GetForest: func(_ string) *core.Forest {
 							return &core.Forest{
 								T: fS,

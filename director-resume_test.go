@@ -64,8 +64,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+							Handler: noOpHandler,
 							GetForest: func(_ string) *core.Forest {
 								return &core.Forest{
 									T: fS,
@@ -98,8 +97,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
-							Subscription: tv.SubscribeFiles,
-							Handler:      noOpHandler,
+							Handler: noOpHandler,
 						},
 						From:     jsonPath,                  // TODO: need to fake out the resume path
 						Strategy: tv.ResumeStrategyFastward, // revert to Spawn
@@ -129,8 +127,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&pref.Relic{
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							From:     jsonPath,
 							Strategy: tv.ResumeStrategyFastward,
@@ -157,8 +154,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&pref.Relic{
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							From:     jsonPath,
 							Strategy: tv.ResumeStrategyFastward,
@@ -189,8 +185,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
 						&pref.Relic{
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							From:     jsonPath,
 							Strategy: tv.ResumeStrategyFastward,

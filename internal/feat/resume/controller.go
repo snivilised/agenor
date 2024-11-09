@@ -6,6 +6,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/pref"
 )
@@ -44,19 +45,20 @@ func (c *Controller) Conclude(result core.TraverseResult) {
 	c.kc.Conclude(result)
 }
 
-func newStrategy(ci *enclave.ControllerInfo,
+func newStrategy(creation *kernel.Creation,
+	sealer enclave.GuardianSealer,
 	kc enclave.KernelController,
 ) (strategy Strategy) {
-	load := ci.Harvest.Loaded()
-	relic, _ := ci.Facade.(*pref.Relic)
+	load := creation.Harvest.Loaded()
+	relic, _ := creation.Facade.(*pref.Relic)
 	base := baseStrategy{
 		o:        load.O,
 		active:   load.State,
 		relic:    relic,
-		sealer:   ci.Sealer,
+		sealer:   sealer,
 		kc:       kc,
 		mediator: kc.Mediator(),
-		forest:   ci.Resources.Forest,
+		forest:   creation.Resources.Forest,
 	}
 
 	switch relic.Strategy {

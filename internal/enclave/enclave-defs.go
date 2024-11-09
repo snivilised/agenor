@@ -140,23 +140,4 @@ type (
 		Binder() *opts.Binder
 		Loaded() *opts.LoadInfo
 	}
-
-	ControllerInfo struct {
-		Facade    pref.Facade
-		Harvest   OptionHarvest
-		Resources *Resources
-		Sealer    GuardianSealer
-	}
 )
-
-type (
-	FilterChildren interface { // TODO: is this still needed?
-		Matching(files []fs.DirEntry) []fs.DirEntry
-	}
-
-	FilterChildrenFunc func(files []fs.DirEntry) []fs.DirEntry
-)
-
-func (fn FilterChildrenFunc) Matching(files []fs.DirEntry) []fs.DirEntry {
-	return fn(files)
-}
