@@ -17,6 +17,7 @@ type (
 	}
 
 	platform struct {
+		fac pref.Facade
 		ext extent
 		oh  enclave.OptionHarvest
 	}
@@ -38,10 +39,12 @@ func newPrimaryPlatform(facade pref.Facade,
 			fac:   using,
 			trees: primary.buildForest(using),
 		},
+		using: using,
 	}
 	harvest, err := primary.buildOptions(using, ext, settings...)
 
 	return &platform{
+		fac: facade,
 		ext: ext,
 		oh:  harvest,
 	}, err
@@ -76,6 +79,7 @@ func newResumePlatform(facade pref.Facade,
 	ext.trees = resume.buildForest(relic, harvest.Loaded().State.Tree)
 
 	return &platform{
+		fac: facade,
 		ext: ext,
 		oh:  harvest,
 	}, err
@@ -111,6 +115,7 @@ func (p *basePlatform) pacify(facade pref.Facade,
 	o, binder, _ := opts.Get(settings...)
 
 	return &platform{
+		fac: facade,
 		ext: &primeExtent{
 			baseExtent: baseExtent{
 				fac: facade,

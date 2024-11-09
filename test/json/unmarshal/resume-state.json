@@ -40,6 +40,7 @@
   },
   "Active": {
     "Tree": "set/this/tree/in/unit/test",
+    "Subscription": 4,
     "Hibernation": 1,
     "CurrentPath": "set/this/path/in/unit/test",
     "IsDir": true,

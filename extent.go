@@ -2,6 +2,7 @@ package tv
 
 import (
 	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
@@ -12,6 +13,7 @@ import (
 
 type extent interface {
 	facade() pref.Facade
+	subscription() enums.Subscription
 	plugin(*kernel.Artefacts) enclave.Plugin
 	options(...pref.Option) (enclave.OptionHarvest, error)
 	forest() *core.Forest
@@ -40,6 +42,10 @@ type primeExtent struct {
 	using *pref.Using
 }
 
+func (x *primeExtent) subscription() enums.Subscription {
+	return x.using.Subscription
+}
+
 func (x *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
 	return nil
 }
@@ -62,6 +68,10 @@ type resumeExtent struct {
 	relic  *pref.Relic
 	loaded *opts.LoadInfo
 	pin    *resume.Plugin
+}
+
+func (x *resumeExtent) subscription() enums.Subscription {
+	return x.loaded.State.Subscription
 }
 
 func (x *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {

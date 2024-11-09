@@ -52,7 +52,6 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 				_, err := tv.Walk().Configure().Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
-							Subscription: enums.SubscribeUniversal,
 							Handler: func(servant tv.Servant) error {
 								node := servant.Node()
 								depth := node.Extension.Depth
@@ -82,6 +81,7 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 						Restorer: func(_ *pref.Options, active *core.ActiveState) error {
 							active.Tree = tree
 							active.CurrentPath = resumeAt
+							active.Subscription = enums.SubscribeUniversal
 
 							return nil
 						},

@@ -100,9 +100,9 @@ func navigate(n *navigation) {
 
 	result, err := tv.Walk().Configure().Extent(tv.Prime(
 		&pref.Using{
-			Tree: n.path,
+			Tree:         n.path,
+			Subscription: tv.SubscribeFiles,
 			Head: pref.Head{
-				Subscription: tv.SubscribeFiles,
 				Handler: func(servant tv.Servant) error {
 					node := servant.Node()
 					indicator := lo.Ternary(node.IsDirectory(), "📂", "🏷️")

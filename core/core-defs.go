@@ -60,12 +60,13 @@ type (
 	Client func(servant Servant) error
 
 	ActiveState struct {
-		Tree        string
-		Hibernation enums.Hibernation
-		CurrentPath string
-		IsDir       bool
-		Depth       int
-		Metrics     Metrics
+		Tree         string
+		Subscription enums.Subscription
+		Hibernation  enums.Hibernation
+		CurrentPath  string
+		IsDir        bool
+		Depth        int
+		Metrics      Metrics
 	}
 
 	// SimpleHandler is a function that takes no parameters and can

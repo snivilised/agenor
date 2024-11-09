@@ -53,10 +53,10 @@ func (f *FastwardFilter) Scope() enums.FilterScope {
 	return f.scope
 }
 
-type fastwardGuardianSealer struct {
+type FastwardGuardianSealer struct {
 }
 
-func (g *fastwardGuardianSealer) Seal(top enclave.Link) error {
+func (g *FastwardGuardianSealer) Seal(top enclave.Link) error {
 	if top.Role() == enums.RoleHibernate {
 		return core.ErrGuardianCantDecorateItemSealed
 	}
@@ -64,7 +64,7 @@ func (g *fastwardGuardianSealer) Seal(top enclave.Link) error {
 	return nil
 }
 
-func (g *fastwardGuardianSealer) IsSealed(enclave.Link) bool {
+func (g *FastwardGuardianSealer) IsSealed(enclave.Link) bool {
 	return false
 }
 

@@ -10,7 +10,6 @@ import (
 type (
 	// Facade
 	Facade interface {
-		Sub() enums.Subscription
 		Path() string
 		Client() core.Client
 		Forest() BuildForest
@@ -20,9 +19,6 @@ type (
 	// Head contains information common to both primary and resume
 	// navigation sessions.
 	Head struct {
-		// Subscription indicates which file system nodes the client's
-		// callback function will be invoked for.
-		Subscription enums.Subscription
 
 		// Handler is the callback function invoked for each encountered
 		// file system node.
@@ -41,6 +37,10 @@ type (
 	// navigation.
 	Using struct {
 		Head
+		// Subscription indicates which file system nodes the client's
+		// callback function will be invoked for.
+		Subscription enums.Subscription
+
 		// Tree is the root of the directory tree to be traversed and
 		// should not be confused with the Root of the file system when
 		// the file system in use is relative.
@@ -109,19 +109,11 @@ func (fn BuildForest) Build(root string) *core.Forest {
 }
 
 func (f *Head) Validate() error {
-	if f.Subscription == enums.SubscribeUndefined {
-		return locale.ErrUsageMissingSubscription
-	}
-
 	if f.Handler == nil {
 		return locale.ErrUsageMissingHandler
 	}
 
 	return nil
-}
-
-func (f *Using) Sub() enums.Subscription {
-	return f.Subscription
 }
 
 func (f *Using) Path() string {
@@ -141,11 +133,11 @@ func (f *Using) Validate() error {
 		return locale.ErrUsageMissingTreePath
 	}
 
-	return f.Head.Validate()
-}
+	if f.Subscription == enums.SubscribeUndefined {
+		return locale.ErrUsageMissingSubscription
+	}
 
-func (f *Relic) Sub() enums.Subscription {
-	return f.Subscription
+	return f.Head.Validate()
 }
 
 func (f *Relic) Path() string {

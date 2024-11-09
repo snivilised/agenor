@@ -79,6 +79,7 @@ var _ = Describe("Resume", Ordered, func() {
 					// => OnLoad(o *pref.Options, active *core.ActiveState)
 					//
 					active.Tree = entry.Relative
+					active.Subscription = entry.Subscription
 					active.CurrentPath = entry.active.resumeAt
 					active.Hibernation = entry.active.listenState
 					//
@@ -140,8 +141,7 @@ var _ = Describe("Resume", Ordered, func() {
 				result, err := tv.Walk().Configure().Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
-							Subscription: entry.Subscription,
-							Handler:      callback,
+							Handler: callback,
 							GetForest: func(_ string) *core.Forest {
 								return &core.Forest{
 									T: fS,

@@ -52,8 +52,8 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 					}
 					result, _ := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: enums.SubscribeUniversal,
 							Head: pref.Head{
-								Subscription: enums.SubscribeUniversal,
 								Handler: func(servant tv.Servant) error {
 									node := servant.Node()
 									GinkgoWriter.Printf(
@@ -128,9 +128,9 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 			}
 			result, err := tv.Walk().Configure().Extent(tv.Prime(
 				&pref.Using{
+					Subscription: entry.Subscription,
 					Head: pref.Head{
-						Subscription: entry.Subscription,
-						Handler:      callback,
+						Handler: callback,
 						GetForest: func(_ string) *core.Forest {
 							return &core.Forest{
 								T: fS,

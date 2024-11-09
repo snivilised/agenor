@@ -52,9 +52,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: tree,
 						},
@@ -79,9 +79,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 							O:    o,
@@ -117,9 +117,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
@@ -146,9 +146,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					o.Defects.Fault = tv.Accepter(lab.IgnoreFault)
 					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 							O:    o,
@@ -174,9 +174,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
@@ -198,9 +198,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
@@ -226,9 +226,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 					_, err := tv.Walk().Configure().Extent(tv.Prime(
 						&pref.Using{
+							Subscription: tv.SubscribeFiles,
 							Head: pref.Head{
-								Subscription: tv.SubscribeFiles,
-								Handler:      noOpHandler,
+								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},

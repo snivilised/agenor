@@ -1,6 +1,7 @@
 package tv
 
 import (
+	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/feat/filter"
 	"github.com/snivilised/traverse/internal/feat/hiber"
@@ -18,7 +19,7 @@ const (
 
 type (
 	ifActive func(o *pref.Options,
-		facade pref.Facade, mediator enclave.Mediator,
+		sub enums.Subscription, mediator enclave.Mediator,
 	) enclave.Plugin
 )
 
@@ -49,7 +50,7 @@ func features(o *pref.Options,
 		},
 		lo.Reduce(all,
 			func(acc []enclave.Plugin, query ifActive, _ int) []enclave.Plugin {
-				if plugin := query(o, ext.facade(), artefacts.Mediator); plugin != nil {
+				if plugin := query(o, ext.subscription(), artefacts.Mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
 				return acc
@@ -72,23 +73,14 @@ func features(o *pref.Options,
 // Prime extent requests that the navigator performs a full
 // traversal from the root path specified.
 func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
-	// 🧿 the error from the following facade typecast is ignored, because
-	// this is checked by the creation of the scaffolding.
-	//
-	using, _ := facade.(*pref.Using)
-
 	return &Builders{
 		facade: facade,
 		scaffold: scaffolding(func() (scaffold, error) {
 			return newPrimaryPlatform(facade, settings...)
 		}),
-		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
-			resources *enclave.Resources,
-		) *kernel.Artefacts {
+		navigator: kernel.Builder(func(creation *kernel.Creation) *kernel.Artefacts {
 			return kernel.PrimeArtefacts(
-				using,
-				harvest,
-				resources,
+				creation,
 				&kernel.Benign{},
 			)
 		}),
@@ -101,22 +93,12 @@ func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
 // as a result of it being terminated prematurely via a ctrl-c
 // interrupt.
 func Resume(facade pref.Facade, settings ...pref.Option) *Builders {
-	relic, _ := facade.(*pref.Relic) // 🧿
-
 	return &Builders{
 		facade: facade,
 		scaffold: scaffolding(func() (scaffold, error) {
 			return newResumePlatform(facade, settings...)
 		}),
-		navigator: kernel.Builder(func(harvest enclave.OptionHarvest,
-			resources *enclave.Resources,
-		) *kernel.Artefacts {
-			return resume.Artefacts(
-				relic,
-				harvest,
-				resources,
-			)
-		}),
-		plugins: activated(features),
+		navigator: kernel.Builder(resume.Artefacts),
+		plugins:   activated(features),
 	}
 }

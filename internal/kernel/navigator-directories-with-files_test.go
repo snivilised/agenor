@@ -58,9 +58,9 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 				path := entry.Relative
 				result, err := tv.Walk().Configure().Extent(tv.Prime(
 					&pref.Using{
+						Subscription: entry.Subscription,
 						Head: pref.Head{
-							Subscription: entry.Subscription,
-							Handler:      once,
+							Handler: once,
 							GetForest: func(_ string) *core.Forest {
 								return &core.Forest{
 									T: fS,
