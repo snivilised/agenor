@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
 )
 
@@ -44,4 +45,8 @@ func GetJSONPath() string {
 	jroot := hydra.Repo(filepath.Join("test", "json"))
 
 	return yoke(jroot, "unmarshal", Static.JSONFile)
+}
+
+func IgnoreFault(_ *pref.NavigationFault) error {
+	return nil
 }

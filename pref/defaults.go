@@ -82,12 +82,12 @@ func DefaultSubPathHook(info *core.SubPathInfo) string {
 	return difference(info.Tree, info.Node.Extension.Parent)
 }
 
-func DefaultFaultHandler(*NavigationFault) error {
-	return nil
+func DefaultFaultHandler(fault *NavigationFault) error {
+	return fault.Err
 }
 
 func DefaultPanicHandler() {
-	// may this should invoke save
+	// maybe this should invoke save
 }
 
 func DefaultSkipHandler(*core.Node,
