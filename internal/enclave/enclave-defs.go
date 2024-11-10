@@ -87,13 +87,6 @@ type (
 		Inject(state *core.ActiveState)
 	}
 
-	// Facilities is the interface provided to plugins to enable them
-	// to initialise successfully.
-	Facilities interface {
-		Restoration
-		Metrics() *core.Supervisor
-	}
-
 	// Ignition
 	Ignition struct {
 		Session core.Session
@@ -127,12 +120,25 @@ type (
 		Path string
 	}
 
-	// RestoreState
+	// RestoreState defines properties required in order to instigate
+	// a resume.
 	RestoreState struct {
 		Path   string
 		FS     nef.ReadFileFS
 		Resume enums.ResumeStrategy
 	}
+
+	// StateHandler defines a method that allows am internal client to modify active
+	// state after it has been marshalled in. This is meant for use by unit tests to
+	// easy the process of defining their constraints. Without this, there would be
+	// a need to provide separate json files for each test.
+	StateHandler interface {
+		OnLoad(active *core.ActiveState)
+	}
+
+	// Loader is to be defined by a unit test and should modify the loaded active state
+	// for the test's own purposes.
+	Loader func(active *core.ActiveState)
 
 	// OptionHarvest
 	OptionHarvest interface {
@@ -141,3 +147,7 @@ type (
 		Loaded() *opts.LoadInfo
 	}
 )
+
+func (fn Loader) OnLoad(active *core.ActiveState) {
+	fn(active)
+}

@@ -7,18 +7,21 @@ import (
 	"github.com/snivilised/traverse/internal/feat/resume"
 	"github.com/snivilised/traverse/internal/kernel"
 	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tfs"
 )
 
-type extent interface {
-	facade() pref.Facade
-	subscription() enums.Subscription
-	plugin(*kernel.Artefacts) enclave.Plugin
-	options(...pref.Option) (enclave.OptionHarvest, error)
-	forest() *core.Forest
-	complete() bool
-}
+type (
+	extent interface {
+		facade() pref.Facade
+		subscription() enums.Subscription
+		plugin(*kernel.Artefacts) enclave.Plugin
+		options([]Addon, ...pref.Option) (enclave.OptionHarvest, error)
+		forest() *core.Forest
+		complete() bool
+	}
+)
 
 type fileSystems struct {
 	fS tfs.TraversalFS
@@ -50,7 +53,7 @@ func (x *primeExtent) plugin(*kernel.Artefacts) enclave.Plugin {
 	return nil
 }
 
-func (x *primeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
+func (x *primeExtent) options(_ []Addon, settings ...pref.Option) (enclave.OptionHarvest, error) {
 	o, binder, err := opts.Get(settings...)
 
 	return &optionHarvest{
@@ -85,7 +88,9 @@ func (x *resumeExtent) plugin(artefacts *kernel.Artefacts) enclave.Plugin {
 	return x.pin
 }
 
-func (x *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, error) {
+func (x *resumeExtent) options(addons []Addon,
+	settings ...pref.Option,
+) (enclave.OptionHarvest, error) {
 	loaded, binder, err := resume.Load(&enclave.RestoreState{
 		Path:   x.relic.From,
 		FS:     x.trees.R,
@@ -94,8 +99,8 @@ func (x *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, 
 
 	x.loaded = loaded
 
-	if x.relic.Restorer != nil {
-		err = x.relic.Restorer(x.loaded.O, x.loaded.State)
+	if handler := x.seek(addons); handler != nil {
+		handler.OnLoad(loaded.State)
 	}
 
 	return &optionHarvest{
@@ -107,4 +112,16 @@ func (x *resumeExtent) options(settings ...pref.Option) (enclave.OptionHarvest, 
 
 func (x *resumeExtent) complete() bool {
 	return x.pin.IfResult.IsComplete()
+}
+
+func (x *resumeExtent) seek(addons []Addon) enclave.StateHandler {
+	if addon, found := lo.Find(addons, func(item Addon) bool {
+		_, ok := item.(enclave.StateHandler)
+		return ok
+	}); found {
+		result, _ := addon.(enclave.StateHandler)
+		return result
+	}
+
+	return nil
 }

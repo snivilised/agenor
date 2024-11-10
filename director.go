@@ -75,8 +75,8 @@ func features(o *pref.Options,
 func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
 	return &Builders{
 		facade: facade,
-		scaffold: scaffolding(func() (scaffold, error) {
-			return newPrimaryPlatform(facade, settings...)
+		scaffold: scaffolding(func(addons ...Addon) (scaffold, error) {
+			return newPrimaryPlatform(facade, addons, settings...)
 		}),
 		navigator: kernel.Builder(func(creation *kernel.Creation) *kernel.Artefacts {
 			return kernel.PrimeArtefacts(
@@ -95,8 +95,8 @@ func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
 func Resume(facade pref.Facade, settings ...pref.Option) *Builders {
 	return &Builders{
 		facade: facade,
-		scaffold: scaffolding(func() (scaffold, error) {
-			return newResumePlatform(facade, settings...)
+		scaffold: scaffolding(func(addons ...Addon) (scaffold, error) {
+			return newResumePlatform(facade, addons, settings...)
 		}),
 		navigator: kernel.Builder(resume.Artefacts),
 		plugins:   activated(features),

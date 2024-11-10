@@ -24,6 +24,7 @@ type (
 )
 
 func newPrimaryPlatform(facade pref.Facade,
+	addons []Addon,
 	settings ...pref.Option,
 ) (*platform, error) {
 	primary := primaryPlatform{}
@@ -41,7 +42,7 @@ func newPrimaryPlatform(facade pref.Facade,
 		},
 		using: using,
 	}
-	harvest, err := primary.buildOptions(using, ext, settings...)
+	harvest, err := primary.buildOptions(using, addons, ext, settings...)
 
 	return &platform{
 		fac: facade,
@@ -51,6 +52,7 @@ func newPrimaryPlatform(facade pref.Facade,
 }
 
 func newResumePlatform(facade pref.Facade,
+	addons []Addon,
 	settings ...pref.Option,
 ) (*platform, error) {
 	resume := resumePlatform{}
@@ -70,7 +72,7 @@ func newResumePlatform(facade pref.Facade,
 		},
 		relic: relic,
 	}
-	harvest, err := ext.options(settings...)
+	harvest, err := ext.options(addons, settings...)
 	if err != nil {
 		return resume.base.pacify(facade, settings...),
 			err
@@ -137,6 +139,7 @@ func (p *primaryPlatform) buildForest(using *pref.Using) *core.Forest {
 }
 
 func (p *primaryPlatform) buildOptions(using *pref.Using,
+	addons []Addon,
 	ext *primeExtent,
 	settings ...pref.Option,
 ) (oh enclave.OptionHarvest, err error) {
@@ -157,7 +160,7 @@ func (p *primaryPlatform) buildOptions(using *pref.Using,
 				}
 			},
 			func() *baggage {
-				harvest, err := ext.options(settings...)
+				harvest, err := ext.options(addons, settings...)
 
 				return &baggage{
 					harvest: harvest,
