@@ -12,6 +12,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/life"
@@ -64,39 +65,6 @@ var _ = Describe("Resume", Ordered, func() {
 					Fail(fmt.Sprintf("bad test, missing profile for '%v'", entry.profile))
 				}
 
-				restorer := func(o *pref.Options, active *core.ActiveState) error {
-					// synthetic assignments: The client should not perform these
-					// types of assignments. Only being done here for testing purposes
-					// to avoid the need to create many restore files
-					// (eg resume-state.json) for different test cases.
-					//
-					// The client doesn't need to use the Restorer, then can just
-					// use the With operators in the same manner as a Prime
-					// navigation. In fact, perhaps we should remove the restorer and
-					// replace it with another mechanism that is internal only, so
-					// not available to the client:
-					//
-					// => OnLoad(o *pref.Options, active *core.ActiveState)
-					//
-					active.Tree = entry.Relative
-					active.Subscription = entry.Subscription
-					active.CurrentPath = entry.active.resumeAt
-					active.Hibernation = entry.active.listenState
-					//
-					// end of synthetic assignments
-
-					if strategy == enums.ResumeStrategyFastward {
-						o.Events.Begin.On(func(_ *life.BeginState) {
-							// don't enforce this yet, we need to disable notifications
-							//
-							// Fail("begin handler should not be invoked because begin notification muted")
-						})
-					}
-					GinkgoWriter.Printf("===> 🐚 restoring ...\n")
-
-					return nil
-				}
-
 				once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
@@ -128,17 +96,13 @@ var _ = Describe("Resume", Ordered, func() {
 					return once(node)
 				}
 
-				// Do we have a WithRestore option, that also accepts
-				// the active state?
-				// Was contains the info that was in nav.Resumption
-				//
-				// MarshalRequest??
-				//
-				// nav.RunnerInfo => should be built into Run
-
-				// the resume process starts off at the plugin
-				//
-				result, err := tv.Walk().Configure().Extent(tv.Resume(
+				result, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					GinkgoWriter.Printf("===> 🐚 restoring ...\n")
+					active.Tree = entry.Relative
+					active.Subscription = entry.Subscription
+					active.CurrentPath = entry.active.resumeAt
+					active.Hibernation = entry.active.listenState
+				})).Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: callback,
@@ -151,9 +115,21 @@ var _ = Describe("Resume", Ordered, func() {
 						},
 						From:     from,
 						Strategy: strategy,
-						Restorer: restorer,
 					},
-					tv.WithOnBegin(lab.Begin("🛡️")),
+					tv.IfElseOptionF(strategy == enums.ResumeStrategyFastward,
+						func() pref.Option {
+							return tv.WithOnBegin(func(state *life.BeginState) {
+								lab.Begin("🛡️")(state)
+								//
+								// don't enforce this yet, we need to disable notifications
+								//
+								// Fail("begin handler should not be invoked because begin notification muted")
+							})
+						},
+						func() pref.Option {
+							return tv.WithOnBegin(lab.Begin("🛡️"))
+						},
+					),
 					tv.WithOnEnd(lab.End("🏁")),
 				)).Navigate(ctx)
 

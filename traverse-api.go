@@ -40,7 +40,7 @@ type NavigatorFactory interface {
 	// we return a fake navigator that when invoked immediately returns
 	// a traverse error indicating the build issue.
 	//
-	Configure() Director
+	Configure(addons ...Addon) Director
 }
 
 type (
@@ -125,6 +125,11 @@ var (
 	// is known to be true. This is in contrast to IfOption where the Option is
 	// pre-created, regardless of the condition.
 	IfOptionF = pref.IfOptionF
+
+	// IfElseOptionF is similar to IfOptionF except that it accepts 2 options, the
+	// first represents the returned option if the condition true and the second
+	// if false.
+	IfElseOptionF = pref.IfElseOptionF
 
 	// WithCPU configures the worker pool used for concurrent traversal sessions
 	// in the Run function to utilise a number of go-routines equal to the available

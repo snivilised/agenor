@@ -134,6 +134,12 @@ type (
 		Resume enums.ResumeStrategy
 	}
 
+	StateHandler interface {
+		OnLoad(active *core.ActiveState)
+	}
+
+	Loader func(active *core.ActiveState)
+
 	// OptionHarvest
 	OptionHarvest interface {
 		Options() *pref.Options
@@ -141,3 +147,7 @@ type (
 		Loaded() *opts.LoadInfo
 	}
 )
+
+func (fn Loader) OnLoad(active *core.ActiveState) {
+	fn(active)
+}

@@ -81,6 +81,17 @@ func IfOptionF(condition bool, option ConditionalOption) Option {
 	return nil
 }
 
+// IfElseOptionF is similar to IfOptionF except that it accepts 2 options, the
+// first represents the returned option if the condition true and the second
+// if false.
+func IfElseOptionF(condition bool, tOption, fOption ConditionalOption) Option {
+	if condition {
+		return tOption()
+	}
+
+	return fOption()
+}
+
 // DefaultOptions // TODO: move to defaults.go
 func DefaultOptions() *Options {
 	// If a change is made to the default, make sure to make the corresponding

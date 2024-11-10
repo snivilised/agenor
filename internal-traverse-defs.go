@@ -90,13 +90,13 @@ func (fn extension) build(forest *core.Forest) extent {
 }
 
 type scaffoldBuilder interface {
-	build() (scaffold, error)
+	build(addons ...Addon) (scaffold, error)
 }
 
-type scaffolding func() (scaffold, error)
+type scaffolding func(addons ...Addon) (scaffold, error)
 
-func (fn scaffolding) build() (scaffold, error) {
-	return fn()
+func (fn scaffolding) build(addons ...Addon) (scaffold, error) {
+	return fn(addons...)
 }
 
 // We need an entity that manages the decoration of the client handler. The
