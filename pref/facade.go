@@ -65,10 +65,6 @@ type (
 
 		// Strategy represent what type of resume is run.
 		Strategy enums.ResumeStrategy
-
-		// Restorer function defined by client invoked as part of the resume
-		// process
-		Restorer Restorer
 	}
 )
 

@@ -12,11 +12,10 @@ import (
 )
 
 type Controller struct {
-	kc         enclave.KernelController
-	relic      *pref.Relic
-	load       *opts.LoadInfo
-	strategy   Strategy
-	facilities enclave.Facilities
+	kc       enclave.KernelController
+	relic    *pref.Relic
+	load     *opts.LoadInfo
+	strategy Strategy
 }
 
 func (c *Controller) Ignite(ignition *enclave.Ignition) {

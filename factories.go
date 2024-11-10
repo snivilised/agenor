@@ -24,14 +24,14 @@ type walkerFac struct {
 	factory
 }
 
-func (f *walkerFac) Configure() Director {
+func (f *walkerFac) Configure(addons ...Addon) Director {
 	return director(func(bs *Builders) core.Navigator {
 		// resume or prime? If resume, we need to access the hibernation
 		// wake condition on the retrieved options. But how do we know what
 		// the extent is, so we know if we need to make this query?
 		//
 		//
-		artefacts, err := bs.buildAll()
+		artefacts, err := bs.buildAll(addons...)
 
 		return &driver{
 			session{
@@ -54,11 +54,11 @@ type runnerFac struct {
 	wg pants.WaitGroup
 }
 
-func (f *runnerFac) Configure() Director {
+func (f *runnerFac) Configure(addons ...Addon) Director {
 	// Run: create the observable/worker-pool
 	//
 	return director(func(bs *Builders) core.Navigator {
-		artefacts, err := bs.buildAll()
+		artefacts, err := bs.buildAll(addons...)
 
 		return &driver{
 			session{
@@ -76,3 +76,7 @@ func (f *runnerFac) Configure() Director {
 		}
 	})
 }
+
+type (
+	Addon interface{}
+)

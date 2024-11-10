@@ -28,10 +28,10 @@ type Builders struct {
 	extent    extentBuilder
 }
 
-func (bs *Builders) buildAll() (*buildArtefacts, error) {
+func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 	// BUILD SCAFFOLD
 	//
-	scaffold, err := bs.scaffold.build()
+	scaffold, err := bs.scaffold.build(addons...)
 	harvest := scaffold.harvest()
 	ext := scaffold.extent()
 	o := harvest.Options()

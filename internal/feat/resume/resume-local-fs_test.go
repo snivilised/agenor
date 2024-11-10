@@ -11,6 +11,7 @@ import (
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/locale"
@@ -49,7 +50,11 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 		Context("given: resume path exists", func() {
 			It("🧪 should: resume traverse ok", func(ctx SpecContext) {
 				strategy = enums.ResumeStrategyFastward
-				_, err := tv.Walk().Configure().Extent(tv.Resume(
+				_, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.Tree = tree
+					active.CurrentPath = resumeAt
+					active.Subscription = enums.SubscribeUniversal
+				})).Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: func(servant tv.Servant) error {
@@ -78,13 +83,6 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 						},
 						From:     from,
 						Strategy: enums.ResumeStrategyFastward,
-						Restorer: func(_ *pref.Options, active *core.ActiveState) error {
-							active.Tree = tree
-							active.CurrentPath = resumeAt
-							active.Subscription = enums.SubscribeUniversal
-
-							return nil
-						},
 					},
 					tv.WithOnBegin(lab.Begin("🛡️")),
 					tv.WithOnEnd(lab.End("🏁")),
