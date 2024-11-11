@@ -1,25 +1,28 @@
 package lab
 
 import (
-	"io/fs"
+	"github.com/snivilised/traverse/core"
 )
 
 var (
-	Perms = struct {
-		File fs.FileMode
-		Dir  fs.FileMode
-	}{
+	Perms = core.Permissions{
 		File: 0o666, //nolint:mnd // ok (pedantic)
 		Dir:  0o777, //nolint:mnd // ok (pedantic)
 	}
 
 	Static = struct {
-		JSONFile    string
-		JSONSubPath string
-		RetroWave   string
+		JSONFile        string
+		JSONSubPath     string
+		ElectricYouth   string
+		NorthernCouncil string
+		TeenageColor    string
+		RetroWave       string
 	}{
-		JSONFile:    "resume-state.json",
-		JSONSubPath: "json/unmarshal/resume-state.json",
-		RetroWave:   "RETRO-WAVE",
+		JSONFile:        "resume-state.json",
+		JSONSubPath:     "json/unmarshal/resume-state.json",
+		ElectricYouth:   "Electric Youth",
+		NorthernCouncil: "Northern Council",
+		RetroWave:       "RETRO-WAVE",
+		TeenageColor:    "Teenage Color",
 	}
 )

@@ -34,6 +34,8 @@ github.com/snivilised/nefilim v0.1.8 h1:Srnl6rw7cB/cy3jQT8QfQ0ZNxumQX0Yj/Z+qH3+5
 github.com/snivilised/nefilim v0.1.8/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
 github.com/snivilised/nefilim v0.1.9 h1:KUUc4b8xeShDiiB15MuI4F9P1VlZF0bOwh/1UWsZLOA=
 github.com/snivilised/nefilim v0.1.9/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
+github.com/snivilised/nefilim v0.1.10 h1:j8EGMZSGgFIjcxaVOvYvn7/r66Q5ffXihmq52F55r/E=
+github.com/snivilised/nefilim v0.1.10/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
 github.com/snivilised/pants v0.1.2 h1:6Abj02gV5rFYyKfCsmeEiOi1pLdRyITKUY5oDoRgYuU=
 github.com/snivilised/pants v0.1.2/go.mod h1:BOZa24yLxVjjnTCFWQeCzUWL8eK4TLtXtkz3pMdEFQM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=

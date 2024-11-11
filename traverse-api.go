@@ -19,7 +19,7 @@ type (
 	// Director
 	Director interface {
 		// Extent represents the magnitude of the traversal; ie we can
-		// perform a full Prime run, or Resume from a previously
+		// perform a full 'Prime' traversal, or 'Resume' from a previously
 		// cancelled run.
 		//
 		Extent(bs *Builders) core.Navigator
@@ -135,6 +135,9 @@ var (
 	// tOption (executed when condition is true) and
 	// fOption (executed when condition is false).
 	IfElseOptionF = pref.IfElseOptionF
+
+	// WithAdminPath defines the path for admin related files
+	WithAdminPath = pref.WithAdminPath
 
 	// WithCPU configures the worker pool used for concurrent traversal sessions
 	// in the Run function to utilise a number of go-routines equal to the available

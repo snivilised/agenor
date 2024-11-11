@@ -96,3 +96,22 @@ func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 		return nil
 	}
 }
+
+func PanicAt(at string) core.Client {
+	return func(servant core.Servant) error {
+		node := servant.Node()
+		depth := node.Extension.Depth
+		name := node.Extension.Name
+
+		GinkgoWriter.Printf(
+			"---> 👿 PANIC-AT//%v-CALLBACK: (depth:%v) '%v'\n",
+			name, depth, node.Path,
+		)
+
+		if name == at {
+			panic("foo bar")
+		}
+
+		return nil
+	}
+}

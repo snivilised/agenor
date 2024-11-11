@@ -9,6 +9,7 @@ import (
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/tapable"
 )
@@ -35,6 +36,8 @@ type navigatorAgent struct {
 	ro        *readOptions
 	resources *enclave.Resources
 	session   core.Session
+	persister author
+	ofExtent  string
 }
 
 func (n *navigatorAgent) Ignite(ignition *enclave.Ignition) {
@@ -43,12 +46,12 @@ func (n *navigatorAgent) Ignite(ignition *enclave.Ignition) {
 
 func (n *navigatorAgent) top(ctx context.Context,
 	ns *navigationStatic,
-) (*enclave.KernelResult, error) {
+) (result *enclave.KernelResult, err error) {
 	info, ie := n.ao.hooks.QueryStatus.Invoke()(
 		ns.mediator.resources.Forest.T, ns.tree,
 	)
 
-	err := lo.TernaryF(ie != nil,
+	err = lo.TernaryF(ie != nil,
 		func() error {
 			return n.ao.defects.Fault.Accept(&pref.NavigationFault{
 				Err:  ie,
@@ -105,7 +108,38 @@ const (
 func (n *navigatorAgent) travel(ctx context.Context,
 	ns *navigationStatic,
 	vapour inspection,
-) (bool, error) {
+) (skip bool, err error) {
+	defer func() {
+		if data := recover(); data != nil {
+			to, rescueErr := n.ao.defects.Panic.Rescue(n, &vex{
+				data:            data,
+				vap:             vapour,
+				causeOfVexation: "panic",
+				ofExtent:        n.ofExtent,
+			}) // wrap???
+
+			panicErr, ok := data.(error)
+			if !ok {
+				panicErr = errors.New("")
+			}
+
+			if rescueErr != nil {
+				err = locale.NewTraversalNotSavedError(panicErr, rescueErr)
+			}
+
+			err = lo.TernaryF(rescueErr != nil,
+				func() error {
+					return locale.NewTraversalNotSavedError(panicErr, rescueErr)
+				},
+				func() error {
+					return locale.NewTraversalSavedError(to, panicErr)
+				},
+			)
+
+			skip = skipTraversal
+		}
+	}()
+
 	var (
 		parent = vapour.Current()
 	)
@@ -160,4 +194,12 @@ func (n *navigatorAgent) travel(ctx context.Context,
 	}
 
 	return continueTraversal, nil
+}
+
+func (n *navigatorAgent) Save(data pref.RescueData) (string, error) {
+	if v, ok := data.(vexation); ok {
+		return n.persister.write(v)
+	}
+
+	return "", errors.New("save failed")
 }
