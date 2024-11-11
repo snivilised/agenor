@@ -595,3 +595,100 @@ func (td InvalidPathTemplData) Message() *i18n.Message {
 		Other:       "path: {{.Path}}",
 	}
 }
+
+// 🍒 ResumeTraverseFsMismatch (dynamic i18n error)
+type TraverseFsMismatchTemplData struct {
+	traverseTemplData
+}
+
+func (td TraverseFsMismatchTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "traverse-fs-mismatch.dynamic-error",
+		Description: "traverse fs mismatch dynamic error (prefix for core mismatch error)",
+		Other:       "traverse-fs",
+	}
+}
+
+type TraverseFsMismatchError struct {
+	li18ngo.LocalisableError
+	Wrapped error
+}
+
+func (e TraverseFsMismatchError) Error() string {
+	return fmt.Sprintf("%v, %v", li18ngo.Text(e.Data), e.Wrapped.Error())
+}
+
+func (e TraverseFsMismatchError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewTraverseFsMismatchError() error {
+	return &TraverseFsMismatchError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: TraverseFsMismatchTemplData{},
+		},
+		Wrapped: ErrCoreResumeFsMismatch,
+	}
+}
+
+// 🍒 ResumeFsMismatch (dynamic i18n error)
+type ResumeFsMismatchTemplData struct {
+	traverseTemplData
+}
+
+func (td ResumeFsMismatchTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "resume-fs-mismatch.dynamic-error",
+		Description: "resume fs mismatch dynamic error (prefix for core mismatch error)",
+		Other:       "resume-fs",
+	}
+}
+
+type ResumeFsMismatchError struct {
+	li18ngo.LocalisableError
+	Wrapped error
+}
+
+func (e ResumeFsMismatchError) Error() string {
+	return fmt.Sprintf("%v, %v", li18ngo.Text(e.Data), e.Wrapped.Error())
+}
+
+func (e ResumeFsMismatchError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewResumeFsMismatchError() error {
+	return &ResumeFsMismatchError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: ResumeFsMismatchTemplData{},
+		},
+		Wrapped: ErrCoreResumeFsMismatch,
+	}
+}
+
+// 🥥 CoreResumeFsMismatch (core i18n error)
+type CoreResumeFsMismatchErrorTemplData struct {
+	traverseTemplData
+}
+
+func IsCoreResumeFsMismatchError(err error) bool {
+	return errors.Is(err, ErrCoreResumeFsMismatch)
+}
+
+func (td CoreResumeFsMismatchErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "core-resume-fs-mismatch.core-error",
+		Description: "core resume file system mismatch error",
+		Other:       "resume file system mismatch",
+	}
+}
+
+type CoreResumeFsMismatchError struct {
+	li18ngo.LocalisableError
+}
+
+var ErrCoreResumeFsMismatch = CoreResumeFsMismatchError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: CoreResumeFsMismatchErrorTemplData{},
+	},
+}
