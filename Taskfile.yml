@@ -120,7 +120,7 @@ tasks:
     cmds:
       - go test ./pref
 
-  tpers:
+  t-pers:
     cmds:
       - go test ./internal/persist
 

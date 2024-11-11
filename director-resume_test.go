@@ -9,16 +9,17 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/test/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/traverse/internal/enclave"
 	lab "github.com/snivilised/traverse/internal/laboratory"
 	"github.com/snivilised/traverse/internal/services"
 	"github.com/snivilised/traverse/life"
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("Director(Resume)", Ordered, func() {
@@ -61,14 +62,17 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 				const depth = 2
 
-				_, err := tv.Walk().Configure().Extent(tv.Resume(
+				_, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.TraverseDescription.IsRelative = true
+					active.ResumeDescription.IsRelative = false
+				})).Extent(tv.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: noOpHandler,
 							GetForest: func(_ string) *core.Forest {
 								return &core.Forest{
 									T: fS,
-									R: nef.NewTraverseABS(),
+									R: tfs.New(),
 								}
 							},
 						},

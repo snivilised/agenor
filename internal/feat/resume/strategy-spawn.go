@@ -113,6 +113,12 @@ func (s *spawnStrategy) seed(ctx context.Context,
 
 		intermediate, err := s.mediator.Spawn(ctx, &core.ActiveState{
 			Tree: top,
+			TraverseDescription: core.FsDescription{
+				IsRelative: s.forest.T.IsRelative(),
+			},
+			ResumeDescription: core.FsDescription{
+				IsRelative: s.forest.R.IsRelative(),
+			},
 			// Subscription: tbd,
 		})
 

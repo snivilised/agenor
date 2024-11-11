@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
@@ -17,6 +16,7 @@ import (
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
+	"github.com/snivilised/traverse/tfs"
 )
 
 const (
@@ -129,7 +129,7 @@ func navigate(n *navigation) {
 				GetForest: func(_ string) *core.Forest {
 					return &core.Forest{
 						T: fS,
-						R: nef.NewTraverseABS(),
+						R: tfs.New(),
 					}
 				},
 			},
