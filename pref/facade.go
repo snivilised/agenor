@@ -26,7 +26,7 @@ type (
 
 		// GetForest is optional and enables the client to specify how the
 		// file systems for a path is created. Typically used by unit tests,
-		// but can be used by client to specify a different file systems
+		// but can be used by client to specify different file systems
 		// than the default; eg if the client needs to integrate with a
 		// file system like afero, they can do so by providing the required
 		// adapters.

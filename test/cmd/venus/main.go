@@ -101,7 +101,7 @@ func navigate(n *navigation) {
 	result, err := tv.Walk().Configure().Extent(tv.Prime(
 		&pref.Using{
 			Tree:         n.path,
-			Subscription: tv.SubscribeFiles,
+			Subscription: n.subscription,
 			Head: pref.Head{
 				Handler: func(servant tv.Servant) error {
 					node := servant.Node()

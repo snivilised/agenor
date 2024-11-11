@@ -134,6 +134,11 @@ tasks:
     cmds:
       - go run ./test/cmd/venus/main.go {{.CLI_ARGS}}
 
+  # quick venus test
+  venus-t:
+    cmds:
+      - go run ./test/cmd/venus/main.go -path . -filter RETRO-WAVE,DUB -pattern "*|flac"
+
   # === ginkgo ================================================
 
   # initialise a test suite for a package. (only 1 per package)
