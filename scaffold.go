@@ -7,7 +7,6 @@ import (
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
 	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/tfs"
 )
 
 type (
@@ -98,12 +97,15 @@ func (p *basePlatform) buildForest(facade pref.Facade, tree string) *core.Forest
 			return fn(tree)
 		},
 		func() *core.Forest {
+			// Create an absolute file system for both navigation and resume. We
+			// can share the same instance because absolute fs have no state, as
+			// opposed to a relative fs, which needs use the root path as state
+			// which would be different for navigation and resume purposes.
+			fS := nef.NewTraverseABS()
+
 			return &core.Forest{
-				T: tfs.NewFS(Rel{
-					Root:      tree,
-					Overwrite: noOverwrite,
-				}),
-				R: nef.NewTraverseABS(),
+				T: fS,
+				R: fS,
 			}
 		},
 	)
