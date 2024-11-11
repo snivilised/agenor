@@ -5,22 +5,24 @@ import (
 )
 
 type (
-	MonitorOptions struct {
-		Log *slog.Logger
+	AdminOptions struct {
+		Path string
 	}
 
-	LogRotationOptions struct {
-		// MaxSizeInMb, max size of a log file, before it is re-cycled
-		MaxSizeInMb int
-
-		// MaxNoOfBackups, max number of legacy log files that can exist
-		// before being deleted
-		MaxNoOfBackups int
-
-		// MaxAgeInDays, max no of days before old log file is deleted
-		MaxAgeInDays int
+	MonitorOptions struct {
+		Log   *slog.Logger
+		Admin AdminOptions
 	}
 )
+
+// WithAdminPath defines the path for admin related files
+func WithAdminPath(path string) Option {
+	return func(o *Options) error {
+		o.Monitor.Admin.Path = path
+
+		return nil
+	}
+}
 
 // WithLogger defines a structure logger
 func WithLogger(logger *slog.Logger) Option {

@@ -19,6 +19,7 @@ import (
 type mediator struct {
 	tree         string
 	subscription enums.Subscription
+	facade       pref.Facade
 	impl         NavigatorImpl
 	guardian     *guardian
 	periscope    *level.Periscope
@@ -37,6 +38,37 @@ type mediatorInfo struct {
 	resources    *enclave.Resources
 }
 
+type (
+	vexation interface {
+		vapour() inspection
+		cause() string
+		extent() string
+	}
+
+	vex struct {
+		data            interface{}
+		vap             inspection
+		causeOfVexation string
+		ofExtent        string
+	}
+)
+
+func (v *vex) Data() interface{} {
+	return v.data
+}
+
+func (v *vex) vapour() inspection {
+	return v.vap
+}
+
+func (v *vex) cause() string {
+	return v.causeOfVexation
+}
+
+func (v *vex) extent() string {
+	return v.ofExtent
+}
+
 func newMediator(info *mediatorInfo) *mediator {
 	metrics := info.resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
@@ -45,8 +77,9 @@ func newMediator(info *mediatorInfo) *mediator {
 	)
 
 	return &mediator{
-		tree:         info.facade.Path(), // TODO: ??? is this right for resume?
+		tree:         info.facade.Path(),
 		subscription: info.subscription,
+		facade:       info.facade,
 		impl:         info.impl,
 		guardian: newGuardian(&guardianInfo{
 			subscription: info.subscription,
@@ -102,11 +135,13 @@ func (m *mediator) Conclude(result core.TraverseResult) {
 	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 
-func (m *mediator) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
-	result, err := m.impl.Top(ctx, &navigationStatic{
-		mediator: m,
-		tree:     m.tree,
-		calc:     m.resources.Forest.T.Calc(),
+func (m *mediator) Navigate(ctx context.Context) (result *enclave.KernelResult, err error) {
+	result, err = m.impl.Top(ctx, &navigationStatic{
+		mediator:     m,
+		tree:         m.tree,
+		calc:         m.resources.Forest.T.Calc(),
+		subscription: m.subscription,
+		ofExtent:     m.facade.OfExtent(),
 	})
 
 	if !stock.IsBenignError(err) && m.o != nil {
@@ -122,7 +157,7 @@ func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
 
 func (m *mediator) Resume(ctx context.Context,
 	active *core.ActiveState,
-) (*enclave.KernelResult, error) {
+) (result *enclave.KernelResult, err error) {
 	m.tree = active.Tree
 	// TODO: there is something missing here...
 	// we need to do more with the loaded active state
@@ -131,9 +166,11 @@ func (m *mediator) Resume(ctx context.Context,
 	// - load the periscope with an adjusted depth from active state
 	//
 	return m.impl.Top(ctx, &navigationStatic{
-		mediator: m,
-		tree:     active.Tree,
-		calc:     m.resources.Forest.T.Calc(),
+		mediator:     m,
+		tree:         active.Tree,
+		calc:         m.resources.Forest.T.Calc(),
+		subscription: m.subscription,
+		ofExtent:     m.facade.OfExtent(),
 	})
 }
 

@@ -116,10 +116,6 @@ type (
 		AssignChildren(children []fs.DirEntry)
 	}
 
-	SaveState struct {
-		Path string
-	}
-
 	// RestoreState defines properties required in order to instigate
 	// a resume.
 	RestoreState struct {
@@ -136,17 +132,19 @@ type (
 		OnLoad(active *core.ActiveState)
 	}
 
-	// Loader is to be defined by a unit test and should modify the loaded active state
-	// for the test's own purposes. This allows the unit tests to be isolated from the
-	// content of the loaded active state.
-	Loader func(active *core.ActiveState)
-
 	// OptionHarvest
 	OptionHarvest interface {
 		Options() *pref.Options
 		Binder() *opts.Binder
 		Loaded() *opts.LoadInfo
 	}
+)
+
+type (
+	// Loader is to be defined by a unit test and should modify the loaded active state
+	// for the test's own purposes. This allows the unit tests to be isolated from the
+	// content of the loaded active state.
+	Loader func(active *core.ActiveState)
 )
 
 func (fn Loader) OnLoad(active *core.ActiveState) {

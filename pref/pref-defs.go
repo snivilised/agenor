@@ -6,3 +6,13 @@ package pref
 const (
 	badge = "badge: option-requester"
 )
+
+type (
+	RescueData interface {
+		Data() interface{}
+	}
+
+	Recovery interface {
+		Save(data RescueData) (string, error)
+	}
+)

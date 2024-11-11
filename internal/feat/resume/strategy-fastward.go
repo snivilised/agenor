@@ -39,7 +39,7 @@ func (f *FastwardFilter) Source() string {
 
 // IsMatch does this node match the filter
 func (f *FastwardFilter) IsMatch(node *core.Node) bool {
-	return node.Extension.Name == f.name && node.Parent.Path == f.parent
+	return node.Extension.Name == f.name && (node.Parent.Path == f.parent || f.parent == ".")
 }
 
 // IsApplicable is this filter applicable to this node's scope
@@ -76,11 +76,13 @@ type fastwardStrategy struct {
 }
 
 func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
-	// We don't use the Hibernate.Wake/Sleep-At, as those are defined bt the client.
+	// We don't use the Hibernate.Wake/Sleep-At, as those are defined by the client.
 	// Instead we just need to create a filter on the fly from the load state...
 	//
 	calc := s.forest.T.Calc()
 	scope := lo.Ternary(load.State.IsDir, enums.ScopeDirectory, enums.ScopeFile)
+	parent := calc.Dir(load.State.CurrentPath)
+
 	s.filter, err = filtering.New(
 		&core.FilterDef{
 			Type: enums.FilterTypeCustom,
@@ -92,7 +94,7 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 				),
 				scope:  scope,
 				source: load.State.CurrentPath,
-				parent: calc.Dir(load.State.CurrentPath),
+				parent: parent,
 				name:   calc.Base(load.State.CurrentPath),
 			},
 		},

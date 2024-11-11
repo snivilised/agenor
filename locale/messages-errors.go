@@ -591,7 +591,7 @@ type InvalidPathTemplData struct {
 func (td InvalidPathTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-path.dynamic-error",
-		Description: "invalid path dynamic error",
+		Description: "invalid path (dynamic error)",
 		Other:       "path: {{.Path}}",
 	}
 }
@@ -604,7 +604,7 @@ type TraverseFsMismatchTemplData struct {
 func (td TraverseFsMismatchTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "traverse-fs-mismatch.dynamic-error",
-		Description: "traverse fs mismatch dynamic error (prefix for core mismatch error)",
+		Description: "traverse fs mismatch (dynamic error) (prefix for core mismatch error)",
 		Other:       "traverse-fs",
 	}
 }
@@ -639,7 +639,7 @@ type ResumeFsMismatchTemplData struct {
 func (td ResumeFsMismatchTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "resume-fs-mismatch.dynamic-error",
-		Description: "resume fs mismatch dynamic error (prefix for core mismatch error)",
+		Description: "resume fs mismatch (dynamic error) (prefix for core mismatch error)",
 		Other:       "resume-fs",
 	}
 }
@@ -690,5 +690,108 @@ type CoreResumeFsMismatchError struct {
 var ErrCoreResumeFsMismatch = CoreResumeFsMismatchError{
 	LocalisableError: li18ngo.LocalisableError{
 		Data: CoreResumeFsMismatchErrorTemplData{},
+	},
+}
+
+// 🍒 TraversalSaved (dynamic i18n error)
+type TraversalSavedTemplData struct {
+	traverseTemplData
+}
+
+func (td TraversalSavedTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "traversal-saved.dynamic-error",
+		Description: "traversal saved due to panic (dynamic error)",
+		Other:       "traversal saved: {{.Field}}",
+	}
+}
+
+type TraversalSavedError struct {
+	li18ngo.LocalisableError
+	Wrapped     error
+	Destination string
+}
+
+func (e TraversalSavedError) Error() string {
+	return fmt.Sprintf("%v, %v", e.Wrapped.Error(), li18ngo.Text(e.Data))
+}
+
+func (e TraversalSavedError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewTraversalSavedError(destination string, _ error) error {
+	return &TraversalSavedError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: TraversalSavedTemplData{},
+		},
+		Wrapped:     ErrCorePanicOccurred,
+		Destination: destination,
+	}
+}
+
+// 🍒 TraversalNotSaved (dynamic i18n error)
+type TraversalNotSavedTemplData struct {
+	traverseTemplData
+}
+
+func (td TraversalNotSavedTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "traversal-not-saved.dynamic-error",
+		Description: "panic induced traversal not saved (dynamic error)",
+		Other:       "field: {{.Reason}}",
+	}
+}
+
+type TraversalNotSavedError struct {
+	li18ngo.LocalisableError
+	Wrapped error
+	Reason  error
+}
+
+func (e TraversalNotSavedError) Error() string {
+	return fmt.Sprintf("%v, %v (%v)",
+		e.Wrapped.Error(), li18ngo.Text(e.Data), e.Reason.Error(),
+	)
+}
+
+func (e TraversalNotSavedError) Unwrap() error {
+	return e.Wrapped
+}
+
+func NewTraversalNotSavedError(_, reason error) error {
+	return &TraversalNotSavedError{
+		LocalisableError: li18ngo.LocalisableError{
+			Data: TraversalNotSavedTemplData{},
+		},
+		Wrapped: ErrCorePanicOccurred,
+		Reason:  reason,
+	}
+}
+
+// 🥥 CorePanicOccurred (core i18n error)
+type CorePanicOccurredErrorTemplData struct {
+	traverseTemplData
+}
+
+func IsCorePanicOccurredError(err error) bool {
+	return errors.Is(err, ErrCorePanicOccurred)
+}
+
+func (td CorePanicOccurredErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "core-panic-occurred.core-error",
+		Description: "core error",
+		Other:       "panic occurred",
+	}
+}
+
+type CorePanicOccurredError struct {
+	li18ngo.LocalisableError
+}
+
+var ErrCorePanicOccurred = CorePanicOccurredError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: CorePanicOccurredErrorTemplData{},
 	},
 }

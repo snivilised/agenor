@@ -47,6 +47,10 @@ func GetJSONPath() string {
 	return yoke(jroot, "unmarshal", Static.JSONFile)
 }
 
+func GetJSONDir() string {
+	return hydra.Repo(filepath.Join("test", "json"))
+}
+
 func IgnoreFault(_ *pref.NavigationFault) error {
 	return nil
 }

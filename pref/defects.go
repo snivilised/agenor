@@ -17,10 +17,10 @@ type (
 
 	// PanicHandler
 	PanicHandler interface {
-		Rescue()
+		Rescue(r Recovery, data RescueData) (string, error)
 	}
 
-	Rescuer func()
+	Rescuer func(r Recovery, data RescueData) (string, error)
 
 	// FaultHandler is called to handle an error that occurs when Stating
 	// the tree directory. When an error occurs, traversal terminates
@@ -57,11 +57,13 @@ func (fn Accepter) Accept(fault *NavigationFault) error {
 	return fn(fault)
 }
 
-func (fn Rescuer) Rescue() {
-	fn()
+func (fn Rescuer) Rescue(r Recovery, data RescueData) (string, error) {
+	return fn(r, data)
 }
 
-func (fn Asker) Ask(current *core.Node, contents core.DirectoryContents, err error) (enums.SkipTraversal, error) {
+func (fn Asker) Ask(current *core.Node, contents core.DirectoryContents,
+	err error,
+) (enums.SkipTraversal, error) {
 	return fn(current, contents, err)
 }
 
