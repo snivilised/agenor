@@ -144,35 +144,19 @@ func (p *primaryPlatform) buildOptions(using *pref.Using,
 	addons []Addon,
 	ext *primeExtent,
 	settings ...pref.Option,
-) (oh enclave.OptionHarvest, err error) {
-	type baggage struct {
-		harvest enclave.OptionHarvest
-		err     error
-	}
+) (enclave.OptionHarvest, error) {
+	return func(ve error) (enclave.OptionHarvest, error) {
+		if using.O != nil {
+			return &optionHarvest{
+				o:      using.O,
+				binder: opts.Push(using.O),
+			}, ve
+		}
 
-	b := func(ve error) *baggage {
-		return lo.TernaryF(using.O != nil,
-			func() *baggage {
-				return &baggage{
-					harvest: &optionHarvest{
-						o:      using.O,
-						binder: opts.Push(using.O),
-					},
-					err: ve,
-				}
-			},
-			func() *baggage {
-				harvest, err := ext.options(addons, settings...)
+		harvest, err := ext.options(addons, settings...)
 
-				return &baggage{
-					harvest: harvest,
-					err:     lo.Ternary(ve != nil, ve, err),
-				}
-			},
-		)
+		return harvest, lo.Ternary(ve != nil, ve, err)
 	}(using.Validate())
-
-	return b.harvest, b.err
 }
 
 type resumePlatform struct {
