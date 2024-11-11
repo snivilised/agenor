@@ -3,6 +3,7 @@ package pref
 import (
 	"io"
 	"log/slog"
+	"path/filepath"
 	"runtime"
 
 	"github.com/snivilised/traverse/core"
@@ -81,9 +82,6 @@ func IfOptionF(condition bool, option ConditionalOption) Option {
 	return nil
 }
 
-// IfElseOptionF is similar to IfOptionF except that it accepts 2 options, the
-// first represents the returned option if the condition true and the second
-// if false.
 // IfElseOptionF provides conditional option selection similar to IfOptionF but
 // handles both true and false cases. It accepts a condition and two
 // ConditionalOption functions:
@@ -125,6 +123,9 @@ func DefaultOptions() *Options {
 		Hooks: newHooks(),
 		Monitor: MonitorOptions{
 			Log: nopLogger,
+			Admin: AdminOptions{
+				Path: filepath.Join("~", core.PackageName, "admin", "resume"),
+			},
 		},
 
 		Defects: DefectOptions{

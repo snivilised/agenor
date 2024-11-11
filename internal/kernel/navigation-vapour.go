@@ -42,6 +42,28 @@ func (v *navigationVapour) clear() {
 	}
 }
 
+func (v *navigationVapour) active(tree string,
+	forest *core.Forest,
+	depth int,
+	metrics core.Metrics,
+) *core.ActiveState {
+	return &core.ActiveState{
+		Tree: tree,
+		TraverseDescription: core.FsDescription{
+			IsRelative: forest.T.IsRelative(),
+		},
+		ResumeDescription: core.FsDescription{
+			IsRelative: forest.R.IsRelative(),
+		},
+		Subscription: v.ns.subscription,
+		Hibernation:  enums.HibernationRetired, // TODO:check
+		CurrentPath:  v.present.Path,
+		IsDir:        v.present.IsDirectory(),
+		Depth:        depth,
+		Metrics:      metrics,
+	}
+}
+
 func (v *navigationVapour) Sort(et enums.EntryType) []fs.DirEntry {
 	v.cargo.Sort(et)
 

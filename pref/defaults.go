@@ -86,8 +86,8 @@ func DefaultFaultHandler(fault *NavigationFault) error {
 	return fault.Err
 }
 
-func DefaultPanicHandler() {
-	// maybe this should invoke save
+func DefaultPanicHandler(recovery Recovery, data RescueData) (string, error) {
+	return recovery.Save(data)
 }
 
 func DefaultSkipHandler(*core.Node,

@@ -1,6 +1,8 @@
 package core
 
 import (
+	"io/fs"
+	"path/filepath"
 	"time"
 
 	"github.com/snivilised/traverse/enums"
@@ -8,7 +10,7 @@ import (
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
-// cutting concerns try to keep to a minimum to reduce rippling changes.
+// cutting concerns.
 
 type (
 	// ResultCompletion used to determine if the result really represents
@@ -59,8 +61,14 @@ type (
 	// during traversal.
 	Client func(servant Servant) error
 
+	// FsDescription description of a file system
 	FsDescription struct {
 		IsRelative bool
+	}
+
+	Permissions struct {
+		File fs.FileMode
+		Dir  fs.FileMode
 	}
 
 	ActiveState struct {
@@ -74,6 +82,9 @@ type (
 		Depth               int
 		Metrics             Metrics
 	}
+
+	// TimeFunc get time
+	TimeFunc func() time.Time
 
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
@@ -97,4 +108,26 @@ func (fn Completion) IsComplete() bool {
 func (s *ActiveState) Clone() *ActiveState {
 	c := *s
 	return &c
+}
+
+const (
+	FileSystemTimeFormat = "2006-01-02_15-04-05"
+	PackageName          = "traverse"
+	filePerm             = 0o666
+	dirPerm              = 0o777
+)
+
+var (
+	Now        TimeFunc
+	Perms      Permissions
+	ResumeTail string
+)
+
+func init() {
+	Now = time.Now
+	Perms = Permissions{
+		File: filePerm,
+		Dir:  dirPerm,
+	}
+	ResumeTail = filepath.Join(PackageName, "admin", "resume")
 }

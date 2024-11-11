@@ -96,19 +96,20 @@ type (
 	// bootstrap and doesn't change after navigation begins. Used to help
 	// minimise allocations.
 	navigationStatic struct {
-		mediator *mediator
-		tree     string
-		calc     nef.PathCalc
+		mediator     *mediator
+		tree         string
+		calc         nef.PathCalc
+		ofExtent     string
+		subscription enums.Subscription
 	}
 
 	inspection interface { // after content has been read
 		enclave.Inspection
 		static() *navigationStatic
+		active(tree string,
+			forest *core.Forest,
+			depth int,
+			metrics core.Metrics) *core.ActiveState
 		clear()
-	}
-
-	navigationAssets struct {
-		ns     navigationStatic
-		vapour *navigationVapour
 	}
 )

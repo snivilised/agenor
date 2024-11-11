@@ -21,8 +21,8 @@ type (
 	testSkipHandler  struct{}
 )
 
-func (*testFaultHandler) Accept(*pref.NavigationFault) error { return nil }
-func (*testPanicHandler) Rescue()                            {}
+func (*testFaultHandler) Accept(*pref.NavigationFault) error                        { return nil }
+func (*testPanicHandler) Rescue(_ pref.Recovery, _ pref.RescueData) (string, error) { return "", nil }
 func (*testSkipHandler) Ask(*core.Node, core.DirectoryContents, error) (enums.SkipTraversal, error) {
 	return enums.SkipAllTraversal, nil
 }

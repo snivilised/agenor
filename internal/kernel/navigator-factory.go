@@ -1,6 +1,7 @@
 package kernel
 
 import (
+	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/enums"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/locale"
@@ -57,6 +58,11 @@ func newImpl(o *pref.Options,
 			behaviour: &o.Behaviours.Sort,
 		},
 		resources: creation.Resources,
+		persister: author{
+			o:     o,
+			perms: core.Perms,
+		},
+		ofExtent: creation.Facade.OfExtent(),
 	}
 
 	switch subscription {
