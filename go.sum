@@ -30,8 +30,8 @@ github.com/rogpeppe/go-internal v1.13.1 h1:KvO1DLK/DRN07sQ1LQKScxyZJuNnedQ5/wKSR
 github.com/rogpeppe/go-internal v1.13.1/go.mod h1:uMEvuHeurkdAXX61udpOXGD/AzZDWNMNyH2VO9fmH0o=
 github.com/snivilised/li18ngo v0.1.9 h1:xq+9yUv9JBY3fwzCzqCt0bIUdFlzDXcSjC2fQiSF3O0=
 github.com/snivilised/li18ngo v0.1.9/go.mod h1:7soFZVy6K6P8jgHYn0fN2Sw0r66isPa/K/K+r3fl19Q=
-github.com/snivilised/nefilim v0.1.8 h1:Srnl6rw7cB/cy3jQT8QfQ0ZNxumQX0Yj/Z+qH3+5TWc=
-github.com/snivilised/nefilim v0.1.8/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
+github.com/snivilised/nefilim v0.1.9 h1:KUUc4b8xeShDiiB15MuI4F9P1VlZF0bOwh/1UWsZLOA=
+github.com/snivilised/nefilim v0.1.9/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
 github.com/snivilised/pants v0.1.2 h1:6Abj02gV5rFYyKfCsmeEiOi1pLdRyITKUY5oDoRgYuU=
 github.com/snivilised/pants v0.1.2/go.mod h1:BOZa24yLxVjjnTCFWQeCzUWL8eK4TLtXtkz3pMdEFQM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
