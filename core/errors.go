@@ -216,3 +216,9 @@ var ErrWrongPrimaryFacade = errors.New(
 var ErrWrongResumeFacade = errors.New(
 	"wrong resume facade",
 )
+
+// ❌ Nil Forest error
+
+var ErrNilForest = errors.New(
+	"forest is nil",
+)

@@ -59,14 +59,20 @@ type (
 	// during traversal.
 	Client func(servant Servant) error
 
+	FsDescription struct {
+		IsRelative bool
+	}
+
 	ActiveState struct {
-		Tree         string
-		Subscription enums.Subscription
-		Hibernation  enums.Hibernation
-		CurrentPath  string
-		IsDir        bool
-		Depth        int
-		Metrics      Metrics
+		Tree                string
+		TraverseDescription FsDescription
+		ResumeDescription   FsDescription
+		Subscription        enums.Subscription
+		Hibernation         enums.Hibernation
+		CurrentPath         string
+		IsDir               bool
+		Depth               int
+		Metrics             Metrics
 	}
 
 	// SimpleHandler is a function that takes no parameters and can

@@ -40,6 +40,12 @@
   },
   "Active": {
     "Tree": "json/marshal",
+    "TraverseDescription": {
+      "IsRelative": true
+    },
+    "ResumeDescription": {
+      "IsRelative": false
+    },
     "Hibernation": 1,
     "CurrentPath": "/top/a/b/c",
     "IsDir": true,

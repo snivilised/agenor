@@ -1,12 +1,13 @@
 package tv
 
 import (
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/traverse/core"
 	"github.com/snivilised/traverse/internal/enclave"
 	"github.com/snivilised/traverse/internal/opts"
 	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/traverse/tfs"
 )
 
 type (
@@ -66,7 +67,7 @@ func newResumePlatform(facade pref.Facade,
 		baseExtent: baseExtent{
 			fac: facade,
 			trees: &core.Forest{
-				R: nef.NewTraverseABS(),
+				R: tfs.New(),
 			},
 		},
 		relic: relic,
@@ -77,7 +78,16 @@ func newResumePlatform(facade pref.Facade,
 			err
 	}
 
-	ext.trees = resume.buildForest(relic, harvest.Loaded().State.Tree)
+	ext.trees = resume.buildForest(relic, harvest.Loaded().State)
+	if ext.trees == nil {
+		return resume.base.pacify(facade, settings...), core.ErrNilForest
+	}
+
+	if ext.trees.T == nil {
+		err = locale.NewTraverseFsMismatchError()
+	} else if ext.trees.R == nil {
+		err = locale.NewResumeFsMismatchError()
+	}
 
 	return &platform{
 		fac: facade,
@@ -87,28 +97,6 @@ func newResumePlatform(facade pref.Facade,
 }
 
 type basePlatform struct {
-}
-
-func (p *basePlatform) buildForest(facade pref.Facade, tree string) *core.Forest {
-	fn := facade.Forest()
-
-	return lo.TernaryF(fn != nil,
-		func() *core.Forest {
-			return fn(tree)
-		},
-		func() *core.Forest {
-			// Create an absolute file system for both navigation and resume. We
-			// can share the same instance because absolute fs have no state, as
-			// opposed to a relative fs, which needs use the root path as state
-			// which would be different for navigation and resume purposes.
-			fS := nef.NewTraverseABS()
-
-			return &core.Forest{
-				T: fS,
-				R: fS,
-			}
-		},
-	)
 }
 
 func (p *basePlatform) pacify(facade pref.Facade,
@@ -137,7 +125,22 @@ type primaryPlatform struct {
 }
 
 func (p *primaryPlatform) buildForest(using *pref.Using) *core.Forest {
-	return p.base.buildForest(using, using.Path())
+	fn := using.Forest()
+	tree := using.Path()
+
+	if fn != nil {
+		return fn(tree)
+	}
+	// Create an absolute file system for both navigation and resume. We
+	// can share the same instance because absolute fs have no state, as
+	// opposed to a relative fs, which needs use the root path as state
+	// which would be different for navigation and resume purposes.
+	fS := tfs.New()
+
+	return &core.Forest{
+		T: fS,
+		R: fS,
+	}
 }
 
 func (p *primaryPlatform) buildOptions(using *pref.Using,
@@ -163,8 +166,47 @@ type resumePlatform struct {
 	base basePlatform
 }
 
-func (p *resumePlatform) buildForest(relic *pref.Relic, tree string) *core.Forest {
-	return p.base.buildForest(relic, tree)
+func (p *resumePlatform) buildForest(relic *pref.Relic, active *core.ActiveState) *core.Forest {
+	fn := relic.Forest()
+	forest := lo.TernaryF(fn != nil,
+		func() *core.Forest {
+			return fn(active.Tree)
+		},
+		func() *core.Forest {
+			// Create an absolute file system for both navigation and resume. We
+			// can share the same instance because absolute fs have no state, as
+			// opposed to a relative fs, which needs use the root path as state
+			// which would be different for navigation and resume purposes.
+			fS := tfs.New()
+
+			return &core.Forest{
+				T: fS,
+				R: fS,
+			}
+		},
+	)
+
+	if forest == nil {
+		return nil
+	}
+
+	// Client may not have provided a function to create the forest,
+	// instead relying on the default, but as we create an absolute fs by
+	// default, this may not match the type of traverse fs created by
+	// the original traversal session as per the active state loaded.
+	// If this is the case, then the client should provide a file system
+	// that matches the loaded active state from the previous session.
+	//
+
+	if forest.T.IsRelative() != active.TraverseDescription.IsRelative {
+		forest.T = nil
+	}
+
+	if forest.R.IsRelative() != active.ResumeDescription.IsRelative {
+		forest.R = nil
+	}
+
+	return forest
 }
 
 func (p *platform) extent() extent {

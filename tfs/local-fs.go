@@ -11,5 +11,5 @@ func NewFS(rel nef.Rel) TraversalFS {
 
 // New creates an absolute local file system required for traversal.
 func New() TraversalFS {
-	return nef.NewTraverseABS()
+	return nef.NewUniversalABS()
 }

@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/li18ngo"
-	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/test/luna"
 	tv "github.com/snivilised/traverse"
 	"github.com/snivilised/traverse/core"
@@ -19,6 +18,7 @@ import (
 	"github.com/snivilised/traverse/locale"
 	"github.com/snivilised/traverse/pref"
 	"github.com/snivilised/traverse/test/hydra"
+	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -77,7 +77,7 @@ var _ = Describe("feature", Ordered, func() {
 								GetForest: func(_ string) *core.Forest {
 									return &core.Forest{
 										T: fS,
-										R: nef.NewTraverseABS(),
+										R: tfs.New(),
 									}
 								},
 							},
@@ -146,7 +146,7 @@ var _ = Describe("feature", Ordered, func() {
 						GetForest: func(_ string) *core.Forest {
 							return &core.Forest{
 								T: fS,
-								R: nef.NewTraverseABS(),
+								R: tfs.New(),
 							}
 						},
 					},

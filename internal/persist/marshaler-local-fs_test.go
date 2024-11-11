@@ -81,7 +81,10 @@ var _ = Describe("Marshaler", Ordered, func() {
 					jo, err := persist.Marshal(&persist.MarshalRequest{
 						O: o,
 						Active: &core.ActiveState{
-							Tree:        destination,
+							Tree: destination,
+							TraverseDescription: core.FsDescription{
+								IsRelative: writerFS.IsRelative(),
+							},
 							Hibernation: enums.HibernationPending,
 							CurrentPath: "/top/a/b/c",
 							Depth:       3,
