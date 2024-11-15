@@ -55,7 +55,7 @@ type (
 	KernelController interface {
 		KernelNavigator
 		Ignite(ignition *Ignition)
-		Result(ctx context.Context, err error) *KernelResult
+		Result(ctx context.Context) *KernelResult
 		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Conclude(result core.TraverseResult)
 	}

@@ -34,7 +34,6 @@ type (
 	TraverseResult interface {
 		Metrics() Reporter
 		Session() Session
-		Error() error
 	}
 
 	// Servant provides the client with facility to request properties

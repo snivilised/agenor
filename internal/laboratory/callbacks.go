@@ -22,9 +22,9 @@ func Begin(em string) life.BeginHandler {
 }
 
 func End(em string) life.EndHandler {
-	return func(result core.TraverseResult) {
+	return func(_ core.TraverseResult) {
 		GinkgoWriter.Printf(
-			"---> %v [traverse-navigator-test:END], err: '%v'\n", em, result.Error(),
+			"---> %v [traverse-navigator-test:END]\n", em,
 		)
 	}
 }

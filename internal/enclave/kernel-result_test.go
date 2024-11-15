@@ -16,7 +16,7 @@ var _ = Describe("KernelResult", func() {
 			sess     *session
 			reporter *core.Supervisor
 			trig     *lab.Trigger
-			err      error
+			// err      error
 			complete bool
 		)
 
@@ -39,7 +39,7 @@ var _ = Describe("KernelResult", func() {
 				entry.arrange(trig)
 				result := enclave.NewResult(sess,
 					reporter,
-					err,
+					// err,
 					complete,
 				)
 				entry.assert(&asserter{

@@ -70,7 +70,7 @@ func (n *navigatorAgent) top(ctx context.Context,
 		},
 	)
 
-	return ns.mediator.impl.Result(ctx, err), err
+	return ns.mediator.impl.Result(ctx), err
 }
 
 // Result is the single point at which a Result is constructed. Due to
@@ -79,12 +79,10 @@ func (n *navigatorAgent) top(ctx context.Context,
 // Result that occurs prior to completion are as a result of child
 // navigation whose result should be combined in the final Result. This
 // is all handled by the strategy.
-func (n *navigatorAgent) Result(_ context.Context,
-	err error,
-) *enclave.KernelResult {
+func (n *navigatorAgent) Result(_ context.Context) *enclave.KernelResult {
 	result := enclave.NewResult(n.session,
 		n.resources.Supervisor,
-		err,
+		// err,
 		n.session.IsComplete(),
 	)
 

@@ -31,7 +31,7 @@ type (
 		) (bool, error)
 
 		// Result
-		Result(ctx context.Context, err error) *enclave.KernelResult
+		Result(ctx context.Context) *enclave.KernelResult
 	}
 
 	// NavigatorDriver
