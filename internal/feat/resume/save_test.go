@@ -39,13 +39,12 @@ func (s arrangeSave) arrange() *saveAsserter {
 		},
 	}
 
-	full, _ := mocks.HomeFunc()
-	file, err := s.rS.Ensure(nef.PathAs{
-		Name:    full,
+	directory, _ := mocks.HomeFunc()
+	_, err := s.rS.Ensure(nef.PathAs{
+		Name:    directory,
 		Default: s.name,
 		Perm:    lab.Perms.Dir,
 	})
-	directory, _ := calc.Split(file)
 
 	Expect(err).To(Succeed())
 	Expect(luna.AsDirectory(directory)).To(luna.ExistInFS(s.rS))

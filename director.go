@@ -78,9 +78,9 @@ func Prime(facade pref.Facade, settings ...pref.Option) *Builders {
 		scaffold: scaffolding(func(addons ...Addon) (scaffold, error) {
 			return newPrimaryPlatform(facade, addons, settings...)
 		}),
-		navigator: kernel.Builder(func(creation *kernel.Creation) *kernel.Artefacts {
+		navigator: kernel.Builder(func(inception *kernel.Inception) *kernel.Artefacts {
 			return kernel.PrimeArtefacts(
-				creation,
+				inception,
 				&kernel.Benign{},
 			)
 		}),

@@ -68,7 +68,7 @@ func IfOption(condition bool, option Option) Option {
 	return nil
 }
 
-// ConditionalOption allows the delaying of creation of the option until
+// ConditionalOption allows the delaying of inception of the option until
 // the condition is known to be true. This is in contrast to If where the
 // Option is pre-created, regardless of the condition.
 type ConditionalOption func() Option

@@ -64,29 +64,29 @@ func Load(restoration *enclave.RestoreState,
 	return opts.Bind(result.O, result.Active, settings...)
 }
 
-func Artefacts(creation *kernel.Creation) *kernel.Artefacts {
+func Artefacts(inception *kernel.Inception) *kernel.Artefacts {
 	// the error from the following facade typecast is ignored, because
-	// this is already checked by the creation of the scaffolding.
+	// this is already checked by the inception of the scaffolding.
 	//
-	relic, _ := creation.Facade.(*pref.Relic)
+	relic, _ := inception.Facade.(*pref.Relic)
 
 	sealer := lo.Ternary(relic.Strategy == enums.ResumeStrategyFastward,
 		enclave.GuardianSealer(&FastwardGuardianSealer{}),
 		enclave.GuardianSealer(&kernel.Benign{}),
 	)
 
-	controller := kernel.New(creation, sealer)
-	strategy := newStrategy(creation, sealer, controller)
+	mediator := kernel.NewMediator(inception, sealer)
+	strategy := newStrategy(inception, sealer, mediator)
 
 	return &kernel.Artefacts{
 		Kontroller: &Controller{
-			kc:       controller,
+			med:      mediator,
 			relic:    relic,
-			load:     creation.Harvest.Loaded(),
+			load:     inception.Harvest.Loaded(),
 			strategy: strategy,
 		},
-		Mediator:  controller.Mediator(),
-		Resources: creation.Resources,
+		Mediator:  mediator,
+		Resources: inception.Resources,
 		IfResult:  strategy.ifResult,
 	}
 }

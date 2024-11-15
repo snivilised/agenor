@@ -12,22 +12,18 @@ import (
 )
 
 type Controller struct {
-	kc       enclave.KernelController
+	med      enclave.Mediator
 	relic    *pref.Relic
 	load     *opts.LoadInfo
 	strategy Strategy
 }
 
 func (c *Controller) Ignite(ignition *enclave.Ignition) {
-	c.kc.Ignite(ignition)
+	c.med.Ignite(ignition)
 }
 
 func (c *Controller) Result(ctx context.Context, err error) *enclave.KernelResult {
-	return c.kc.Result(ctx, err)
-}
-
-func (c *Controller) Mediator() enclave.Mediator {
-	return c.kc.Mediator()
+	return c.med.Result(ctx, err)
 }
 
 func (c *Controller) Strategy() Strategy {
@@ -41,23 +37,23 @@ func (c *Controller) Resume(context.Context,
 }
 
 func (c *Controller) Conclude(result core.TraverseResult) {
-	c.kc.Conclude(result)
+	c.med.Conclude(result)
 }
 
-func newStrategy(creation *kernel.Creation,
+func newStrategy(inception *kernel.Inception,
 	sealer enclave.GuardianSealer,
-	kc enclave.KernelController,
+	mediator enclave.Mediator,
 ) (strategy Strategy) {
-	load := creation.Harvest.Loaded()
-	relic, _ := creation.Facade.(*pref.Relic)
+	load := inception.Harvest.Loaded()
+	relic, _ := inception.Facade.(*pref.Relic)
 	base := baseStrategy{
 		o:        load.O,
 		active:   load.State,
 		relic:    relic,
 		sealer:   sealer,
-		kc:       kc,
-		mediator: kc.Mediator(),
-		forest:   creation.Resources.Forest,
+		kc:       mediator,
+		mediator: mediator,
+		forest:   inception.Resources.Forest,
 	}
 
 	switch relic.Strategy {

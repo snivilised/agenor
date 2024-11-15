@@ -47,6 +47,19 @@ type (
 		Arrange(active, order []enums.Role)
 	}
 
+	KernelNavigator interface {
+		Navigate(ctx context.Context) (*KernelResult, error)
+	}
+
+	// KernelController
+	KernelController interface {
+		KernelNavigator
+		Ignite(ignition *Ignition)
+		Result(ctx context.Context, err error) *KernelResult
+		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
+		Conclude(result core.TraverseResult)
+	}
+
 	// PluginInit
 	PluginInit struct {
 		O          *pref.Options
@@ -60,9 +73,9 @@ type (
 	Mediator interface {
 		Guardian
 		Arrangeable
-		Navigate(ctx context.Context) (*KernelResult, error)
+		KernelController
+		//
 		Read(path string) ([]fs.DirEntry, error)
-		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Spawn(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
 		Bridge(tree, current string)
 		Supervisor() *core.Supervisor
@@ -90,20 +103,6 @@ type (
 	// Ignition
 	Ignition struct {
 		Session core.Session
-	}
-
-	KernelNavigator interface {
-		Navigate(ctx context.Context) (*KernelResult, error)
-	}
-
-	// KernelController
-	KernelController interface {
-		KernelNavigator
-		Ignite(ignition *Ignition)
-		Result(ctx context.Context, err error) *KernelResult
-		Mediator() Mediator
-		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
-		Conclude(result core.TraverseResult)
 	}
 
 	// Inspection

@@ -47,7 +47,7 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 	// BUILD NAVIGATOR
 	//
 	subscription := ext.subscription()
-	artefacts := bs.navigator.Build(&kernel.Creation{
+	artefacts := bs.navigator.Build(&kernel.Inception{
 		Facade:       ext.facade(),
 		Subscription: subscription,
 		Harvest:      harvest,
