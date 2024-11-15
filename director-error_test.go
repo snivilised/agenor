@@ -1,4 +1,4 @@
-package tv_test
+package age_test
 
 import (
 	"context"
@@ -10,31 +10,31 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
 )
 
 type traverseErrorTE struct {
 	given string
-	using *tv.Using
-	relic *tv.Relic
+	using *age.Using
+	relic *age.Relic
 }
 
 var _ = Describe("director error", Ordered, func() {
-	var handler tv.Client
+	var handler age.Client
 
 	BeforeAll(func() {
-		handler = func(_ tv.Servant) error {
+		handler = func(_ age.Servant) error {
 			return nil
 		}
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -64,9 +64,9 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "using missing tree path",
-			using: &tv.Using{
-				Subscription: tv.SubscribeFiles,
-				Head: tv.Head{
+			using: &age.Using{
+				Subscription: age.SubscribeFiles,
+				Head: age.Head{
 					Handler: handler,
 				},
 			},
@@ -74,8 +74,8 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "using missing subscription",
-			using: &tv.Using{
-				Head: tv.Head{
+			using: &age.Using{
+				Head: age.Head{
 					Handler: handler,
 				},
 				Tree: "/tree-traverse-path",
@@ -84,28 +84,28 @@ var _ = Describe("director error", Ordered, func() {
 
 		Entry(nil, &traverseErrorTE{
 			given: "using missing handler",
-			using: &tv.Using{
-				Subscription: tv.SubscribeFiles,
-				Head:         tv.Head{},
+			using: &age.Using{
+				Subscription: age.SubscribeFiles,
+				Head:         age.Head{},
 				Tree:         "/tree-traverse-path",
 			},
 		}),
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing restore from path",
-			relic: &tv.Relic{
-				Head: tv.Head{
+			relic: &age.Relic{
+				Head: age.Head{
 					Handler: handler,
 				},
 				From:     "/resume-from-path",
-				Strategy: tv.ResumeStrategySpawn,
+				Strategy: age.ResumeStrategySpawn,
 			},
 		}),
 
 		Entry(nil, &traverseErrorTE{
 			given: "as missing resume strategy",
-			relic: &tv.Relic{
-				Head: tv.Head{
+			relic: &age.Relic{
+				Head: age.Head{
 					Handler: handler,
 				},
 				From: "/resume-from-path",
@@ -120,7 +120,7 @@ var _ = Describe("director error", Ordered, func() {
 			ctx, cancel := context.WithCancel(specCtx)
 			defer cancel()
 
-			_, err := tv.Walk().Configure().Extent(tv.Prime(
+			_, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Head: pref.Head{
 						Handler: noOpHandler,
@@ -140,9 +140,9 @@ var _ = Describe("director error", Ordered, func() {
 			ctx, cancel := context.WithCancel(specCtx)
 			defer cancel()
 
-			_, err := tv.Walk().Configure().Extent(tv.Prime(
+			_, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
-					Subscription: tv.SubscribeFiles,
+					Subscription: age.SubscribeFiles,
 					Head: pref.Head{
 						Handler: noOpHandler,
 					},
@@ -166,7 +166,7 @@ var _ = Describe("director error", Ordered, func() {
 
 			var wg sync.WaitGroup
 
-			_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
+			_, err := age.Run(&wg).Configure().Extent(age.Prime(
 				&pref.Using{
 					Head: pref.Head{
 						Handler: noOpHandler,
@@ -186,14 +186,14 @@ var _ = Describe("director error", Ordered, func() {
 			defer cancel()
 
 			invoked := false
-			_, _ = tv.Walk().Configure().Extent(tv.Prime(
+			_, _ = age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Head: pref.Head{
 						Handler: noOpHandler,
 					},
 					Tree: TreePath,
 				},
-				tv.WithLogger(
+				age.WithLogger(
 					slog.New(slog.NewTextHandler(&TestWriter{
 						assertFn: func() {
 							invoked = true
@@ -214,7 +214,7 @@ var _ = Describe("director error", Ordered, func() {
 				ctx, cancel := context.WithCancel(specCtx)
 				defer cancel()
 
-				_, err := tv.Walk().Configure().Extent(tv.Prime(
+				_, err := age.Walk().Configure().Extent(age.Prime(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: noOpHandler,
@@ -234,9 +234,9 @@ var _ = Describe("director error", Ordered, func() {
 				ctx, cancel := context.WithCancel(specCtx)
 				defer cancel()
 
-				_, err := tv.Walk().Configure().Extent(tv.Resume(
+				_, err := age.Walk().Configure().Extent(age.Resume(
 					&pref.Using{
-						Subscription: tv.SubscribeFiles,
+						Subscription: age.SubscribeFiles,
 						Head: pref.Head{
 							Handler: noOpHandler,
 						},

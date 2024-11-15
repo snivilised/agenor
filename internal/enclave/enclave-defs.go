@@ -4,12 +4,12 @@ import (
 	"context"
 	"io/fs"
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/life"
+	"github.com/snivilised/agenor/pref"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/life"
-	"github.com/snivilised/traverse/pref"
 )
 
 // 📦 pkg: enclave - defines internal types

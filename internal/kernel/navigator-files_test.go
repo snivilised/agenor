@@ -7,12 +7,12 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("NavigatorFiles", Ordered, func() {
@@ -20,7 +20,7 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -38,17 +38,17 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 				ctx, cancel := context.WithCancel(specCtx)
 				defer cancel()
 
-				_, err := tv.Walk().Configure().Extent(tv.Prime(
+				_, err := age.Walk().Configure().Extent(age.Prime(
 					&pref.Using{
-						Subscription: tv.SubscribeFiles,
+						Subscription: age.SubscribeFiles,
 						Head: pref.Head{
-							Handler: func(_ tv.Servant) error {
+							Handler: func(_ age.Servant) error {
 								return nil
 							},
 						},
 						Tree: RootPath,
 					},
-					tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+					age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())

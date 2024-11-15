@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/snivilised/traverse/internal/third/bus"
+	"github.com/snivilised/agenor/internal/third/bus"
 )
 
 // 📦 pkg: services - can contain anything which is a cross cutting concern

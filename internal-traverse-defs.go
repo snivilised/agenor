@@ -1,14 +1,14 @@
-package tv
+package age
 
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/internal/kernel"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
 )
 
 type optionHarvest struct {

@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/locale"
 )
 
 type (

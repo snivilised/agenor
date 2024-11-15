@@ -1,17 +1,17 @@
-package tv
+package age
 
 import (
 	"time"
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/filtering"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/tfs"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/filtering"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/tfs"
 )
 
-// 📦 pkg: traverse - is the front line user facing interface to this module. It sits
+// 📦 pkg: agenor - is the front line user facing interface to this module. It sits
 // on the top of the code stack and is allowed to use anything, but nothing
 // else can depend on definitions here, except unit tests.
 
@@ -285,7 +285,7 @@ var (
 // from using "pref".
 // ============================================================================
 // 🔆 user interface layer
-// traverse: [everything]
+// agenor: [everything]
 // ---
 //
 // 🔆 feature layer

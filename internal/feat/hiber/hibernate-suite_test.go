@@ -5,8 +5,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	"github.com/snivilised/traverse/core"
-	lab "github.com/snivilised/traverse/internal/laboratory"
+	"github.com/snivilised/agenor/core"
+	lab "github.com/snivilised/agenor/internal/laboratory"
 )
 
 func TestHibernate(t *testing.T) {

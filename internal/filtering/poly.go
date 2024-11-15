@@ -3,8 +3,8 @@ package filtering
 import (
 	"fmt"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
 )
 
 // Poly is a dual filter that allows files and directories to be filtered

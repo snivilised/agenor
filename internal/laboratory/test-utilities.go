@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 )
 
 type (

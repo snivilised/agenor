@@ -6,16 +6,16 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("Resume local-fs", Ordered, func() {
@@ -28,7 +28,7 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -49,14 +49,14 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 		Context("given: resume path exists", func() {
 			It("🧪 should: resume traverse ok", func(ctx SpecContext) {
 				strategy = enums.ResumeStrategyFastward
-				_, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 					active.Tree = tree
 					active.CurrentPath = resumeAt
 					active.Subscription = enums.SubscribeUniversal
-				})).Extent(tv.Resume(
+				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
-							Handler: func(servant tv.Servant) error {
+							Handler: func(servant age.Servant) error {
 								node := servant.Node()
 								depth := node.Extension.Depth
 								GinkgoWriter.Printf(
@@ -77,8 +77,8 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 						From:     from,
 						Strategy: enums.ResumeStrategyFastward,
 					},
-					tv.WithOnBegin(lab.Begin("🛡️")),
-					tv.WithOnEnd(lab.End("🏁")),
+					age.WithOnBegin(lab.Begin("🛡️")),
+					age.WithOnEnd(lab.End("🏁")),
 				)).Navigate(ctx)
 
 				Expect(err).To(Succeed())

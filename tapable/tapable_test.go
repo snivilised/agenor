@@ -6,13 +6,13 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
 )
 
 const (
@@ -211,7 +211,7 @@ var _ = Describe("Tapable", Ordered, func() {
 						},
 					)
 
-					sys := tv.NewReadDirFS(tv.Rel{
+					sys := age.NewReadDirFS(age.Rel{
 						Root: root,
 					})
 					_, _ = o.Hooks.ReadDirectory.Default()(sys, root)

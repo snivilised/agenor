@@ -4,8 +4,8 @@ import (
 	"io/fs"
 	"regexp"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/third/lo"
 )
 
 func createRegexFilter(def *core.FilterDef,

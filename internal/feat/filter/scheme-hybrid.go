@@ -1,8 +1,8 @@
 package filter
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/enclave"
 )
 
 // hybridScheme required because node based filtering can be active at

@@ -3,8 +3,8 @@ package kernel
 import (
 	"context"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/enclave"
 )
 
 type NavigationController struct {

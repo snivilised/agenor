@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/tfs"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/tfs"
 )
 
 // 📦 pkg: core - contains universal definitions and handles user facing cross
@@ -112,7 +112,7 @@ func (s *ActiveState) Clone() *ActiveState {
 
 const (
 	FileSystemTimeFormat = "2006-01-02_15-04-05"
-	PackageName          = "traverse"
+	PackageName          = "agenor"
 	filePerm             = 0o644
 	dirPerm              = 0o755
 )

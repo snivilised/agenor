@@ -1,11 +1,11 @@
 package locale
 
 const (
-	SourceID = "github.com/snivilised/traverse"
+	SourceID = "github.com/snivilised/agenor"
 )
 
-type traverseTemplData struct{}
+type agenorTemplData struct{}
 
-func (td traverseTemplData) SourceID() string {
+func (td agenorTemplData) SourceID() string {
 	return SourceID
 }

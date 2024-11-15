@@ -1,7 +1,7 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/life"
+	"github.com/snivilised/agenor/life"
 )
 
 // WithOnAscend sets ascend handler, invoked when navigator

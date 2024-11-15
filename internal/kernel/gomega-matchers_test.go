@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	. "github.com/onsi/gomega/types" //nolint:revive // ok
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/filtering"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/filtering"
 )
 
 // === MatchCurrentRegexFilter ===

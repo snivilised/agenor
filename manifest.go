@@ -1,10 +1,10 @@
-package tv
+package age
 
 import (
 	"slices"
 
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/third/lo"
 )
 
 type (

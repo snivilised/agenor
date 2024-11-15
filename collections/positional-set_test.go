@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/collections"
-	lab "github.com/snivilised/traverse/internal/laboratory"
+	"github.com/snivilised/agenor/collections"
+	lab "github.com/snivilised/agenor/internal/laboratory"
 )
 
 var (

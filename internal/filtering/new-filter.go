@@ -1,8 +1,8 @@
 package filtering
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/pref"
 )
 
 func New(definition *core.FilterDef,

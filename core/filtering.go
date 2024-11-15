@@ -3,7 +3,7 @@ package core
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/enums"
 )
 
 // TraverseFilter filter that can be applied to file system entries. When specified,

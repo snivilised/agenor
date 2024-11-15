@@ -1,4 +1,4 @@
-module github.com/snivilised/traverse
+module github.com/snivilised/agenor
 
 go 1.23.0
 

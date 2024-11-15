@@ -45,7 +45,7 @@ type BootStrapper interface {
 //
 // to make this a bit clearer, perhaps we define a bus and comms to and
 // from it use messages instead of events. That allows us to have a clearer
-// vocabulary within traverse. Messages are dynamic and can be sent to a topic.
+// vocabulary within agenor. Messages are dynamic and can be sent to a topic.
 // Whereas events are fixed in nature. We have a clear definition of each message,
 // which is bound to a topic.
 //

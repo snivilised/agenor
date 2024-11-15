@@ -1,7 +1,7 @@
 package enclave
 
 import (
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/agenor/core"
 )
 
 // KernelResult is the internal representation of core.TraverseResult

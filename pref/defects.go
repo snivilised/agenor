@@ -3,8 +3,8 @@ package pref
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
 )
 
 type (

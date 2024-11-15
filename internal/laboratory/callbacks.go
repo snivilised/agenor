@@ -6,10 +6,11 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive,stylecheck // ok
 	. "github.com/onsi/gomega"    //nolint:revive,stylecheck // ok
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/life"
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/life"
 )
 
 func Begin(em string) life.BeginHandler {
@@ -29,7 +30,7 @@ func End(em string) life.EndHandler {
 }
 
 func UniversalCallback(name string) core.Client {
-	return func(servant tv.Servant) error {
+	return func(servant age.Servant) error {
 		node := servant.Node()
 		depth := node.Extension.Depth
 		GinkgoWriter.Printf(
@@ -42,7 +43,7 @@ func UniversalCallback(name string) core.Client {
 }
 
 func DirectoriesCallback(name string) core.Client {
-	return func(servant tv.Servant) error {
+	return func(servant age.Servant) error {
 		node := servant.Node()
 		depth := node.Extension.Depth
 		actualNoChildren := len(node.Children)
@@ -60,7 +61,7 @@ func DirectoriesCallback(name string) core.Client {
 }
 
 func FilesCallback(name string) core.Client {
-	return func(servant tv.Servant) error {
+	return func(servant age.Servant) error {
 		node := servant.Node()
 		GinkgoWriter.Printf("---> 🌙 FILES//%v-CALLBACK: '%v'\n", name, node.Path)
 		Expect(node.IsDirectory()).To(BeFalse(),
@@ -75,7 +76,7 @@ func FilesCallback(name string) core.Client {
 func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 	recall := make(Recall)
 
-	return func(servant tv.Servant) error {
+	return func(servant age.Servant) error {
 		node := servant.Node()
 		recall[node.Path] = len(node.Children)
 

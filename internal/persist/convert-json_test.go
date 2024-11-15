@@ -6,18 +6,19 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/pref"
 )
 
 var _ = Describe("Convert Options via JSON", Ordered, func() {
 	var (
-		fS tv.TraversalFS
+		fS age.TraversalFS
 	)
 
 	BeforeAll(func() {

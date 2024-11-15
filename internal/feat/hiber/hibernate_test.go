@@ -10,15 +10,15 @@ import (
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
 
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -52,11 +52,11 @@ var _ = Describe("feature", Ordered, func() {
 			It("🧪 should: invoke inside hibernation range", Label("example"),
 				func(ctx SpecContext) {
 					path := lab.Static.RetroWave
-					result, _ := tv.Walk().Configure().Extent(tv.Prime(
+					result, _ := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
 							Subscription: enums.SubscribeDirectories,
 							Head: pref.Head{
-								Handler: func(servant tv.Servant) error {
+								Handler: func(servant age.Servant) error {
 									node := servant.Node()
 									GinkgoWriter.Printf(
 										"---> 🍯 EXAMPLE-HIBERNATE-CALLBACK: '%v'\n", node.Path,
@@ -72,18 +72,18 @@ var _ = Describe("feature", Ordered, func() {
 							},
 							Tree: path,
 						},
-						tv.WithOnBegin(lab.Begin("🛡️")),
-						tv.WithOnEnd(lab.End("🏁")),
+						age.WithOnBegin(lab.Begin("🛡️")),
+						age.WithOnEnd(lab.End("🏁")),
 
-						tv.WithOnWake(func(description string) {
+						age.WithOnWake(func(description string) {
 							GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
 						}),
 
-						tv.WithOnSleep(func(description string) {
+						age.WithOnSleep(func(description string) {
 							GinkgoWriter.Printf("===> 🔇 Sleep: '%v'\n", description)
 						}),
 
-						tv.WithHibernationOptions(
+						age.WithHibernationOptions(
 							&core.HibernateOptions{
 								WakeAt: &core.FilterDef{
 									Type:        enums.FilterTypeGlob,
@@ -100,11 +100,11 @@ var _ = Describe("feature", Ordered, func() {
 
 						// This is only required to change the default inclusivity
 						// of the wake condition; by default is inclusive.
-						tv.WithHibernationBehaviourExclusiveWake(),
+						age.WithHibernationBehaviourExclusiveWake(),
 
 						// This is only required to change the default inclusivity
 						// of the sleep condition; by default is exclusive.
-						tv.WithHibernationBehaviourInclusiveSleep(),
+						age.WithHibernationBehaviourInclusiveSleep(),
 					)).Navigate(ctx)
 
 					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories\n",
@@ -118,7 +118,7 @@ var _ = Describe("feature", Ordered, func() {
 	DescribeTable("simple hibernate",
 		func(ctx SpecContext, entry *hibernateTE) {
 			recall := make(lab.Recall)
-			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
+			once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
 				recall[node.Extension.Name] = len(node.Children)
@@ -131,7 +131,7 @@ var _ = Describe("feature", Ordered, func() {
 				entry.NaviTE.Relative,
 			)
 
-			client := func(servant tv.Servant) error {
+			client := func(servant age.Servant) error {
 				node := servant.Node()
 				GinkgoWriter.Printf(
 					"---> 🌊 HIBERNATE-CALLBACK: '%v'\n", node.Path,
@@ -140,7 +140,7 @@ var _ = Describe("feature", Ordered, func() {
 				return once(node)
 			}
 
-			result, err := tv.Walk().Configure().Extent(tv.Prime(
+			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Subscription: entry.Subscription,
 					Head: pref.Head{
@@ -154,18 +154,18 @@ var _ = Describe("feature", Ordered, func() {
 					},
 					Tree: path,
 				},
-				tv.WithOnBegin(lab.Begin("🛡️")),
-				tv.WithOnEnd(lab.End("🏁")),
+				age.WithOnBegin(lab.Begin("🛡️")),
+				age.WithOnEnd(lab.End("🏁")),
 
-				tv.WithOnWake(func(description string) {
+				age.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔊 Wake: '%v'\n", description)
 				}),
 
-				tv.WithOnSleep(func(description string) {
+				age.WithOnSleep(func(description string) {
 					GinkgoWriter.Printf("===> 🔇 Sleep: '%v'\n", description)
 				}),
 
-				tv.WithHibernationOptions(
+				age.WithHibernationOptions(
 					&core.HibernateOptions{
 						WakeAt:    entry.Hibernate.WakeAt,
 						SleepAt:   entry.Hibernate.SleepAt,
@@ -173,7 +173,7 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				),
 
-				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
+				age.IfOption(entry.CaseSensitive, age.WithHookCaseSensitiveSort()),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{

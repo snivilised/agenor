@@ -8,7 +8,7 @@ import (
 
 // PatternTemplData
 type ProhibitiveWordTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
@@ -24,7 +24,7 @@ func (td ProhibitiveWordTemplData) Message() *i18n.Message {
 
 // PatternTemplData
 type PermissiveWordTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message

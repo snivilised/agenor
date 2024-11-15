@@ -6,17 +6,18 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("Marshaler", Ordered, func() {
@@ -73,7 +74,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 						enums.MetricNoDirectoriesFilteredOut, 4,
 					)
 
-					writerFS := nef.NewWriteFileFS(tv.Rel{
+					writerFS := nef.NewWriteFileFS(age.Rel{
 						Root:      testPath,
 						Overwrite: NoOverwrite,
 					})

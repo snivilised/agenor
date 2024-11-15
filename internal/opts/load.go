@@ -1,8 +1,8 @@
 package opts
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/pref"
 )
 
 func Bind(o *pref.Options, active *core.ActiveState,

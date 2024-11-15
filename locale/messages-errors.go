@@ -13,13 +13,13 @@ import (
 
 // FilterIsNilTemplData
 type FilterIsNilErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td FilterIsNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-is-nil.static-error",
+		ID:          "filter-is-nil.age.static-error",
 		Description: "filter is nil error",
 		Other:       "filter is nil",
 	}
@@ -39,13 +39,13 @@ var ErrFilterIsNil = FilterIsNilError{
 
 // FilterMissingTypeTemplData
 type FilterMissingTypeErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td FilterMissingTypeErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-missing-type.static-error",
+		ID:          "filter-missing-type.age.static-error",
 		Description: "filter missing type",
 		Other:       "filter missing type",
 	}
@@ -65,13 +65,13 @@ var ErrFilterMissingType = FilterMissingTypeError{
 
 // FilterCustomNotSupportedTemplData
 type FilterCustomNotSupportedErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td FilterCustomNotSupportedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "custom-filter-not-supported-for-children.static-error",
+		ID:          "custom-filter-not-supported-for-children.age.static-error",
 		Description: "custom filter not supported for children",
 		Other:       "custom filter not supported for children",
 	}
@@ -91,13 +91,13 @@ var ErrFilterCustomNotSupported = FilterCustomNotSupportedError{
 
 // FilterUndefinedTemplData
 type FilterUndefinedErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td FilterUndefinedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "filter-is-undefined.static-error",
+		ID:          "filter-is-undefined.age.static-error",
 		Description: "filter is undefined error",
 		Other:       "filter is undefined",
 	}
@@ -117,13 +117,13 @@ var ErrFilterUndefined = FilterUndefinedError{
 
 // InternalFailedToGetNavigatorDriverTemplData
 type InternalFailedToGetNavigatorDriverErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td InternalFailedToGetNavigatorDriverErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "failed-to-get-navigator-driver.static-error",
+		ID:          "failed-to-get-navigator-driver.age.static-error",
 		Description: "failed to get navigator driver",
 		Other:       "failed to get navigator driver",
 	}
@@ -142,13 +142,13 @@ var ErrInternalFailedToGetNavigatorDriver = InternalFailedToGetNavigatorDriverEr
 // ❌ InvalidIncaseFilterDefError
 
 type InvalidIncaseFilterDefTemplData struct {
-	traverseTemplData
+	agenorTemplData
 	Pattern string
 }
 
 func (td InvalidIncaseFilterDefTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-incase-filter-definition.dynamic-error",
+		ID:          "invalid-incase-filter-definition.age.dynamic-error",
 		Description: "invalid incase filter definition; pattern is missing separator wrapper error",
 		Other:       "pattern: {{.Pattern}}",
 	}
@@ -179,7 +179,7 @@ func NewInvalidIncaseFilterDefError(pattern string) error {
 }
 
 type CoreInvalidIncaseFilterDefErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func IsInvalidIncaseFilterDefError(err error) bool {
@@ -188,7 +188,7 @@ func IsInvalidIncaseFilterDefError(err error) bool {
 
 func (td CoreInvalidIncaseFilterDefErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-incase-filter-definition.core-error",
+		ID:          "invalid-incase-filter-definition.age.core-error",
 		Description: "invalid incase filter definition; pattern is missing separator core error",
 		Other:       "invalid incase filter definition; pattern is missing separator",
 	}
@@ -208,13 +208,13 @@ var errCoreInvalidIncaseFilterDef = CoreInvalidIncaseFilterDefError{
 
 // WorkerPoolCreationFailedTemplData
 type WorkerPoolCreationFailedErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td WorkerPoolCreationFailedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "failed-to-create-worker-pool.static-error",
+		ID:          "failed-to-create-worker-pool.age.static-error",
 		Description: "failed to create worker pool",
 		Other:       "failed to create worker pool",
 	}
@@ -234,13 +234,13 @@ var ErrWorkerPoolCreationFailed = WorkerPoolCreationFailedError{
 
 // InvalidSamplingSpecMissingFilesErrorTemplData
 type InvalidSamplingSpecMissingFilesErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td InvalidSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-files.static-error",
+		ID:          "invalid-file-sampling-spec-missing-files.age.static-error",
 		Description: "invalid file sampling specification, missing no of files",
 		Other:       "invalid file sampling specification, missing no of files",
 	}
@@ -260,13 +260,13 @@ var ErrInvalidFileSamplingSpecMissingFiles = InvalidFileSamplingSpecificationErr
 
 // InvalidSamplingSpecMissingDirectoriesErrorTemplData
 type InvalidSamplingSpecMissingDirectoriesErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td InvalidSamplingSpecMissingDirectoriesErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-directories.static-error",
+		ID:          "invalid-file-sampling-spec-missing-directories.age.static-error",
 		Description: "invalid file sampling specification, missing no of directories",
 		Other:       "invalid file sampling specification, missing no of directories",
 	}
@@ -286,13 +286,13 @@ var ErrInvalidSamplingSpecMissingDirectories = InvalidSamplingSpecMissingDirecto
 
 // MissingCustomFilterDefinitionTemplData
 type MissingCustomFilterDefinitionErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td MissingCustomFilterDefinitionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "missing-custom-filter-definition.static-error",
+		ID:          "missing-custom-filter-definition.age.static-error",
 		Description: "config error missing-custom-filter-definition",
 		Other:       "missing custom filter definition (config error)",
 	}
@@ -312,7 +312,7 @@ var ErrMissingCustomFilterDefinition = MissingCustomFilterDefinitionError{
 
 // PatternTemplData
 type PatternFieldTemplData struct {
-	traverseTemplData
+	agenorTemplData
 	Pattern string
 }
 
@@ -329,14 +329,14 @@ func (td PatternFieldTemplData) Message() *i18n.Message {
 
 // InvalidExtGlobFilterMissingSeparatorTemplData
 type InvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 	Pattern string
 }
 
 // Message
 func (td InvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-glob-ex-filter-missing-separator.dynamic-error",
+		ID:          "invalid-glob-ex-filter-missing-separator.age.dynamic-error",
 		Description: "invalid glob ex filter definition; pattern is missing separator",
 		Other:       "pattern: {{.Pattern}}",
 	}
@@ -370,7 +370,7 @@ func NewInvalidExtGlobFilterMissingSeparatorError(pattern string) error {
 
 // InvalidExtGlobFilterMissingSeparatorTemplData
 type CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // IsInvalidExtGlobFilterMissingSeparatorError uses errors.Is to check
@@ -383,7 +383,7 @@ func IsInvalidExtGlobFilterMissingSeparatorError(err error) bool {
 // Message
 func (td CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-extended-glob-filter-missing-separator.core-error",
+		ID:          "invalid-extended-glob-filter-missing-separator.age.core-error",
 		Description: "invalid glob ex filter definition; pattern is missing separator",
 		Other:       "invalid glob ex filter definition; pattern is missing separator",
 	}
@@ -403,13 +403,13 @@ var errCoreInvalidExtGlobFilterMissingSeparator = CoreInvalidExtGlobFilterMissin
 
 // FilterIsNilTemplData
 type PolyFilterIsInvalidTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td PolyFilterIsInvalidTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "poly-filter-is-invalid.static-error",
+		ID:          "poly-filter-is-invalid.age.static-error",
 		Description: "poly filter definition is invalid error",
 		Other:       "poly filter definition is invalid",
 	}
@@ -429,13 +429,13 @@ var ErrPolyFilterIsInvalid = PolyFilterIsInvalidError{
 
 // UsageMissingRootPathTemplData
 type UsageMissingTreePathErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td UsageMissingTreePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-tree-path.static-error",
+		ID:          "usage-missing-tree-path.age.static-error",
 		Description: "usage missing tree path",
 		Other:       "usage missing tree path",
 	}
@@ -455,13 +455,13 @@ var ErrUsageMissingTreePath = UsageMissingTreePathError{
 
 // UsageMissingRestorePathTemplData
 type UsageMissingRestorePathErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td UsageMissingRestorePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-restore-path.static-error",
+		ID:          "usage-missing-restore-path.age.static-error",
 		Description: "usage missing restore path",
 		Other:       "usage missing restore path",
 	}
@@ -481,13 +481,13 @@ var ErrUsageMissingRestorePath = UsageMissingRestorePathError{
 
 // UsageMissingSubscriptionTemplData
 type UsageMissingSubscriptionErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td UsageMissingSubscriptionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-subscription.static-error",
+		ID:          "usage-missing-subscription.age.static-error",
 		Description: "usage missing subscription",
 		Other:       "usage missing subscription",
 	}
@@ -507,13 +507,13 @@ var ErrUsageMissingSubscription = UsageMissingSubscriptionError{
 
 // UsageMissingHandlerTemplData
 type UsageMissingHandlerErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td UsageMissingHandlerErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "usage-missing-handler.static-error",
+		ID:          "usage-missing-handler.age.static-error",
 		Description: "usage missing handler",
 		Other:       "usage missing handler",
 	}
@@ -533,13 +533,13 @@ var ErrUsageMissingHandler = UsageMissingHandlerError{
 
 // IDGeneratorFuncCantBeNilTemplData
 type IDGeneratorFuncCantBeNilErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td IDGeneratorFuncCantBeNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "id-generator-func-cant-be-nil.static-error",
+		ID:          "id-generator-func-cant-be-nil.age.static-error",
 		Description: "id generator func is nil, should be defined",
 		Other:       "id generator func can't be nil",
 	}
@@ -559,13 +559,13 @@ var ErrIDGeneratorFuncCantBeNil = IDGeneratorFuncCantBeNilError{
 
 // UnEqualConversionTemplData
 type UnEqualJSONConversionErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 // Message
 func (td UnEqualJSONConversionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "un-equal-conversion.static-error",
+		ID:          "un-equal-conversion.age.static-error",
 		Description: "JSON options conversion error",
 		Other:       "unequal JSON conversion",
 	}
@@ -584,13 +584,13 @@ var ErrUnEqualConversion = UnEqualConversionError{
 // ❌ InvalidPath
 
 type InvalidPathTemplData struct {
-	traverseTemplData
+	agenorTemplData
 	Path string
 }
 
 func (td InvalidPathTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-path.dynamic-error",
+		ID:          "invalid-path.age.dynamic-error",
 		Description: "invalid path (dynamic error)",
 		Other:       "path: {{.Path}}",
 	}
@@ -598,12 +598,12 @@ func (td InvalidPathTemplData) Message() *i18n.Message {
 
 // 🍒 ResumeTraverseFsMismatch (dynamic i18n error)
 type TraverseFsMismatchTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func (td TraverseFsMismatchTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "traverse-fs-mismatch.dynamic-error",
+		ID:          "traverse-fs-mismatch.age.dynamic-error",
 		Description: "traverse fs mismatch (dynamic error) (prefix for core mismatch error)",
 		Other:       "traverse-fs",
 	}
@@ -633,12 +633,12 @@ func NewTraverseFsMismatchError() error {
 
 // 🍒 ResumeFsMismatch (dynamic i18n error)
 type ResumeFsMismatchTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func (td ResumeFsMismatchTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "resume-fs-mismatch.dynamic-error",
+		ID:          "resume-fs-mismatch.age.dynamic-error",
 		Description: "resume fs mismatch (dynamic error) (prefix for core mismatch error)",
 		Other:       "resume-fs",
 	}
@@ -668,7 +668,7 @@ func NewResumeFsMismatchError() error {
 
 // 🥥 CoreResumeFsMismatch (core i18n error)
 type CoreResumeFsMismatchErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func IsCoreResumeFsMismatchError(err error) bool {
@@ -677,7 +677,7 @@ func IsCoreResumeFsMismatchError(err error) bool {
 
 func (td CoreResumeFsMismatchErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "core-resume-fs-mismatch.core-error",
+		ID:          "core-resume-fs-mismatch.age.core-error",
 		Description: "core resume file system mismatch error",
 		Other:       "resume file system mismatch",
 	}
@@ -695,12 +695,12 @@ var ErrCoreResumeFsMismatch = CoreResumeFsMismatchError{
 
 // 🍒 TraversalSaved (dynamic i18n error)
 type TraversalSavedTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func (td TraversalSavedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "traversal-saved.dynamic-error",
+		ID:          "traversal-saved.age.dynamic-error",
 		Description: "traversal saved due to panic (dynamic error)",
 		Other:       "traversal saved: {{.Field}}",
 	}
@@ -732,12 +732,12 @@ func NewTraversalSavedError(destination string, _ error) error {
 
 // 🍒 TraversalNotSaved (dynamic i18n error)
 type TraversalNotSavedTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func (td TraversalNotSavedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "traversal-not-saved.dynamic-error",
+		ID:          "traversal-not-saved.age.dynamic-error",
 		Description: "panic induced traversal not saved (dynamic error)",
 		Other:       "field: {{.Reason}}",
 	}
@@ -771,7 +771,7 @@ func NewTraversalNotSavedError(_, reason error) error {
 
 // 🥥 CorePanicOccurred (core i18n error)
 type CorePanicOccurredErrorTemplData struct {
-	traverseTemplData
+	agenorTemplData
 }
 
 func IsCorePanicOccurredError(err error) bool {
@@ -780,7 +780,7 @@ func IsCorePanicOccurredError(err error) bool {
 
 func (td CorePanicOccurredErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "core-panic-occurred.core-error",
+		ID:          "core-panic-occurred.age.core-error",
 		Description: "core error",
 		Other:       "panic occurred",
 	}

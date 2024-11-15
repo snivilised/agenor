@@ -6,11 +6,11 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/pref"
 )
 
 var (
@@ -33,55 +33,55 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithCPU", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithCPU()).NotTo(BeNil())
+			Expect(age.WithCPU()).NotTo(BeNil())
 		})
 	})
 
 	Context("WithDepth", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithDepth(1)).NotTo(BeNil())
+			Expect(age.WithDepth(1)).NotTo(BeNil())
 		})
 	})
 
 	Context("WithFaultHandler", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithFaultHandler(&testFaultHandler{})).NotTo(BeNil())
+			Expect(age.WithFaultHandler(&testFaultHandler{})).NotTo(BeNil())
 		})
 	})
 
 	Context("WithFilter", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithFilter(filterOptions)).NotTo(BeNil())
+			Expect(age.WithFilter(filterOptions)).NotTo(BeNil())
 		})
 	})
 
 	Context("WithHibernationBehaviourExclusiveWake", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHibernationBehaviourExclusiveWake()).NotTo(BeNil())
+			Expect(age.WithHibernationBehaviourExclusiveWake()).NotTo(BeNil())
 		})
 	})
 
 	Context("WithHibernationBehaviourInclusiveSleep", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHibernationBehaviourInclusiveSleep()).NotTo(BeNil())
+			Expect(age.WithHibernationBehaviourInclusiveSleep()).NotTo(BeNil())
 		})
 	})
 
 	Context("WithHibernationFilterSleep", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHibernationFilterSleep(nodeDef)).NotTo(BeNil())
+			Expect(age.WithHibernationFilterSleep(nodeDef)).NotTo(BeNil())
 		})
 	})
 
 	Context("WithHibernationFilterWake", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHibernationFilterWake(nodeDef)).NotTo(BeNil())
+			Expect(age.WithHibernationFilterWake(nodeDef)).NotTo(BeNil())
 		})
 	})
 
 	Context("WithHibernationOptions", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithHibernationOptions(&core.HibernateOptions{
+			Expect(age.WithHibernationOptions(&core.HibernateOptions{
 				WakeAt: nodeDef,
 			})).NotTo(BeNil())
 		})
@@ -89,7 +89,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithHookSort", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithHookSort(
+			option := age.WithHookSort(
 				func([]fs.DirEntry, ...any) {},
 			)
 			Expect(option).NotTo(BeNil())
@@ -99,7 +99,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithHookFileSubPath", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithHookFileSubPath(func(*core.SubPathInfo) string {
+			option := age.WithHookFileSubPath(func(*core.SubPathInfo) string {
 				return ""
 			})
 			Expect(option).NotTo(BeNil())
@@ -109,7 +109,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithHookDirectorySubPath", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithHookDirectorySubPath(func(*core.SubPathInfo) string {
+			option := age.WithHookDirectorySubPath(func(*core.SubPathInfo) string {
 				return ""
 			})
 			Expect(option).NotTo(BeNil())
@@ -119,7 +119,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithNavigationBehaviours", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithNavigationBehaviours(
+			option := age.WithNavigationBehaviours(
 				&pref.NavigationBehaviours{
 					SubPath: pref.SubPathBehaviour{
 						KeepTrailingSep: true,
@@ -139,7 +139,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithPanicHandler", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithPanicHandler(&testPanicHandler{})
+			option := age.WithPanicHandler(&testPanicHandler{})
 			Expect(option).NotTo(BeNil())
 			_ = option(pref.DefaultOptions())
 		})
@@ -147,19 +147,19 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithNoRecurse", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithNoRecurse()).NotTo(BeNil())
+			Expect(age.WithNoRecurse()).NotTo(BeNil())
 		})
 	})
 
 	Context("WithNoW", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithNoW(3)).NotTo(BeNil())
+			Expect(age.WithNoW(3)).NotTo(BeNil())
 		})
 	})
 
 	Context("WithSamplingOptions", func() {
 		It("🧪 should: create option", func() {
-			Expect(tv.WithSamplingOptions(
+			Expect(age.WithSamplingOptions(
 				&pref.SamplingOptions{
 					Type:      enums.SampleTypeFilter,
 					InReverse: true,
@@ -174,7 +174,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithSkipHandler", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithSkipHandler(&testSkipHandler{})
+			option := age.WithSkipHandler(&testSkipHandler{})
 			Expect(option).NotTo(BeNil())
 			_ = option(pref.DefaultOptions())
 		})
@@ -182,7 +182,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithSortBehaviour", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithSortBehaviour(&pref.SortBehaviour{
+			option := age.WithSortBehaviour(&pref.SortBehaviour{
 				IsCaseSensitive: true,
 				SortFilesFirst:  true,
 			})
@@ -193,7 +193,7 @@ var _ = Describe("With Operators", Ordered, func() {
 
 	Context("WithSubPathBehaviour", func() {
 		It("🧪 should: create option", func() {
-			option := tv.WithSubPathBehaviour(
+			option := age.WithSubPathBehaviour(
 				&pref.SubPathBehaviour{
 					KeepTrailingSep: true,
 				},

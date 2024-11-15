@@ -4,9 +4,9 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/li18ngo"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/life"
 )
 
 var _ = Describe("controls", Ordered, func() {

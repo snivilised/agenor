@@ -1,7 +1,7 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/agenor/core"
 )
 
 // WithHibernationBehaviourExclusiveWake activates hibernation

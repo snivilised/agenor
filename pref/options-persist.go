@@ -1,7 +1,7 @@
 package pref
 
 import (
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/enums"
 )
 
 type (

@@ -5,18 +5,19 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -41,11 +42,11 @@ var _ = Describe("feature", Ordered, func() {
 		When("universal: slice sample", func() {
 			It("🧪 should: foo", Label("example"), func(ctx SpecContext) {
 				path := lab.Static.RetroWave
-				result, _ := tv.Walk().Configure().Extent(tv.Prime(
+				result, _ := age.Walk().Configure().Extent(age.Prime(
 					&pref.Using{
 						Subscription: enums.SubscribeUniversal,
 						Head: pref.Head{
-							Handler: func(servant tv.Servant) error {
+							Handler: func(servant age.Servant) error {
 								node := servant.Node()
 								GinkgoWriter.Printf(
 									"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
@@ -61,10 +62,10 @@ var _ = Describe("feature", Ordered, func() {
 						},
 						Tree: path,
 					},
-					tv.WithOnBegin(lab.Begin("🛡️")),
-					tv.WithOnEnd(lab.End("🏁")),
+					age.WithOnBegin(lab.Begin("🛡️")),
+					age.WithOnEnd(lab.End("🏁")),
 
-					tv.WithSamplingOptions(&pref.SamplingOptions{
+					age.WithSamplingOptions(&pref.SamplingOptions{
 						Type: enums.SampleTypeSlice,
 						NoOf: pref.EntryQuantities{
 							Files:       2,
@@ -84,7 +85,7 @@ var _ = Describe("feature", Ordered, func() {
 	DescribeTable("sample",
 		func(ctx SpecContext, entry *lab.SampleTE) {
 			recall := make(lab.Recall)
-			once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
+			once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
 				recall[node.Extension.Name] = len(node.Children)
@@ -97,7 +98,7 @@ var _ = Describe("feature", Ordered, func() {
 				entry.NaviTE.Relative,
 			)
 
-			callback := func(servant tv.Servant) error {
+			callback := func(servant age.Servant) error {
 				node := servant.Node()
 				GinkgoWriter.Printf(
 					"---> 🌊 SAMPLE-CALLBACK: '%v'\n", node.Path,
@@ -110,7 +111,7 @@ var _ = Describe("feature", Ordered, func() {
 				return once(node)
 			}
 
-			result, err := tv.Walk().Configure().Extent(tv.Prime(
+			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Subscription: entry.Subscription,
 					Head: pref.Head{
@@ -124,10 +125,10 @@ var _ = Describe("feature", Ordered, func() {
 					},
 					Tree: path,
 				},
-				tv.WithOnBegin(lab.Begin("🛡️")),
-				tv.WithOnEnd(lab.End("🏁")),
+				age.WithOnBegin(lab.Begin("🛡️")),
+				age.WithOnEnd(lab.End("🏁")),
 
-				tv.WithSamplingOptions(&pref.SamplingOptions{
+				age.WithSamplingOptions(&pref.SamplingOptions{
 					Type:      entry.SampleType,
 					InReverse: entry.Reverse,
 					NoOf: pref.EntryQuantities{
@@ -146,8 +147,8 @@ var _ = Describe("feature", Ordered, func() {
 						},
 					),
 				}),
-				tv.IfOptionF(entry.Filter != nil, func() pref.Option {
-					return tv.WithFilter(&pref.FilterOptions{
+				age.IfOptionF(entry.Filter != nil, func() pref.Option {
+					return age.WithFilter(&pref.FilterOptions{
 						Sample: &core.SampleFilterDef{
 							Type:        entry.Filter.Type,
 							Description: entry.Filter.Description,
@@ -158,7 +159,7 @@ var _ = Describe("feature", Ordered, func() {
 						Custom: entry.Filter.Custom,
 					})
 				}),
-				tv.IfOption(entry.CaseSensitive, tv.WithHookCaseSensitiveSort()),
+				age.IfOption(entry.CaseSensitive, age.WithHookCaseSensitiveSort()),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
@@ -704,7 +705,7 @@ var _ = Describe("feature", Ordered, func() {
 			Filter: &lab.FilterTE{ // 🍒
 				Type: enums.FilterTypeCustom,
 				Sample: &customSamplingFilter{
-					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
+					Sample:      age.NewCustomSampleFilter(enums.ScopeFile),
 					description: "custom(glob): items with cover prefix",
 					pattern:     "cover*",
 				},
@@ -730,7 +731,7 @@ var _ = Describe("feature", Ordered, func() {
 			Filter: &lab.FilterTE{ // 🍒
 				Type: enums.FilterTypeCustom,
 				Sample: &customSamplingFilter{
-					Sample:      tv.NewCustomSampleFilter(enums.ScopeDirectory),
+					Sample:      age.NewCustomSampleFilter(enums.ScopeDirectory),
 					description: "custom(glob): items with A prefix",
 					pattern:     "A*",
 				},
@@ -756,7 +757,7 @@ var _ = Describe("feature", Ordered, func() {
 			Filter: &lab.FilterTE{ // 🍒
 				Type: enums.FilterTypeCustom,
 				Sample: &customSamplingFilter{
-					Sample:      tv.NewCustomSampleFilter(enums.ScopeFile),
+					Sample:      age.NewCustomSampleFilter(enums.ScopeFile),
 					description: "custom(glob): items with .flac suffix",
 					pattern:     "*.flac",
 				},

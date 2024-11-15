@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	"github.com/pkg/errors"
 
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/agenor/core"
 )
 
 var _ = Describe("Variable untranslated Errors", func() {
