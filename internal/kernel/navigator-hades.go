@@ -39,10 +39,6 @@ func (n *navigatorHades) Result(_ context.Context, err error) *enclave.KernelRes
 	return enclave.NewFailed(err)
 }
 
-func (n *navigatorHades) Mediator() enclave.Mediator {
-	return nil
-}
-
 func (n *navigatorHades) Resume(context.Context,
 	*core.ActiveState,
 ) (*enclave.KernelResult, error) {

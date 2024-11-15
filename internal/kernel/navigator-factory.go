@@ -8,42 +8,22 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
-func PrimeArtefacts(creation *Creation,
+func PrimeArtefacts(inception *Inception,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {
-	controller := New(creation, sealer)
-	mediator := controller.Mediator()
+	mediator := NewMediator(inception, sealer)
 
 	return &Artefacts{
-		Kontroller: controller,
+		Kontroller: mediator,
 		Mediator:   mediator,
-		Resources:  creation.Resources,
+		Resources:  inception.Resources,
 	}
 }
 
-func New(creation *Creation,
-	sealer enclave.GuardianSealer,
-) *NavigationController {
-	o := creation.Harvest.Options()
-	facade := creation.Facade
-	resources := creation.Resources
-	impl, _ := newImpl(o, creation)
-	mediator := newMediator(&mediatorInfo{
-		facade:       facade,
-		subscription: creation.Subscription,
-		o:            o,
-		impl:         impl,
-		sealer:       sealer,
-		resources:    resources,
-	})
-
-	return newNavigationController(mediator)
-}
-
 func newImpl(o *pref.Options,
-	creation *Creation,
+	inception *Inception,
 ) (impl NavigatorImpl, err error) {
-	subscription := creation.Subscription
+	subscription := inception.Subscription
 
 	agent := navigatorAgent{
 		ao: &agentOptions{
@@ -57,12 +37,12 @@ func newImpl(o *pref.Options,
 			},
 			behaviour: &o.Behaviours.Sort,
 		},
-		resources: creation.Resources,
+		resources: inception.Resources,
 		persister: author{
 			o:     o,
 			perms: core.Perms,
 		},
-		ofExtent: creation.Facade.OfExtent(),
+		ofExtent: inception.Facade.OfExtent(),
 	}
 
 	switch subscription {

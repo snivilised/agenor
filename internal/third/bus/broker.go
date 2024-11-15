@@ -36,7 +36,7 @@ type (
 		TxID       string      // transaction identifier
 		Topic      string      // topic name
 		Source     string      // source of the message
-		OccurredAt time.Time   // creation time in nanoseconds
+		OccurredAt time.Time   // inception time in nanoseconds
 		Data       interface{} // actual message data
 	}
 

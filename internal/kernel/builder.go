@@ -15,7 +15,7 @@ type (
 		IfResult   core.Completion
 	}
 
-	Creation struct {
+	Inception struct {
 		Facade       pref.Facade
 		Subscription enums.Subscription
 		Harvest      enclave.OptionHarvest
@@ -23,12 +23,12 @@ type (
 	}
 
 	NavigatorBuilder interface {
-		Build(creation *Creation) *Artefacts
+		Build(inception *Inception) *Artefacts
 	}
 
-	Builder func(creation *Creation) *Artefacts
+	Builder func(inception *Inception) *Artefacts
 )
 
-func (fn Builder) Build(creation *Creation) *Artefacts {
-	return fn(creation)
+func (fn Builder) Build(inception *Inception) *Artefacts {
+	return fn(inception)
 }

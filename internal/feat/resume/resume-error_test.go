@@ -77,7 +77,7 @@ var _ = Describe("Resume Error", Ordered, func() {
 		})
 	})
 
-	Context("forest creation failure", func() {
+	Context("forest inception failure", func() {
 		DescribeTable("fs type mismatch",
 			func(specCtx SpecContext, _ string, travIsRelative, resIsRelative bool) {
 				defer leaktest.Check(GinkgoT())()

@@ -29,85 +29,35 @@ type mediator struct {
 	order        []enums.Role
 }
 
-type mediatorInfo struct {
-	facade       pref.Facade
-	subscription enums.Subscription
-	o            *pref.Options
-	impl         NavigatorImpl
-	sealer       enclave.GuardianSealer
-	resources    *enclave.Resources
-}
+func NewMediator(inception *Inception,
+	sealer enclave.GuardianSealer,
+) enclave.Mediator {
+	o := inception.Harvest.Options()
+	facade := inception.Facade
+	resources := inception.Resources
+	impl, _ := newImpl(o, inception)
 
-type (
-	vexation interface {
-		vapour() inspection
-		cause() string
-		extent() string
-	}
-
-	vex struct {
-		data            interface{}
-		vap             inspection
-		causeOfVexation string
-		ofExtent        string
-	}
-)
-
-func (v *vex) Data() interface{} {
-	return v.data
-}
-
-func (v *vex) vapour() inspection {
-	return v.vap
-}
-
-func (v *vex) cause() string {
-	return v.causeOfVexation
-}
-
-func (v *vex) extent() string {
-	return v.ofExtent
-}
-
-func newMediator(info *mediatorInfo) *mediator {
-	metrics := info.resources.Supervisor.Many(
+	metrics := resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
 		enums.MetricNoDirectoriesInvoked,
 		enums.MetricNoChildFilesFound,
 	)
 
 	return &mediator{
-		tree:         info.facade.Path(),
-		subscription: info.subscription,
-		facade:       info.facade,
-		impl:         info.impl,
+		tree:         facade.Path(),
+		subscription: inception.Subscription,
+		facade:       facade,
+		impl:         impl,
 		guardian: newGuardian(&guardianInfo{
-			subscription: info.subscription,
-			client:       info.facade.Client(),
-			master:       info.sealer,
+			subscription: inception.Subscription,
+			client:       facade.Client(),
+			master:       sealer,
 			metrics:      metrics,
 		}),
 		periscope: level.New(),
-		o:         info.o,
-		resources: info.resources,
+		o:         o,
+		resources: resources,
 		metrics:   metrics,
-	}
-}
-
-func (m *mediator) descend(node *core.Node) bool {
-	if !m.periscope.Descend(m.o.Behaviours.Cascade.Depth) {
-		return false
-	}
-
-	m.resources.Binder.Controls.Descend.Dispatch()(node)
-
-	return true
-}
-
-func (m *mediator) ascend(node *core.Node, permit bool) {
-	if permit {
-		m.periscope.Ascend()
-		m.resources.Binder.Controls.Ascend.Dispatch()(node)
 	}
 }
 
@@ -119,20 +69,46 @@ func (m *mediator) Unwind(role enums.Role) error {
 	return m.guardian.Unwind(role)
 }
 
+func (m *mediator) Invoke(servant core.Servant,
+	inspection enclave.Inspection,
+) error {
+	return m.guardian.Invoke(servant, inspection)
+}
+
 func (m *mediator) Arrange(active, order []enums.Role) {
 	m.order = order
 	m.guardian.arrange(active, order)
 }
 
-func (m *mediator) Ignite(ignition *enclave.Ignition) {
-	m.impl.Ignite(ignition)
-	m.resources.Binder.Controls.Begin.Dispatch()(&life.BeginState{
-		Tree: m.tree,
+func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
+	return m.o.Hooks.ReadDirectory.Invoke()(m.resources.Forest.T, path)
+}
+
+func (m *mediator) Spawn(ctx context.Context,
+	active *core.ActiveState, // TODO: this should not be ActiveState, ActiveState is being abused
+) (*enclave.KernelResult, error) {
+	m.tree = active.Tree
+	offset := 0 // TODO: not sure what to set this to yet
+	m.periscope = level.Restore(offset, active.Depth)
+
+	return m.impl.Top(ctx, &navigationStatic{
+		mediator: m,
+		tree:     active.Tree,
+		calc:     m.resources.Forest.T.Calc(),
 	})
 }
 
-func (m *mediator) Conclude(result core.TraverseResult) {
-	m.resources.Binder.Controls.End.Dispatch()(result)
+// Bridge combines information gleaned from the previous traversal that was
+// interrupted, into the resume traversal
+//
+// tree, current string
+func (m *mediator) Bridge(tree, current string) {
+	m.tree = tree
+	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n", tree, current)
+}
+
+func (m *mediator) Supervisor() *core.Supervisor {
+	return m.resources.Supervisor
 }
 
 func (m *mediator) Navigate(ctx context.Context) (result *enclave.KernelResult, err error) {
@@ -151,8 +127,17 @@ func (m *mediator) Navigate(ctx context.Context) (result *enclave.KernelResult, 
 	return result, err
 }
 
-func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
-	return m.o.Hooks.ReadDirectory.Invoke()(m.resources.Forest.T, path)
+func (m *mediator) Ignite(ignition *enclave.Ignition) {
+	m.impl.Ignite(ignition)
+	m.resources.Binder.Controls.Begin.Dispatch()(&life.BeginState{
+		Tree: m.tree,
+	})
+}
+
+func (m *mediator) Result(ctx context.Context,
+	err error,
+) *enclave.KernelResult {
+	return m.impl.Result(ctx, err)
 }
 
 func (m *mediator) Resume(ctx context.Context,
@@ -174,35 +159,23 @@ func (m *mediator) Resume(ctx context.Context,
 	})
 }
 
-// Bridge combines information gleaned from the previous traversal that was
-// interrupted, into the resume traversal
-//
-// tree, current string
-func (m *mediator) Bridge(tree, current string) {
-	m.tree = tree
-	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n", tree, current)
+func (m *mediator) Conclude(result core.TraverseResult) {
+	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 
-func (m *mediator) Spawn(ctx context.Context,
-	active *core.ActiveState, // TODO: this should not be ActiveState, ActiveState is being abused
-) (*enclave.KernelResult, error) {
-	m.tree = active.Tree
-	offset := 0 // TODO: not sure what to set this to yet
-	m.periscope = level.Restore(offset, active.Depth)
+func (m *mediator) descend(node *core.Node) bool {
+	if !m.periscope.Descend(m.o.Behaviours.Cascade.Depth) {
+		return false
+	}
 
-	return m.impl.Top(ctx, &navigationStatic{
-		mediator: m,
-		tree:     active.Tree,
-		calc:     m.resources.Forest.T.Calc(),
-	})
+	m.resources.Binder.Controls.Descend.Dispatch()(node)
+
+	return true
 }
 
-func (m *mediator) Invoke(servant core.Servant,
-	inspection enclave.Inspection,
-) error {
-	return m.guardian.Invoke(servant, inspection)
-}
-
-func (m *mediator) Supervisor() *core.Supervisor {
-	return m.resources.Supervisor
+func (m *mediator) ascend(node *core.Node, permit bool) {
+	if permit {
+		m.periscope.Ascend()
+		m.resources.Binder.Controls.Ascend.Dispatch()(node)
+	}
 }

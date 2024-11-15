@@ -121,7 +121,7 @@ var (
 	// then the option is returned, otherwise nil.
 	IfOption = pref.IfOption
 
-	// IfOptionF allows the delaying of creation of the option until the condition
+	// IfOptionF allows the delaying of inception of the option until the condition
 	// is known to be true. This is in contrast to IfOption where the Option is
 	// pre-created, regardless of the condition.
 	IfOptionF = pref.IfOptionF
