@@ -8,15 +8,15 @@ import (
 	"os"
 	"strings"
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 const (
@@ -98,12 +98,12 @@ func navigate(n *navigation) {
 	ctx := context.Background()
 	fS := hydra.Nuxx(verbose, strings.Split(n.filters, ",")...)
 
-	result, err := tv.Walk().Configure().Extent(tv.Prime(
+	result, err := age.Walk().Configure().Extent(age.Prime(
 		&pref.Using{
 			Tree:         n.path,
 			Subscription: n.subscription,
 			Head: pref.Head{
-				Handler: func(servant tv.Servant) error {
+				Handler: func(servant age.Servant) error {
 					node := servant.Node()
 					indicator := lo.Ternary(node.IsDirectory(), "📂", "🏷️")
 
@@ -134,10 +134,10 @@ func navigate(n *navigation) {
 				},
 			},
 		},
-		tv.WithOnBegin(lab.Begin("🔊")),
-		tv.WithOnEnd(lab.End("🏁")),
-		tv.IfOptionF(n.pattern != "", func() pref.Option {
-			return tv.WithFilter(&pref.FilterOptions{
+		age.WithOnBegin(lab.Begin("🔊")),
+		age.WithOnEnd(lab.End("🏁")),
+		age.IfOptionF(n.pattern != "", func() pref.Option {
+			return age.WithFilter(&pref.FilterOptions{
 				Node: &core.FilterDef{
 					Type:        enums.FilterTypeGlobEx,
 					Description: "as selected by user",
@@ -146,7 +146,7 @@ func navigate(n *navigation) {
 				},
 			})
 		}),
-		tv.WithHookReadDirectory(readEntriesHook),
+		age.WithHookReadDirectory(readEntriesHook),
 	)).Navigate(ctx)
 
 	if err != nil {

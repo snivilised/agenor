@@ -1,10 +1,10 @@
 package persist
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/opts/json"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
 )
 
 // 📦 pkg: persist - defines marshalling functionality. This package is

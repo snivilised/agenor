@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ginkgo ok
 	. "github.com/onsi/gomega"    //nolint:revive // gomega ok
 
-	"github.com/snivilised/traverse/collections"
+	"github.com/snivilised/agenor/collections"
 )
 
 var _ = Describe("Stack", func() {

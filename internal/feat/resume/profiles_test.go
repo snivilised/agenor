@@ -1,7 +1,7 @@
 package resume_test
 
 import (
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/enums"
 )
 
 const (

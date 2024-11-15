@@ -6,17 +6,17 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -33,7 +33,7 @@ var _ = Describe("feature", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -59,7 +59,7 @@ var _ = Describe("feature", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(servant tv.Servant) error {
+			callback := func(servant age.Servant) error {
 				node := servant.Node()
 				actualNoChildren := len(node.Children)
 				GinkgoWriter.Printf(
@@ -77,7 +77,7 @@ var _ = Describe("feature", Ordered, func() {
 				return nil
 			}
 
-			result, err := tv.Walk().Configure().Extent(tv.Prime(
+			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Subscription: entry.Subscription,
 					Head: pref.Head{
@@ -91,10 +91,10 @@ var _ = Describe("feature", Ordered, func() {
 					},
 					Tree: path,
 				},
-				tv.WithOnBegin(lab.Begin("🛡️")),
-				tv.WithOnEnd(lab.End("🏁")),
+				age.WithOnBegin(lab.Begin("🛡️")),
+				age.WithOnEnd(lab.End("🏁")),
 
-				tv.WithFilter(filterDefs),
+				age.WithFilter(filterDefs),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{

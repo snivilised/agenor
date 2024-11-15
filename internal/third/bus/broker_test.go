@@ -12,8 +12,8 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/third/bus"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/third/bus"
 )
 
 const (

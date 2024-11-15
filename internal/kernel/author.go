@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/pref"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/pref"
 )
 
 type author struct {

@@ -3,12 +3,12 @@ package kernel
 import (
 	"io/fs"
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/tapable"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/tapable"
 )
 
 func NewContents(behaviour *pref.SortBehaviour,

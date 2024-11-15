@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega" //nolint:revive // gomega ok
 
 	"github.com/onsi/gomega/types"
-	"github.com/snivilised/traverse/collections"
+	"github.com/snivilised/agenor/collections"
 )
 
 // === HaveSize

@@ -1,8 +1,8 @@
 package filtering
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
 )
 
 func NewPermissiveTraverseFilter(def *core.FilterDef) core.TraverseFilter {

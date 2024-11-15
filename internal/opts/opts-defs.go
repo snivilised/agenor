@@ -1,13 +1,13 @@
 package opts
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/pref"
 )
 
 // 📦 pkg: opts - internal options handling; can't use persist
 //
-// TODO: The traverse-api table might be wrong as far as opts and persist
+// TODO: The agenor-api table might be wrong as far as opts and persist
 // is concerned. The table shows opts is above persist, yet we can't
 // use persist from opts, so something is wrong and needs clarification.
 //

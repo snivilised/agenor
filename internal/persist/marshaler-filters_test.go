@@ -8,15 +8,15 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts/json"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/pref"
 )
 
 // 📚 NB: these create functions are required because it is vitally important
@@ -136,7 +136,7 @@ func createJSONSampleFilterDefFromCoreWithPoly(def *core.SampleFilterDef,
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		fS       tv.TraversalFS
+		fS       age.TraversalFS
 		readPath string
 
 		// 🍑 NODE:

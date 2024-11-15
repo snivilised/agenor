@@ -3,7 +3,7 @@ package life_test
 import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	"github.com/snivilised/traverse/internal/opts"
+	"github.com/snivilised/agenor/internal/opts"
 )
 
 var _ = Describe("event", func() {

@@ -1,14 +1,14 @@
-package tv
+package age
 
 import (
 	"context"
 
 	"github.com/pkg/errors"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/pants"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
 )
 
 type synchroniser interface {

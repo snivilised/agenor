@@ -5,7 +5,7 @@ import (
 )
 
 type UsingConfigFileTemplData struct {
-	traverseTemplData
+	agenorTemplData
 	ConfigFileName string
 }
 

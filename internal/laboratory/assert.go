@@ -6,10 +6,10 @@ import (
 	"testing/fstest"
 
 	. "github.com/onsi/gomega" //nolint:revive,stylecheck // ok
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/nefilim/test/luna"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 type TestOptions struct {

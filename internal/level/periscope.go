@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
 )
 
 // 📦 pkg: level - contains functionality concerned only with depth

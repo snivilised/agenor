@@ -1,4 +1,4 @@
-package tv_test
+package age_test
 
 import (
 	"errors"
@@ -6,7 +6,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	tv "github.com/snivilised/traverse"
+
+	age "github.com/snivilised/agenor"
 )
 
 func TestTraverse(t *testing.T) {
@@ -24,7 +25,7 @@ const (
 	directories = 2
 )
 
-var noOpHandler = func(_ tv.Servant) error {
+var noOpHandler = func(_ age.Servant) error {
 	return nil
 }
 

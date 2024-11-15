@@ -7,8 +7,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/pref"
 )
 
 func TestPersist(t *testing.T) {

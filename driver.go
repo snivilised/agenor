@@ -1,11 +1,11 @@
-package tv
+package age
 
 import (
 	"context"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/internal/third/bus"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/bus"
 )
 
 const (

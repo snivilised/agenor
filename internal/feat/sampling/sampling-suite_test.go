@@ -7,8 +7,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/filtering"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/filtering"
 )
 
 func TestSampling(t *testing.T) {

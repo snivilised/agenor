@@ -1,10 +1,10 @@
-package tv
+package age
 
 import (
 	"context"
 	"time"
 
-	"github.com/snivilised/traverse/internal/enclave"
+	"github.com/snivilised/agenor/internal/enclave"
 )
 
 type session struct {

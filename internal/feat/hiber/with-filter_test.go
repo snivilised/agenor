@@ -8,15 +8,15 @@ import (
 
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -40,7 +40,7 @@ var _ = Describe("feature", Ordered, func() {
 	DescribeTable("filter and listen both active",
 		func(ctx SpecContext, entry *hibernateTE) {
 			path := lab.Static.RetroWave
-			result, err := tv.Walk().Configure().Extent(tv.Prime(
+			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Subscription: entry.Subscription,
 					Head: pref.Head{
@@ -54,10 +54,10 @@ var _ = Describe("feature", Ordered, func() {
 					},
 					Tree: path,
 				},
-				tv.WithOnBegin(lab.Begin("🛡️")),
-				tv.WithOnEnd(lab.End("🏁")),
+				age.WithOnBegin(lab.Begin("🛡️")),
+				age.WithOnEnd(lab.End("🏁")),
 
-				tv.WithFilter(&pref.FilterOptions{
+				age.WithFilter(&pref.FilterOptions{
 					Node: &core.FilterDef{
 						Type:        enums.FilterTypeGlob,
 						Description: "items with '.flac' suffix",
@@ -66,9 +66,9 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				}),
 
-				tv.IfOptionF(entry.Hibernate != nil && entry.Hibernate.WakeAt != nil,
+				age.IfOptionF(entry.Hibernate != nil && entry.Hibernate.WakeAt != nil,
 					func() pref.Option {
-						return tv.WithHibernationFilterWake(
+						return age.WithHibernationFilterWake(
 							&core.FilterDef{
 								Type:        entry.Hibernate.WakeAt.Type,
 								Description: entry.Hibernate.WakeAt.Description,
@@ -78,9 +78,9 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				),
 
-				tv.IfOptionF(entry.Hibernate != nil && entry.Hibernate.SleepAt != nil,
+				age.IfOptionF(entry.Hibernate != nil && entry.Hibernate.SleepAt != nil,
 					func() pref.Option {
-						return tv.WithHibernationFilterSleep(
+						return age.WithHibernationFilterSleep(
 							&core.FilterDef{
 								Type:        entry.Hibernate.SleepAt.Type,
 								Description: entry.Hibernate.SleepAt.Description,
@@ -90,10 +90,10 @@ var _ = Describe("feature", Ordered, func() {
 					},
 				),
 
-				tv.WithOnWake(func(description string) {
+				age.WithOnWake(func(description string) {
 					GinkgoWriter.Printf("===> 🔆 Waking: '%v'\n", description)
 				}),
-				tv.WithOnSleep(func(description string) {
+				age.WithOnSleep(func(description string) {
 					GinkgoWriter.Printf("===> 🌙 Sleeping: '%v'\n", description)
 				}),
 			)).Navigate(ctx)
@@ -121,7 +121,7 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "wake, then apply filter until the end",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(servant tv.Servant) error {
+				Callback: func(servant age.Servant) error {
 					node := servant.Node()
 					GinkgoWriter.Printf("---> WAKE-HIBERNATE-AND-FILTER-😵‍💫: '%v'\n", node.Path)
 
@@ -146,7 +146,7 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "apply filter until sleep",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(servant tv.Servant) error {
+				Callback: func(servant age.Servant) error {
 					node := servant.Node()
 					GinkgoWriter.Printf("---> SLEEP-HIBERNATE-AND-FILTER-😴: '%v'\n", node.Path)
 
@@ -171,7 +171,7 @@ var _ = Describe("feature", Ordered, func() {
 				Given:        "File Subscription",
 				Should:       "apply filter within hibernation range",
 				Subscription: enums.SubscribeFiles,
-				Callback: func(servant tv.Servant) error {
+				Callback: func(servant age.Servant) error {
 					node := servant.Node()
 					GinkgoWriter.Printf("---> WAKE/SLEEP-HIBERNATE-AND-FILTER-😴: '%v'\n", node.Path)
 

@@ -6,19 +6,20 @@ import (
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/life"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/life"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 const (
@@ -37,7 +38,7 @@ var _ = Describe("Resume", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -65,7 +66,7 @@ var _ = Describe("Resume", Ordered, func() {
 					Fail(fmt.Sprintf("bad test, missing profile for '%v'", entry.profile))
 				}
 
-				once := func(node *tv.Node) error { //nolint:unparam // return nil error ok
+				once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
 					recall[node.Extension.Name] = len(node.Children)
@@ -73,7 +74,7 @@ var _ = Describe("Resume", Ordered, func() {
 					return nil
 				}
 
-				callback := func(servant tv.Servant) error {
+				callback := func(servant age.Servant) error {
 					node := servant.Node()
 					depth := node.Extension.Depth
 					GinkgoWriter.Printf(
@@ -96,7 +97,7 @@ var _ = Describe("Resume", Ordered, func() {
 					return once(node)
 				}
 
-				result, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+				result, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 					GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
 						entry.active.resumeAt, entry.Subscription,
 					)
@@ -106,7 +107,7 @@ var _ = Describe("Resume", Ordered, func() {
 					active.Subscription = entry.Subscription
 					active.CurrentPath = entry.active.resumeAt
 					active.Hibernation = entry.active.listenState
-				})).Extent(tv.Resume(
+				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: callback,
@@ -120,9 +121,9 @@ var _ = Describe("Resume", Ordered, func() {
 						From:     from,
 						Strategy: strategy,
 					},
-					tv.IfElseOptionF(strategy == enums.ResumeStrategyFastward,
+					age.IfElseOptionF(strategy == enums.ResumeStrategyFastward,
 						func() pref.Option {
-							return tv.WithOnBegin(func(state *life.BeginState) {
+							return age.WithOnBegin(func(state *life.BeginState) {
 								lab.Begin("🛡️")(state)
 								//
 								// don't enforce this yet, we need to disable notifications
@@ -131,10 +132,10 @@ var _ = Describe("Resume", Ordered, func() {
 							})
 						},
 						func() pref.Option {
-							return tv.WithOnBegin(lab.Begin("🛡️"))
+							return age.WithOnBegin(lab.Begin("🛡️"))
 						},
 					),
-					tv.WithOnEnd(lab.End("🏁")),
+					age.WithOnEnd(lab.End("🏁")),
 				)).Navigate(ctx)
 
 				if profile.mandatory != nil {

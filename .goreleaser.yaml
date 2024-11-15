@@ -5,7 +5,7 @@ before:
     # - go mod generate
 
 builds:
-  - id: "traverse"
+  - id: "agenor"
     env:
       - CGO_ENABLED=0
     goos:

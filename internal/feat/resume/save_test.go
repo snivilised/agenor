@@ -7,26 +7,27 @@ import (
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 const home = "home/prodigy"
 
 type arrangeSave struct {
 	jdir, name string
-	rS         tv.TraversalFS
+	rS         age.TraversalFS
 }
 
 func (s arrangeSave) arrange() *saveAsserter {
@@ -72,14 +73,14 @@ var _ = Describe("Save", Ordered, func() {
 	var (
 		from, jdir string
 		fS         *luna.MemFS
-		rS         tv.TraversalFS
+		rS         age.TraversalFS
 	)
 
 	BeforeAll(func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -112,7 +113,7 @@ var _ = Describe("Save", Ordered, func() {
 						jdir: jdir,
 					}).arrange()
 
-					result, err := tv.Walk().Configure().Extent(tv.Prime(
+					result, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
 							Subscription: enums.SubscribeDirectories,
 							Head: pref.Head{
@@ -126,8 +127,8 @@ var _ = Describe("Save", Ordered, func() {
 							},
 							Tree: lab.Static.RetroWave,
 						},
-						tv.WithOnBegin(lab.Begin("🛡️")),
-						tv.WithOnEnd(lab.End("🏁")),
+						age.WithOnBegin(lab.Begin("🛡️")),
+						age.WithOnEnd(lab.End("🏁")),
 						pref.WithAdminPath(save.directory),
 					)).Navigate(ctx)
 
@@ -147,14 +148,14 @@ var _ = Describe("Save", Ordered, func() {
 						rS:   rS,
 					}).arrange()
 
-					result, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					result, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 						active.Tree = lab.Static.RetroWave
 						active.TraverseDescription = core.FsDescription{
 							IsRelative: true,
 						}
 						active.CurrentPath = lab.Static.NorthernCouncil
 						active.Subscription = enums.SubscribeUniversal
-					})).Extent(tv.Resume(
+					})).Extent(age.Resume(
 						&pref.Relic{
 							Head: pref.Head{
 								Handler: lab.PanicAt(lab.Static.ElectricYouth),
@@ -168,8 +169,8 @@ var _ = Describe("Save", Ordered, func() {
 							From:     from,
 							Strategy: enums.ResumeStrategyFastward,
 						},
-						tv.WithOnBegin(lab.Begin("🛡️")),
-						tv.WithOnEnd(lab.End("🏁")),
+						age.WithOnBegin(lab.Begin("🛡️")),
+						age.WithOnEnd(lab.End("🏁")),
 						pref.WithAdminPath(save.directory),
 					)).Navigate(ctx)
 
@@ -178,5 +179,5 @@ var _ = Describe("Save", Ordered, func() {
 			})
 		})
 	})
-	// TODO: repeat for concurrent sync (tv.Run).
+	// TODO: repeat for concurrent sync (age.Run).
 })

@@ -1,7 +1,7 @@
 package opts
 
 import (
-	"github.com/snivilised/traverse/life"
+	"github.com/snivilised/agenor/life"
 )
 
 type (

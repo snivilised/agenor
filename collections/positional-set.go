@@ -1,7 +1,7 @@
 package collections
 
 import (
-	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/agenor/internal/third/lo"
 	"golang.org/x/exp/constraints"
 )
 

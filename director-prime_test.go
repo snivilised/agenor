@@ -1,4 +1,4 @@
-package tv_test
+package age_test
 
 import (
 	"context"
@@ -7,17 +7,18 @@ import (
 	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
+
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/life"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/li18ngo"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/life"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
 )
 
 var _ = Describe("Director(Prime)", Ordered, func() {
@@ -29,7 +30,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -50,17 +51,17 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					ctx, cancel := context.WithCancel(specCtx)
 					defer cancel()
 
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
+					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: tree,
 						},
-						tv.WithOnAscend(func(_ *core.Node) {}),
-						tv.WithNoRecurse(),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithOnAscend(func(_ *core.Node) {}),
+						age.WithNoRecurse(),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -75,18 +76,18 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					defer cancel()
 
 					o, _, _ := opts.Get()
-					o.Defects.Fault = tv.Accepter(lab.IgnoreFault)
+					o.Defects.Fault = age.Accepter(lab.IgnoreFault)
 
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
+					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 							O:    o,
 						},
-						tv.WithOnDescend(func(_ *core.Node) {}),
+						age.WithOnDescend(func(_ *core.Node) {}),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -115,17 +116,17 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					// can we tap into cancellation?
 					//
 
-					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
+					_, err := age.Run(&wg).Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
-						tv.WithOnBegin(func(_ *life.BeginState) {}),
-						tv.WithCPU(),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithOnBegin(func(_ *life.BeginState) {}),
+						age.WithCPU(),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					wg.Wait()
@@ -143,17 +144,17 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					var wg sync.WaitGroup
 
 					o, _, _ := opts.Get()
-					o.Defects.Fault = tv.Accepter(lab.IgnoreFault)
-					_, err := tv.Run(&wg).Configure().Extent(tv.Prime(
+					o.Defects.Fault = age.Accepter(lab.IgnoreFault)
+					_, err := age.Run(&wg).Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 							O:    o,
 						},
-						tv.WithOnEnd(func(_ core.TraverseResult) {}),
+						age.WithOnEnd(func(_ core.TraverseResult) {}),
 					)).Navigate(ctx)
 
 					wg.Wait()
@@ -172,17 +173,17 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					ctx, cancel := context.WithCancel(specCtx)
 					defer cancel()
 
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
+					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
-						tv.WithFilter(&pref.FilterOptions{}),
-						tv.WithOnWake(func(_ string) {}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithFilter(&pref.FilterOptions{}),
+						age.WithOnWake(func(_ string) {}),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -196,21 +197,21 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					ctx, cancel := context.WithCancel(specCtx)
 					defer cancel()
 
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
+					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
-						tv.WithHibernationFilterWake(&core.FilterDef{
+						age.WithHibernationFilterWake(&core.FilterDef{
 							Description: "nonsense",
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
-						tv.WithOnSleep(func(_ string) {}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithOnSleep(func(_ string) {}),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
@@ -224,21 +225,21 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 					ctx, cancel := context.WithCancel(specCtx)
 					defer cancel()
 
-					_, err := tv.Walk().Configure().Extent(tv.Prime(
+					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
-							Subscription: tv.SubscribeFiles,
+							Subscription: age.SubscribeFiles,
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							Tree: TreePath,
 						},
-						tv.WithHibernationFilterSleep(&core.FilterDef{
+						age.WithHibernationFilterSleep(&core.FilterDef{
 							Description: "nonsense",
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
-						tv.WithOnSleep(func(_ string) {}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithOnSleep(func(_ string) {}),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())

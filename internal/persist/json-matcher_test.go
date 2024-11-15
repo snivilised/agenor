@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/onsi/gomega/types"
-	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/internal/persist"
+	"github.com/snivilised/agenor/internal/opts/json"
+	"github.com/snivilised/agenor/internal/persist"
 
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/pref"
 )
 
 type MarshalJSONMatcher struct {

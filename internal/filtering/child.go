@@ -4,10 +4,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/locale"
 )
 
 func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {

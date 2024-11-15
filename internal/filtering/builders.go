@@ -3,11 +3,11 @@ package filtering
 import (
 	"strings"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
 )
 
 func buildNativeNodeFilter(definition *core.FilterDef) (core.TraverseFilter, error) {

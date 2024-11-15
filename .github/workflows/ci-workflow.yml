@@ -1,4 +1,4 @@
-name: Traverse Continuous Integration
+name: Agenor Continuous Integration
 
 on:
   push:

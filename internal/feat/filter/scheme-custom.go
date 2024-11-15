@@ -1,10 +1,10 @@
 package filter
 
 import (
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/internal/third/lo"
 )
 
 type customScheme struct {

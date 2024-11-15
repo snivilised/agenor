@@ -13,7 +13,7 @@ dotenv: [".env"]
 
 vars:
   FORMAT: json
-  BINARY_NAME: traverse
+  BINARY_NAME: agenor
   DEPLOY_DIR: ./locale/deploy
   OUT_DIR: ./locale/out
   L10N_DIR: ./locale/out/l10n

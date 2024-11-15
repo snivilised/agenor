@@ -7,18 +7,18 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/test/hydra"
-	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("feature", Ordered, func() {
@@ -63,11 +63,11 @@ var _ = Describe("feature", Ordered, func() {
 							},
 						},
 					}
-					result, _ := tv.Walk().Configure().Extent(tv.Prime(
+					result, _ := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
 							Subscription: enums.SubscribeUniversal,
 							Head: pref.Head{
-								Handler: func(servant tv.Servant) error {
+								Handler: func(servant age.Servant) error {
 									node := servant.Node()
 									GinkgoWriter.Printf(
 										"---> 🍯 EXAMPLE-POLY-FILTER-CALLBACK: '%v'\n", node.Path,
@@ -83,10 +83,10 @@ var _ = Describe("feature", Ordered, func() {
 							},
 							Tree: path,
 						},
-						tv.WithOnBegin(lab.Begin("🛡️")),
-						tv.WithOnEnd(lab.End("🏁")),
+						age.WithOnBegin(lab.Begin("🛡️")),
+						age.WithOnEnd(lab.End("🏁")),
 
-						tv.WithFilter(filterDefs),
+						age.WithFilter(filterDefs),
 					)).Navigate(ctx)
 
 					GinkgoWriter.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
@@ -119,7 +119,7 @@ var _ = Describe("feature", Ordered, func() {
 			}
 
 			path := entry.Relative
-			callback := func(servant tv.Servant) error {
+			callback := func(servant age.Servant) error {
 				node := servant.Node()
 				indicator := lo.Ternary(node.IsDirectory(), "📁", "💠")
 				GinkgoWriter.Printf(
@@ -138,7 +138,7 @@ var _ = Describe("feature", Ordered, func() {
 				recall[node.Extension.Name] = len(node.Children)
 				return nil
 			}
-			result, err := tv.Walk().Configure().Extent(tv.Prime(
+			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
 					Subscription: entry.Subscription,
 					Head: pref.Head{
@@ -152,10 +152,10 @@ var _ = Describe("feature", Ordered, func() {
 					},
 					Tree: path,
 				},
-				tv.WithOnBegin(lab.Begin("🛡️")),
-				tv.WithOnEnd(lab.End("🏁")),
+				age.WithOnBegin(lab.Begin("🛡️")),
+				age.WithOnEnd(lab.End("🏁")),
 
-				tv.WithFilter(filterDefs),
+				age.WithFilter(filterDefs),
 			)).Navigate(ctx)
 
 			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{

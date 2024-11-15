@@ -1,8 +1,8 @@
-package tv
+package age
 
 import (
+	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/pants"
-	"github.com/snivilised/traverse/core"
 )
 
 // Walk requests a sequential traversal of a directory tree.

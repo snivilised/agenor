@@ -1,8 +1,8 @@
-package tv
+package age
 
 import (
+	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/pants"
-	"github.com/snivilised/traverse/core"
 )
 
 type (

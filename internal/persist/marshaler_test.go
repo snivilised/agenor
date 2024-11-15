@@ -9,19 +9,19 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/internal/opts/json"
+	"github.com/snivilised/agenor/internal/persist"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/internal/persist"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
 )
 
 func check[T any](entry *checkerTE, err error) error {
@@ -39,7 +39,7 @@ func check[T any](entry *checkerTE, err error) error {
 	}
 }
 
-func marshal(entry *marshalTE, fS tv.TraversalFS) *tampered {
+func marshal(entry *marshalTE, fS age.TraversalFS) *tampered {
 	// success:
 	o, _, err := opts.Get(
 		pref.IfOptionF(entry.option != nil, func() pref.Option {
@@ -87,7 +87,7 @@ func marshal(entry *marshalTE, fS tv.TraversalFS) *tampered {
 	}
 }
 
-func unmarshal(entry *marshalTE, fS tv.TraversalFS, restorePath string, t *tampered) {
+func unmarshal(entry *marshalTE, fS age.TraversalFS, restorePath string, t *tampered) {
 	// success:
 	request := &persist.UnmarshalRequest{
 		Restore: &enclave.RestoreState{
@@ -126,7 +126,7 @@ func createJSONSamplingOptions(so *pref.SamplingOptions) *json.SamplingOptions {
 
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
-		fS tv.TraversalFS
+		fS age.TraversalFS
 
 		sourceNodeFilterDef *core.FilterDef
 		jsonNodeFilterDef   json.FilterDef

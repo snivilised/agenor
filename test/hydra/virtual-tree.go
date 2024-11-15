@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing/fstest"
 
+	"github.com/snivilised/agenor/collections"
+	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/nefilim/test/luna"
-	"github.com/snivilised/traverse/collections"
-	"github.com/snivilised/traverse/internal/third/lo"
 )
 
 // Nuxx is a luna.MemFS factory hardcoded to Musico

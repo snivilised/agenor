@@ -4,8 +4,8 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
-	"github.com/snivilised/traverse/internal/opts"
-	"github.com/snivilised/traverse/life"
+	"github.com/snivilised/agenor/internal/opts"
+	"github.com/snivilised/agenor/life"
 )
 
 var _ = Describe("event", func() {

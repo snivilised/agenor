@@ -1,4 +1,4 @@
-package tv_test
+package age_test
 
 import (
 	"context"
@@ -8,18 +8,18 @@ import (
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
+	age "github.com/snivilised/agenor"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
+	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/life"
+	"github.com/snivilised/agenor/locale"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
-	tv "github.com/snivilised/traverse"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	lab "github.com/snivilised/traverse/internal/laboratory"
-	"github.com/snivilised/traverse/internal/services"
-	"github.com/snivilised/traverse/life"
-	"github.com/snivilised/traverse/locale"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/tfs"
 )
 
 var _ = Describe("Director(Resume)", Ordered, func() {
@@ -31,7 +31,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		restore = func(o *tv.Options) error {
+		restore = func(o *age.Options) error {
 			o.Events.Begin.On(func(_ *life.BeginState) {})
 
 			return nil
@@ -42,7 +42,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "traverse"},
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
 				}
 			},
 		)).To(Succeed())
@@ -62,10 +62,10 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 				const depth = 2
 
-				_, err := tv.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 					active.TraverseDescription.IsRelative = true
 					active.ResumeDescription.IsRelative = false
-				})).Extent(tv.Resume(
+				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: noOpHandler,
@@ -77,11 +77,11 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 							},
 						},
 						From:     jsonPath,
-						Strategy: tv.ResumeStrategyFastward,
+						Strategy: age.ResumeStrategyFastward,
 					},
-					tv.WithDepth(depth),
-					tv.WithOnDescend(func(_ *core.Node) {}),
-					tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+					age.WithDepth(depth),
+					age.WithOnDescend(func(_ *core.Node) {}),
+					age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 					restore,
 				)).Navigate(ctx)
 
@@ -98,15 +98,15 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 				var wg sync.WaitGroup
 
-				_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
+				_, err := age.Run(&wg).Configure().Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: noOpHandler,
 						},
-						From:     jsonPath,                  // TODO: need to fake out the resume path
-						Strategy: tv.ResumeStrategyFastward, // revert to Spawn
+						From:     jsonPath,                   // TODO: need to fake out the resume path
+						Strategy: age.ResumeStrategyFastward, // revert to Spawn
 					},
-					tv.WithOnDescend(func(_ *core.Node) {}),
+					age.WithOnDescend(func(_ *core.Node) {}),
 					restore,
 				)).Navigate(ctx)
 
@@ -128,16 +128,16 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 					var wg sync.WaitGroup
 
-					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
+					_, err := age.Run(&wg).Configure().Extent(age.Resume(
 						&pref.Relic{
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							From:     jsonPath,
-							Strategy: tv.ResumeStrategyFastward,
+							Strategy: age.ResumeStrategyFastward,
 						},
-						tv.WithFilter(&pref.FilterOptions{}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithFilter(&pref.FilterOptions{}),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 
@@ -155,20 +155,20 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 					var wg sync.WaitGroup
 
-					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
+					_, err := age.Run(&wg).Configure().Extent(age.Resume(
 						&pref.Relic{
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							From:     jsonPath,
-							Strategy: tv.ResumeStrategyFastward,
+							Strategy: age.ResumeStrategyFastward,
 						},
-						tv.WithHibernationFilterWake(&core.FilterDef{
+						age.WithHibernationFilterWake(&core.FilterDef{
 							Description: "nonsense",
 							Type:        enums.FilterTypeGlob,
 							Pattern:     "*",
 						}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 
@@ -186,15 +186,15 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 					var wg sync.WaitGroup
 
-					_, err := tv.Run(&wg).Configure().Extent(tv.Resume(
+					_, err := age.Run(&wg).Configure().Extent(age.Resume(
 						&pref.Relic{
 							Head: pref.Head{
 								Handler: noOpHandler,
 							},
 							From:     jsonPath,
-							Strategy: tv.ResumeStrategyFastward,
+							Strategy: age.ResumeStrategyFastward,
 						},
-						tv.WithSamplingOptions(&pref.SamplingOptions{
+						age.WithSamplingOptions(&pref.SamplingOptions{
 							NoOf: pref.EntryQuantities{
 								Files:       files,
 								Directories: directories,
@@ -205,7 +205,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 								While: func(_ *pref.FilteredInfo) bool { return false },
 							},
 						}),
-						tv.WithFaultHandler(tv.Accepter(lab.IgnoreFault)),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
 						restore,
 					)).Navigate(ctx)
 

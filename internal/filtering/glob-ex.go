@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/third/lo"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/third/lo"
 )
 
 func createGlobExFilter(def *core.FilterDef,

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io/fs"
 
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/level"
-	"github.com/snivilised/traverse/life"
-	"github.com/snivilised/traverse/pref"
-	"github.com/snivilised/traverse/stock"
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/internal/level"
+	"github.com/snivilised/agenor/life"
+	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/stock"
 )
 
 // mediator controls traversal events, sends notifications and emits

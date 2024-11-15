@@ -1,7 +1,7 @@
 package lab
 
 import (
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/agenor/core"
 )
 
 var (

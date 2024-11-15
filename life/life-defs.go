@@ -1,7 +1,7 @@
 package life
 
 import (
-	"github.com/snivilised/traverse/core"
+	"github.com/snivilised/agenor/core"
 )
 
 // 📦 pkg: life - represents life cycle events; can't use prefs

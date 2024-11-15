@@ -1,7 +1,7 @@
 package opts
 
 import (
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/pref"
 )
 
 func Get(settings ...pref.Option) (o *pref.Options, b *Binder, err error) {

@@ -8,7 +8,7 @@ import (
 // 📦 pkg: stock, contain functions that can be considered addenda
 // to the std golang library. Any functions/type created here should
 // be self contained; no dependencies should be created towards any
-// other package inside traverse.
+// other package inside agenor.
 
 // IsBenignError enables the distinction between a genuine err and
 // a synthetic file system error, in this context described as being

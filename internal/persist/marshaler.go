@@ -4,11 +4,11 @@ import (
 	ejson "encoding/json"
 	"io/fs"
 
+	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/internal/opts/json"
+	"github.com/snivilised/agenor/pref"
 	nef "github.com/snivilised/nefilim"
-	"github.com/snivilised/traverse/core"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/opts/json"
-	"github.com/snivilised/traverse/pref"
 )
 
 type (

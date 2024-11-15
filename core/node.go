@@ -3,7 +3,7 @@ package core
 import (
 	"io/fs"
 
-	"github.com/snivilised/traverse/enums"
+	"github.com/snivilised/agenor/enums"
 )
 
 // Node represents a file system node event and represents each file system

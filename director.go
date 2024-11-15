@@ -1,16 +1,16 @@
-package tv
+package age
 
 import (
-	"github.com/snivilised/traverse/enums"
-	"github.com/snivilised/traverse/internal/enclave"
-	"github.com/snivilised/traverse/internal/feat/filter"
-	"github.com/snivilised/traverse/internal/feat/hiber"
-	"github.com/snivilised/traverse/internal/feat/nanny"
-	"github.com/snivilised/traverse/internal/feat/resume"
-	"github.com/snivilised/traverse/internal/feat/sampling"
-	"github.com/snivilised/traverse/internal/kernel"
-	"github.com/snivilised/traverse/internal/third/lo"
-	"github.com/snivilised/traverse/pref"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	"github.com/snivilised/agenor/internal/feat/filter"
+	"github.com/snivilised/agenor/internal/feat/hiber"
+	"github.com/snivilised/agenor/internal/feat/nanny"
+	"github.com/snivilised/agenor/internal/feat/resume"
+	"github.com/snivilised/agenor/internal/feat/sampling"
+	"github.com/snivilised/agenor/internal/kernel"
+	"github.com/snivilised/agenor/internal/third/lo"
+	"github.com/snivilised/agenor/pref"
 )
 
 const (
