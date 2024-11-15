@@ -30,7 +30,7 @@ func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) 
 type plugin struct {
 	kernel.BasePlugin
 	sink   pref.FilteringSink
-	crate  core.Crate
+	crate  enclave.Crate
 	scheme scheme
 }
 

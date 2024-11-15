@@ -33,7 +33,7 @@ func (fn NodeInvoker) Invoke(servant core.Servant,
 type anchor struct {
 	subscription enums.Subscription
 	client       core.Client
-	crate        core.Crate
+	crate        enclave.Crate
 }
 
 func (a *anchor) Next(servant core.Servant, _ enclave.Inspection) (bool, error) {
@@ -75,7 +75,7 @@ func newGuardian(info *guardianInfo) *guardian {
 		anchor: &anchor{
 			subscription: info.subscription,
 			client:       info.client,
-			crate: core.Crate{
+			crate: enclave.Crate{
 				Metrics: info.metrics,
 			},
 		},

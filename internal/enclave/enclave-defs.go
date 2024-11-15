@@ -76,15 +76,15 @@ type (
 		KernelController
 		//
 		Read(path string) ([]fs.DirEntry, error)
-		Spawn(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
-		Bridge(tree, current string)
-		Supervisor() *core.Supervisor
+		Spawn(ctx context.Context, tree string) (*KernelResult, error)
+		Bridge(active *core.ActiveState)
+		Supervisor() *Supervisor
 	}
 
 	// Resources are dependencies required for navigation
 	Resources struct {
 		Forest     *core.Forest
-		Supervisor *core.Supervisor
+		Supervisor *Supervisor
 		Binder     *opts.Binder
 	}
 

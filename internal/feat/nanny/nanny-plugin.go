@@ -29,7 +29,7 @@ func IfActive(o *pref.Options,
 
 type plugin struct {
 	kernel.BasePlugin
-	crate core.Crate
+	crate enclave.Crate
 }
 
 func (p *plugin) Next(servant core.Servant,

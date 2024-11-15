@@ -2,16 +2,18 @@ package kernel
 
 type (
 	vexation interface {
+		ancestor() string
 		vapour() inspection
 		cause() string
-		extent() string
+		magnitude() string
 	}
 
 	vex struct {
-		data            interface{}
-		vap             inspection
-		causeOfVexation string
-		ofExtent        string
+		data     interface{}
+		anc      string
+		vap      inspection
+		catalyst string
+		mag      string
 	}
 )
 
@@ -19,14 +21,18 @@ func (v *vex) Data() interface{} {
 	return v.data
 }
 
+func (v *vex) ancestor() string {
+	return v.anc
+}
+
 func (v *vex) vapour() inspection {
 	return v.vap
 }
 
 func (v *vex) cause() string {
-	return v.causeOfVexation
+	return v.catalyst
 }
 
-func (v *vex) extent() string {
-	return v.ofExtent
+func (v *vex) magnitude() string {
+	return v.mag
 }

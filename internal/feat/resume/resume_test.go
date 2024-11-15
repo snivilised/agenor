@@ -13,6 +13,7 @@ import (
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
@@ -55,6 +56,7 @@ var _ = Describe("Resume", Ordered, func() {
 		func(ctx SpecContext, entry *resumeTE) {
 			invocations := strategyInvocations{}
 
+			fmt.Printf("💀💀💀 restore strategies\n")
 			for _, strategy := range []enums.ResumeStrategy{
 				enums.ResumeStrategyFastward,
 				enums.ResumeStrategySpawn,
@@ -102,6 +104,7 @@ var _ = Describe("Resume", Ordered, func() {
 						entry.active.resumeAt, entry.Subscription,
 					)
 					active.Tree = entry.Relative
+					active.Depth = lo.Ternary(entry.active.depth == 0, 2, entry.active.depth)
 					active.TraverseDescription.IsRelative = true
 					active.ResumeDescription.IsRelative = false
 					active.Subscription = entry.Subscription

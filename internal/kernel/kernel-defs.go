@@ -99,7 +99,7 @@ type (
 		mediator     *mediator
 		tree         string
 		calc         nef.PathCalc
-		ofExtent     string
+		magnitude    string
 		subscription enums.Subscription
 	}
 

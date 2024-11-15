@@ -14,7 +14,7 @@ type (
 		Client() core.Client
 		Forest() BuildForest
 		Validate() error
-		OfExtent() string
+		Magnitude() string
 	}
 
 	// Head contains information common to both primary and resume
@@ -137,7 +137,7 @@ func (f *Using) Validate() error {
 	return f.Head.Validate()
 }
 
-func (f *Using) OfExtent() string {
+func (f *Using) Magnitude() string {
 	return "prime"
 }
 
@@ -165,6 +165,6 @@ func (f *Relic) Validate() error {
 	return f.Head.Validate()
 }
 
-func (f *Relic) OfExtent() string {
+func (f *Relic) Magnitude() string {
 	return "resume"
 }

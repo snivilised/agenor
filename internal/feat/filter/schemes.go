@@ -10,17 +10,17 @@ import (
 type (
 	scheme interface {
 		create() error
-		init(pi *enclave.PluginInit, crate *core.Crate)
+		init(pi *enclave.PluginInit, crate *enclave.Crate)
 		next(servant core.Servant, inspection enclave.Inspection) (bool, error)
 	}
 )
 
 type common struct {
 	o     *pref.Options
-	crate *core.Crate
+	crate *enclave.Crate
 }
 
-func (f *common) init(_ *enclave.PluginInit, crate *core.Crate) {
+func (f *common) init(_ *enclave.PluginInit, crate *enclave.Crate) {
 	f.crate = crate
 }
 
