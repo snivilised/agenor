@@ -25,7 +25,7 @@ func (s *customScheme) next(servant core.Servant,
 }
 
 func matchNext(filter core.TraverseFilter,
-	node *core.Node, crate *core.Crate,
+	node *core.Node, crate *enclave.Crate,
 ) (bool, error) {
 	matched := filter.IsMatch(node)
 

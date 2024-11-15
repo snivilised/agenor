@@ -16,6 +16,7 @@ func TestResume(t *testing.T) {
 
 type (
 	activeTE struct {
+		depth       int // must correspond to the correct depth of resumeAt
 		resumeAt    string
 		listenState enums.Hibernation // rename listenState...
 	}

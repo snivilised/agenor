@@ -30,7 +30,7 @@ func (s *nannyScheme) create() error {
 	return nil
 }
 
-func (s *nannyScheme) init(pi *enclave.PluginInit, crate *core.Crate) {
+func (s *nannyScheme) init(pi *enclave.PluginInit, crate *enclave.Crate) {
 	s.common.init(pi, crate)
 }
 

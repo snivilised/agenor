@@ -23,7 +23,7 @@ import (
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
 		testPath string
-		reporter *core.Supervisor
+		reporter *enclave.Supervisor
 		trig     *lab.Trigger
 	)
 
@@ -47,7 +47,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 			Fail(err.Error())
 		}
 
-		reporter = core.NewSupervisor()
+		reporter = enclave.NewSupervisor()
 		trig = &lab.Trigger{
 			Metrics: reporter.Many(
 				enums.MetricNoFilesInvoked,

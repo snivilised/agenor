@@ -39,7 +39,7 @@ func (s *hybridScheme) create() error {
 	return nil
 }
 
-func (s *hybridScheme) init(pi *enclave.PluginInit, crate *core.Crate) {
+func (s *hybridScheme) init(pi *enclave.PluginInit, crate *enclave.Crate) {
 	s.common.init(pi, crate)
 
 	if s.primary != nil {

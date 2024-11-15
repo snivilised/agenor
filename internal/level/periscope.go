@@ -13,8 +13,7 @@ import (
 
 // Periscope: depth and scope manager
 type Periscope struct {
-	offset int
-	depth  int
+	depth int
 }
 
 // New creates a new periscope instance for a fresh session
@@ -22,12 +21,11 @@ func New() *Periscope {
 	return &Periscope{}
 }
 
-// Restore creates a new periscope instance required for resume sessions
-func Restore(offset, depth int) *Periscope {
-	return &Periscope{
-		offset: offset,
-		depth:  depth,
-	}
+// Offset should be invoked with the Depth loaded into the ActiveState
+// during bridging from the previous resume session and the current
+// resume session.
+func (p *Periscope) Offset(by int) {
+	p.depth += by
 }
 
 func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
@@ -55,7 +53,7 @@ func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 }
 
 func (p *Periscope) Depth() int {
-	return p.offset + p.depth - 1
+	return p.depth - 1
 }
 
 func (p *Periscope) Delta(tree, current string) (err error) {
@@ -65,8 +63,6 @@ func (p *Periscope) Delta(tree, current string) (err error) {
 	if rootSize > currentSize {
 		return core.NewInvalidPeriscopeRootPathError(tree, current)
 	}
-
-	p.offset = currentSize - rootSize
 
 	return nil
 }

@@ -37,7 +37,7 @@ type navigatorAgent struct {
 	resources *enclave.Resources
 	session   core.Session
 	persister author
-	ofExtent  string
+	magnitude string
 }
 
 func (n *navigatorAgent) Ignite(ignition *enclave.Ignition) {
@@ -82,7 +82,6 @@ func (n *navigatorAgent) top(ctx context.Context,
 func (n *navigatorAgent) Result(_ context.Context) *enclave.KernelResult {
 	result := enclave.NewResult(n.session,
 		n.resources.Supervisor,
-		// err,
 		n.session.IsComplete(),
 	)
 
@@ -109,11 +108,19 @@ func (n *navigatorAgent) travel(ctx context.Context,
 ) (skip bool, err error) {
 	defer func() {
 		if data := recover(); data != nil {
+			// The tree on the mediator always points to the original tree root
+			// requested by the user. The tree on navigation static can be different
+			// when a spawn resume is in play; ie, the Spawn is created using a child
+			// tree and this is what is set on the navigation static when a sub tree
+			// is seeded, but this would be the incorrect tree to persist, rather, we
+			// need the real ancestor that is denoted by the mediator's tree.
+			//
 			to, rescueErr := n.ao.defects.Panic.Rescue(n, &vex{
-				data:            data,
-				vap:             vapour,
-				causeOfVexation: "panic",
-				ofExtent:        n.ofExtent,
+				data:     data,
+				anc:      ns.mediator.tree,
+				vap:      vapour,
+				catalyst: "panic",
+				mag:      n.magnitude,
 			}) // wrap???
 
 			panicErr, ok := data.(error)

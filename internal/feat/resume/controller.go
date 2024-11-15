@@ -30,10 +30,10 @@ func (c *Controller) Strategy() Strategy {
 	return c.strategy
 }
 
-func (c *Controller) Resume(context.Context,
-	*core.ActiveState,
+func (c *Controller) Resume(ctx context.Context,
+	_ *core.ActiveState,
 ) (*enclave.KernelResult, error) {
-	return &enclave.KernelResult{}, nil
+	return c.Result(ctx), nil
 }
 
 func (c *Controller) Conclude(result core.TraverseResult) {

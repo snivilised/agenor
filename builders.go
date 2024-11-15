@@ -1,7 +1,6 @@
 package age
 
 import (
-	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/enclave"
 	"github.com/snivilised/agenor/internal/kernel"
@@ -55,7 +54,7 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 		Harvest:      harvest,
 		Resources: &enclave.Resources{
 			Forest:     ext.forest(),
-			Supervisor: core.NewSupervisor(),
+			Supervisor: enclave.NewSupervisor(),
 			Binder:     harvest.Binder(),
 		},
 	})

@@ -42,7 +42,7 @@ func newImpl(o *pref.Options,
 			o:     o,
 			perms: core.Perms,
 		},
-		ofExtent: inception.Facade.OfExtent(),
+		magnitude: inception.Facade.Magnitude(),
 	}
 
 	switch subscription {

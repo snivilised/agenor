@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
@@ -14,7 +13,7 @@ var _ = Describe("KernelResult", func() {
 	Context("Metrics", Ordered, func() {
 		var (
 			sess     *session
-			reporter *core.Supervisor
+			reporter *enclave.Supervisor
 			trig     *lab.Trigger
 			// err      error
 			complete bool
@@ -22,7 +21,7 @@ var _ = Describe("KernelResult", func() {
 
 		BeforeEach(func() {
 			sess = &session{}
-			reporter = core.NewSupervisor()
+			reporter = enclave.NewSupervisor()
 			trig = &lab.Trigger{
 				Metrics: reporter.Many(
 					enums.MetricNoFilesInvoked,
@@ -39,7 +38,6 @@ var _ = Describe("KernelResult", func() {
 				entry.arrange(trig)
 				result := enclave.NewResult(sess,
 					reporter,
-					// err,
 					complete,
 				)
 				entry.assert(&asserter{

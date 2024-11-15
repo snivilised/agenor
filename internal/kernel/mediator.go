@@ -85,29 +85,29 @@ func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
 }
 
 func (m *mediator) Spawn(ctx context.Context,
-	active *core.ActiveState, // TODO: this should not be ActiveState, ActiveState is being abused
+	tree string,
 ) (*enclave.KernelResult, error) {
-	m.tree = active.Tree
-	offset := 0 // TODO: not sure what to set this to yet
-	m.periscope = level.Restore(offset, active.Depth)
-
+	// NB:
 	return m.impl.Top(ctx, &navigationStatic{
-		mediator: m,
-		tree:     active.Tree,
-		calc:     m.resources.Forest.T.Calc(),
+		mediator:     m,
+		tree:         tree,
+		calc:         m.resources.Forest.T.Calc(),
+		subscription: m.subscription,
+		magnitude:    m.facade.Magnitude(),
 	})
 }
 
 // Bridge combines information gleaned from the previous traversal that was
 // interrupted, into the resume traversal
-//
-// tree, current string
-func (m *mediator) Bridge(tree, current string) {
-	m.tree = tree
-	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n", tree, current)
+func (m *mediator) Bridge(active *core.ActiveState) {
+	m.tree = active.Tree
+	m.periscope.Offset(active.Depth)
+	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n",
+		active.Tree, active.CurrentPath,
+	)
 }
 
-func (m *mediator) Supervisor() *core.Supervisor {
+func (m *mediator) Supervisor() *enclave.Supervisor {
 	return m.resources.Supervisor
 }
 
@@ -117,7 +117,7 @@ func (m *mediator) Navigate(ctx context.Context) (result *enclave.KernelResult, 
 		tree:         m.tree,
 		calc:         m.resources.Forest.T.Calc(),
 		subscription: m.subscription,
-		ofExtent:     m.facade.OfExtent(),
+		magnitude:    m.facade.Magnitude(),
 	})
 
 	if !stock.IsBenignError(err) && m.o != nil {
@@ -154,7 +154,7 @@ func (m *mediator) Resume(ctx context.Context,
 		tree:         active.Tree,
 		calc:         m.resources.Forest.T.Calc(),
 		subscription: m.subscription,
-		ofExtent:     m.facade.OfExtent(),
+		magnitude:    m.facade.Magnitude(),
 	})
 }
 

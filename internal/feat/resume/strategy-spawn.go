@@ -32,8 +32,12 @@ func (s *spawnStrategy) init(load *opts.LoadInfo) error {
 }
 
 func (s *spawnStrategy) resume(ctx context.Context) (result *enclave.KernelResult, err error) {
-	fmt.Printf("\t💙 resume, tree: '%v', current path: '%v'\n",
+	fmt.Printf("\t💙 resume, tree: '%v', restore-at: '%v'\n",
 		s.active.Tree, s.active.CurrentPath)
+
+	// Bridge announces the availability of the ActiveState and acts as a conduit
+	// between the previous navigation session and this resume session.
+	s.mediator.Bridge(s.active)
 
 	result, err = s.conclude(ctx, &conclusion{
 		active:    s.active,
@@ -54,6 +58,15 @@ func (s *spawnStrategy) ifResult() bool {
 	return s.complete
 }
 
+// conclude finishes off the navigation of a directory's contents as the
+// Spawn resume has to deal with fractured ancestors; this is to say when a
+// navigation is halted and saved, the state of the tree is that it is only
+// partly navigated. The point at which it stops, marks a dividing line in
+// that directory, where the parent's children have not all been visited;
+// ie fractured ancestor and this fracturing occurs all the way up to the root
+// of the tree. For the current node, conclude identifies the following
+// siblings and invokes seed for each one and this progresses on a recursive
+// basis via conclude.
 func (s *spawnStrategy) conclude(ctx context.Context,
 	conc *conclusion,
 ) (*enclave.KernelResult, error) {
@@ -98,29 +111,18 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 	return s.conclude(ctx, conc)
 }
 
+// seed invokes a Spawn for each new sibling it is presented with by conclude.
 func (s *spawnStrategy) seed(ctx context.Context,
 	parent string,
 	entries []fs.DirEntry,
 	conc *conclusion,
 ) (*enclave.KernelResult, error) {
 	fmt.Printf("\t🔊 seed, current: '%v'\n", conc.current)
-	s.mediator.Bridge(conc.tree, conc.current)
-
 	result := s.kc.Result(ctx)
 
 	for _, entry := range entries {
 		top := s.calc.Join(parent, entry.Name())
-
-		intermediate, err := s.mediator.Spawn(ctx, &core.ActiveState{
-			Tree: top,
-			TraverseDescription: core.FsDescription{
-				IsRelative: s.forest.T.IsRelative(),
-			},
-			ResumeDescription: core.FsDescription{
-				IsRelative: s.forest.R.IsRelative(),
-			},
-			// Subscription: tbd,
-		})
+		intermediate, err := s.mediator.Spawn(ctx, top)
 
 		if err != nil {
 			return intermediate, err

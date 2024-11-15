@@ -12,7 +12,7 @@ type KernelResult struct {
 }
 
 func NewResult(session core.Session,
-	supervisor *core.Supervisor,
+	supervisor *Supervisor,
 	complete bool,
 ) *KernelResult {
 	return &KernelResult{

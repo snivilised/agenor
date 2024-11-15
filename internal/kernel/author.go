@@ -15,22 +15,22 @@ type author struct {
 	perms core.Permissions
 }
 
-func (a *author) write(v vexation) (string, error) {
-	vapour := v.vapour()
-	s := vapour.static()
-	forest := s.mediator.resources.Forest
+func (a *author) write(vex vexation) (string, error) {
+	vapour := vex.vapour()
+	static := vapour.static()
+	forest := static.mediator.resources.Forest
 	fS := forest.R
 	calc := fS.Calc()
-	directory, file := a.destination(v, calc)
+	directory, file := a.destination(vex, calc)
 
 	if err := fS.MakeDirAll(directory, a.perms.Dir); err != nil {
 		return "", err
 	}
 
 	path := calc.Join(directory, file)
-	active := vapour.active(s.tree, forest,
-		s.mediator.periscope.Depth(),
-		s.mediator.metrics,
+	active := vapour.active(vex.ancestor(), forest,
+		static.mediator.periscope.Depth(),
+		static.mediator.metrics,
 	)
 
 	request := &persist.MarshalRequest{
@@ -47,7 +47,7 @@ func (a *author) write(v vexation) (string, error) {
 }
 
 func (a *author) destination(v vexation, calc nef.PathCalc) (directory, file string) {
-	extent := v.extent()
+	mag := v.magnitude()
 	cause := v.cause()
 	now := core.Now()
 
@@ -57,7 +57,7 @@ func (a *author) destination(v vexation, calc nef.PathCalc) (directory, file str
 	}
 
 	file = fmt.Sprintf("%v.%v.%v.json",
-		extent, cause, now.Format(core.FileSystemTimeFormat),
+		mag, cause, now.Format(core.FileSystemTimeFormat),
 	)
 
 	return directory, file
