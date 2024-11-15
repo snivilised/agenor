@@ -9,26 +9,21 @@ type KernelResult struct {
 	session  core.Session
 	reporter core.Reporter
 	complete bool
-	err      error
 }
 
 func NewResult(session core.Session,
 	supervisor *core.Supervisor,
-	err error,
 	complete bool,
 ) *KernelResult {
 	return &KernelResult{
 		session:  session,
 		reporter: supervisor,
-		err:      err,
 		complete: complete,
 	}
 }
 
-func NewFailed(err error) *KernelResult {
-	return &KernelResult{
-		err: err,
-	}
+func NewFailed() *KernelResult {
+	return &KernelResult{}
 }
 
 func (r *KernelResult) IsComplete() bool {
@@ -41,8 +36,4 @@ func (r *KernelResult) Session() core.Session {
 
 func (r *KernelResult) Metrics() core.Reporter {
 	return r.reporter
-}
-
-func (r *KernelResult) Error() error {
-	return r.err
 }

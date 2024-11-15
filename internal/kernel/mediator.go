@@ -135,9 +135,8 @@ func (m *mediator) Ignite(ignition *enclave.Ignition) {
 }
 
 func (m *mediator) Result(ctx context.Context,
-	err error,
 ) *enclave.KernelResult {
-	return m.impl.Result(ctx, err)
+	return m.impl.Result(ctx)
 }
 
 func (m *mediator) Resume(ctx context.Context,

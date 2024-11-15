@@ -22,8 +22,8 @@ func (c *Controller) Ignite(ignition *enclave.Ignition) {
 	c.med.Ignite(ignition)
 }
 
-func (c *Controller) Result(ctx context.Context, err error) *enclave.KernelResult {
-	return c.med.Result(ctx, err)
+func (c *Controller) Result(ctx context.Context) *enclave.KernelResult {
+	return c.med.Result(ctx)
 }
 
 func (c *Controller) Strategy() Strategy {
@@ -74,7 +74,7 @@ func newStrategy(inception *kernel.Inception,
 
 func (c *Controller) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	if err := c.strategy.init(c.load); err != nil {
-		return c.Result(ctx, err), err
+		return c.Result(ctx), err
 	}
 
 	return c.strategy.resume(ctx)

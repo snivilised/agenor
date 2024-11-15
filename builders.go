@@ -37,6 +37,8 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 	o := harvest.Options()
 
 	if err != nil {
+		o.Monitor.Log.Error(err.Error())
+
 		return &buildArtefacts{
 			o:   o,
 			kc:  kernel.HadesNav(o, err),
@@ -67,6 +69,8 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 	)
 
 	if err != nil {
+		o.Monitor.Log.Error(err.Error())
+
 		return &buildArtefacts{
 			o:   o,
 			kc:  kernel.HadesNav(o, err),
@@ -93,6 +97,8 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 
 	for _, p := range plugins {
 		if err := p.Init(pi); err != nil {
+			o.Monitor.Log.Error(err.Error())
+
 			return &buildArtefacts{
 				o:       o,
 				kc:      artefacts.Kontroller,

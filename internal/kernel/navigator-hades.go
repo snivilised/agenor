@@ -6,7 +6,6 @@ import (
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/internal/enclave"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/stock"
 )
 
 func HadesNav(o *pref.Options, err error) enclave.KernelController {
@@ -28,15 +27,11 @@ func (n *navigatorHades) Ignite(*enclave.Ignition) {
 }
 
 func (n *navigatorHades) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
-	return n.Result(ctx, n.err), n.err
+	return n.Result(ctx), n.err
 }
 
-func (n *navigatorHades) Result(_ context.Context, err error) *enclave.KernelResult {
-	if !stock.IsBenignError(err) && n.o != nil {
-		n.o.Monitor.Log.Error(err.Error())
-	}
-
-	return enclave.NewFailed(err)
+func (n *navigatorHades) Result(_ context.Context) *enclave.KernelResult {
+	return enclave.NewFailed()
 }
 
 func (n *navigatorHades) Resume(context.Context,

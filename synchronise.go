@@ -53,7 +53,7 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 	defer c.close()
 
 	if c.err != nil {
-		return c.kc.Result(ctx, c.err), c.err
+		return c.kc.Result(ctx), c.err
 	}
 
 	c.decorator = func(servant Servant) error {
@@ -91,7 +91,7 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 
 	if c.err != nil {
 		err := errors.Wrap(c.err, locale.ErrWorkerPoolCreationFailed.Error())
-		return c.kc.Result(ctx, err), err
+		return c.kc.Result(ctx), err
 	}
 	c.open(ctx)
 
@@ -114,7 +114,7 @@ type sequential struct {
 
 func (s *sequential) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	if s.err != nil {
-		return s.kc.Result(ctx, s.err), s.err
+		return s.kc.Result(ctx), s.err
 	}
 
 	return s.kc.Navigate(ctx)

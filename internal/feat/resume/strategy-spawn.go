@@ -68,7 +68,7 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 		// reach the top, so we're done
 		//
 		s.complete = true
-		return s.kc.Result(ctx, nil), nil
+		return s.kc.Result(ctx), nil
 	}
 
 	fmt.Printf("\t🟢 conclude, current: '%v'\n",
@@ -80,7 +80,7 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 		conc.inclusive,
 	)
 	if err != nil {
-		return s.kc.Result(ctx, err), err
+		return s.kc.Result(ctx), err
 	}
 
 	following.siblings.Sort(enums.EntryTypeFile)
@@ -106,7 +106,7 @@ func (s *spawnStrategy) seed(ctx context.Context,
 	fmt.Printf("\t🔊 seed, current: '%v'\n", conc.current)
 	s.mediator.Bridge(conc.tree, conc.current)
 
-	result := s.kc.Result(ctx, nil)
+	result := s.kc.Result(ctx)
 
 	for _, entry := range entries {
 		top := s.calc.Join(parent, entry.Name())
@@ -127,7 +127,7 @@ func (s *spawnStrategy) seed(ctx context.Context,
 		}
 	}
 
-	return result, result.Error() //nolint:gocritic // baa
+	return result, nil
 }
 
 func (s *spawnStrategy) following(parent, anchor string,
