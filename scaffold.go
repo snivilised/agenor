@@ -126,10 +126,9 @@ type primaryPlatform struct {
 
 func (p *primaryPlatform) buildForest(using *pref.Using) *core.Forest {
 	fn := using.Forest()
-	tree := using.Path()
 
 	if fn != nil {
-		return fn(tree)
+		return fn(using.Tree)
 	}
 	// Create an absolute file system for both navigation and resume. We
 	// can share the same instance because absolute fs have no state, as
@@ -175,8 +174,8 @@ func (p *resumePlatform) buildForest(relic *pref.Relic, active *core.ActiveState
 		func() *core.Forest {
 			// Create an absolute file system for both navigation and resume. We
 			// can share the same instance because absolute fs have no state, as
-			// opposed to a relative fs, which needs use the root path as state
-			// which would be different for navigation and resume purposes.
+			// opposed to a relative fs, which needs to use the root path as state
+			// tha is different for navigation and resume purposes.
 			fS := tfs.New()
 
 			return &core.Forest{
@@ -190,7 +189,7 @@ func (p *resumePlatform) buildForest(relic *pref.Relic, active *core.ActiveState
 		return nil
 	}
 
-	// Client may not have provided a function to create the forest,
+	// The client may not have provided a function to create the forest,
 	// instead relying on the default, but as we create an absolute fs by
 	// default, this may not match the type of traverse fs created by
 	// the original traversal session as per the active state loaded.

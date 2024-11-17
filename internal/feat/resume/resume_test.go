@@ -108,7 +108,7 @@ var _ = Describe("Resume", Ordered, func() {
 					active.ResumeDescription.IsRelative = false
 					active.Subscription = entry.Subscription
 					active.CurrentPath = entry.active.resumeAt
-					active.Hibernation = entry.active.listenState
+					active.Hibernation = entry.active.hibernateState
 				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
@@ -182,8 +182,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> universal(pending): unfiltered",
@@ -196,8 +196,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationActive,
 			},
 			// For these scenarios (START_AT_CLIENT_ALREADY_ACTIVE), since
 			// listening is already active, the value of resumeAt is irrelevant,
@@ -217,8 +217,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeDirectories,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> folders(pending): unfiltered",
@@ -231,8 +231,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeDirectories,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationActive,
 			},
 			clientListenAt: StartAtClientAlreadyActive,
 			profile:        "-> folders(active): unfiltered",
@@ -245,8 +245,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeFiles,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtCanYouKissMeFirst,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtCanYouKissMeFirst,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtBeforeLife,
 			profile:        "-> files(pending): unfiltered",
@@ -259,8 +259,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeFiles,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtCanYouKissMeFirst,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtCanYouKissMeFirst,
+				hibernateState: enums.HibernationActive,
 			},
 			clientListenAt: StartAtClientAlreadyActive,
 			profile:        "-> files(active): unfiltered",
@@ -275,8 +275,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationRetired, // TODO(listen not active):check Retired is correct enum!!!
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationRetired, // TODO(listen not active):check Retired is correct enum!!!
 			},
 			profile: "-> universal: filtered",
 		}),
@@ -288,8 +288,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeDirectories,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationRetired, // TODO:check Retired
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationRetired, // TODO:check Retired
 			},
 			profile: "-> folders: filtered",
 		}),
@@ -301,8 +301,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeFiles,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtCanYouKissMeFirst,
-				listenState: enums.HibernationRetired, // TODO:check Retired
+				resumeAt:       ResumeAtCanYouKissMeFirst,
+				hibernateState: enums.HibernationRetired, // TODO:check Retired
 			},
 			profile: "-> files: filtered",
 		}),
@@ -316,8 +316,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> universal: listen pending and filtered",
@@ -330,8 +330,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationActive,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> universal: filtered",
@@ -344,8 +344,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeDirectories,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> folders: listen pending and filtered",
@@ -358,8 +358,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeDirectories,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtTeenageColor,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtTeenageColor,
+				hibernateState: enums.HibernationActive,
 			},
 			clientListenAt: StartAtElectricYouth,
 			profile:        "-> folders: filtered",
@@ -372,8 +372,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeFiles,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtCanYouKissMeFirst,
-				listenState: enums.HibernationPending,
+				resumeAt:       ResumeAtCanYouKissMeFirst,
+				hibernateState: enums.HibernationPending,
 			},
 			clientListenAt: StartAtBeforeLife,
 			profile:        "-> files: listen pending and filtered",
@@ -386,8 +386,8 @@ var _ = Describe("Resume", Ordered, func() {
 				Subscription: enums.SubscribeFiles,
 			},
 			active: activeTE{
-				resumeAt:    ResumeAtCanYouKissMeFirst,
-				listenState: enums.HibernationActive,
+				resumeAt:       ResumeAtCanYouKissMeFirst,
+				hibernateState: enums.HibernationActive,
 			},
 			clientListenAt: StartAtBeforeLife,
 			profile:        "-> files: filtered",

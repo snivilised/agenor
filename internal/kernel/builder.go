@@ -32,3 +32,11 @@ type (
 func (fn Builder) Build(inception *Inception) *Artefacts {
 	return fn(inception)
 }
+
+func (i *Inception) NavigationTree() string {
+	if using, ok := i.Facade.(*pref.Using); ok {
+		return using.Tree
+	}
+
+	return i.Harvest.Loaded().State.Tree
+}

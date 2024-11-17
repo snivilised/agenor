@@ -30,7 +30,7 @@ type (
 		Elapsed() time.Duration
 	}
 
-	// TraverseResult
+	// TraverseResult represents the result of a traversal
 	TraverseResult interface {
 		Metrics() Reporter
 		Session() Session
@@ -65,11 +65,14 @@ type (
 		IsRelative bool
 	}
 
+	// Permissions used to hold default permissions
 	Permissions struct {
 		File fs.FileMode
 		Dir  fs.FileMode
 	}
 
+	// ActiveState represents state that needs to be persisted alongside
+	// the options in order for resume to work.
 	ActiveState struct {
 		Tree                string
 		TraverseDescription FsDescription
@@ -110,6 +113,9 @@ func (s *ActiveState) Clone() *ActiveState {
 }
 
 const (
+	// FileSystemTimeFormat the format of the string timestamp encoded
+	// into the resume file. This is a fixed format in order to enable
+	// easy processing of resume files.
 	FileSystemTimeFormat = "2006-01-02_15-04-05"
 	PackageName          = "agenor"
 	filePerm             = 0o644
@@ -117,8 +123,15 @@ const (
 )
 
 var (
-	Now        TimeFunc
-	Perms      Permissions
+	// Now, the function used to compute the current time
+	Now TimeFunc
+
+	// Perms defines the default permissions used to create administrative
+	// files and directories.
+	Perms Permissions
+
+	// ResumeTail is the trailing part of a directory location used to
+	// store admin files; eg resume restoration files.
 	ResumeTail string
 )
 

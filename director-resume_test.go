@@ -103,8 +103,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 						Head: pref.Head{
 							Handler: noOpHandler,
 						},
-						From:     jsonPath,                   // TODO: need to fake out the resume path
-						Strategy: age.ResumeStrategyFastward, // revert to Spawn
+						From:     jsonPath,
+						Strategy: age.ResumeStrategyFastward, // TODO: revert to Spawn
 					},
 					age.WithOnDescend(func(_ *core.Node) {}),
 					restore,
