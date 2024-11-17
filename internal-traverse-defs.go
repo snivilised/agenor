@@ -18,14 +18,14 @@ type optionHarvest struct {
 }
 
 func (a *optionHarvest) Options() *pref.Options {
-	return lo.TernaryF(a.loaded != nil,
+	return a.afterwards(lo.TernaryF(a.loaded != nil,
 		func() *pref.Options {
 			return a.loaded.O
 		},
 		func() *pref.Options {
 			return a.o
 		},
-	)
+	))
 }
 
 func (a *optionHarvest) Binder() *opts.Binder {
@@ -34,6 +34,14 @@ func (a *optionHarvest) Binder() *opts.Binder {
 
 func (a *optionHarvest) Loaded() *opts.LoadInfo {
 	return a.loaded
+}
+
+func (a *optionHarvest) afterwards(o *pref.Options) *pref.Options {
+	if o.Behaviours.Cascade.NoRecurse {
+		o.Behaviours.Cascade.Depth = 1
+	}
+
+	return o
 }
 
 // optionsBuilder
