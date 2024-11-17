@@ -102,6 +102,8 @@ func (m *mediator) Spawn(ctx context.Context,
 func (m *mediator) Bridge(active *core.ActiveState) {
 	m.tree = active.Tree
 	m.periscope.Offset(active.Depth)
+	m.Supervisor().Load(active.Metrics)
+
 	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n",
 		active.Tree, active.CurrentPath,
 	)

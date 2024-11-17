@@ -1,6 +1,8 @@
 package core
 
 import (
+	"maps"
+
 	"github.com/snivilised/agenor/enums"
 )
 
@@ -53,4 +55,19 @@ func (m *NavigationMetric) Times(increment uint) MetricValue {
 	m.Counter += increment
 
 	return m.Counter
+}
+
+func (m Metrics) Merge(other Metrics) {
+	for mt := range maps.Keys(m) {
+		if om, foundOther := other[mt]; foundOther {
+			if metric, found := m[mt]; found {
+				metric.Times(om.Counter)
+			} else {
+				m[mt] = &NavigationMetric{
+					T:       mt,
+					Counter: om.Counter,
+				}
+			}
+		}
+	}
 }

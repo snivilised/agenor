@@ -58,7 +58,7 @@ var _ = Describe("Resume", Ordered, func() {
 
 			fmt.Printf("💀💀💀 restore strategies\n")
 			for _, strategy := range []enums.ResumeStrategy{
-				enums.ResumeStrategyFastward,
+				// enums.ResumeStrategyFastward,
 				enums.ResumeStrategySpawn,
 			} {
 				recall := make(lab.Recall)

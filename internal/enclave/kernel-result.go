@@ -7,7 +7,7 @@ import (
 // KernelResult is the internal representation of core.TraverseResult
 type KernelResult struct {
 	session  core.Session
-	reporter core.Reporter
+	reporter *Supervisor
 	complete bool
 }
 
@@ -24,6 +24,10 @@ func NewResult(session core.Session,
 
 func NewFailed() *KernelResult {
 	return &KernelResult{}
+}
+
+func (r *KernelResult) Merge(other core.Metrics) {
+	r.reporter.metrics.Merge(other)
 }
 
 func (r *KernelResult) IsComplete() bool {
