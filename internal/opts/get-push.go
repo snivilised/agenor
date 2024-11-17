@@ -8,7 +8,7 @@ func Get(settings ...pref.Option) (o *pref.Options, b *Binder, err error) {
 	o = pref.DefaultOptions()
 
 	binder := NewBinder()
-	o.Events.Bind(&binder.Controls)
+	o.Events.Bind(binder.Controls)
 
 	err = apply(o, settings...)
 
@@ -31,7 +31,7 @@ func apply(o *pref.Options, settings ...pref.Option) (err error) {
 
 func Push(o *pref.Options) *Binder {
 	binder := NewBinder()
-	o.Events.Bind(&binder.Controls)
+	o.Events.Bind(binder.Controls)
 
 	return binder
 }

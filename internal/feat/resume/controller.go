@@ -19,6 +19,7 @@ type Controller struct {
 }
 
 func (c *Controller) Ignite(ignition *enclave.Ignition) {
+	c.strategy.ignite()
 	c.med.Ignite(ignition)
 }
 
@@ -30,7 +31,7 @@ func (c *Controller) Strategy() Strategy {
 	return c.strategy
 }
 
-func (c *Controller) Resume(ctx context.Context,
+func (c *Controller) Snooze(ctx context.Context,
 	_ *core.ActiveState,
 ) (*enclave.KernelResult, error) {
 	return c.Result(ctx), nil
@@ -46,14 +47,18 @@ func newStrategy(inception *kernel.Inception,
 ) (strategy Strategy) {
 	load := inception.Harvest.Loaded()
 	relic, _ := inception.Facade.(*pref.Relic)
+
+	_ = inception.Resources
+
 	base := baseStrategy{
-		o:        load.O,
-		active:   load.State,
-		relic:    relic,
-		sealer:   sealer,
-		kc:       mediator,
-		mediator: mediator,
-		forest:   inception.Resources.Forest,
+		o:         load.O,
+		active:    load.State,
+		relic:     relic,
+		sealer:    sealer,
+		kc:        mediator,
+		mediator:  mediator,
+		forest:    inception.Resources.Forest,
+		resources: inception.Resources,
 	}
 
 	switch relic.Strategy {

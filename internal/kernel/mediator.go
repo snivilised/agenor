@@ -141,16 +141,11 @@ func (m *mediator) Result(ctx context.Context,
 	return m.impl.Result(ctx)
 }
 
-func (m *mediator) Resume(ctx context.Context,
+func (m *mediator) Snooze(ctx context.Context,
 	active *core.ActiveState,
 ) (result *enclave.KernelResult, err error) {
 	m.tree = active.Tree
-	// TODO: there is something missing here...
-	// we need to do more with the loaded active state
-	//
-	// - mute notifications
-	// - load the periscope with an adjusted depth from active state
-	//
+
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator:     m,
 		tree:         active.Tree,
@@ -158,6 +153,10 @@ func (m *mediator) Resume(ctx context.Context,
 		subscription: m.subscription,
 		magnitude:    m.facade.Magnitude(),
 	})
+}
+
+func (m *mediator) Wake() {
+
 }
 
 func (m *mediator) Conclude(result core.TraverseResult) {

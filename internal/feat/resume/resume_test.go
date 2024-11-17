@@ -56,9 +56,8 @@ var _ = Describe("Resume", Ordered, func() {
 		func(ctx SpecContext, entry *resumeTE) {
 			invocations := strategyInvocations{}
 
-			fmt.Printf("💀💀💀 restore strategies\n")
 			for _, strategy := range []enums.ResumeStrategy{
-				// enums.ResumeStrategyFastward,
+				enums.ResumeStrategyFastward,
 				enums.ResumeStrategySpawn,
 			} {
 				recall := make(lab.Recall)
@@ -131,7 +130,7 @@ var _ = Describe("Resume", Ordered, func() {
 								//
 								// don't enforce this yet, we need to disable notifications
 								//
-								// Fail("begin handler should not be invoked because begin notification muted")
+								Fail("begin handler should not be invoked because begin notification muted")
 							})
 						},
 						func() pref.Option {

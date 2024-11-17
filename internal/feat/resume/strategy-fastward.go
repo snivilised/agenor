@@ -107,6 +107,10 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 	return err
 }
 
+func (s *fastwardStrategy) ignite() {
+	s.resources.Binder.Controls.MuteAll()
+}
+
 // Next invokes this decorator which returns true if
 // next link in the chain can be run or false to stop
 // execution of subsequent links.
@@ -117,9 +121,8 @@ func (s *fastwardStrategy) Next(servant core.Servant,
 	match = s.filter.IsMatch(node)
 
 	if match {
-		// TODO: unmute notifications
-		//
 		err = s.mediator.Unwind(s.role)
+		s.resources.Binder.Controls.UnmuteAll()
 	}
 
 	return match, err
@@ -131,7 +134,7 @@ func (s *fastwardStrategy) Role() enums.Role {
 }
 
 func (s *fastwardStrategy) resume(ctx context.Context) (*enclave.KernelResult, error) {
-	return s.mediator.Resume(ctx, s.active)
+	return s.mediator.Snooze(ctx, s.active)
 }
 
 func (s *fastwardStrategy) ifResult() bool {

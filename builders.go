@@ -90,7 +90,7 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 	pi := &enclave.PluginInit{
 		O:          o,
 		Kontroller: artefacts.Kontroller,
-		Controls:   &harvest.Binder().Controls,
+		Controls:   harvest.Binder().Controls,
 		Resources:  artefacts.Resources,
 	}
 

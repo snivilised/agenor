@@ -52,8 +52,8 @@ func NewNotificationCtrl[F any](nop F,
 	}
 }
 
-func NewControls() Controls {
-	return Controls{
+func NewControls() *Controls {
+	return &Controls{
 		Ascend:  *NewNotificationCtrl[NodeHandler](nopNode, broadcastNode),
 		Begin:   *NewNotificationCtrl[BeginHandler](nopBegin, broadcastBegin),
 		Descend: *NewNotificationCtrl[NodeHandler](nopNode, broadcastNode),
@@ -61,6 +61,23 @@ func NewControls() Controls {
 		Wake:    *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
 		Sleep:   *NewNotificationCtrl[HibernateHandler](nopHibernate, broadcastHibernate),
 	}
+}
+
+func (c *Controls) MuteAll() {
+	c.Ascend.Mute()
+	c.Begin.Mute()
+	c.Descend.Mute()
+	c.End.Mute()
+	c.Wake.Mute()
+	c.Sleep.Mute()
+}
+
+func (c *Controls) UnmuteAll() {
+	c.Ascend.Unmute()
+	c.Begin.Unmute()
+	c.Descend.Unmute()
+	c.End.Unmute()
+	c.Sleep.Unmute()
 }
 
 // Bind attaches the underlying notification controllers to the

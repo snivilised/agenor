@@ -56,7 +56,8 @@ type (
 		KernelNavigator
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context) *KernelResult
-		Resume(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
+		Snooze(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
+		// Wake()
 		Conclude(result core.TraverseResult)
 	}
 
@@ -118,9 +119,9 @@ type (
 	// RestoreState defines properties required in order to instigate
 	// a resume.
 	RestoreState struct {
-		Path   string
-		FS     nef.ReadFileFS
-		Resume enums.ResumeStrategy
+		Path     string
+		FS       nef.ReadFileFS
+		Strategy enums.ResumeStrategy
 	}
 
 	// StateHandler defines a method that allows am internal client to modify active

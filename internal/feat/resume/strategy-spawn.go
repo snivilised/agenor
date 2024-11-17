@@ -31,6 +31,9 @@ func (s *spawnStrategy) init(load *opts.LoadInfo) error {
 	return nil
 }
 
+func (s *spawnStrategy) ignite() {
+}
+
 func (s *spawnStrategy) resume(ctx context.Context) (result *enclave.KernelResult, err error) {
 	fmt.Printf("\t💙 resume, tree: '%v', restore-at: '%v'\n",
 		s.active.Tree, s.active.CurrentPath)

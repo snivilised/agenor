@@ -9,7 +9,7 @@ func Bind(o *pref.Options, active *core.ActiveState,
 	settings ...pref.Option,
 ) (*LoadInfo, *Binder, error) {
 	binder := NewBinder()
-	o.Events.Bind(&binder.Controls)
+	o.Events.Bind(binder.Controls)
 
 	err := apply(o, settings...)
 

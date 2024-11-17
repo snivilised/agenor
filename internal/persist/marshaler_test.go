@@ -91,9 +91,9 @@ func unmarshal(entry *marshalTE, fS age.TraversalFS, restorePath string, t *tamp
 	// success:
 	request := &persist.UnmarshalRequest{
 		Restore: &enclave.RestoreState{
-			Path:   restorePath,
-			FS:     fS,
-			Resume: enums.ResumeStrategySpawn,
+			Path:     restorePath,
+			FS:       fS,
+			Strategy: enums.ResumeStrategySpawn,
 		},
 	}
 
