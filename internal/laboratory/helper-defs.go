@@ -63,6 +63,12 @@ type (
 		While      pref.WhileDirectoryPredicate
 	}
 
+	CascadeTE struct {
+		NaviTE
+		NoRecurse bool
+		Depth     uint
+	}
+
 	Quantities struct {
 		Files       uint
 		Directories uint
