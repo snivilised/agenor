@@ -1,8 +1,6 @@
 package enclave
 
 import (
-	"maps"
-
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 )
@@ -24,7 +22,7 @@ func NewSupervisor() *Supervisor {
 }
 
 func (s *Supervisor) Load(metrics core.Metrics) {
-	s.metrics = maps.Clone(metrics)
+	s.metrics.Merge(metrics)
 }
 
 func (s *Supervisor) Single(mt enums.Metric) *core.NavigationMetric {
