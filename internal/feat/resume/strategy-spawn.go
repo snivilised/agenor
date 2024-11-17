@@ -2,7 +2,6 @@ package resume
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 
 	"github.com/snivilised/agenor/core"
@@ -20,13 +19,8 @@ type spawnStrategy struct {
 	complete bool
 }
 
-func (s *spawnStrategy) init(load *opts.LoadInfo) error {
+func (s *spawnStrategy) init(_ *opts.LoadInfo) error {
 	s.calc = s.forest.T.Calc()
-
-	fmt.Printf("===> 🍭 RESTORED '%v' directories, '%v' files.\n",
-		load.State.Metrics[enums.MetricNoDirectoriesInvoked].Counter,
-		load.State.Metrics[enums.MetricNoFilesInvoked].Counter,
-	)
 
 	return nil
 }
@@ -35,9 +29,6 @@ func (s *spawnStrategy) ignite() {
 }
 
 func (s *spawnStrategy) resume(ctx context.Context) (result *enclave.KernelResult, err error) {
-	fmt.Printf("\t💙 resume, tree: '%v', restore-at: '%v'\n",
-		s.active.Tree, s.active.CurrentPath)
-
 	// Bridge announces the availability of the ActiveState and acts as a conduit
 	// between the previous navigation session and this resume session.
 	s.mediator.Bridge(s.active)
@@ -48,11 +39,6 @@ func (s *spawnStrategy) resume(ctx context.Context) (result *enclave.KernelResul
 		current:   s.active.CurrentPath,
 		inclusive: true,
 	})
-
-	fmt.Printf("===> 🍭 invoked '%v' directories, '%v' files.\n",
-		result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
-		result.Metrics().Count(enums.MetricNoFilesInvoked),
-	)
 
 	return result, err
 }
@@ -74,9 +60,6 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 	conc *conclusion,
 ) (*enclave.KernelResult, error) {
 	if conc.current == conc.active.Tree {
-		fmt.Printf("\t💎 conclude(COMPLETE), current: '%v'\n",
-			conc.current)
-
 		if s.complete {
 			return nil, core.ErrDetectedSpawnStackOverflow
 		}
@@ -86,9 +69,6 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 		s.complete = true
 		return s.kc.Result(ctx), nil
 	}
-
-	fmt.Printf("\t🟢 conclude, current: '%v'\n",
-		conc.current)
 
 	parent, child := s.calc.Split(conc.current)
 	following, err := s.following(parent,
@@ -102,7 +82,7 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 	following.siblings.Sort(enums.EntryTypeFile)
 	following.siblings.Sort(enums.EntryTypeDirectory)
 
-	result, err := s.seed(ctx, parent, following.siblings.All(), conc)
+	result, err := s.seed(ctx, parent, following.siblings.All())
 
 	if err != nil {
 		return result, err
@@ -114,13 +94,11 @@ func (s *spawnStrategy) conclude(ctx context.Context,
 	return s.conclude(ctx, conc)
 }
 
-// seed invokes a Spawn for each new sibling it is presented with by conclude.
+// seed invokes a Spawn for each new siblings it is presented with by conclude.
 func (s *spawnStrategy) seed(ctx context.Context,
 	parent string,
 	entries []fs.DirEntry,
-	conc *conclusion,
 ) (*enclave.KernelResult, error) {
-	fmt.Printf("\t🔊 seed, current: '%v'\n", conc.current)
 	result := s.kc.Result(ctx)
 
 	for _, entry := range entries {

@@ -47,9 +47,6 @@ func newStrategy(inception *kernel.Inception,
 ) (strategy Strategy) {
 	load := inception.Harvest.Loaded()
 	relic, _ := inception.Facade.(*pref.Relic)
-
-	_ = inception.Resources
-
 	base := baseStrategy{
 		o:         load.O,
 		active:    load.State,

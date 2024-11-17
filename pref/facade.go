@@ -10,7 +10,6 @@ import (
 type (
 	// Facade
 	Facade interface {
-		Path() string
 		Client() core.Client
 		Forest() BuildForest
 		Validate() error
@@ -113,10 +112,6 @@ func (f *Head) Validate() error {
 	return nil
 }
 
-func (f *Using) Path() string {
-	return f.Tree
-}
-
 func (f *Using) Client() core.Client {
 	return f.Handler
 }
@@ -139,10 +134,6 @@ func (f *Using) Validate() error {
 
 func (f *Using) Magnitude() string {
 	return "prime"
-}
-
-func (f *Relic) Path() string {
-	return f.From
 }
 
 func (f *Relic) Client() core.Client {

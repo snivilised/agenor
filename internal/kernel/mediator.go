@@ -14,7 +14,7 @@ import (
 	"github.com/snivilised/agenor/stock"
 )
 
-// mediator controls traversal events, sends notifications and emits
+// mediator controls traversal, sends notifications and emits
 // life-cycle events
 type mediator struct {
 	tree         string
@@ -44,7 +44,7 @@ func NewMediator(inception *Inception,
 	)
 
 	return &mediator{
-		tree:         facade.Path(),
+		tree:         inception.NavigationTree(),
 		subscription: inception.Subscription,
 		facade:       facade,
 		impl:         impl,

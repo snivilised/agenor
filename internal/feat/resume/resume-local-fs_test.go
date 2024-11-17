@@ -66,13 +66,6 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 
 								return nil
 							},
-
-							// TODO: Create an absolute fs because the default is relative.
-							// Actually, the type of file system we use has to be inline
-							// with the file system type that was used in the corresponding
-							// primary run that we are resuming from, but how to enforce?
-							// (see issue #301)
-							//
 						},
 						From:     from,
 						Strategy: enums.ResumeStrategyFastward,
