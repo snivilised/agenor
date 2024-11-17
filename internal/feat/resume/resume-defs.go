@@ -22,18 +22,20 @@ const (
 type (
 	Strategy interface {
 		init(load *opts.LoadInfo) error
+		ignite()
 		resume(context.Context) (*enclave.KernelResult, error)
 		ifResult() bool
 	}
 
 	baseStrategy struct {
-		o        *pref.Options
-		active   *core.ActiveState
-		relic    *pref.Relic
-		sealer   enclave.GuardianSealer
-		kc       enclave.KernelController
-		mediator enclave.Mediator
-		forest   *core.Forest
+		o         *pref.Options
+		active    *core.ActiveState
+		relic     *pref.Relic
+		sealer    enclave.GuardianSealer
+		kc        enclave.KernelController
+		mediator  enclave.Mediator
+		forest    *core.Forest
+		resources *enclave.Resources
 	}
 
 	conclusion struct {

@@ -92,9 +92,9 @@ func (x *resumeExtent) options(addons []Addon,
 	settings ...pref.Option,
 ) (enclave.OptionHarvest, error) {
 	loaded, binder, err := resume.Load(&enclave.RestoreState{
-		Path:   x.relic.From,
-		FS:     x.trees.R,
-		Resume: x.relic.Strategy,
+		Path:     x.relic.From,
+		FS:       x.trees.R,
+		Strategy: x.relic.Strategy,
 	}, settings...)
 
 	x.loaded = loaded

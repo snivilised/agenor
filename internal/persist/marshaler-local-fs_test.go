@@ -111,9 +111,9 @@ var _ = Describe("Marshaler", Ordered, func() {
 				})
 				result, err := persist.Unmarshal(&persist.UnmarshalRequest{
 					Restore: &enclave.RestoreState{
-						Path:   lab.Static.JSONSubPath,
-						FS:     fS,
-						Resume: enums.ResumeStrategySpawn,
+						Path:     lab.Static.JSONSubPath,
+						FS:       fS,
+						Strategy: enums.ResumeStrategySpawn,
 					},
 				})
 

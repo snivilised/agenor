@@ -7,7 +7,7 @@ import (
 type (
 	// Binder contains items derived from Options
 	Binder struct {
-		Controls life.Controls
+		Controls *life.Controls
 	}
 )
 

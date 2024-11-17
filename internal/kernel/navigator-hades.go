@@ -34,7 +34,7 @@ func (n *navigatorHades) Result(_ context.Context) *enclave.KernelResult {
 	return enclave.NewFailed()
 }
 
-func (n *navigatorHades) Resume(context.Context,
+func (n *navigatorHades) Snooze(context.Context,
 	*core.ActiveState,
 ) (*enclave.KernelResult, error) {
 	return &enclave.KernelResult{}, nil
