@@ -13,6 +13,7 @@ type (
 		Mediator   enclave.Mediator
 		Resources  *enclave.Resources
 		IfResult   core.Completion
+		Error      error
 	}
 
 	Inception struct {

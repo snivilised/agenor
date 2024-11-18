@@ -2,7 +2,6 @@ package kernel
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 
 	"github.com/snivilised/agenor/core"
@@ -31,11 +30,11 @@ type mediator struct {
 
 func NewMediator(inception *Inception,
 	sealer enclave.GuardianSealer,
-) enclave.Mediator {
+) (enclave.Mediator, error) {
 	o := inception.Harvest.Options()
 	facade := inception.Facade
 	resources := inception.Resources
-	impl, _ := newImpl(o, inception)
+	impl, err := newImpl(o, inception)
 
 	metrics := resources.Supervisor.Many(
 		enums.MetricNoFilesInvoked,
@@ -58,7 +57,7 @@ func NewMediator(inception *Inception,
 		o:         o,
 		resources: resources,
 		metrics:   metrics,
-	}
+	}, err
 }
 
 func (m *mediator) Decorate(link enclave.Link) error {
@@ -103,10 +102,6 @@ func (m *mediator) Bridge(active *core.ActiveState) {
 	m.tree = active.Tree
 	m.periscope.Offset(active.Depth)
 	m.Supervisor().Load(active.Metrics)
-
-	fmt.Printf("---> mediator.Bridge - tree %q, current %q\n",
-		active.Tree, active.CurrentPath,
-	)
 }
 
 func (m *mediator) Supervisor() *enclave.Supervisor {

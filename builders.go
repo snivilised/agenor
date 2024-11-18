@@ -59,6 +59,14 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 		},
 	})
 
+	if artefacts.Error != nil {
+		return &buildArtefacts{
+			o:   o,
+			kc:  kernel.HadesNav(o, err),
+			ext: ext,
+		}, artefacts.Error
+	}
+
 	// BUILD PLUGINS
 	//
 	plugins, err := bs.plugins.build(o,

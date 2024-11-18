@@ -12,9 +12,13 @@ import (
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
+	"github.com/snivilised/agenor/internal/enclave"
+	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/services"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -154,6 +158,35 @@ var _ = Describe("director error", Ordered, func() {
 			)).Navigate(ctx)
 
 			Expect(err).To(MatchError(errBuildOptions))
+		})
+	})
+
+	When("Resume with subscription error", func() {
+		It("🧪 should: fail", func(specCtx SpecContext) {
+			// In case user has tampered with the json file changing
+			// the subscription to an inappropriate value
+			defer leaktest.Check(GinkgoT())()
+
+			ctx, cancel := context.WithCancel(specCtx)
+			defer cancel()
+
+			_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+				active.Tree = hydra.Repo("test")
+				active.TraverseDescription.IsRelative = false
+				active.ResumeDescription.IsRelative = false
+				active.Subscription = enums.SubscribeUndefined
+			})).Extent(age.Resume(
+				&pref.Relic{
+					Head: pref.Head{
+						Handler: noOpHandler,
+					},
+					From:     lab.GetJSONPath(),
+					Strategy: age.ResumeStrategyFastward,
+				},
+				age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+			)).Navigate(ctx)
+
+			Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
 		})
 	})
 
