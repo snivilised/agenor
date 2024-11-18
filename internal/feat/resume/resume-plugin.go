@@ -75,7 +75,7 @@ func Artefacts(inception *kernel.Inception) *kernel.Artefacts {
 		enclave.GuardianSealer(&kernel.Benign{}),
 	)
 
-	mediator := kernel.NewMediator(inception, sealer)
+	mediator, err := kernel.NewMediator(inception, sealer)
 	strategy := newStrategy(inception, sealer, mediator)
 
 	return &kernel.Artefacts{
@@ -88,5 +88,6 @@ func Artefacts(inception *kernel.Inception) *kernel.Artefacts {
 		Mediator:  mediator,
 		Resources: inception.Resources,
 		IfResult:  strategy.ifResult,
+		Error:     err,
 	}
 }

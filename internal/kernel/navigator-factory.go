@@ -11,12 +11,13 @@ import (
 func PrimeArtefacts(inception *Inception,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {
-	mediator := NewMediator(inception, sealer)
+	mediator, err := NewMediator(inception, sealer)
 
 	return &Artefacts{
 		Kontroller: mediator,
 		Mediator:   mediator,
 		Resources:  inception.Resources,
+		Error:      err,
 	}
 }
 
@@ -63,6 +64,9 @@ func newImpl(o *pref.Options,
 
 	case enums.SubscribeUndefined:
 		err = locale.ErrUsageMissingSubscription
+		impl = &navigatorUniversal{
+			navigatorAgent: agent,
+		}
 	}
 
 	return impl, err
