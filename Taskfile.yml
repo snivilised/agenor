@@ -124,7 +124,7 @@ tasks:
     cmds:
       - go test ./internal/persist
 
-  tt:
+  ta:
     cmds:
       - go test
 

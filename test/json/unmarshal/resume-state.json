@@ -39,10 +39,16 @@
     }
   },
   "Active": {
-    "Tree": "set/this/tree/in/unit/test",
+    "Tree": "set/this/tree/in/unit/test/Loader",
+    "TraverseDescription": {
+      "IsRelative": false
+    },
+    "ResumeDescription": {
+      "IsRelative": false
+    },
     "Subscription": 4,
     "Hibernation": 1,
-    "CurrentPath": "set/this/path/in/unit/test",
+    "CurrentPath": "set/this/path/in/unit/test/Loader",
     "IsDir": true,
     "Depth": 3,
     "Metrics": {

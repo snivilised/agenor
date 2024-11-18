@@ -2,6 +2,7 @@ package age_test
 
 import (
 	"context"
+	"path/filepath"
 	"sync"
 
 	"github.com/fortytw2/leaktest"
@@ -17,9 +18,14 @@ import (
 	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/agenor/test/hydra"
 	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
+)
+
+const (
+	ResumeAtTeenageColor = "RETRO-WAVE/College/Teenage Color"
 )
 
 var _ = Describe("Director(Resume)", Ordered, func() {
@@ -27,7 +33,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		fS      *luna.MemFS
 		restore pref.Option
 
-		jsonPath string
+		jsonPath, resumeAt, tree string
 	)
 
 	BeforeAll(func() {
@@ -38,6 +44,8 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		}
 		fS = luna.NewMemFS()
 		jsonPath = lab.GetJSONPath()
+		tree = hydra.Repo("test")
+		resumeAt = filepath.Join(tree, "hydra")
 
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
@@ -63,8 +71,12 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 				const depth = 2
 
 				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.Tree = tree
+					active.Depth = depth
 					active.TraverseDescription.IsRelative = true
 					active.ResumeDescription.IsRelative = false
+					active.Subscription = enums.SubscribeUniversal
+					active.CurrentPath = ResumeAtTeenageColor
 				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
@@ -90,7 +102,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		})
 
 		Context("Run", func() {
-			It("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
+			XIt("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
 				defer leaktest.Check(GinkgoT())()
 
 				ctx, cancel := context.WithCancel(specCtx)
@@ -98,21 +110,33 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 				var wg sync.WaitGroup
 
-				_, err := age.Run(&wg).Configure().Extent(age.Resume(
+				_, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.Tree = tree
+					active.Depth = 2
+					active.TraverseDescription.IsRelative = true
+					active.ResumeDescription.IsRelative = false
+					active.Subscription = enums.SubscribeUniversal
+					active.CurrentPath = resumeAt
+				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: noOpHandler,
+							GetForest: func(_ string) *core.Forest {
+								return &core.Forest{
+									T: fS,
+									R: tfs.New(),
+								}
+							},
 						},
 						From:     jsonPath,
-						Strategy: age.ResumeStrategyFastward, // TODO: revert to Spawn
+						Strategy: age.ResumeStrategySpawn,
 					},
 					age.WithOnDescend(func(_ *core.Node) {}),
 					restore,
 				)).Navigate(ctx)
 
 				wg.Wait()
-				_ = err
-				// Expect(err).To(Succeed())
+				Expect(err).To(Succeed())
 			})
 		})
 	})

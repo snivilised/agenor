@@ -1,9 +1,11 @@
 package lab
 
 import (
+	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/pref"
+	"github.com/snivilised/nefilim/test/luna"
 )
 
 type (
@@ -68,6 +70,49 @@ type (
 		NoRecurse bool
 		Depth     uint
 	}
+
+	AsyncResumeTE struct {
+		At               string
+		Strategy         enums.ResumeStrategy
+		HibernationState enums.Hibernation
+	}
+
+	AsyncTE struct {
+		Given        string
+		Should       string
+		Path         func() string
+		Subscription enums.Subscription
+		Callback     core.Client
+		Builder      BuilderFunc
+		Resume       AsyncResumeTE
+		NoWorkers    uint
+		CPU          bool
+	}
+
+	AsyncOkTE struct {
+		AsyncTE
+	}
+
+	BuilderFunc func(entry *AsyncOkTE, path string, fS *luna.MemFS) *age.Builders
+	/*
+			asyncResumeTE struct {
+			Strategy nav.ResumeStrategyEnum
+			Listen   nav.ListeningState
+		}
+
+		operatorFunc func(op nav.AccelerationOperators) nav.AccelerationOperators
+
+		asyncTE struct {
+			given    string
+			should   string
+			operator operatorFunc
+			resume   *asyncResumeTE
+		}
+
+		asyncOkTE struct {
+			asyncTE
+		}
+	*/
 
 	Quantities struct {
 		Files       uint

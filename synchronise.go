@@ -63,15 +63,12 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 		// containing the current file system node. The navigator is
 		// not aware that its invoking the decorator ...
 		//
-		// TODO: later, we need to be able to decorate the client callback,
-		// either by a Tap or a bus event...
-		//
 		input := &TraverseInput{
 			Servant: servant,
 			Handler: c.ext.facade().Client(),
 		}
 
-		c.inputCh <- input // support for timeout (TimeoutOnSendInput) ???
+		c.inputCh <- input // TODO: support for timeout (TimeoutOnSendInput) ??? issue #333
 
 		return nil
 	}
