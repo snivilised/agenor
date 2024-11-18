@@ -26,6 +26,8 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 		tree string
 	)
 
+	// 👽 These tests are not using Nuxx therefore they are traversing the
+	// local test directory.
 	BeforeAll(func() {
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {

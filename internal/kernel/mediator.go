@@ -155,10 +155,6 @@ func (m *mediator) Snooze(ctx context.Context,
 	})
 }
 
-func (m *mediator) Wake() {
-
-}
-
 func (m *mediator) Conclude(result core.TraverseResult) {
 	m.resources.Binder.Controls.End.Dispatch()(result)
 }

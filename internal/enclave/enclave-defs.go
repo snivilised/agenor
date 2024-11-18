@@ -143,7 +143,8 @@ type (
 type (
 	// Loader is to be defined by a unit test and should modify the loaded active state
 	// for the test's own purposes. This allows the unit tests to be isolated from the
-	// content of the loaded active state.
+	// content of the loaded active state and frees the unit tests from having to provide
+	// a separate json file loaded specifically for it.
 	Loader func(active *core.ActiveState)
 )
 
