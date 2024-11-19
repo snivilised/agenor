@@ -17,7 +17,7 @@ import (
 	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -37,7 +37,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 			},
 		)).To(Succeed())
 
-		tree = hydra.Repo("test")
+		tree = hanno.Repo("test")
 	})
 
 	BeforeEach(func() {

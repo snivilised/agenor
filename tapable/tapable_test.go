@@ -11,7 +11,7 @@ import (
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/opts"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/nefilim/test/luna"
 )
 
@@ -41,7 +41,7 @@ var _ = Describe("Tapable", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		fS = hydra.Nuxx(verbose,
+		fS = hanno.Nuxx(verbose,
 			lab.Static.RetroWave,
 		)
 	})

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 )
 
 type (
@@ -42,13 +42,13 @@ func yoke(segments ...string) string {
 }
 
 func GetJSONPath() string {
-	jroot := hydra.Repo(filepath.Join("test", "json"))
+	jroot := hanno.Repo(filepath.Join("test", "json"))
 
 	return yoke(jroot, "unmarshal", Static.JSONFile)
 }
 
 func GetJSONDir() string {
-	return hydra.Repo(filepath.Join("test", "json"))
+	return hanno.Repo(filepath.Join("test", "json"))
 }
 
 func IgnoreFault(_ *pref.NavigationFault) error {

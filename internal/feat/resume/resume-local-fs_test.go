@@ -14,7 +14,7 @@ import (
 	"github.com/snivilised/agenor/internal/services"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -37,7 +37,7 @@ var _ = Describe("Resume local-fs", Ordered, func() {
 		// and the resume point is the 'data' directory.
 		//
 		from = lab.GetJSONPath()
-		tree = hydra.Repo("test")
+		tree = hanno.Repo("test")
 		resumeAt = filepath.Join(tree, "data")
 	})
 

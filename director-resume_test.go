@@ -18,7 +18,7 @@ import (
 	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
@@ -44,7 +44,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		}
 		fS = luna.NewMemFS()
 		jsonPath = lab.GetJSONPath()
-		tree = hydra.Repo("test")
+		tree = hanno.Repo("test")
 		resumeAt = filepath.Join(tree, "hydra")
 
 		Expect(li18ngo.Use(

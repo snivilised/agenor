@@ -15,7 +15,7 @@ import (
 	"github.com/snivilised/agenor/internal/opts"
 	"github.com/snivilised/agenor/internal/persist"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
 )
@@ -30,7 +30,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 	BeforeAll(func() {
 		Expect(li18ngo.Use()).To(Succeed())
 
-		testPath = hydra.Repo("test")
+		testPath = hanno.Repo("test")
 		testFile := filepath.Join(testPath, destination, tempFile)
 
 		if _, err := os.Stat(testFile); err == nil {
