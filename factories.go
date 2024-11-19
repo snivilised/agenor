@@ -1,7 +1,6 @@
 package age
 
 import (
-	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/pants"
 )
 
@@ -25,7 +24,7 @@ type walkerFac struct {
 }
 
 func (f *walkerFac) Configure(addons ...Addon) Director {
-	return director(func(bs *Builders) core.Navigator {
+	return director(func(bs *Builders) Navigator {
 		// resume or prime? If resume, we need to access the hibernation
 		// wake condition on the retrieved options. But how do we know what
 		// the extent is, so we know if we need to make this query?
@@ -57,7 +56,7 @@ type runnerFac struct {
 func (f *runnerFac) Configure(addons ...Addon) Director {
 	// Run: create the observable/worker-pool
 	//
-	return director(func(bs *Builders) core.Navigator {
+	return director(func(bs *Builders) Navigator {
 		artefacts, err := bs.buildAll(addons...)
 
 		return &driver{

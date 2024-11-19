@@ -1,6 +1,12 @@
 package lab
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/fortytw2/leaktest"
+	. "github.com/onsi/ginkgo/v2" //nolint:stylecheck,revive // ok
+
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
@@ -94,25 +100,13 @@ type (
 	}
 
 	BuilderFunc func(entry *AsyncOkTE, path string, fS *luna.MemFS) *age.Builders
-	/*
-			asyncResumeTE struct {
-			Strategy nav.ResumeStrategyEnum
-			Listen   nav.ListeningState
-		}
 
-		operatorFunc func(op nav.AccelerationOperators) nav.AccelerationOperators
-
-		asyncTE struct {
-			given    string
-			should   string
-			operator operatorFunc
-			resume   *asyncResumeTE
-		}
-
-		asyncOkTE struct {
-			asyncTE
-		}
-	*/
+	CompositeTE struct {
+		AsyncTE
+		IsWalk  bool
+		IsPrime bool
+		Facade  pref.Facade
+	}
 
 	Quantities struct {
 		Files       uint
@@ -142,4 +136,17 @@ func (t *Trigger) Times(m enums.Metric, n uint) *Trigger {
 	t.Metrics[m].Times(n)
 
 	return t
+}
+
+func WithTestContext(specCtx SpecContext, fn func(context.Context)) {
+	defer leaktest.Check(GinkgoT())()
+
+	ctx, cancel := context.WithCancel(specCtx)
+	defer cancel()
+
+	fn(ctx)
+}
+
+func FormatTestDescription(entry *NaviTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.Given, entry.Should)
 }
