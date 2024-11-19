@@ -18,7 +18,7 @@ import (
 	"github.com/snivilised/agenor/internal/services"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -171,7 +171,7 @@ var _ = Describe("director error", Ordered, func() {
 			defer cancel()
 
 			_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-				active.Tree = hydra.Repo("test")
+				active.Tree = hanno.Repo("test")
 				active.TraverseDescription.IsRelative = false
 				active.ResumeDescription.IsRelative = false
 				active.Subscription = enums.SubscribeUndefined

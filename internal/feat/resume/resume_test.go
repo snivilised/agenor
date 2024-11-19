@@ -17,7 +17,7 @@ import (
 	"github.com/snivilised/agenor/life"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
@@ -44,7 +44,7 @@ var _ = Describe("Resume", Ordered, func() {
 			},
 		)).To(Succeed())
 
-		fS = hydra.Nuxx(verbose, lab.Static.RetroWave)
+		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
 		from = lab.GetJSONPath()
 	})
 

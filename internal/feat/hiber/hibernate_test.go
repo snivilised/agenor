@@ -17,7 +17,7 @@ import (
 	"github.com/snivilised/agenor/internal/services"
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/agenor/tfs"
 )
 
@@ -35,9 +35,9 @@ var _ = Describe("feature", Ordered, func() {
 			err error
 		)
 
-		repo := hydra.Repo("")
-		index := hydra.Combine(repo, "test/data/musico-index.xml")
-		fS, err = hydra.CustomTree(index, "MUSICO", verbose, lab.Static.RetroWave, "edm")
+		repo := hanno.Repo("")
+		index := hanno.Combine(repo, "test/data/musico-index.xml")
+		fS, err = hanno.CustomTree(index, "MUSICO", verbose, lab.Static.RetroWave, "edm")
 
 		Expect(err).To(Succeed(), "Failed to initialise custom tree with MUSICO data")
 		Expect(li18ngo.Use()).To(Succeed())

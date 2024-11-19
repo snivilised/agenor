@@ -15,7 +15,7 @@ import (
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/services"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/agenor/tfs"
 )
 
@@ -29,7 +29,7 @@ var _ = Describe("feature", Ordered, func() {
 			verbose = false
 		)
 
-		fS = hydra.Nuxx(verbose, lab.Static.RetroWave, "edm")
+		fS = hanno.Nuxx(verbose, lab.Static.RetroWave, "edm")
 		Expect(li18ngo.Use()).To(Succeed())
 	})
 

@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
 	"github.com/snivilised/agenor/locale"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -21,8 +21,8 @@ var _ = Describe("error messages", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		repo = hydra.Repo("")
-		l10nPath = hydra.Combine(repo, "test/data/l10n")
+		repo = hanno.Repo("")
+		l10nPath = hanno.Combine(repo, "test/data/l10n")
 
 		_, err := os.Stat(l10nPath)
 		Expect(err).To(Succeed(),

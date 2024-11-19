@@ -14,7 +14,7 @@ import (
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/test/hydra"
+	"github.com/snivilised/agenor/test/hanno"
 	"github.com/snivilised/agenor/tfs"
 	"github.com/snivilised/li18ngo"
 )
@@ -96,7 +96,7 @@ func navigate(n *navigation) {
 	}
 
 	ctx := context.Background()
-	fS := hydra.Nuxx(verbose, strings.Split(n.filters, ",")...)
+	fS := hanno.Nuxx(verbose, strings.Split(n.filters, ",")...)
 
 	result, err := age.Walk().Configure().Extent(age.Prime(
 		&pref.Using{
