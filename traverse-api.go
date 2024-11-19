@@ -45,9 +45,10 @@ type NavigatorFactory interface {
 
 type (
 	// 🌀 core
-	Client  = core.Client
-	Node    = core.Node
-	Servant = core.Servant
+	Client    = core.Client
+	Navigator = core.Navigator
+	Node      = core.Node
+	Servant   = core.Servant
 
 	// 🌀 enums
 	Subscription   = enums.Subscription
