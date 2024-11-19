@@ -94,25 +94,13 @@ type (
 	}
 
 	BuilderFunc func(entry *AsyncOkTE, path string, fS *luna.MemFS) *age.Builders
-	/*
-			asyncResumeTE struct {
-			Strategy nav.ResumeStrategyEnum
-			Listen   nav.ListeningState
-		}
 
-		operatorFunc func(op nav.AccelerationOperators) nav.AccelerationOperators
-
-		asyncTE struct {
-			given    string
-			should   string
-			operator operatorFunc
-			resume   *asyncResumeTE
-		}
-
-		asyncOkTE struct {
-			asyncTE
-		}
-	*/
+	CompositeTE struct {
+		AsyncTE
+		IsWalk  bool
+		IsPrime bool
+		Facade  pref.Facade
+	}
 
 	Quantities struct {
 		Files       uint
