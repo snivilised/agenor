@@ -22,13 +22,13 @@ type (
 		// perform a full 'Prime' traversal, or 'Resume' from a previously
 		// cancelled run.
 		//
-		Extent(bs *Builders) core.Navigator
+		Extent(bs *Builders) Navigator
 	}
 
-	director func(bs *Builders) core.Navigator
+	director func(bs *Builders) Navigator
 )
 
-func (fn director) Extent(bs *Builders) core.Navigator {
+func (fn director) Extent(bs *Builders) Navigator {
 	return fn(bs)
 }
 
@@ -45,9 +45,10 @@ type NavigatorFactory interface {
 
 type (
 	// 🌀 core
-	Client  = core.Client
-	Node    = core.Node
-	Servant = core.Servant
+	Client    = core.Client
+	Navigator = core.Navigator
+	Node      = core.Node
+	Servant   = core.Servant
 
 	// 🌀 enums
 	Subscription   = enums.Subscription
