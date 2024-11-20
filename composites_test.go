@@ -70,12 +70,8 @@ var _ = Describe("Composites", Ordered, func() {
 		func(specCtx SpecContext, entry *lab.CompositeTE) {
 			lab.WithTestContext(specCtx, func(ctx context.Context) {
 				_, _ = age.Hydra(
-					func() bool {
-						return entry.IsWalk
-					},
-					func() bool {
-						return entry.IsPrime
-					},
+					entry.IsWalk,
+					entry.IsPrime,
 					&wg,
 				)(entry.Facade, []pref.Option{}...).Navigate(ctx)
 			})
@@ -124,9 +120,7 @@ var _ = Describe("Composites", Ordered, func() {
 	DescribeTable("hare",
 		func(specCtx SpecContext, entry *lab.CompositeTE) {
 			lab.WithTestContext(specCtx, func(ctx context.Context) {
-				_, _ = age.Hare(func() bool {
-					return entry.IsPrime
-				}, &wg)(entry.Facade).Navigate(ctx)
+				_, _ = age.Hare(entry.IsPrime, &wg)(entry.Facade).Navigate(ctx)
 			})
 
 			wg.Wait()
@@ -153,9 +147,7 @@ var _ = Describe("Composites", Ordered, func() {
 	DescribeTable("tortoise",
 		func(specCtx SpecContext, entry *lab.CompositeTE) {
 			lab.WithTestContext(specCtx, func(ctx context.Context) {
-				_, _ = age.Tortoise(func() bool {
-					return entry.IsPrime
-				})(entry.Facade).Navigate(ctx)
+				_, _ = age.Tortoise(entry.IsPrime)(entry.Facade).Navigate(ctx)
 			})
 		},
 		FormatCompositeTestDescription,
@@ -180,9 +172,7 @@ var _ = Describe("Composites", Ordered, func() {
 	DescribeTable("goldfish",
 		func(specCtx SpecContext, entry *lab.CompositeTE) {
 			lab.WithTestContext(specCtx, func(ctx context.Context) {
-				_, _ = age.Goldfish(func() bool {
-					return entry.IsWalk
-				}, &wg)(entry.Facade).Navigate(ctx)
+				_, _ = age.Goldfish(entry.IsWalk, &wg)(entry.Facade).Navigate(ctx)
 			})
 
 			wg.Wait()

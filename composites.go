@@ -24,14 +24,6 @@ type (
 	// * run/prime
 	// * run/resume
 	Scenario func(facade pref.Facade, settings ...pref.Option) Navigator
-
-	// ExtentQuery a function that answers the query; has the user requested
-	// prime or resume session. Return true for Prime, false for Resume
-	ExtentQuery func() bool
-
-	// SyncQuery a function that answers the query; has the user requested
-	// walk or run session. Return true for Walk, false for Run
-	SyncQuery func() bool
 )
 
 // Hydra is a composite that a client can use to build a cli that implements
@@ -67,24 +59,18 @@ type (
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Hydra composite
-// which can run all scenarios, so 2 query functions needs to be specified;
-// the first query function is being asked to determine if it should walk or run
-// and the second prime or resume:
+// which can run all scenarios, so 2 values needs to be specified:
+// isWalk and isPrime.
 //
 // # Hydra
 //
 // Example:
 //
 //	var wg sync.WaitGroup
-//	age.Hydra(func() bool {
-//		return \<boolean expression to determine if user requested walk or run\>
-//	}, func() bool {
-//		return \<boolean expression to determine if user requested prime or resume\>
-//	}, &wg)(facade, options...).Navigate(ctx)
-func Hydra(syncQuery SyncQuery, extentQuery ExtentQuery, wg pants.WaitGroup) Scenario {
-	isWalk := syncQuery()
-	isPrime := extentQuery()
-
+//	isWalk := \<set depending on wether user requested walk or run\>
+//	isPrime := \<set depending on wether user requested prime or resume\>
+//	age.Hydra(isWalk, isPrime, &wg)(facade, options...).Navigate(ctx)
+func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 	if isWalk && isPrime {
 		return slowPrime
 	}
@@ -131,11 +117,10 @@ func Hydra(syncQuery SyncQuery, extentQuery ExtentQuery, wg pants.WaitGroup) Sce
 // Example:
 //
 //	var wg sync.WaitGroup
-//	age.Hare(func() bool {
-//		return \<boolean expression to determine if user requested prime or resume\>
-//	}, &wg)(facade, options...).Navigate(ctx)
-func Hare(extentQuery ExtentQuery, wg pants.WaitGroup) Scenario {
-	if extentQuery() {
+//	isPrime := \<set depending on wether user requested prime or resume\>
+//	age.Hare(isPrime, &wg)(facade, options...).Navigate(ctx)
+func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
+	if isPrime {
 		return func(facade pref.Facade, settings ...pref.Option) Navigator {
 			return fastPrime(facade, wg, settings...)
 		}
@@ -173,11 +158,10 @@ func Hare(extentQuery ExtentQuery, wg pants.WaitGroup) Scenario {
 // Example:
 //
 //	var wg sync.WaitGroup
-//	age.Tortoise(func() bool {
-//		return \<boolean expression to determine if user requested prime or resume\>
-//	})(facade, options...).Navigate(ctx)
-func Tortoise(extentQuery ExtentQuery) Scenario {
-	if extentQuery() {
+//	isPrime := \<set depending on wether user requested prime or resume\>
+//	age.Tortoise(isPrime)(facade, options...).Navigate(ctx)
+func Tortoise(isPrime bool) Scenario {
+	if isPrime {
 		return slowPrime
 	}
 
@@ -211,11 +195,10 @@ func Tortoise(extentQuery ExtentQuery) Scenario {
 // Example:
 //
 //	var wg sync.WaitGroup
-//	age.Goldfish(func() bool {
-//		return \<boolean expression to determine if user requested walk or run\>
-//	}, &wg)(facade, options...).Navigate(ctx)
-func Goldfish(syncQuery SyncQuery, wg pants.WaitGroup) Scenario {
-	if syncQuery() {
+//	isWalk := \<set depending on wether user requested walk or run\>
+//	age.Goldfish(isWalk, &wg)(facade, options...).Navigate(ctx)
+func Goldfish(isWalk bool, wg pants.WaitGroup) Scenario {
+	if isWalk {
 		return slowPrime
 	}
 
