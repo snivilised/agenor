@@ -1,8 +1,6 @@
 package hiber_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -38,7 +36,7 @@ var _ = Describe("feature", Ordered, func() {
 	})
 
 	DescribeTable("filter and listen both active",
-		func(ctx SpecContext, entry *hibernateTE) {
+		func(ctx SpecContext, entry *lab.HibernateTE) {
 			path := lab.Static.RetroWave
 			result, err := age.Walk().Configure().Extent(age.Prime(
 				&pref.Using{
@@ -112,14 +110,14 @@ var _ = Describe("feature", Ordered, func() {
 				files, directories,
 			)
 		},
-		func(entry *hibernateTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
-		},
+		lab.FormatHibernateTestDescription,
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "File Subscription",
+				Should: "wake, then apply filter until the end",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "File Subscription",
-				Should:       "wake, then apply filter until the end",
 				Subscription: enums.SubscribeFiles,
 				Callback: func(servant age.Servant) error {
 					node := servant.Node()
@@ -140,11 +138,12 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			},
 		}),
-
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "File Subscription",
+				Should: "apply filter until sleep",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "File Subscription",
-				Should:       "apply filter until sleep",
 				Subscription: enums.SubscribeFiles,
 				Callback: func(servant age.Servant) error {
 					node := servant.Node()
@@ -165,11 +164,12 @@ var _ = Describe("feature", Ordered, func() {
 				},
 			},
 		}),
-
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "File Subscription",
+				Should: "apply filter within hibernation range",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "File Subscription",
-				Should:       "apply filter within hibernation range",
 				Subscription: enums.SubscribeFiles,
 				Callback: func(servant age.Servant) error {
 					node := servant.Node()

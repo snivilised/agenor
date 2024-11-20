@@ -3,7 +3,6 @@ package kernel_test
 import (
 	"context"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -33,25 +32,23 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 	Context("nav", func() {
 		When("foo", func() {
 			It("🧪 should: not fail", func(specCtx SpecContext) {
-				defer leaktest.Check(GinkgoT())()
-
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				_, err := age.Walk().Configure().Extent(age.Prime(
-					&pref.Using{
-						Subscription: age.SubscribeFiles,
-						Head: pref.Head{
-							Handler: func(_ age.Servant) error {
-								return nil
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					_, err := age.Walk().Configure().Extent(age.Prime(
+						&pref.Using{
+							Subscription: age.SubscribeFiles,
+							Head: pref.Head{
+								Handler: func(_ age.Servant) error {
+									return nil
+								},
 							},
+							Tree: RootPath,
 						},
-						Tree: RootPath,
-					},
-					age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-				)).Navigate(ctx)
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+					)).Navigate(ctx)
 
-				Expect(err).To(Succeed())
+					Expect(err).To(Succeed())
+
+				})
 			})
 		})
 	})

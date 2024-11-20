@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -47,51 +46,9 @@ var _ = Describe("Resume Error", Ordered, func() {
 
 	Context("given: resume path does not exist", func() {
 		It("🧪 should: return error", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			from = "/invalid-path"
-			_, err := age.Walk().Configure().Extent(age.Resume(
-				&pref.Relic{
-					Head: pref.Head{
-						Handler: func(_ age.Servant) error {
-							return nil
-						},
-						GetForest: func(_ string) *core.Forest {
-							return &core.Forest{
-								T: fS,
-								R: tfs.New(),
-							}
-						},
-					},
-					From:     from,
-					Strategy: enums.ResumeStrategyFastward,
-				},
-				age.WithOnBegin(lab.Begin("🛡️")),
-				age.WithOnEnd(lab.End("🏁")),
-			)).Navigate(ctx)
-
-			Expect(err).To(MatchError(fs.ErrNotExist))
-		})
-	})
-
-	Context("forest inception failure", func() {
-		DescribeTable("fs type mismatch",
-			func(specCtx SpecContext, _ string, travIsRelative, resIsRelative bool) {
-				defer leaktest.Check(GinkgoT())()
-
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-					active.Tree = lab.Static.RetroWave
-					active.CurrentPath = ResumeAtTeenageColor
-					active.Subscription = enums.SubscribeUniversal
-					active.TraverseDescription.IsRelative = travIsRelative
-					active.ResumeDescription.IsRelative = resIsRelative
-				})).Extent(age.Resume(
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				from = "/invalid-path"
+				_, err := age.Walk().Configure().Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
 							Handler: func(_ age.Servant) error {
@@ -111,7 +68,43 @@ var _ = Describe("Resume Error", Ordered, func() {
 					age.WithOnEnd(lab.End("🏁")),
 				)).Navigate(ctx)
 
-				Expect(err).To(MatchError(locale.ErrCoreResumeFsMismatch))
+				Expect(err).To(MatchError(fs.ErrNotExist))
+			})
+		})
+	})
+
+	Context("forest inception failure", func() {
+		DescribeTable("fs type mismatch",
+			func(specCtx SpecContext, _ string, travIsRelative, resIsRelative bool) {
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+						active.Tree = lab.Static.RetroWave
+						active.CurrentPath = ResumeAtTeenageColor
+						active.Subscription = enums.SubscribeUniversal
+						active.TraverseDescription.IsRelative = travIsRelative
+						active.ResumeDescription.IsRelative = resIsRelative
+					})).Extent(age.Resume(
+						&pref.Relic{
+							Head: pref.Head{
+								Handler: func(_ age.Servant) error {
+									return nil
+								},
+								GetForest: func(_ string) *core.Forest {
+									return &core.Forest{
+										T: fS,
+										R: tfs.New(),
+									}
+								},
+							},
+							From:     from,
+							Strategy: enums.ResumeStrategyFastward,
+						},
+						age.WithOnBegin(lab.Begin("🛡️")),
+						age.WithOnEnd(lab.End("🏁")),
+					)).Navigate(ctx)
+
+					Expect(err).To(MatchError(locale.ErrCoreResumeFsMismatch))
+				})
 			},
 			func(given string, _, _ bool) string {
 				return fmt.Sprintf("🧪 ===> given: '%v'", given)
@@ -123,36 +116,33 @@ var _ = Describe("Resume Error", Ordered, func() {
 
 	When("custom forest creator returns nil", func() {
 		It("should: fail", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-				active.Tree = lab.Static.RetroWave
-				active.CurrentPath = ResumeAtTeenageColor
-				active.Subscription = enums.SubscribeUniversal
-				active.TraverseDescription.IsRelative = true
-				active.ResumeDescription.IsRelative = false
-			})).Extent(age.Resume(
-				&pref.Relic{
-					Head: pref.Head{
-						Handler: func(_ age.Servant) error {
-							return nil
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.Tree = lab.Static.RetroWave
+					active.CurrentPath = ResumeAtTeenageColor
+					active.Subscription = enums.SubscribeUniversal
+					active.TraverseDescription.IsRelative = true
+					active.ResumeDescription.IsRelative = false
+				})).Extent(age.Resume(
+					&pref.Relic{
+						Head: pref.Head{
+							Handler: func(_ age.Servant) error {
+								return nil
+							},
+							GetForest: func(_ string) *core.Forest {
+								return nil
+							},
 						},
-						GetForest: func(_ string) *core.Forest {
-							return nil
-						},
+						From:     from,
+						Strategy: enums.ResumeStrategyFastward,
 					},
-					From:     from,
-					Strategy: enums.ResumeStrategyFastward,
-				},
-				age.WithOnBegin(lab.Begin("🛡️")),
-				age.WithOnEnd(lab.End("🏁")),
-			)).Navigate(ctx)
+					age.WithOnBegin(lab.Begin("🛡️")),
+					age.WithOnEnd(lab.End("🏁")),
+				)).Navigate(ctx)
 
-			Expect(err).NotTo(Succeed())
-			Expect(err).To(MatchError(core.ErrNilForest))
+				Expect(err).NotTo(Succeed())
+				Expect(err).To(MatchError(core.ErrNilForest))
+			})
 		})
 	})
 })

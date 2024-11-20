@@ -1,8 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -74,16 +72,13 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.FilterErrataTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'",
-				entry.Given, entry.Should,
-			)
-		},
-
+		lab.FormatFilterErrataTestDescription,
 		XEntry(nil, &lab.FilterErrataTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "missing type",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "missing type",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedErr:  locale.ErrFilterMissingType,

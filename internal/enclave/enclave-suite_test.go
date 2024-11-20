@@ -19,9 +19,13 @@ func TestEnclave(t *testing.T) {
 }
 
 type resultTE struct {
-	lab.NaviTE
+	lab.DescribedTE
 	arrange func(trig *lab.Trigger)
 	assert  func(a *asserter)
+}
+
+func FormatResultTestDescription(entry *resultTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.Given, entry.Should)
 }
 
 type session struct {

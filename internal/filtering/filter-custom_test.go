@@ -1,8 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -98,15 +96,15 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.FilterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatFilterTestDescription,
 
 		// === universal =====================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): custom filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): custom filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -120,8 +118,10 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): custom filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): custom filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -136,8 +136,10 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(undefined scope): custom filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(undefined scope): custom filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -152,8 +154,10 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 		// === error =========================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): missing filter type",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): missing filter type",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{

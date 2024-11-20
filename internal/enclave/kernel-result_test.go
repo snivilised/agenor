@@ -1,8 +1,6 @@
 package enclave_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/enclave"
@@ -15,7 +13,6 @@ var _ = Describe("KernelResult", func() {
 			sess     *session
 			reporter *enclave.Supervisor
 			trig     *lab.Trigger
-			// err      error
 			complete bool
 		)
 
@@ -44,12 +41,9 @@ var _ = Describe("KernelResult", func() {
 					result: result,
 				})
 			},
-			func(entry *resultTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
-			},
-
+			FormatResultTestDescription,
 			Entry(nil, &resultTE{
-				NaviTE: lab.NaviTE{
+				DescribedTE: lab.DescribedTE{
 					Given:  "metrics populated",
 					Should: "count metrics",
 				},

@@ -1,7 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
 	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -158,15 +157,15 @@ var _ = Describe("feature", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.FilterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatFilterTestDescription,
 
 		// === files =========================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(any scope): regex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(any scope): regex filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -180,8 +179,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(any scope): regex filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(any scope): regex filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -196,8 +197,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(default to any scope): regex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(default to any scope): regex filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -212,8 +215,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === directories ===================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(any scope): regex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(any scope): regex filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -227,8 +232,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(any scope): regex filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(any scope): regex filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -243,8 +250,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(undefined scope): regex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(undefined scope): regex filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -259,8 +268,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === ifNotApplicable ===============================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(top): regex filter (ifNotApplicable=true)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(top): regex filter (ifNotApplicable=true)",
 				Relative:     "PROGRESSIVE-HOUSE",
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -276,8 +287,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(top): regex filter (ifNotApplicable=false)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(top): regex filter (ifNotApplicable=false)",
 				Relative:     ".",
 				Subscription: enums.SubscribeDirectories,
 				Mandatory:    []string{"PROGRESSIVE-HOUSE"},
@@ -296,8 +309,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === error =========================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(any scope): regex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(any scope): regex filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedErr: &syntax.Error{

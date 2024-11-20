@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -101,79 +100,73 @@ var _ = Describe("Save", Ordered, func() {
 		When("given: panic", func() {
 			Context("prime", func() {
 				It("🧪 should: save", func(specCtx SpecContext) {
-					defer leaktest.Check(GinkgoT())()
+					lab.WithTestContext(specCtx, func(ctx context.Context) {
+						save := (arrangeSave{
+							name: "prime.walk.panic-save.json",
+							rS:   rS,
+							jdir: jdir,
+						}).arrange()
 
-					ctx, cancel := context.WithCancel(specCtx)
-					defer cancel()
-
-					save := (arrangeSave{
-						name: "prime.walk.panic-save.json",
-						rS:   rS,
-						jdir: jdir,
-					}).arrange()
-
-					result, err := age.Walk().Configure().Extent(age.Prime(
-						&pref.Using{
-							Subscription: enums.SubscribeDirectories,
-							Head: pref.Head{
-								Handler: lab.PanicAt(lab.Static.TeenageColor),
-								GetForest: func(_ string) *core.Forest {
-									return &core.Forest{
-										T: fS,
-										R: rS,
-									}
+						result, err := age.Walk().Configure().Extent(age.Prime(
+							&pref.Using{
+								Subscription: enums.SubscribeDirectories,
+								Head: pref.Head{
+									Handler: lab.PanicAt(lab.Static.TeenageColor),
+									GetForest: func(_ string) *core.Forest {
+										return &core.Forest{
+											T: fS,
+											R: rS,
+										}
+									},
 								},
+								Tree: lab.Static.RetroWave,
 							},
-							Tree: lab.Static.RetroWave,
-						},
-						age.WithOnBegin(lab.Begin("🛡️")),
-						age.WithOnEnd(lab.End("🏁")),
-						pref.WithAdminPath(save.directory),
-					)).Navigate(ctx)
+							age.WithOnBegin(lab.Begin("🛡️")),
+							age.WithOnEnd(lab.End("🏁")),
+							pref.WithAdminPath(save.directory),
+						)).Navigate(ctx)
 
-					save.assert(result, err, locale.ErrCorePanicOccurred)
+						save.assert(result, err, locale.ErrCorePanicOccurred)
+					})
 				})
 			})
 
 			Context("resume", func() {
 				It("🧪 should: save", func(specCtx SpecContext) {
-					defer leaktest.Check(GinkgoT())()
+					lab.WithTestContext(specCtx, func(ctx context.Context) {
+						save := (arrangeSave{
+							name: "resume.walk.panic-save.json",
+							rS:   rS,
+						}).arrange()
 
-					ctx, cancel := context.WithCancel(specCtx)
-					defer cancel()
-
-					save := (arrangeSave{
-						name: "resume.walk.panic-save.json",
-						rS:   rS,
-					}).arrange()
-
-					result, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-						active.Tree = lab.Static.RetroWave
-						active.TraverseDescription = core.FsDescription{
-							IsRelative: true,
-						}
-						active.CurrentPath = lab.Static.NorthernCouncil
-						active.Subscription = enums.SubscribeUniversal
-					})).Extent(age.Resume(
-						&pref.Relic{
-							Head: pref.Head{
-								Handler: lab.PanicAt(lab.Static.ElectricYouth),
-								GetForest: func(_ string) *core.Forest {
-									return &core.Forest{
-										T: fS,
-										R: rS,
-									}
+						result, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+							active.Tree = lab.Static.RetroWave
+							active.TraverseDescription = core.FsDescription{
+								IsRelative: true,
+							}
+							active.CurrentPath = lab.Static.NorthernCouncil
+							active.Subscription = enums.SubscribeUniversal
+						})).Extent(age.Resume(
+							&pref.Relic{
+								Head: pref.Head{
+									Handler: lab.PanicAt(lab.Static.ElectricYouth),
+									GetForest: func(_ string) *core.Forest {
+										return &core.Forest{
+											T: fS,
+											R: rS,
+										}
+									},
 								},
+								From:     from,
+								Strategy: enums.ResumeStrategyFastward,
 							},
-							From:     from,
-							Strategy: enums.ResumeStrategyFastward,
-						},
-						age.WithOnBegin(lab.Begin("🛡️")),
-						age.WithOnEnd(lab.End("🏁")),
-						pref.WithAdminPath(save.directory),
-					)).Navigate(ctx)
+							age.WithOnBegin(lab.Begin("🛡️")),
+							age.WithOnEnd(lab.End("🏁")),
+							pref.WithAdminPath(save.directory),
+						)).Navigate(ctx)
 
-					save.assert(result, err, locale.ErrCorePanicOccurred)
+						save.assert(result, err, locale.ErrCorePanicOccurred)
+					})
 				})
 			})
 		})

@@ -171,15 +171,16 @@ var _ = Describe("feature", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.SampleTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
-		},
+		lab.FormatSampleTestDescription,
+
 		// === universal =====================================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(slice): first, with 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(slice): first, with 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"cover.night-drive.jpg"},
 				ExpectedNoOf: lab.Quantities{
@@ -194,9 +195,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(slice): first, with 2 directories",
+				Should: "invoke for at most 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(slice): first, with 2 directories",
-				Should:       "invoke for at most 2 directories per directory",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
@@ -211,9 +214,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(slice): first, with 2 files and 2 directories",
+				Should: "invoke for at most 2 files and 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(slice): first, with 2 files and 2 directories",
-				Should:       "invoke for at most 2 files and 2 directories per directory",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"cover.night-drive.jpg", "Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
@@ -229,9 +234,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(filter): first, single file, first 2 directories",
+				Should: "invoke for at most single file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): first, single file, first 2 directories",
-				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
@@ -254,9 +261,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(filter): first, single file, first 2 directories",
+				Should: "invoke for at most single file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): first, single file, first 2 directories",
-				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
@@ -279,9 +288,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(filter): last, last single files, last 2 directories",
+				Should: "invoke for at most single file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): last, last single files, last 2 directories",
-				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"01 - Dre.flac"},
@@ -305,9 +316,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(filter): last, last single files, last 2 directories",
+				Should: "invoke for at most single file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(filter): last, last single files, last 2 directories",
-				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"01 - Dre.flac"},
@@ -333,9 +346,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === directories ===================================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "directories(slice): first, with 2 directories",
+				Should: "invoke for at most 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(slice): first, with 2 directories",
-				Should:       "invoke for at most 2 directories per directory",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
@@ -349,9 +364,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "directories(slice): last, with last single directory",
+				Should: "invoke for only last directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(slice): last, with last single directory",
-				Should:       "invoke for only last directory per directory",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Chromatics"},
 				ExpectedNoOf: lab.Quantities{
@@ -366,9 +383,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories(filter): first, with 2 directories that start with A",
+				Should: "invoke for at most 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories(filter): first, with 2 directories that start with A",
-				Should:       "invoke for at most 2 directories per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Tales Of Ephidrina"},
@@ -390,9 +409,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories(filter): first, with 2 directories that start with A",
+				Should: "invoke for at most 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories(filter): first, with 2 directories that start with A",
-				Should:       "invoke for at most 2 directories per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Tales Of Ephidrina"},
@@ -414,9 +435,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories(filter): last, with single directory that start with A",
+				Should: "invoke for at most a single directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories(filter): last, with single directory that start with A",
-				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
@@ -438,9 +461,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories(filter): last, with single directory that start with A",
+				Should: "invoke for at most a single directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories(filter): last, with single directory that start with A",
-				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
@@ -464,9 +489,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === directories with files ========================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "directories with files(slice): first, with 2 directories",
+				Should: "invoke for at most 2 directories per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories with files(slice): first, with 2 directories",
-				Should:       "invoke for at most 2 directories per directory",
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
@@ -485,9 +512,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "directories with files(slice): last, with last single directory",
+				Should: "invoke for only last directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories with files(slice): last, with last single directory",
-				Should:       "invoke for only last directory per directory",
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Chromatics"},
 				ExpectedNoOf: lab.Quantities{
@@ -505,9 +534,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories with files(filter): last, with single directory that start with A",
+				Should: "invoke for at most a single directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories with files(filter): last, with single directory that start with A",
-				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Amorphous Androgynous"},
@@ -530,9 +561,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories with files(filter): last, with single directory that start with A",
+				Should: "invoke for at most a single directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories with files(filter): last, with single directory that start with A",
-				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				Prohibited:   []string{"Amorphous Androgynous"},
@@ -557,9 +590,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === files =========================================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "files(slice): first, with 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(slice): first, with 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"cover.night-drive.jpg"},
 				ExpectedNoOf: lab.Quantities{
@@ -573,9 +608,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "files(slice): last, with last single file",
+				Should: "invoke for only last file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(slice): last, with last single file",
-				Should:       "invoke for only last file per directory",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"A1 - The Telephone Call.flac"},
 				ExpectedNoOf: lab.Quantities{
@@ -595,9 +632,11 @@ var _ = Describe("feature", Ordered, func() {
 		// applied at the point the contents are read. Any scopes other
 		// than file/directory are ignored.
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered files(filter): first, 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered files(filter): first, 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Relative:     "edm/ELECTRONICA",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"03 - Mountain Goat.flac"},
@@ -618,9 +657,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered files(filter): first, 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered files(filter): first, 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Relative:     "edm/ELECTRONICA",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"03 - Mountain Goat.flac"},
@@ -641,9 +682,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered files(filter): last, last 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered files(filter): last, last 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"01 - Liquid Insects.flac"},
@@ -665,9 +708,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered files(filter): last, last 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered files(filter): last, last 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"01 - Liquid Insects.flac"},
@@ -691,9 +736,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === custom ========================================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal(custom): first, single file, 2 directories",
+				Should: "invoke for at most single file per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(custom): first, single file, 2 directories",
-				Should:       "invoke for at most single file per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				Prohibited:   []string{"02 - Swab.flac"},
@@ -718,9 +765,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered directories(custom): last, single directory that starts with A",
+				Should: "invoke for at most a single directory per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered directories(custom): last, single directory that starts with A",
-				Should:       "invoke for at most a single directory per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeDirectories,
 				Prohibited:   []string{"Amorphous Androgynous"},
@@ -744,9 +793,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filtered files(custom): last, last 2 files",
+				Should: "invoke for at most 2 files per directory",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filtered files(custom): last, last 2 files",
-				Should:       "invoke for at most 2 files per directory",
 				Relative:     "edm",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"01 - Liquid Insects.flac"},
@@ -772,9 +823,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === errors ========================================================
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "directory spec, without no of directories",
+				Should: "return invalid directory spec error",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory spec, without no of directories",
-				Should:       "return invalid directory spec error",
 				Relative:     "edm/ELECTRONICA",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"03 - Mountain Goat.flac"},
@@ -796,9 +849,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "file spec, without no of files",
+				Should: "return invalid file spec error",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file spec, without no of files",
-				Should:       "return invalid file spec error",
 				Relative:     "edm/ELECTRONICA",
 				Subscription: enums.SubscribeFiles,
 				Prohibited:   []string{"03 - Mountain Goat.flac"},
@@ -820,9 +875,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "custom filter not defined",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "custom filter not defined",
-				Should:       "fail",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedErr:  locale.ErrFilterIsNil,
@@ -834,9 +891,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.SampleTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "filter missing type",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "filter missing type",
-				Should:       "fail",
 				Relative:     "edm",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedErr:  locale.ErrFilterMissingType,

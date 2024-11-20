@@ -1,7 +1,6 @@
 package kernel_test
 
 import (
-	"fmt"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -49,7 +48,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 	})
 
 	DescribeTable("Ensure Callback Invoked Once", Label("vanilla"),
-		func(ctx SpecContext, entry *lab.NaviTE) {
+		func(ctx SpecContext, entry *lab.GeneralTE) {
 			recall := make(lab.Recall)
 			once := func(servant age.Servant) error {
 				node := servant.Node()
@@ -89,7 +88,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				age.IfOption(entry.CaseSensitive, age.WithHookCaseSensitiveSort()),
 			)).Navigate(ctx)
 
-			lab.AssertNavigation(entry, &lab.TestOptions{
+			lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{
 				FS:        fS,
 				Recording: recall,
 				Path:      path,
@@ -102,134 +101,176 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				ByPassMetrics: entry.ByPassMetrics,
 			})
 		},
-		func(entry *lab.NaviTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatGeneralTestDescription,
 
 		// === universal =====================================================
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "universal: Path is leaf",
-			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
-			Subscription: enums.SubscribeUniversal,
-			Callback:     lab.UniversalCallback("LEAF-PATH"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       4,
-				Directories: 1,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: Path is leaf",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
+				Subscription: enums.SubscribeUniversal,
+				Callback:     lab.UniversalCallback("LEAF-PATH"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       4,
+					Directories: 1,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "universal: Path contains directories",
-			Relative:     lab.Static.RetroWave,
-			Subscription: enums.SubscribeUniversal,
-			Callback:     lab.UniversalCallback("CONTAINS-DIRECTORIES"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       14,
-				Directories: 8,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: Path contains directories",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeUniversal,
+				Callback:     lab.UniversalCallback("CONTAINS-DIRECTORIES"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       14,
+					Directories: 8,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "universal: Path contains directories (visit)",
-			Relative:     lab.Static.RetroWave,
-			Visit:        true,
-			Subscription: enums.SubscribeUniversal,
-			Callback:     lab.UniversalCallback("VISIT-CONTAINS-DIRECTORIES"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       14,
-				Directories: 8,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: Path contains directories (visit)",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Visit:        true,
+				Subscription: enums.SubscribeUniversal,
+				Callback:     lab.UniversalCallback("VISIT-CONTAINS-DIRECTORIES"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       14,
+					Directories: 8,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:         "universal: Path is Root",
-			Relative:      ".",
-			Subscription:  enums.SubscribeUniversal,
-			Callback:      lab.UniversalCallback("ROOT-PATH"),
-			ByPassMetrics: true,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: Path is Root",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:      ".",
+				Subscription:  enums.SubscribeUniversal,
+				Callback:      lab.UniversalCallback("ROOT-PATH"),
+				ByPassMetrics: true,
+			},
 		}),
 
 		// === directories ===================================================
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "directories: Path is leaf",
-			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
-			Subscription: enums.SubscribeDirectories,
-			Callback:     lab.DirectoriesCallback("LEAF-PATH"),
-			ExpectedNoOf: lab.Quantities{
-				Directories: 1,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories: Path is leaf",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
+				Subscription: enums.SubscribeDirectories,
+				Callback:     lab.DirectoriesCallback("LEAF-PATH"),
+				ExpectedNoOf: lab.Quantities{
+					Directories: 1,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "directories: Path contains directories",
-			Relative:     lab.Static.RetroWave,
-			Subscription: enums.SubscribeDirectories,
-			Callback:     lab.DirectoriesCallback("CONTAINS-DIRECTORIES"),
-			ExpectedNoOf: lab.Quantities{
-				Directories: 8,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories: Path contains directories",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeDirectories,
+				Callback:     lab.DirectoriesCallback("CONTAINS-DIRECTORIES"),
+				ExpectedNoOf: lab.Quantities{
+					Directories: 8,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "directories: Path contains directories (check all invoked)",
-			Relative:     lab.Static.RetroWave,
-			Visit:        true,
-			Subscription: enums.SubscribeDirectories,
-			Callback:     lab.DirectoriesCallback("CONTAINS-DIRECTORIES (check all invoked)"),
-			ExpectedNoOf: lab.Quantities{
-				Directories: 8,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories: Path contains directories (check all invoked)",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Visit:        true,
+				Subscription: enums.SubscribeDirectories,
+				Callback:     lab.DirectoriesCallback("CONTAINS-DIRECTORIES (check all invoked)"),
+				ExpectedNoOf: lab.Quantities{
+					Directories: 8,
+				},
 			},
 		}),
 
-		Entry(nil, Label("metal"), &lab.NaviTE{
-			Given:         "directories: case sensitive sort",
-			Relative:      "rock/metal",
-			Subscription:  enums.SubscribeDirectories,
-			CaseSensitive: true,
-			Callback: lab.DirectoriesCaseSensitiveCallback(
-				"rock/metal/HARD-METAL", "rock/metal/dark",
-			),
-			ExpectedNoOf: lab.Quantities{
-				Files:       0,
-				Directories: 41,
+		Entry(nil, Label("metal"), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories: case sensitive sort",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:      "rock/metal",
+				Subscription:  enums.SubscribeDirectories,
+				CaseSensitive: true,
+				Callback: lab.DirectoriesCaseSensitiveCallback(
+					"rock/metal/HARD-METAL", "rock/metal/dark",
+				),
+				ExpectedNoOf: lab.Quantities{
+					Files:       0,
+					Directories: 41,
+				},
 			},
 		}),
 
 		// === files =========================================================
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "files: Path is leaf",
-			Relative:     "RETRO-WAVE/Chromatics/Night Drive",
-			Subscription: enums.SubscribeFiles,
-			Callback:     lab.FilesCallback("LEAF-PATH"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       4,
-				Directories: 0,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: Path is leaf",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
+				Subscription: enums.SubscribeFiles,
+				Callback:     lab.FilesCallback("LEAF-PATH"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       4,
+					Directories: 0,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "files: Path contains directories",
-			Relative:     lab.Static.RetroWave,
-			Subscription: enums.SubscribeFiles,
-			Callback:     lab.FilesCallback("CONTAINS-DIRECTORIES"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       14,
-				Directories: 0,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: Path contains directories",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Subscription: enums.SubscribeFiles,
+				Callback:     lab.FilesCallback("CONTAINS-DIRECTORIES"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       14,
+					Directories: 0,
+				},
 			},
 		}),
 
-		Entry(nil, Label(lab.Static.RetroWave), &lab.NaviTE{
-			Given:        "files: Path contains directories",
-			Relative:     lab.Static.RetroWave,
-			Visit:        true,
-			Subscription: enums.SubscribeFiles,
-			Callback:     lab.FilesCallback("VISIT-CONTAINS-DIRECTORIES"),
-			ExpectedNoOf: lab.Quantities{
-				Files:       14,
-				Directories: 0,
+		Entry(nil, Label(lab.Static.RetroWave), &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: Path contains directories",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     lab.Static.RetroWave,
+				Visit:        true,
+				Subscription: enums.SubscribeFiles,
+				Callback:     lab.FilesCallback("VISIT-CONTAINS-DIRECTORIES"),
+				ExpectedNoOf: lab.Quantities{
+					Files:       14,
+					Directories: 0,
+				},
 			},
 		}),
 	)
