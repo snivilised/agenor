@@ -1,8 +1,6 @@
 package kernel_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 	age "github.com/snivilised/agenor"
@@ -77,16 +75,16 @@ var _ = Describe("navigator", Ordered, func() {
 				Err:    err,
 			})
 		},
-		func(entry *lab.CascadeTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatCascadeTestDescription,
 
 		// === universal =====================================================
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, no-recurse",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, no-recurse",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -99,9 +97,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains files only, no-recurse",
+				Should: "traverse single level (containing files)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains files only, no-recurse",
-				Should:       "traverse single level (containing files)",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FILES"),
@@ -114,9 +114,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=1",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=1",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -129,9 +131,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=2",
+				Should: "traverse 2 levels",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=2",
-				Should:       "traverse 2 levels",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -144,9 +148,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=3",
+				Should: "traverse 3 levels (containing files)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=3",
-				Should:       "traverse 3 levels (containing files)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -161,9 +167,11 @@ var _ = Describe("navigator", Ordered, func() {
 		// === folders =======================================================
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, no-recurse",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, no-recurse",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 				Callback:     lab.DirectoriesCallback("CONTAINS-FILES"),
@@ -176,9 +184,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains files only, no-recurse",
+				Should: "traverse single level (containing files)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains files only, no-recurse",
-				Should:       "traverse single level (containing files)",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeDirectories,
 				Callback:     lab.UniversalCallback("LEAF-PATH"),
@@ -191,9 +201,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=1",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=1",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -206,9 +218,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=2",
+				Should: "traverse 2 levels",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=2",
-				Should:       "traverse 2 levels",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -221,9 +235,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "universal: Path contains folders only, depth=3",
+				Should: "traverse 3 levels (containing files)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: Path contains folders only, depth=3",
-				Should:       "traverse 3 levels (containing files)",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
@@ -238,9 +254,11 @@ var _ = Describe("navigator", Ordered, func() {
 		// === files =========================================================
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "file: Path contains folders only, no-recurse",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file: Path contains folders only, no-recurse",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeFiles,
 				Callback:     lab.FilesCallback("FILE"),
@@ -253,9 +271,11 @@ var _ = Describe("navigator", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.CascadeTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "file: Path contains folders only, depth=1",
+				Should: "traverse single level",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file: Path contains folders only, depth=1",
-				Should:       "traverse single level",
 				Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 				Subscription: enums.SubscribeFiles,
 				Callback:     lab.FilesCallback("FILE"),

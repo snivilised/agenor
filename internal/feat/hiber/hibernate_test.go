@@ -1,7 +1,6 @@
 package hiber_test
 
 import (
-	"fmt"
 	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -116,7 +115,7 @@ var _ = Describe("feature", Ordered, func() {
 	})
 
 	DescribeTable("simple hibernate",
-		func(ctx SpecContext, entry *hibernateTE) {
+		func(ctx SpecContext, entry *lab.HibernateTE) {
 			recall := make(lab.Recall)
 			once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 				_, found := recall[node.Extension.Name]
@@ -185,16 +184,16 @@ var _ = Describe("feature", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-
-		func(entry *hibernateTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.Given, entry.Should)
-		},
+		lab.FormatHibernateTestDescription,
 
 		// === directories ===================================================
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "wake and sleep (directories, inclusive:default)",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "wake and sleep (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College",
@@ -225,9 +224,13 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "wake and sleep (directories, excl:wake, inc:sleep, mute)",
+				Should: "fail",
+			},
+
 			NaviTE: lab.NaviTE{
-				Given:        "wake and sleep (directories, excl:wake, inc:sleep, mute)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"College", "Northern Council",
@@ -259,9 +262,11 @@ var _ = Describe("feature", Ordered, func() {
 			Mute: true,
 		}),
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "wake only (directories, inclusive:default)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "wake only (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
@@ -285,9 +290,11 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "sleep only (directories, inclusive:default)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (directories, inclusive:default)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",
@@ -312,9 +319,12 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "sleep only (directories, inclusive:default)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (directories, inclusive:default)",
+
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory:    []string{lab.Static.RetroWave, "Chromatics"},
@@ -340,10 +350,12 @@ var _ = Describe("feature", Ordered, func() {
 
 		// error ==================================================================
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "wake only (directories, inclusive:default)",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "wake only (directories, inclusive:default)",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{"Night Drive", "College", "Northern Council",
@@ -364,10 +376,12 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &hibernateTE{
+		Entry(nil, &lab.HibernateTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "sleep only (directories, inclusive:default)",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "sleep only (directories, inclusive:default)",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectories,
 				Mandatory: []string{lab.Static.RetroWave, "Chromatics", "Night Drive", "College",

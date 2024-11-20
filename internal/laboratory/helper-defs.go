@@ -15,9 +15,17 @@ import (
 )
 
 type (
+	ActiveTE struct {
+		Depth          int // must correspond to the correct depth of resumeAt
+		ResumeAt       string
+		HibernateState enums.Hibernation
+	}
+
+	GeneralTE struct {
+		DescribedTE
+		NaviTE
+	}
 	NaviTE struct {
-		Given         string
-		Should        string
 		Relative      string
 		Once          bool
 		Visit         bool
@@ -32,6 +40,7 @@ type (
 	}
 
 	FilterTE struct {
+		DescribedTE
 		NaviTE
 		Description     string
 		Pattern         string
@@ -45,23 +54,42 @@ type (
 	}
 
 	FilterErrataTE struct {
+		DescribedTE
 		NaviTE
 		Filter *pref.FilterOptions
 	}
 
+	HibernateTE struct {
+		DescribedTE
+		NaviTE
+		Hibernate *core.HibernateOptions
+		Mute      bool
+	}
+
 	HybridFilterTE struct {
+		DescribedTE
 		NaviTE
 		NodeDef  core.FilterDef
 		ChildDef core.ChildFilterDef
 	}
 
 	PolyTE struct {
+		DescribedTE
 		NaviTE
 		File      core.FilterDef
 		Directory core.FilterDef
 	}
 
+	ResumeTE struct {
+		DescribedTE
+		NaviTE
+		Active         ActiveTE
+		ClientListenAt string
+		Profile        string
+	}
+
 	SampleTE struct {
+		DescribedTE
 		NaviTE
 		SampleType enums.SampleType
 		Reverse    bool
@@ -72,6 +100,7 @@ type (
 	}
 
 	CascadeTE struct {
+		DescribedTE
 		NaviTE
 		NoRecurse bool
 		Depth     uint
@@ -147,6 +176,60 @@ func WithTestContext(specCtx SpecContext, fn func(context.Context)) {
 	fn(ctx)
 }
 
-func FormatTestDescription(entry *NaviTE) string {
+func FormatCascadeTestDescription(entry *CascadeTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatGeneralTestDescription(entry *GeneralTE) string {
 	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.Given, entry.Should)
+}
+
+func FormatHibernateTestDescription(entry *HibernateTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatHybridFilterTestDescription(entry *HybridFilterTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatFilterTestDescription(entry *FilterTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatFilterErrataTestDescription(entry *FilterErrataTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatPolyFilterTestDescription(entry *PolyTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatResumeTestDescription(entry *ResumeTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+func FormatSampleTestDescription(entry *SampleTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+}
+
+type DescribedTestItem interface {
+	WhenGiven() string
+	ItShould() string
+}
+
+func FormatTestDescription(entry *DescribedTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.WhenGiven(), entry.ItShould())
+}
+
+type DescribedTE struct {
+	Given  string
+	Should string
+}
+
+func (e *DescribedTE) WhenGiven() string {
+	return e.Given
+}
+
+func (e *DescribedTE) ItShould() string {
+	return e.Should
 }

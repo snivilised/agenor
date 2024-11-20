@@ -1,8 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -106,13 +104,13 @@ var _ = Describe("feature", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.HybridFilterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatHybridFilterTestDescription,
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -138,8 +136,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -165,8 +165,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): regex child filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): regex child filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -192,8 +194,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): regex child filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): regex child filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -219,8 +223,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -246,8 +252,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -273,8 +281,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -301,8 +311,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directory(with files): glob child filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directory(with files): glob child filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -330,9 +342,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === error ==============================================================
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "malformed glob ex filter (missing |)",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "malformed glob ex filter (missing |)",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedErr:  locale.NewInvalidIncaseFilterDefError("*.flac"),
@@ -351,9 +365,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.HybridFilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "malformed glob ex filter, missing type",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "malformed glob ex filter, missing type",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedErr:  locale.ErrFilterUndefined,

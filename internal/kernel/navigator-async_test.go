@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -104,32 +103,29 @@ var _ = Describe("Navigator", Ordered, func() {
 
 	DescribeTable("run",
 		func(specCtx SpecContext, entry *lab.AsyncOkTE) {
-			defer leaktest.Check(GinkgoT())()
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				var wg sync.WaitGroup
 
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
+				path := entry.Path()
 
-			var wg sync.WaitGroup
+				result, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
+					GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
+						entry.Resume.At, entry.Subscription,
+					)
+					active.Tree = lab.Static.RetroWave
+					active.Depth = 2
+					active.TraverseDescription.IsRelative = true
+					active.ResumeDescription.IsRelative = false
+					active.Subscription = entry.Subscription
+					active.CurrentPath = entry.Resume.At
+				})).Extent(
+					entry.Builder(entry, path, fS),
+				).Navigate(ctx)
 
-			path := entry.Path()
-
-			result, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
-				GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
-					entry.Resume.At, entry.Subscription,
-				)
-				active.Tree = lab.Static.RetroWave
-				active.Depth = 2
-				active.TraverseDescription.IsRelative = true
-				active.ResumeDescription.IsRelative = false
-				active.Subscription = entry.Subscription
-				active.CurrentPath = entry.Resume.At
-			})).Extent(
-				entry.Builder(entry, path, fS),
-			).Navigate(ctx)
-
-			wg.Wait()
-			Expect(err).To(Succeed())
-			Expect(result).NotTo(BeNil())
+				wg.Wait()
+				Expect(err).To(Succeed())
+				Expect(result).NotTo(BeNil())
+			})
 		},
 		func(entry *lab.AsyncOkTE) string {
 			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'",

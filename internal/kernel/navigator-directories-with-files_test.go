@@ -1,8 +1,6 @@
 package kernel_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -83,16 +81,15 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 					Err:       err,
 				})
 			},
-
-			func(entry *lab.FilterTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-			},
+			lab.FormatFilterTestDescription,
 
 			// === directories (with files) ======================================
 
 			Entry(nil, &lab.FilterTE{
+				DescribedTE: lab.DescribedTE{
+					Given: "directories(with files): Path is leaf",
+				},
 				NaviTE: lab.NaviTE{
-					Given:        "directories(with files): Path is leaf",
 					Relative:     "RETRO-WAVE/Chromatics/Night Drive",
 					Subscription: enums.SubscribeDirectoriesWithFiles,
 					Callback:     lab.DirectoriesCallback("LEAF-PATH"),
@@ -107,8 +104,10 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 			}),
 
 			Entry(nil, &lab.FilterTE{
+				DescribedTE: lab.DescribedTE{
+					Given: "directories(with files): Path contains directories (check all invoked)",
+				},
 				NaviTE: lab.NaviTE{
-					Given:        "directories(with files): Path contains directories (check all invoked)",
 					Relative:     lab.Static.RetroWave,
 					Visit:        true,
 					Subscription: enums.SubscribeDirectoriesWithFiles,

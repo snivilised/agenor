@@ -1,8 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -154,13 +152,13 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 				Err:       err,
 			})
 		},
-		func(entry *lab.FilterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatFilterTestDescription,
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -174,8 +172,10 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob filter (negate)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -190,8 +190,10 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(undefined scope): glob filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(undefined scope): glob filter",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -206,8 +208,10 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 		// === ifNotApplicable ===============================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob filter (ifNotApplicable=true)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob filter (ifNotApplicable=true)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -223,8 +227,10 @@ var _ = Describe("NavigatorFilterGlob", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(leaf scope): glob filter (ifNotApplicable=false)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(leaf scope): glob filter (ifNotApplicable=false)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{

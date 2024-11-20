@@ -29,8 +29,8 @@ type (
 	}
 
 	iteratorTE struct {
-		message    string
-		should     string
+		Given      string
+		Should     string
 		forward    bool
 		sleeves    []sleeve
 		recordPtrs []*record
@@ -41,6 +41,14 @@ type (
 		iteratorTE
 	}
 )
+
+func FormatIteratorTestDescription(entry *iteratorTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.Given, entry.Should)
+}
+
+func FormatBeginTestDescription(entry *beginTE) string {
+	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.Given, entry.Should)
+}
 
 func (e *record) song() string {
 	return e.name
@@ -122,42 +130,37 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getSleeveIt(entry.forward, entry.sleeves)
 
-				Expect(it).NotTo(BeNil(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.Should))
 			},
-			func(entry *beginTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
-			},
+			FormatBeginTestDescription,
 
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "forward; empty sequence",
-					should:  "forward iterator",
+					Given:   "forward; empty sequence",
+					Should:  "forward iterator",
 					forward: ForwardIterator,
 					sleeves: []sleeve{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "forward; non empty sequence",
-					should:  "return forward iterator",
+					Given:   "forward; non empty sequence",
+					Should:  "return forward iterator",
 					forward: ForwardIterator,
 					sleeves: []sleeve{&record{}},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "reverse; empty sequence",
-					should:  "return reverse iterator",
+					Given:   "reverse; empty sequence",
+					Should:  "return reverse iterator",
 					sleeves: []sleeve{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "reverse; non sequence",
-					should:  "return reverse iterator",
+					Given:   "reverse; non sequence",
+					Should:  "return reverse iterator",
 					sleeves: []sleeve{&record{}},
 				},
 			}),
@@ -167,42 +170,37 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getRecordPtrIt(entry.forward, entry.recordPtrs)
 
-				Expect(it).NotTo(BeNil(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.Should))
 			},
-			func(entry *beginTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
-			},
+			FormatBeginTestDescription,
 
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "forward; empty sequence",
-					should:     "return forward iterator",
+					Given:      "forward; empty sequence",
+					Should:     "return forward iterator",
 					forward:    true,
 					recordPtrs: []*record{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "forward; non empty sequence",
-					should:     "return forward iterator",
+					Given:      "forward; non empty sequence",
+					Should:     "return forward iterator",
 					forward:    true,
 					recordPtrs: []*record{{name: "norman *** rockwell"}},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "reverse; empty sequence",
-					should:     "return reverse iterator",
+					Given:      "reverse; empty sequence",
+					Should:     "return reverse iterator",
 					recordPtrs: []*record{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "reverse; non sequence",
-					should:     "return reverse iterator",
+					Given:      "reverse; non sequence",
+					Should:     "return reverse iterator",
 					recordPtrs: []*record{{name: "mariners apartment complex"}},
 				},
 			}),
@@ -212,42 +210,37 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getRecordsIt(entry.forward, entry.records)
 
-				Expect(it).NotTo(BeNil(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.Should))
 			},
-			func(entry *beginTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
-			},
+			FormatBeginTestDescription,
 
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "forward; empty sequence",
-					should:  "return forward iterator",
+					Given:   "forward; empty sequence",
+					Should:  "return forward iterator",
 					forward: true,
 					records: []record{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "forward; non empty sequence",
-					should:  "return forward iterator",
+					Given:   "forward; non empty sequence",
+					Should:  "return forward iterator",
 					forward: true,
 					records: []record{{name: "venice"}},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "reverse; empty sequence",
-					should:  "return nil reverse iterator",
+					Given:   "reverse; empty sequence",
+					Should:  "return nil reverse iterator",
 					records: []record{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message: "reverse; non sequence",
-					should:  "return reverse iterator",
+					Given:   "reverse; non sequence",
+					Should:  "return reverse iterator",
 					records: []record{{name: "*** it, i love you"}},
 				},
 			}),
@@ -257,42 +250,37 @@ var _ = Describe("Iterators", func() {
 			func(entry *beginTE) {
 				it := getInt32It(entry.forward, entry.numbersN32)
 
-				Expect(it).NotTo(BeNil(), reason(entry.should))
+				Expect(it).NotTo(BeNil(), reason(entry.Should))
 			},
-			func(entry *beginTE) string {
-				return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
-			},
+			FormatBeginTestDescription,
 
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "forward; empty sequence",
-					should:     "return forward iterator",
+					Given:      "forward; empty sequence",
+					Should:     "return forward iterator",
 					forward:    true,
 					numbersN32: []int32{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "forward; non empty sequence",
-					should:     "return forward iterator",
+					Given:      "forward; non empty sequence",
+					Should:     "return forward iterator",
 					forward:    true,
 					numbersN32: []int32{42},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "reverse; empty sequence",
-					should:     "return nil reverse iterator",
+					Given:      "reverse; empty sequence",
+					Should:     "return nil reverse iterator",
 					numbersN32: []int32{},
 				},
 			}),
-
 			Entry(nil, &beginTE{
 				iteratorTE: iteratorTE{
-					message:    "reverse; non sequence",
-					should:     "return reverse iterator",
+					Given:      "reverse; non sequence",
+					Should:     "return reverse iterator",
 					numbersN32: []int32{42},
 				},
 			}),
@@ -311,25 +299,22 @@ var _ = Describe("Iterators", func() {
 				},
 			)
 
-			Expect(it).NotTo(BeNil(), reason(entry.should))
+			Expect(it).NotTo(BeNil(), reason(entry.Should))
 		},
-		func(entry *beginTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v', should: '%v'", entry.message, entry.should)
-		},
+		FormatBeginTestDescription,
 
 		Entry(nil, &beginTE{
 			iteratorTE: iteratorTE{
-				message: "forward; empty sequence",
-				should:  "return forward iterator",
+				Given:   "forward; empty sequence",
+				Should:  "return forward iterator",
 				forward: true,
 				sleeves: []sleeve{},
 			},
 		}),
-
 		Entry(nil, &beginTE{
 			iteratorTE: iteratorTE{
-				message: "reverse; empty sequence",
-				should:  "return nil reverse iterator",
+				Given:   "reverse; empty sequence",
+				Should:  "return nil reverse iterator",
 				sleeves: []sleeve{},
 			},
 		}),

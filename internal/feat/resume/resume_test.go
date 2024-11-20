@@ -53,7 +53,7 @@ var _ = Describe("Resume", Ordered, func() {
 	})
 
 	DescribeTable("walk",
-		func(ctx SpecContext, entry *resumeTE) {
+		func(ctx SpecContext, entry *lab.ResumeTE) {
 			invocations := strategyInvocations{}
 
 			for _, strategy := range []enums.ResumeStrategy{
@@ -61,10 +61,10 @@ var _ = Describe("Resume", Ordered, func() {
 				enums.ResumeStrategySpawn,
 			} {
 				recall := make(lab.Recall)
-				profile, ok := profiles[entry.profile]
+				profile, ok := profiles[entry.Profile]
 
 				if !ok {
-					Fail(fmt.Sprintf("bad test, missing profile for '%v'", entry.profile))
+					Fail(fmt.Sprintf("bad test, missing profile for '%v'", entry.Profile))
 				}
 
 				once := func(node *age.Node) error { //nolint:unparam // return nil error ok
@@ -100,15 +100,15 @@ var _ = Describe("Resume", Ordered, func() {
 
 				result, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 					GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
-						entry.active.resumeAt, entry.Subscription,
+						entry.Active.ResumeAt, entry.Subscription,
 					)
 					active.Tree = entry.Relative
-					active.Depth = lo.Ternary(entry.active.depth == 0, 2, entry.active.depth)
+					active.Depth = lo.Ternary(entry.Active.Depth == 0, 2, entry.Active.Depth)
 					active.TraverseDescription.IsRelative = true
 					active.ResumeDescription.IsRelative = false
 					active.Subscription = entry.Subscription
-					active.CurrentPath = entry.active.resumeAt
-					active.Hibernation = entry.active.hibernateState
+					active.CurrentPath = entry.Active.ResumeAt
+					active.Hibernation = entry.Active.HibernateState
 				})).Extent(age.Resume(
 					&pref.Relic{
 						Head: pref.Head{
@@ -125,11 +125,7 @@ var _ = Describe("Resume", Ordered, func() {
 					},
 					age.IfElseOptionF(strategy == enums.ResumeStrategyFastward,
 						func() pref.Option {
-							return age.WithOnBegin(func(state *life.BeginState) {
-								lab.Begin("🛡️")(state)
-								//
-								// don't enforce this yet, we need to disable notifications
-								//
+							return age.WithOnBegin(func(_ *life.BeginState) {
 								Fail("begin handler should not be invoked because begin notification muted")
 							})
 						},
@@ -165,9 +161,7 @@ var _ = Describe("Resume", Ordered, func() {
 				})
 			}
 		},
-		func(entry *resumeTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatResumeTestDescription,
 
 		// === Listening (uni/folder/file) (pend/active)
 		//
@@ -175,29 +169,33 @@ var _ = Describe("Resume", Ordered, func() {
 		// to, because the listener is already in the active listening state. But resumeAt
 		// still has to be set because that is what would happen in the real world.
 		//
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: listen pending",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: listen pending",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> universal(pending): unfiltered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> universal(pending): unfiltered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: listen active",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: listen active",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationActive,
 			},
 			// For these scenarios (START_AT_CLIENT_ALREADY_ACTIVE), since
 			// listening is already active, the value of resumeAt is irrelevant,
@@ -206,191 +204,217 @@ var _ = Describe("Resume", Ordered, func() {
 			// listen value is a historical event, so the value defined here is a moot
 			// point.
 			//
-			clientListenAt: StartAtClientAlreadyActive,
-			profile:        "-> universal(active): unfiltered",
+			ClientListenAt: StartAtClientAlreadyActive,
+			Profile:        "-> universal(active): unfiltered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "folders: listen pending",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "folders: listen pending",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> folders(pending): unfiltered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> folders(pending): unfiltered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "folders: listen active",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "folders: listen active",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationActive,
 			},
-			clientListenAt: StartAtClientAlreadyActive,
-			profile:        "-> folders(active): unfiltered",
+			ClientListenAt: StartAtClientAlreadyActive,
+			Profile:        "-> folders(active): unfiltered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: listen pending",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files: listen pending",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtCanYouKissMeFirst,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtCanYouKissMeFirst,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtBeforeLife,
-			profile:        "-> files(pending): unfiltered",
+			ClientListenAt: StartAtBeforeLife,
+			Profile:        "-> files(pending): unfiltered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: listen active",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files: listen active",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtCanYouKissMeFirst,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtCanYouKissMeFirst,
+				HibernateState: enums.HibernationActive,
 			},
-			clientListenAt: StartAtClientAlreadyActive,
-			profile:        "-> files(active): unfiltered",
+			ClientListenAt: StartAtClientAlreadyActive,
+			Profile:        "-> files(active): unfiltered",
 		}),
 
 		// === Filtering (uni/folder/file)
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: listen not active/deaf",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationRetired, // TODO(listen not active):check Retired is correct enum!!!
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationRetired, // TODO(listen not active):check Retired is correct enum!!!
 			},
-			profile: "-> universal: filtered",
+			Profile: "-> universal: filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "folders: listen not active/deaf",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "folders: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationRetired, // TODO:check Retired
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationRetired, // TODO:check Retired
 			},
-			profile: "-> folders: filtered",
+			Profile: "-> folders: filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: listen not active/deaf",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files: listen not active/deaf",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtCanYouKissMeFirst,
-				hibernateState: enums.HibernationRetired, // TODO:check Retired
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtCanYouKissMeFirst,
+				HibernateState: enums.HibernationRetired, // TODO:check Retired
 			},
-			profile: "-> files: filtered",
+			Profile: "-> files: filtered",
 		}),
 
 		// === Listening and filtering (uni/folder/file)
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: listen pending and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> universal: listen pending and filtered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> universal: listen pending and filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: listen active and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal: listen active and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeUniversal,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationActive,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> universal: filtered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> universal: filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "folders: listen pending and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "folders: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> folders: listen pending and filtered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> folders: listen pending and filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "folders: listen active and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "folders: listen active and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeDirectories,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtTeenageColor,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtTeenageColor,
+				HibernateState: enums.HibernationActive,
 			},
-			clientListenAt: StartAtElectricYouth,
-			profile:        "-> folders: filtered",
+			ClientListenAt: StartAtElectricYouth,
+			Profile:        "-> folders: filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: listen pending and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files: listen pending and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtCanYouKissMeFirst,
-				hibernateState: enums.HibernationPending,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtCanYouKissMeFirst,
+				HibernateState: enums.HibernationPending,
 			},
-			clientListenAt: StartAtBeforeLife,
-			profile:        "-> files: listen pending and filtered",
+			ClientListenAt: StartAtBeforeLife,
+			Profile:        "-> files: listen pending and filtered",
 		}),
 
-		Entry(nil, &resumeTE{
+		Entry(nil, &lab.ResumeTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files: listen active and filtered",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files: listen active and filtered",
 				Relative:     "RETRO-WAVE",
 				Subscription: enums.SubscribeFiles,
 			},
-			active: activeTE{
-				resumeAt:       ResumeAtCanYouKissMeFirst,
-				hibernateState: enums.HibernationActive,
+			Active: lab.ActiveTE{
+				ResumeAt:       ResumeAtCanYouKissMeFirst,
+				HibernateState: enums.HibernationActive,
 			},
-			clientListenAt: StartAtBeforeLife,
-			profile:        "-> files: filtered",
+			ClientListenAt: StartAtBeforeLife,
+			Profile:        "-> files: filtered",
 		}),
 	)
 })

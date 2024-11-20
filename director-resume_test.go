@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -63,80 +62,74 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 	Context("simple", func() {
 		Context("Walk", func() {
 			It("🧪 should: walk resume navigation successfully", func(specCtx SpecContext) {
-				defer leaktest.Check(GinkgoT())()
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					const depth = 2
 
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				const depth = 2
-
-				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-					active.Tree = tree
-					active.Depth = depth
-					active.TraverseDescription.IsRelative = true
-					active.ResumeDescription.IsRelative = false
-					active.Subscription = enums.SubscribeUniversal
-					active.CurrentPath = ResumeAtTeenageColor
-				})).Extent(age.Resume(
-					&pref.Relic{
-						Head: pref.Head{
-							Handler: noOpHandler,
-							GetForest: func(_ string) *core.Forest {
-								return &core.Forest{
-									T: fS,
-									R: tfs.New(),
-								}
+					_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+						active.Tree = tree
+						active.Depth = depth
+						active.TraverseDescription.IsRelative = true
+						active.ResumeDescription.IsRelative = false
+						active.Subscription = enums.SubscribeUniversal
+						active.CurrentPath = ResumeAtTeenageColor
+					})).Extent(age.Resume(
+						&pref.Relic{
+							Head: pref.Head{
+								Handler: noOpHandler,
+								GetForest: func(_ string) *core.Forest {
+									return &core.Forest{
+										T: fS,
+										R: tfs.New(),
+									}
+								},
 							},
+							From:     jsonPath,
+							Strategy: age.ResumeStrategyFastward,
 						},
-						From:     jsonPath,
-						Strategy: age.ResumeStrategyFastward,
-					},
-					age.WithDepth(depth),
-					age.WithOnDescend(func(_ *core.Node) {}),
-					age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-					restore,
-				)).Navigate(ctx)
+						age.WithDepth(depth),
+						age.WithOnDescend(func(_ *core.Node) {}),
+						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+						restore,
+					)).Navigate(ctx)
 
-				Expect(err).To(Succeed())
+					Expect(err).To(Succeed())
+				})
 			})
 		})
 
 		Context("Run", func() {
 			XIt("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
-				defer leaktest.Check(GinkgoT())()
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					var wg sync.WaitGroup
 
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				var wg sync.WaitGroup
-
-				_, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
-					active.Tree = tree
-					active.Depth = 2
-					active.TraverseDescription.IsRelative = true
-					active.ResumeDescription.IsRelative = false
-					active.Subscription = enums.SubscribeUniversal
-					active.CurrentPath = resumeAt
-				})).Extent(age.Resume(
-					&pref.Relic{
-						Head: pref.Head{
-							Handler: noOpHandler,
-							GetForest: func(_ string) *core.Forest {
-								return &core.Forest{
-									T: fS,
-									R: tfs.New(),
-								}
+					_, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
+						active.Tree = tree
+						active.Depth = 2
+						active.TraverseDescription.IsRelative = true
+						active.ResumeDescription.IsRelative = false
+						active.Subscription = enums.SubscribeUniversal
+						active.CurrentPath = resumeAt
+					})).Extent(age.Resume(
+						&pref.Relic{
+							Head: pref.Head{
+								Handler: noOpHandler,
+								GetForest: func(_ string) *core.Forest {
+									return &core.Forest{
+										T: fS,
+										R: tfs.New(),
+									}
+								},
 							},
+							From:     jsonPath,
+							Strategy: age.ResumeStrategySpawn,
 						},
-						From:     jsonPath,
-						Strategy: age.ResumeStrategySpawn,
-					},
-					age.WithOnDescend(func(_ *core.Node) {}),
-					restore,
-				)).Navigate(ctx)
+						age.WithOnDescend(func(_ *core.Node) {}),
+						restore,
+					)).Navigate(ctx)
 
-				wg.Wait()
-				Expect(err).To(Succeed())
+					wg.Wait()
+					Expect(err).To(Succeed())
+				})
 			})
 		})
 	})
@@ -145,96 +138,88 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		Context("Run", func() {
 			When("filter", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					defer leaktest.Check(GinkgoT())()
+					lab.WithTestContext(specCtx, func(ctx context.Context) {
+						var wg sync.WaitGroup
 
-					ctx, cancel := context.WithCancel(specCtx)
-					defer cancel()
-
-					var wg sync.WaitGroup
-
-					_, err := age.Run(&wg).Configure().Extent(age.Resume(
-						&pref.Relic{
-							Head: pref.Head{
-								Handler: noOpHandler,
+						_, err := age.Run(&wg).Configure().Extent(age.Resume(
+							&pref.Relic{
+								Head: pref.Head{
+									Handler: noOpHandler,
+								},
+								From:     jsonPath,
+								Strategy: age.ResumeStrategyFastward,
 							},
-							From:     jsonPath,
-							Strategy: age.ResumeStrategyFastward,
-						},
-						age.WithFilter(&pref.FilterOptions{}),
-						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-						restore,
-					)).Navigate(ctx)
+							age.WithFilter(&pref.FilterOptions{}),
+							age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+							restore,
+						)).Navigate(ctx)
 
-					wg.Wait()
-					Expect(err).To(Succeed())
+						wg.Wait()
+						Expect(err).To(Succeed())
+
+					})
 				})
 			})
 
 			When("hibernate", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					defer leaktest.Check(GinkgoT())()
+					lab.WithTestContext(specCtx, func(ctx context.Context) {
+						var wg sync.WaitGroup
 
-					ctx, cancel := context.WithCancel(specCtx)
-					defer cancel()
-
-					var wg sync.WaitGroup
-
-					_, err := age.Run(&wg).Configure().Extent(age.Resume(
-						&pref.Relic{
-							Head: pref.Head{
-								Handler: noOpHandler,
+						_, err := age.Run(&wg).Configure().Extent(age.Resume(
+							&pref.Relic{
+								Head: pref.Head{
+									Handler: noOpHandler,
+								},
+								From:     jsonPath,
+								Strategy: age.ResumeStrategyFastward,
 							},
-							From:     jsonPath,
-							Strategy: age.ResumeStrategyFastward,
-						},
-						age.WithHibernationFilterWake(&core.FilterDef{
-							Description: "nonsense",
-							Type:        enums.FilterTypeGlob,
-							Pattern:     "*",
-						}),
-						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-						restore,
-					)).Navigate(ctx)
+							age.WithHibernationFilterWake(&core.FilterDef{
+								Description: "nonsense",
+								Type:        enums.FilterTypeGlob,
+								Pattern:     "*",
+							}),
+							age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+							restore,
+						)).Navigate(ctx)
 
-					wg.Wait()
-					Expect(err).To(Succeed())
+						wg.Wait()
+						Expect(err).To(Succeed())
+					})
 				})
 			})
 
 			When("sample", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					defer leaktest.Check(GinkgoT())()
+					lab.WithTestContext(specCtx, func(ctx context.Context) {
+						var wg sync.WaitGroup
 
-					ctx, cancel := context.WithCancel(specCtx)
-					defer cancel()
-
-					var wg sync.WaitGroup
-
-					_, err := age.Run(&wg).Configure().Extent(age.Resume(
-						&pref.Relic{
-							Head: pref.Head{
-								Handler: noOpHandler,
+						_, err := age.Run(&wg).Configure().Extent(age.Resume(
+							&pref.Relic{
+								Head: pref.Head{
+									Handler: noOpHandler,
+								},
+								From:     jsonPath,
+								Strategy: age.ResumeStrategyFastward,
 							},
-							From:     jsonPath,
-							Strategy: age.ResumeStrategyFastward,
-						},
-						age.WithSamplingOptions(&pref.SamplingOptions{
-							NoOf: pref.EntryQuantities{
-								Files:       files,
-								Directories: directories,
-							},
-							Type: enums.SampleTypeSlice,
-							Iteration: pref.SamplingIterationOptions{
-								Each:  func(_ *core.Node) bool { return false },
-								While: func(_ *pref.FilteredInfo) bool { return false },
-							},
-						}),
-						age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-						restore,
-					)).Navigate(ctx)
+							age.WithSamplingOptions(&pref.SamplingOptions{
+								NoOf: pref.EntryQuantities{
+									Files:       files,
+									Directories: directories,
+								},
+								Type: enums.SampleTypeSlice,
+								Iteration: pref.SamplingIterationOptions{
+									Each:  func(_ *core.Node) bool { return false },
+									While: func(_ *pref.FilteredInfo) bool { return false },
+								},
+							}),
+							age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+							restore,
+						)).Navigate(ctx)
 
-					wg.Wait()
-					Expect(err).To(Succeed())
+						wg.Wait()
+						Expect(err).To(Succeed())
+					})
 				})
 			})
 		})

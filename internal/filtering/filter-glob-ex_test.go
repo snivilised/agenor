@@ -1,8 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -154,16 +152,15 @@ var _ = Describe("filtering", Ordered, func() {
 				Err:       err,
 			})
 		},
-
-		func(entry *lab.FilterTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatFilterTestDescription,
 
 		// === universal =====================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -178,8 +175,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter, with dot extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter, with dot extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -194,8 +193,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter, with multiple extensions",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter, with multiple extensions",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -211,8 +212,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter, without extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter, without extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -228,8 +231,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(file scope): glob ex filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(file scope): glob ex filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -245,8 +250,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(undefined scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(undefined scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -260,8 +267,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter, any extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter, any extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -279,8 +288,10 @@ var _ = Describe("filtering", Ordered, func() {
 		// === directories ===================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(any scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(any scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -296,8 +307,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "directories(directory scope): glob ex filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "directories(directory scope): glob ex filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -314,8 +327,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(undefined scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(undefined scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeDirectories,
 				ExpectedNoOf: lab.Quantities{
@@ -332,8 +347,10 @@ var _ = Describe("filtering", Ordered, func() {
 		// === files =========================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(file scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(file scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -349,8 +366,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(any scope): glob ex filter, with dot extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(any scope): glob ex filter, with dot extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -366,8 +385,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(file scope): glob ex filter, with multiple extensions",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "files(file scope): glob ex filter, with multiple extensions",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -383,8 +404,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "file(file scope): glob ex filter, without extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file(file scope): glob ex filter, without extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -400,8 +423,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "file(file scope): glob ex filter (negate)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file(file scope): glob ex filter (negate)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -418,8 +443,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "file(undefined scope): glob ex filter",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file(undefined scope): glob ex filter",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -434,8 +461,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "file(any scope): glob ex filter, any extension",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "file(any scope): glob ex filter, any extension",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -453,8 +482,10 @@ var _ = Describe("filtering", Ordered, func() {
 		// === ifNotApplicable ===============================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(leaf scope): glob ex filter (ifNotApplicable=true)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(leaf scope): glob ex filter (ifNotApplicable=true)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -471,8 +502,10 @@ var _ = Describe("filtering", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(leaf scope): glob ex filter (ifNotApplicable=false)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(leaf scope): glob ex filter (ifNotApplicable=false)",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -490,8 +523,10 @@ var _ = Describe("filtering", Ordered, func() {
 		// === with-exclusion ================================================
 
 		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal(any scope): glob ex filter with exclusion",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "universal(any scope): glob ex filter with exclusion",
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{

@@ -1,7 +1,6 @@
 package filtering_test
 
 import (
-	"fmt"
 	"regexp/syntax"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
@@ -167,15 +166,15 @@ var _ = Describe("feature", Ordered, func() {
 				ExpectedErr: entry.ExpectedErr,
 			})
 		},
-		func(entry *lab.PolyTE) string {
-			return fmt.Sprintf("🧪 ===> given: '%v'", entry.Given)
-		},
+		lab.FormatPolyFilterTestDescription,
 
 		// === universal(file:regex; directory:glob) =========================
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly - files:regex; directories:glob",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; directories:glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -203,8 +202,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === universal(file:regex; directory:regex) ========================
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly - files:regex; directories:regex",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -229,8 +230,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === universal(file:extended-glob; directory:glob) =================
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly - files:extended-glob; directories:glob",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; directories:glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -257,8 +260,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly - files:extended-glob; directories:regex",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -281,8 +286,10 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly - files:extended-glob; directories:extended-glob",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:extended-glob; directories:extended-glob",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -309,8 +316,10 @@ var _ = Describe("feature", Ordered, func() {
 		// checks that when the file/directory scopes are not set, then poly filtering still works
 		// properly.
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly(scopes omitted) - files:regex; directories:regex",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly(scopes omitted) - files:regex; directories:regex",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
@@ -335,8 +344,10 @@ var _ = Describe("feature", Ordered, func() {
 		// === files (file:regex; directory:regex) ==============================
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "poly(subscribe:files)",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly(subscribe:files)",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
@@ -360,9 +371,11 @@ var _ = Describe("feature", Ordered, func() {
 		// === errors ========================================================
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "invalid poly: constituent is also poly",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "invalid poly: constituent is also poly",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeFiles,
 				ExpectedErr:  locale.ErrPolyFilterIsInvalid,
@@ -378,9 +391,11 @@ var _ = Describe("feature", Ordered, func() {
 		}),
 
 		Entry(nil, &lab.PolyTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "poly - files:regex; directories:glob",
+				Should: "fail",
+			},
 			NaviTE: lab.NaviTE{
-				Given:        "poly - files:regex; directories:glob",
-				Should:       "fail",
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeUniversal,
 				ExpectedErr: &syntax.Error{

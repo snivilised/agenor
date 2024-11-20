@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/fortytw2/leaktest"
 	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
 	. "github.com/onsi/gomega"    //nolint:revive // ok
 
@@ -62,7 +61,7 @@ var _ = Describe("director error", Ordered, func() {
 				return
 			}
 		},
-		func(entry *traverseErrorTE) string {
+		func(entry *traverseErrorTE) string { // !!!
 			return fmt.Sprintf("given: %v, 🧪 should fail", entry.given)
 		},
 
@@ -119,165 +118,144 @@ var _ = Describe("director error", Ordered, func() {
 
 	When("Prime with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			_, err := age.Walk().Configure().Extent(age.Prime(
-				&pref.Using{
-					Head: pref.Head{
-						Handler: noOpHandler,
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				_, err := age.Walk().Configure().Extent(age.Prime(
+					&pref.Using{
+						Head: pref.Head{
+							Handler: noOpHandler,
+						},
+						Tree: TreePath,
 					},
-					Tree: TreePath,
-				},
-			)).Navigate(ctx)
+				)).Navigate(ctx)
 
-			Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
+				Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
+			})
 		})
 	})
 
 	When("Prime with options build error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			_, err := age.Walk().Configure().Extent(age.Prime(
-				&pref.Using{
-					Subscription: age.SubscribeFiles,
-					Head: pref.Head{
-						Handler: noOpHandler,
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				_, err := age.Walk().Configure().Extent(age.Prime(
+					&pref.Using{
+						Subscription: age.SubscribeFiles,
+						Head: pref.Head{
+							Handler: noOpHandler,
+						},
+						Tree: TreePath,
 					},
-					Tree: TreePath,
-				},
-				func(_ *pref.Options) error {
-					return errBuildOptions
-				},
-			)).Navigate(ctx)
+					func(_ *pref.Options) error {
+						return errBuildOptions
+					},
+				)).Navigate(ctx)
 
-			Expect(err).To(MatchError(errBuildOptions))
+				Expect(err).To(MatchError(errBuildOptions))
+			})
 		})
 	})
 
 	When("Resume with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			// In case user has tampered with the json file changing
-			// the subscription to an inappropriate value
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
-				active.Tree = hanno.Repo("test")
-				active.TraverseDescription.IsRelative = false
-				active.ResumeDescription.IsRelative = false
-				active.Subscription = enums.SubscribeUndefined
-			})).Extent(age.Resume(
-				&pref.Relic{
-					Head: pref.Head{
-						Handler: noOpHandler,
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				// In case user has tampered with the json file changing
+				// the subscription to an inappropriate value
+				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
+					active.Tree = hanno.Repo("test")
+					active.TraverseDescription.IsRelative = false
+					active.ResumeDescription.IsRelative = false
+					active.Subscription = enums.SubscribeUndefined
+				})).Extent(age.Resume(
+					&pref.Relic{
+						Head: pref.Head{
+							Handler: noOpHandler,
+						},
+						From:     lab.GetJSONPath(),
+						Strategy: age.ResumeStrategyFastward,
 					},
-					From:     lab.GetJSONPath(),
-					Strategy: age.ResumeStrategyFastward,
-				},
-				age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
-			)).Navigate(ctx)
+					age.WithFaultHandler(age.Accepter(lab.IgnoreFault)),
+				)).Navigate(ctx)
 
-			Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
+				Expect(err).To(MatchError(locale.ErrUsageMissingSubscription))
+			})
 		})
 	})
 
 	When("Prime with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				var wg sync.WaitGroup
 
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			var wg sync.WaitGroup
-
-			_, err := age.Run(&wg).Configure().Extent(age.Prime(
-				&pref.Using{
-					Head: pref.Head{
-						Handler: noOpHandler,
+				_, err := age.Run(&wg).Configure().Extent(age.Prime(
+					&pref.Using{
+						Head: pref.Head{
+							Handler: noOpHandler,
+						},
+						Tree: TreePath,
 					},
-					Tree: TreePath,
-				},
-			)).Navigate(ctx)
+				)).Navigate(ctx)
 
-			wg.Wait()
-			Expect(err).NotTo(Succeed())
+				wg.Wait()
+				Expect(err).NotTo(Succeed())
+			})
 		})
 
 		It("🧪 should: log error", func(specCtx SpecContext) {
-			defer leaktest.Check(GinkgoT())()
-
-			ctx, cancel := context.WithCancel(specCtx)
-			defer cancel()
-
-			invoked := false
-			_, _ = age.Walk().Configure().Extent(age.Prime(
-				&pref.Using{
-					Head: pref.Head{
-						Handler: noOpHandler,
-					},
-					Tree: TreePath,
-				},
-				age.WithLogger(
-					slog.New(slog.NewTextHandler(&TestWriter{
-						assertFn: func() {
-							invoked = true
+			lab.WithTestContext(specCtx, func(ctx context.Context) {
+				invoked := false
+				_, _ = age.Walk().Configure().Extent(age.Prime(
+					&pref.Using{
+						Head: pref.Head{
+							Handler: noOpHandler,
 						},
-					}, nil)),
-				),
-			)).Navigate(ctx)
+						Tree: TreePath,
+					},
+					age.WithLogger(
+						slog.New(slog.NewTextHandler(&TestWriter{
+							assertFn: func() {
+								invoked = true
+							},
+						}, nil)),
+					),
+				)).Navigate(ctx)
 
-			Expect(invoked).To(BeTrue(), "validation error not logged")
+				Expect(invoked).To(BeTrue(), "validation error not logged")
+			})
 		})
 	})
 
 	When("incorrect facade", func() {
 		Context("primary (expected using)", func() {
 			It("🧪 should: return error", func(specCtx SpecContext) {
-				defer leaktest.Check(GinkgoT())()
-
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				_, err := age.Walk().Configure().Extent(age.Prime(
-					&pref.Relic{
-						Head: pref.Head{
-							Handler: noOpHandler,
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					_, err := age.Walk().Configure().Extent(age.Prime(
+						&pref.Relic{
+							Head: pref.Head{
+								Handler: noOpHandler,
+							},
+							From: "/from-path/wrong-facade/primary/relic",
 						},
-						From: "/from-path/wrong-facade/primary/relic",
-					},
-				)).Navigate(ctx)
+					)).Navigate(ctx)
 
-				Expect(err).To(MatchError(core.ErrWrongPrimaryFacade))
+					Expect(err).To(MatchError(core.ErrWrongPrimaryFacade))
+				})
 			})
 		})
 
 		Context("resume (expected relic)", func() {
 			It("🧪 should: return error", func(specCtx SpecContext) {
-				defer leaktest.Check(GinkgoT())()
-
-				ctx, cancel := context.WithCancel(specCtx)
-				defer cancel()
-
-				_, err := age.Walk().Configure().Extent(age.Resume(
-					&pref.Using{
-						Subscription: age.SubscribeFiles,
-						Head: pref.Head{
-							Handler: noOpHandler,
+				lab.WithTestContext(specCtx, func(ctx context.Context) {
+					_, err := age.Walk().Configure().Extent(age.Resume(
+						&pref.Using{
+							Subscription: age.SubscribeFiles,
+							Head: pref.Head{
+								Handler: noOpHandler,
+							},
+							Tree: "/tree-path/wrong-facade/resume/using",
 						},
-						Tree: "/tree-path/wrong-facade/resume/using",
-					},
-				)).Navigate(ctx)
+					)).Navigate(ctx)
 
-				Expect(err).To(MatchError(core.ErrWrongResumeFacade))
+					Expect(err).To(MatchError(core.ErrWrongResumeFacade))
+				})
 			})
 		})
 	})
