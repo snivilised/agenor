@@ -126,9 +126,17 @@ type (
 
 	AsyncOkTE struct {
 		AsyncTE
+		Consume bool
 	}
 
-	BuilderFunc func(entry *AsyncOkTE, path string, fS *luna.MemFS) *age.Builders
+	AsyncPostage struct {
+		Entry *AsyncOkTE
+		Path  string
+		FS    *luna.MemFS
+		On    core.OutputFunc
+	}
+
+	BuilderFunc func(post *AsyncPostage) *age.Builders
 
 	CompositeTE struct {
 		AsyncTE
@@ -167,13 +175,13 @@ func (t *Trigger) Times(m enums.Metric, n uint) *Trigger {
 	return t
 }
 
-func WithTestContext(specCtx SpecContext, fn func(context.Context)) {
+func WithTestContext(specCtx SpecContext, fn func(context.Context, context.CancelFunc)) {
 	defer leaktest.Check(GinkgoT())()
 
 	ctx, cancel := context.WithCancel(specCtx)
 	defer cancel()
 
-	fn(ctx)
+	fn(ctx, cancel)
 }
 
 func FormatCascadeTestDescription(entry *CascadeTE) string {

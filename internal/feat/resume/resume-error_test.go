@@ -46,7 +46,7 @@ var _ = Describe("Resume Error", Ordered, func() {
 
 	Context("given: resume path does not exist", func() {
 		It("🧪 should: return error", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				from = "/invalid-path"
 				_, err := age.Walk().Configure().Extent(age.Resume(
 					&pref.Relic{
@@ -76,7 +76,7 @@ var _ = Describe("Resume Error", Ordered, func() {
 	Context("forest inception failure", func() {
 		DescribeTable("fs type mismatch",
 			func(specCtx SpecContext, _ string, travIsRelative, resIsRelative bool) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 						active.Tree = lab.Static.RetroWave
 						active.CurrentPath = ResumeAtTeenageColor
@@ -116,7 +116,7 @@ var _ = Describe("Resume Error", Ordered, func() {
 
 	When("custom forest creator returns nil", func() {
 		It("should: fail", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
 					active.Tree = lab.Static.RetroWave
 					active.CurrentPath = ResumeAtTeenageColor

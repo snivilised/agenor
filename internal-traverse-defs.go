@@ -41,6 +41,16 @@ func (a *optionHarvest) afterwards(o *pref.Options) *pref.Options {
 		o.Behaviours.Cascade.Depth = 1
 	}
 
+	if o.Concurrency.Input.Size == 0 {
+		o.Concurrency.Input.Size = o.Concurrency.NoW
+	}
+
+	if o.Concurrency.Output.On != nil {
+		if o.Concurrency.Output.Size == 0 {
+			o.Concurrency.Output.Size = o.Concurrency.NoW
+		}
+	}
+
 	return o
 }
 

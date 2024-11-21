@@ -36,8 +36,14 @@ type (
 		IsSealed(top Link) bool
 	}
 
+	// Swapper allows the underlying client handler to be decorated
+	Swapper interface {
+		Swap(decorator core.Client)
+	}
+
 	// Guardian is the gateway to accessing the invocation chain.
 	Guardian interface {
+		Swapper
 		Decorate(link Link) error
 		Unwind(role enums.Role) error
 	}
@@ -57,8 +63,7 @@ type (
 		Ignite(ignition *Ignition)
 		Result(ctx context.Context) *KernelResult
 		Snooze(ctx context.Context, active *core.ActiveState) (*KernelResult, error)
-		// Wake()
-		Conclude(result core.TraverseResult)
+		Bye(result core.TraverseResult)
 	}
 
 	// PluginInit
@@ -96,7 +101,7 @@ type (
 		Init(pi *PluginInit) error
 	}
 
-	// Restoration; tbd...
+	// Restoration
 	Restoration interface {
 		Inject(state *core.ActiveState)
 	}

@@ -112,11 +112,11 @@ func (f *Head) Validate() error {
 	return nil
 }
 
-func (f *Using) Client() core.Client {
+func (f *Head) Client() core.Client {
 	return f.Handler
 }
 
-func (f *Using) Forest() BuildForest {
+func (f *Head) Forest() BuildForest {
 	return f.GetForest
 }
 
@@ -134,14 +134,6 @@ func (f *Using) Validate() error {
 
 func (f *Using) Magnitude() string {
 	return "prime"
-}
-
-func (f *Relic) Client() core.Client {
-	return f.Handler
-}
-
-func (f *Relic) Forest() BuildForest {
-	return f.GetForest
 }
 
 func (f *Relic) Validate() error {

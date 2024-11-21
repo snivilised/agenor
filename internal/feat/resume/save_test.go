@@ -100,7 +100,7 @@ var _ = Describe("Save", Ordered, func() {
 		When("given: panic", func() {
 			Context("prime", func() {
 				It("🧪 should: save", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						save := (arrangeSave{
 							name: "prime.walk.panic-save.json",
 							rS:   rS,
@@ -133,7 +133,7 @@ var _ = Describe("Save", Ordered, func() {
 
 			Context("resume", func() {
 				It("🧪 should: save", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						save := (arrangeSave{
 							name: "resume.walk.panic-save.json",
 							rS:   rS,

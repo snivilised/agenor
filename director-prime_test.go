@@ -47,7 +47,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 		Context("Walk", func() {
 			When("Options", func() {
 				It("🧪 should: walk primary navigation successfully", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						_, err := age.Walk().Configure().Extent(age.Prime(
 							&pref.Using{
 								Subscription: age.SubscribeFiles,
@@ -68,7 +68,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 			When("Push Options", func() {
 				It("🧪 should: walk primary navigation successfully", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						o, _, _ := opts.Get()
 						o.Defects.Fault = age.Accepter(lab.IgnoreFault)
 
@@ -93,7 +93,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 		Context("Run", func() {
 			When("Options", func() {
 				It("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
 						// need to make sure that when a ctrl-c occurs, who is
@@ -128,7 +128,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 			When("Push Options", func() {
 				It("🧪 should: run primary navigation successfully", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
 						o, _, _ := opts.Get()
@@ -158,7 +158,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 		Context("Walk", func() {
 			When("filter", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						_, err := age.Walk().Configure().Extent(age.Prime(
 							&pref.Using{
 								Subscription: age.SubscribeFiles,
@@ -179,7 +179,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 			When("hibernate", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						_, err := age.Walk().Configure().Extent(age.Prime(
 							&pref.Using{
 								Subscription: age.SubscribeFiles,
@@ -204,7 +204,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 			When("sample", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						_, err := age.Walk().Configure().Extent(age.Prime(
 							&pref.Using{
 								Subscription: age.SubscribeFiles,

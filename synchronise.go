@@ -15,7 +15,7 @@ type synchroniser interface {
 	enclave.KernelNavigator
 	Ignite(*enclave.Ignition)
 	IsComplete() bool
-	Conclude(result *enclave.KernelResult)
+	Bye(result *enclave.KernelResult)
 }
 
 type trunk struct {
@@ -37,53 +37,62 @@ func (t *trunk) Ignite(ignition *enclave.Ignition) {
 	t.kc.Ignite(ignition)
 }
 
-func (t *trunk) Conclude(result *enclave.KernelResult) {
-	t.kc.Conclude(result)
+func (t *trunk) Bye(result *enclave.KernelResult) {
+	t.kc.Bye(result)
 }
 
 type concurrent struct {
 	trunk
-	wg        pants.WaitGroup
-	pool      *pants.ManifoldFuncPool[*TraverseInput, *TraverseOutput]
-	decorator core.Client
-	inputCh   pants.SourceStreamW[*TraverseInput]
+	wg      pants.WaitGroup
+	pool    *core.TraversePool
+	inputCh pants.SourceStreamW[*core.TraverseInput]
+	swapper enclave.Swapper
 }
 
 func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
-	defer c.close()
+	defer func() {
+		c.close()
+		if c.pool != nil {
+			c.pool.Release(ctx)
+		}
+	}()
 
 	if c.err != nil {
 		return c.kc.Result(ctx), c.err
 	}
 
-	c.decorator = func(servant Servant) error {
-		// c.decorator is the function we register with the navigator,
-		// so instead of invoking the client handler, the navigator
-		// will invoke the decorator, which will send a job to the pool
-		// containing the current file system node. The navigator is
-		// not aware that its invoking the decorator ...
-		//
-		input := &TraverseInput{
-			Servant: servant,
-			Handler: c.ext.facade().Client(),
-		}
+	if c.swapper != nil {
+		c.swapper.Swap(func(servant Servant) error {
+			handler := c.ext.facade().Client()
+			input := &core.TraverseInput{
+				Servant: servant,
+				Handler: handler,
+			}
 
-		c.inputCh <- input // TODO: support for timeout (TimeoutOnSendInput) ??? issue #333
+			c.inputCh <- input // TODO: support for timeout (TimeoutOnSendInput) ??? issue #333
 
-		return nil
+			return nil
+		})
 	}
 
 	c.pool, c.err = pants.NewManifoldFuncPool(
-		ctx, func(input *TraverseInput) (*TraverseOutput, error) {
+		ctx, func(input *core.TraverseInput) (*core.TraverseOutput, error) {
 			err := input.Handler(input.Servant)
 
-			return &TraverseOutput{
+			return &core.TraverseOutput{
 				Servant: input.Servant,
 				Error:   err,
 			}, err
 		}, c.wg,
 		pants.WithSize(c.o.Concurrency.NoW),
-		pants.WithOutput(OutputChSize, CheckCloseInterval, TimeoutOnSend),
+		pants.WithInput(c.o.Concurrency.Input.Size),
+		pants.IfOptionF(c.o.Concurrency.Output.On != nil, func() pants.Option {
+			return pants.WithOutput(
+				c.o.Concurrency.Output.Size,
+				c.o.Concurrency.Output.CheckCloseInterval,
+				c.o.Concurrency.Output.TimeoutOnSend,
+			)
+		}),
 	)
 
 	if c.err != nil {
@@ -91,6 +100,10 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 		return c.kc.Result(ctx), err
 	}
 	c.open(ctx)
+
+	if c.o.Concurrency.Output.On != nil {
+		c.o.Concurrency.Output.On(c.pool.Observe())
+	}
 
 	return c.kc.Navigate(ctx)
 }

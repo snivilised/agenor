@@ -19,7 +19,7 @@ require (
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/snivilised/li18ngo v0.1.9
 	github.com/snivilised/nefilim v0.1.10
-	github.com/snivilised/pants v0.1.2
+	github.com/snivilised/pants v0.1.3
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect

@@ -9,10 +9,11 @@ import (
 )
 
 type buildArtefacts struct {
-	o       *pref.Options
-	kc      enclave.KernelController
-	plugins []enclave.Plugin
-	ext     extent
+	o         *pref.Options
+	kc        enclave.KernelController
+	plugins   []enclave.Plugin
+	ext       extent
+	swappable enclave.Swapper
 }
 
 // Builders performs build orchestration via its buildAll method. Builders
@@ -47,10 +48,9 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 
 	// BUILD NAVIGATOR
 	//
-	subscription := ext.subscription()
 	artefacts := bs.navigator.Build(&kernel.Inception{
 		Facade:       ext.facade(),
-		Subscription: subscription,
+		Subscription: ext.subscription(),
 		Harvest:      harvest,
 		Resources: &enclave.Resources{
 			Forest:     ext.forest(),
@@ -61,9 +61,10 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 
 	if artefacts.Error != nil {
 		return &buildArtefacts{
-			o:   o,
-			kc:  kernel.HadesNav(o, err),
-			ext: ext,
+			o:         o,
+			kc:        kernel.HadesNav(o, err),
+			ext:       ext,
+			swappable: artefacts.Mediator,
 		}, artefacts.Error
 	}
 
@@ -79,9 +80,10 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 		o.Monitor.Log.Error(err.Error())
 
 		return &buildArtefacts{
-			o:   o,
-			kc:  kernel.HadesNav(o, err),
-			ext: ext,
+			o:         o,
+			kc:        kernel.HadesNav(o, err),
+			ext:       ext,
+			swappable: artefacts.Mediator,
 		}, err
 	}
 
@@ -107,18 +109,20 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 			o.Monitor.Log.Error(err.Error())
 
 			return &buildArtefacts{
-				o:       o,
-				kc:      artefacts.Kontroller,
-				plugins: plugins,
-				ext:     ext,
+				o:         o,
+				kc:        artefacts.Kontroller,
+				plugins:   plugins,
+				ext:       ext,
+				swappable: artefacts.Mediator,
 			}, err
 		}
 	}
 
 	return &buildArtefacts{
-		o:       o,
-		kc:      artefacts.Kontroller,
-		plugins: plugins,
-		ext:     ext,
+		o:         o,
+		kc:        artefacts.Kontroller,
+		plugins:   plugins,
+		ext:       ext,
+		swappable: artefacts.Mediator,
 	}, nil
 }

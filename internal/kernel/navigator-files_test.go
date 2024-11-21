@@ -32,7 +32,7 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 	Context("nav", func() {
 		When("foo", func() {
 			It("🧪 should: not fail", func(specCtx SpecContext) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Using{
 							Subscription: age.SubscribeFiles,

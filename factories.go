@@ -25,11 +25,6 @@ type walkerFac struct {
 
 func (f *walkerFac) Configure(addons ...Addon) Director {
 	return director(func(bs *Builders) Navigator {
-		// resume or prime? If resume, we need to access the hibernation
-		// wake condition on the retrieved options. But how do we know what
-		// the extent is, so we know if we need to make this query?
-		//
-		//
 		artefacts, err := bs.buildAll(addons...)
 
 		return &driver{
@@ -54,8 +49,6 @@ type runnerFac struct {
 }
 
 func (f *runnerFac) Configure(addons ...Addon) Director {
-	// Run: create the observable/worker-pool
-	//
 	return director(func(bs *Builders) Navigator {
 		artefacts, err := bs.buildAll(addons...)
 
@@ -68,7 +61,8 @@ func (f *runnerFac) Configure(addons ...Addon) Director {
 						ext: artefacts.ext,
 						err: err,
 					},
-					wg: f.wg,
+					wg:      f.wg,
+					swapper: artefacts.swappable,
 				},
 				plugins: artefacts.plugins,
 			},

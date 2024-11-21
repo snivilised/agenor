@@ -52,11 +52,19 @@ func (a *anchor) Role() enums.Role {
 	return enums.RoleAnchor
 }
 
+func (a *anchor) swap(decorator core.Client) core.Client {
+	swap := a.client
+	a.client = decorator
+
+	return swap
+}
+
 // guardian controls access to the client callback
 type guardian struct {
 	container iterationContainer
 	master    enclave.GuardianSealer
 	anchor    *anchor
+	swapped   core.Client
 }
 
 type guardianInfo struct {
@@ -152,6 +160,10 @@ func (g *guardian) iterate(servant core.Servant, inspection enclave.Inspection) 
 	}
 
 	return nil
+}
+
+func (g *guardian) Swap(decorator core.Client) {
+	g.swapped = g.anchor.swap(decorator)
 }
 
 // Benign is used when a master sealer has not been registered. It is
