@@ -23,6 +23,15 @@
       "cwd": "${workspaceFolder}",
     },
     {
+      "name": "Debug Nexus(c) CLI",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}/examples/nexus/main.go",
+      "args": ["-path", "bass/DUB", "-filter", "RETRO-WAVE,bass", "-pattern", "*|flac", "-now", "4", "-delay", "2"],
+      "cwd": "${workspaceFolder}",
+    },
+    {
       "name": "Launch Package",
       "type": "go",
       "request": "launch",

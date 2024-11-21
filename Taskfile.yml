@@ -139,6 +139,17 @@ tasks:
     cmds:
       - go run ./test/cmd/venus/main.go -path . -filter RETRO-WAVE,DUB -pattern "*|flac"
 
+  nex:
+    cmds:
+      - go run ./examples/nexus/main.go -path RETRO-WAVE -filter RETRO-WAVE,DUB -pattern "*|flac"
+
+  nex-c:
+    cmds:
+      - go run ./examples/nexus/main.go -path bass/DUB -filter RETRO-WAVE,bass -pattern "*|flac" -now 4 -delay 2
+
+  # nex-r (resume)
+  # nex-cr (resume)
+
   # === ginkgo ================================================
 
   # initialise a test suite for a package. (only 1 per package)
