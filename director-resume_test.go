@@ -62,7 +62,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 	Context("simple", func() {
 		Context("Walk", func() {
 			It("🧪 should: walk resume navigation successfully", func(specCtx SpecContext) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					const depth = 2
 
 					_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
@@ -99,7 +99,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 		Context("Run", func() {
 			XIt("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					var wg sync.WaitGroup
 
 					_, err := age.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
@@ -138,7 +138,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 		Context("Run", func() {
 			When("filter", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
 						_, err := age.Run(&wg).Configure().Extent(age.Resume(
@@ -163,7 +163,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 			When("hibernate", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
 						_, err := age.Run(&wg).Configure().Extent(age.Resume(
@@ -191,7 +191,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 
 			When("sample", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
-					lab.WithTestContext(specCtx, func(ctx context.Context) {
+					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
 						_, err := age.Run(&wg).Configure().Extent(age.Resume(

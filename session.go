@@ -23,7 +23,7 @@ func (s *session) start() {
 
 func (s *session) finish(result *enclave.KernelResult) {
 	s.duration = time.Since(s.started)
-	s.sync.Conclude(result)
+	s.sync.Bye(result)
 }
 
 func (s *session) IsComplete() bool {

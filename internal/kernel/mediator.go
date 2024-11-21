@@ -68,6 +68,10 @@ func (m *mediator) Unwind(role enums.Role) error {
 	return m.guardian.Unwind(role)
 }
 
+func (m *mediator) Swap(decorator core.Client) {
+	m.guardian.Swap(decorator)
+}
+
 func (m *mediator) Invoke(servant core.Servant,
 	inspection enclave.Inspection,
 ) error {
@@ -86,7 +90,6 @@ func (m *mediator) Read(path string) ([]fs.DirEntry, error) {
 func (m *mediator) Spawn(ctx context.Context,
 	tree string,
 ) (*enclave.KernelResult, error) {
-	// NB:
 	return m.impl.Top(ctx, &navigationStatic{
 		mediator:     m,
 		tree:         tree,
@@ -150,7 +153,7 @@ func (m *mediator) Snooze(ctx context.Context,
 	})
 }
 
-func (m *mediator) Conclude(result core.TraverseResult) {
+func (m *mediator) Bye(result core.TraverseResult) {
 	m.resources.Binder.Controls.End.Dispatch()(result)
 }
 

@@ -37,8 +37,8 @@ func (c *Controller) Snooze(ctx context.Context,
 	return c.Result(ctx), nil
 }
 
-func (c *Controller) Conclude(result core.TraverseResult) {
-	c.med.Conclude(result)
+func (c *Controller) Bye(result core.TraverseResult) {
+	c.med.Bye(result)
 }
 
 func newStrategy(inception *kernel.Inception,

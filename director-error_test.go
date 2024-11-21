@@ -118,7 +118,7 @@ var _ = Describe("director error", Ordered, func() {
 
 	When("Prime with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				_, err := age.Walk().Configure().Extent(age.Prime(
 					&pref.Using{
 						Head: pref.Head{
@@ -135,7 +135,7 @@ var _ = Describe("director error", Ordered, func() {
 
 	When("Prime with options build error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				_, err := age.Walk().Configure().Extent(age.Prime(
 					&pref.Using{
 						Subscription: age.SubscribeFiles,
@@ -156,7 +156,7 @@ var _ = Describe("director error", Ordered, func() {
 
 	When("Resume with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				// In case user has tampered with the json file changing
 				// the subscription to an inappropriate value
 				_, err := age.Walk().Configure(enclave.Loader(func(active *core.ActiveState) {
@@ -182,7 +182,7 @@ var _ = Describe("director error", Ordered, func() {
 
 	When("Prime with subscription error", func() {
 		It("🧪 should: fail", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				var wg sync.WaitGroup
 
 				_, err := age.Run(&wg).Configure().Extent(age.Prime(
@@ -200,7 +200,7 @@ var _ = Describe("director error", Ordered, func() {
 		})
 
 		It("🧪 should: log error", func(specCtx SpecContext) {
-			lab.WithTestContext(specCtx, func(ctx context.Context) {
+			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				invoked := false
 				_, _ = age.Walk().Configure().Extent(age.Prime(
 					&pref.Using{
@@ -226,7 +226,7 @@ var _ = Describe("director error", Ordered, func() {
 	When("incorrect facade", func() {
 		Context("primary (expected using)", func() {
 			It("🧪 should: return error", func(specCtx SpecContext) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					_, err := age.Walk().Configure().Extent(age.Prime(
 						&pref.Relic{
 							Head: pref.Head{
@@ -243,7 +243,7 @@ var _ = Describe("director error", Ordered, func() {
 
 		Context("resume (expected relic)", func() {
 			It("🧪 should: return error", func(specCtx SpecContext) {
-				lab.WithTestContext(specCtx, func(ctx context.Context) {
+				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					_, err := age.Walk().Configure().Extent(age.Resume(
 						&pref.Using{
 							Subscription: age.SubscribeFiles,

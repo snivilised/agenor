@@ -40,5 +40,5 @@ func (n *navigatorHades) Snooze(context.Context,
 	return &enclave.KernelResult{}, nil
 }
 
-func (n *navigatorHades) Conclude(_ core.TraverseResult) {
+func (n *navigatorHades) Bye(_ core.TraverseResult) {
 }

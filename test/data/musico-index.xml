@@ -243,15 +243,15 @@
           </directory>
         </directory>
       </directory>
-      <directory name="MINMAL-TECHNO">
+      <directory name="MINIMAL-TECHNO">
         <directory name="FUSE">
           <directory name="Dimension Intrusion">
             <file name="01 - A New Day.flac"/>
             <file name="02 - F.U..flac"/>
             <file name="03 - Siac.flac"/>
             <file name="04 - Dimension Intrusion.flac"/>
-            <file name="fuse.demensions.gif"/>
-            <file name="fuse.demensions.jpg"/>
+            <file name="fuse.dimensions.gif"/>
+            <file name="fuse.dimensions.jpg"/>
           </directory>
           <directory name="Train Trac">
             <file name="01 - Train-Trac (Train-Abuse).flac"/>

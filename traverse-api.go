@@ -239,6 +239,9 @@ var (
 	// node is encountered that matches the hibernation's wake filter.
 	WithOnWake = pref.WithOnWake
 
+	// WithOutput requests that the worker pool emits outputs
+	WithOutput = pref.WithOutput
+
 	// WithPanicHandler defines a custom handler to handle a panic.
 	WithPanicHandler = pref.WithPanicHandler
 
