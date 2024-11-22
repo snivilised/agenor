@@ -42,14 +42,6 @@ type (
 		On     pants.OnCancel
 	}
 
-	// OutputController
-	OutputController interface {
-		Conclude(ctx context.Context)
-		StartCancellationMonitor(ctx context.Context,
-			cancellation *Cancellation,
-		)
-	}
-
 	// OutputFunc
 	OutputFunc func(outs OutputStream)
 )
