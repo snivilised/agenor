@@ -64,7 +64,6 @@ type guardian struct {
 	container iterationContainer
 	master    enclave.GuardianSealer
 	anchor    *anchor
-	swapped   core.Client
 }
 
 type guardianInfo struct {
@@ -163,7 +162,7 @@ func (g *guardian) iterate(servant core.Servant, inspection enclave.Inspection) 
 }
 
 func (g *guardian) Swap(decorator core.Client) {
-	g.swapped = g.anchor.swap(decorator)
+	_ = g.anchor.swap(decorator)
 }
 
 // Benign is used when a master sealer has not been registered. It is
