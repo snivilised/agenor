@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"flag"
 	"fmt"
 	"io/fs"
+	"math/big"
+
 	"os"
 	"strings"
 	"sync"
@@ -22,7 +25,7 @@ import (
 )
 
 const (
-	usage   = `Usage: go run venus \n\t-path <relative-path> \n\t[-sub <file|dir>] \n\t[-filter]`
+	usage   = `Usage: go run nexus \n\t-path <relative-path> \n\t[-sub <file|dir>] \n\t[-filter]`
 	verbose = false
 )
 
@@ -78,7 +81,7 @@ func main() {
 	resume := flag.Bool("resume", false, "resume navigation (not supported yet)")
 	_ = resume
 
-	delay := flag.Int("delay", 1, "no of seconds to represent delay interval")
+	seconds := flag.Int("delay", 1, "no of seconds to represent randomised delay interval")
 
 	flag.Parse()
 
@@ -117,13 +120,12 @@ func main() {
 		age.WithHookReadDirectory(readEntriesHook),
 	}
 
-	period := time.Second * time.Duration(lo.Ternary(*delay >= 0, *delay, 1))
 	n := &navigation{
 		subscription: subscribe(*sub),
 		filters:      filters.String(),
 		path:         *path,
 		pattern:      *pattern,
-		handler:      lo.Ternary(size == 0, sequentialHandler, fileWorker(period)),
+		handler:      lo.Ternary(size == 0, sequentialHandler, fileWorker(*seconds)),
 		isWalk:       size == 0,
 		isPrime:      true, // !resume
 		options:      options,
@@ -211,12 +213,16 @@ func sequentialHandler(servant core.Servant) error {
 	return nil
 }
 
-func fileWorker(period time.Duration) core.Client {
+func fileWorker(seconds int) core.Client {
 	return func(servant core.Servant) error {
 		node := servant.Node()
-		interval := lo.Ternary(node.IsDirectory(), 0, period)
-		seconds := int(period.Seconds())
-		display(node, lo.Ternary(interval == 0, "", fmt.Sprintf(" 💤 (%v seconds)", seconds)))
+		actual := lo.Ternary(node.IsDirectory(), 0, random(int64(seconds)))
+		interval := time.Second * time.Duration(actual)
+
+		display(node, lo.Ternary(interval == 0,
+			"",
+			fmt.Sprintf(" 💤 (%v seconds)", actual)),
+		)
 
 		<-time.After(interval)
 
@@ -272,4 +278,11 @@ func readEntriesHook(sys fs.ReadDirFS,
 	})
 
 	return filtered, nil
+}
+
+func random(maximum int64) int {
+	m := big.NewInt(maximum)
+	result, _ := rand.Int(rand.Reader, m)
+
+	return int(result.Int64())
 }
