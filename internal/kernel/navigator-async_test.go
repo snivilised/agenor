@@ -15,6 +15,7 @@ import (
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/services"
+	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/agenor/test/hanno"
@@ -83,6 +84,19 @@ func Settings(post *lab.AsyncPostage) []pref.Option {
 				On:                 post.On,
 			})
 		}),
+	}
+}
+
+func AsyncNoWCallback(magnitude string, now uint) core.Client {
+	return func(servant core.Servant) error {
+		node := servant.Node()
+		name := node.Extension.Name
+		GinkgoWriter.Printf("---> 🌀 ASYNC//%v/%v-CALLBACK(NoW=%v): '%v'\n",
+			name, magnitude, node.Path,
+			lo.Ternary(now == 0, "CPU", fmt.Sprintf("%v", now)),
+		)
+
+		return nil
 	}
 }
 
@@ -178,15 +192,9 @@ var _ = Describe("Navigator", Ordered, func() {
 
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "Primary Session WithCPUPool",
-				Should: "run with context",
-				Callback: func(servant core.Servant) error {
-					node := servant.Node()
-					name := node.Extension.Name
-					GinkgoWriter.Printf("---> 🌀 ASYNC//%v-PRIME-CALLBACK(CPU): '%v'\n", name, node.Path)
-
-					return nil
-				},
+				Given:        "Primary Session WithCPUPool",
+				Should:       "run with context",
+				Callback:     AsyncNoWCallback("PRIME", 0),
 				Builder:      PrimeBuilder,
 				Path:         func() string { return lab.Static.RetroWave },
 				Subscription: enums.SubscribeUniversal,
@@ -196,15 +204,9 @@ var _ = Describe("Navigator", Ordered, func() {
 
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "Primary Session NoW=3",
-				Should: "run with context",
-				Callback: func(servant core.Servant) error {
-					node := servant.Node()
-					name := node.Extension.Name
-					GinkgoWriter.Printf("---> 🌀 ASYNC//%v-PRIME-CALLBACK(NoW=3): '%v'\n", name, node.Path)
-
-					return nil
-				},
+				Given:        "Primary Session NoW=3",
+				Should:       "run with context",
+				Callback:     AsyncNoWCallback("PRIME", 3),
 				Builder:      PrimeBuilder,
 				Path:         func() string { return lab.Static.RetroWave },
 				Subscription: enums.SubscribeUniversal,
@@ -214,15 +216,9 @@ var _ = Describe("Navigator", Ordered, func() {
 
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "Resume Session NoW=3",
-				Should: "run with context",
-				Callback: func(servant core.Servant) error {
-					node := servant.Node()
-					name := node.Extension.Name
-					GinkgoWriter.Printf("---> 🌀 ASYNC//%v-RESUME-CALLBACK(NoW=3): '%v'\n", name, node.Path)
-
-					return nil
-				},
+				Given:        "Resume Session NoW=3",
+				Should:       "run with context",
+				Callback:     AsyncNoWCallback("RESUME", 3),
 				Builder:      ResumeBuilder,
 				Path:         func() string { return from },
 				Subscription: enums.SubscribeUniversal,
@@ -236,15 +232,9 @@ var _ = Describe("Navigator", Ordered, func() {
 
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "Primary Session With Output",
-				Should: "consume output",
-				Callback: func(servant core.Servant) error {
-					node := servant.Node()
-					name := node.Extension.Name
-					GinkgoWriter.Printf("---> 🌀 ASYNC//%v-PRIME-CALLBACK(NoW=3): '%v'\n", name, node.Path)
-
-					return nil
-				},
+				Given:        "Primary Session With Output",
+				Should:       "consume output",
+				Callback:     AsyncNoWCallback("PRIME", 3),
 				Builder:      PrimeBuilder,
 				Path:         func() string { return lab.Static.RetroWave },
 				Subscription: enums.SubscribeUniversal,
@@ -255,16 +245,10 @@ var _ = Describe("Navigator", Ordered, func() {
 
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "Resume Session With Output",
-				Should: "consume output",
-				Callback: func(servant core.Servant) error {
-					node := servant.Node()
-					name := node.Extension.Name
-					GinkgoWriter.Printf("---> 🌀 ASYNC//%v-PRIME-CALLBACK(NoW=3): '%v'\n", name, node.Path)
-
-					return nil
-				},
-				Builder: ResumeBuilder,
+				Given:    "Resume Session With Output",
+				Should:   "consume output",
+				Callback: AsyncNoWCallback("RESUME", 3),
+				Builder:  ResumeBuilder,
 				Resume: lab.AsyncResumeTE{
 					At:       lab.Static.TeenageColor,
 					Strategy: enums.ResumeStrategyFastward,

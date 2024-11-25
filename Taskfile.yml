@@ -145,10 +145,7 @@ tasks:
 
   nex-c:
     cmds:
-      - go run ./examples/nexus/main.go -path bass/DUB -filter RETRO-WAVE,bass -pattern "*|flac" -now 4 -delay 2
-
-  # nex-r (resume)
-  # nex-cr (resume)
+      - go run ./examples/nexus/main.go -path bass/DUB -filter RETRO-WAVE,bass -pattern "*|flac" -now 4 -delay 10
 
   # === ginkgo ================================================
 
