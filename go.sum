@@ -32,8 +32,8 @@ github.com/snivilised/li18ngo v0.1.9 h1:xq+9yUv9JBY3fwzCzqCt0bIUdFlzDXcSjC2fQiSF
 github.com/snivilised/li18ngo v0.1.9/go.mod h1:7soFZVy6K6P8jgHYn0fN2Sw0r66isPa/K/K+r3fl19Q=
 github.com/snivilised/nefilim v0.1.10 h1:j8EGMZSGgFIjcxaVOvYvn7/r66Q5ffXihmq52F55r/E=
 github.com/snivilised/nefilim v0.1.10/go.mod h1:xcQnPeB+zVD+xgw9yzy0QiMTGqjYNEWKeoaZL0TBQeA=
-github.com/snivilised/pants v0.1.3 h1:yVjMBzQHanfNnlJdotzT/95bXhPYf9s7TL+3lomw19g=
-github.com/snivilised/pants v0.1.3/go.mod h1:6LyLzYXSoMl1/NjDJpa3D5ug/OR0OOKLMuOAxc+mJJA=
+github.com/snivilised/pants v0.1.4 h1:upBCRkYfo/U3rbR9y4U7GSNROnPBoT2GBjOVHmX3fQU=
+github.com/snivilised/pants v0.1.4/go.mod h1:Dzh/1UX+HGO25NBxe3hvtJ4OOMn9F6VmzdKwo1xsMNo=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c h1:7dEasQXItcW1xKJ2+gg5VOiBnqWrJc+rq0DPKyvvdbY=
