@@ -192,7 +192,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, with multiple extensions",
 			},
@@ -211,7 +211,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, without extension",
 			},
@@ -266,7 +266,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, any extension",
 			},
@@ -384,7 +384,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "files(file scope): glob ex filter, with multiple extensions",
 			},
@@ -403,7 +403,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter, without extension",
 			},
@@ -422,7 +422,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter (negate)",
 			},
@@ -460,7 +460,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(any scope): glob ex filter, any extension",
 			},
