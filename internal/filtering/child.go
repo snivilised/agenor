@@ -34,8 +34,8 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 				Pattern: def.Pattern,
 				Negate:  def.Negate,
 			},
-			baseGlob: base,
-			suffixes: lo.Map(suffixes, func(s string, _ int) string {
+			directoryGlob: base,
+			fileGlobs: lo.Map(suffixes, func(s string, _ int) string {
 				return strings.ToLower(strings.TrimPrefix(strings.TrimSpace(s), "."))
 			}),
 			anyExtension: slices.Contains(suffixes, "*"),

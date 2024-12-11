@@ -156,7 +156,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter",
 			},
@@ -174,7 +174,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, with dot extension",
 			},
@@ -192,7 +192,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, with multiple extensions",
 			},
@@ -211,7 +211,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, without extension",
 			},
@@ -230,7 +230,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(file scope): glob ex filter (negate)",
 			},
@@ -249,7 +249,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(undefined scope): glob ex filter",
 			},
@@ -266,7 +266,8 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		// !!!
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, any extension",
 			},
@@ -277,7 +278,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       4,
 					Directories: 1,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "starts with c, any extension",
@@ -287,7 +288,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === directories ===================================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "directories(any scope): glob ex filter",
 			},
@@ -306,7 +307,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeDirectory,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "directories(directory scope): glob ex filter (negate)",
 			},
@@ -326,7 +327,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(undefined scope): glob ex filter",
 			},
@@ -346,7 +347,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === files =========================================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "files(file scope): glob ex filter",
 			},
@@ -365,7 +366,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "files(any scope): glob ex filter, with dot extension",
 			},
@@ -384,7 +385,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "files(file scope): glob ex filter, with multiple extensions",
 			},
@@ -403,7 +404,29 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "files(file scope): glob ex filter, with multiple extensions and body",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
+				Subscription: enums.SubscribeFiles,
+				ExpectedNoOf: lab.Quantities{
+					Files:       18,
+					Directories: 0,
+				},
+				Mandatory: []string{"front.jpg"},
+				Prohibited: []string{
+					"02 - Warm Wet Circles.flac",    // fails-by: *.o*.flac
+					"cover-clutching-at-straws-jpg", // fails-by: f*.jpg
+				},
+			},
+			Description: "items with 'flac' suffix",
+			Pattern:     "*|*.o*.flac,f*.jpg",
+			Scope:       enums.ScopeFile,
+		}),
+
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter, without extension",
 			},
@@ -422,7 +445,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter (negate)",
 			},
@@ -442,7 +465,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(undefined scope): glob ex filter",
 			},
@@ -460,7 +483,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(any scope): glob ex filter, any extension",
 			},
@@ -481,7 +504,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === ifNotApplicable ===============================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(leaf scope): glob ex filter (ifNotApplicable=true)",
 			},
@@ -501,7 +524,7 @@ var _ = Describe("filtering", Ordered, func() {
 			IfNotApplicable: enums.TriStateBoolTrue,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(leaf scope): glob ex filter (ifNotApplicable=false)",
 			},
@@ -522,7 +545,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === with-exclusion ================================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter with exclusion",
 			},

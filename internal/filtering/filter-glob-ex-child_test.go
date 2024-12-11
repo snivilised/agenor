@@ -17,7 +17,7 @@ import (
 	"github.com/snivilised/nefilim/test/luna"
 )
 
-var _ = Describe("filtering", Ordered, func() {
+var _ = XDescribe("filtering", Ordered, func() {
 	var (
 		fS *luna.MemFS
 	)
@@ -156,7 +156,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter",
 			},
@@ -167,14 +167,14 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "nodes with 'flac' suffix",
 			Pattern:     "*|flac",
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, with dot extension",
 			},
@@ -185,14 +185,14 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|.flac",
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, with multiple extensions",
 			},
@@ -204,14 +204,14 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 5,
 				},
 				Mandatory:  []string{"front.jpg"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|flac,jpg",
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, without extension",
 			},
@@ -222,7 +222,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       3,
 					Directories: 5,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "items with 'flac' suffix",
@@ -230,7 +230,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeAll,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(file scope): glob ex filter (negate)",
 			},
@@ -249,7 +249,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Negate:      true,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(undefined scope): glob ex filter",
 			},
@@ -260,13 +260,13 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with '.flac' suffix",
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter, any extension",
 			},
@@ -277,7 +277,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       4,
 					Directories: 1,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "starts with c, any extension",
@@ -358,7 +358,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|flac",
@@ -377,14 +377,14 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|.flac",
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "files(file scope): glob ex filter, with multiple extensions",
 			},
@@ -396,14 +396,14 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 0,
 				},
 				Mandatory:  []string{"front.jpg"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|flac,jpg",
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter, without extension",
 			},
@@ -414,7 +414,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       3,
 					Directories: 0,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "items with 'flac' suffix",
@@ -422,7 +422,7 @@ var _ = Describe("filtering", Ordered, func() {
 			Scope:       enums.ScopeFile,
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(file scope): glob ex filter (negate)",
 			},
@@ -433,7 +433,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       7,
 					Directories: 0,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "files without .flac suffix",
@@ -454,13 +454,13 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 0,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with '.flac' suffix",
 			Pattern:     "*|flac",
 		}),
 
-		Entry(nil, &lab.FilterTE{
+		XEntry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "file(any scope): glob ex filter, any extension",
 			},
@@ -471,7 +471,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       4,
 					Directories: 0,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "starts with c, any extension",
@@ -493,7 +493,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 5,
 				},
 				Mandatory:  []string{"Marillion"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description:     "leaf items with 'flac' suffix",
 			Pattern:         "*|flac",

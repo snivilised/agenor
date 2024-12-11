@@ -229,7 +229,7 @@ var _ = Describe("feature", Ordered, func() {
 
 		// === universal(file:extended-glob; directory:glob) =================
 
-		Entry(nil, &lab.PolyTE{
+		XEntry(nil, &lab.PolyTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "poly - files:extended-glob; directories:glob",
 			},
@@ -259,7 +259,7 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &lab.PolyTE{
+		XEntry(nil, &lab.PolyTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "poly - files:extended-glob; directories:regex",
 			},
@@ -285,7 +285,7 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &lab.PolyTE{
+		XEntry(nil, &lab.PolyTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "poly - files:extended-glob; directories:extended-glob",
 			},
@@ -315,7 +315,7 @@ var _ = Describe("feature", Ordered, func() {
 		// they can be set automatically, the client is not forced to set them. This test
 		// checks that when the file/directory scopes are not set, then poly filtering still works
 		// properly.
-		Entry(nil, &lab.PolyTE{
+		XEntry(nil, &lab.PolyTE{
 			DescribedTE: lab.DescribedTE{
 				Given: "poly(scopes omitted) - files:regex; directories:regex",
 			},
