@@ -87,6 +87,32 @@ var ErrFilterCustomNotSupported = FilterCustomNotSupportedError{
 	},
 }
 
+// ❌ FilterChildGlobExNotSupported
+
+// FilterChildGlobExNotSupportedTemplData
+type FilterChildGlobExNotSupportedErrorTemplData struct {
+	agenorTemplData
+}
+
+// Message
+func (td FilterChildGlobExNotSupportedErrorTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "glob-ex-filter-not-supported-for-children.age.static-error",
+		Description: "glob-ex filter not supported for children",
+		Other:       "glob-ex filter not supported for children",
+	}
+}
+
+type FilterChildGlobExNotSupportedError struct {
+	li18ngo.LocalisableError
+}
+
+var ErrFilterChildGlobExNotSupported = FilterChildGlobExNotSupportedError{
+	LocalisableError: li18ngo.LocalisableError{
+		Data: FilterChildGlobExNotSupportedErrorTemplData{},
+	},
+}
+
 // ❌ FilterUndefined
 
 // FilterUndefinedTemplData

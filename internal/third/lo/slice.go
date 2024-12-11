@@ -18,6 +18,22 @@ func Filter[V any](collection []V, predicate func(item V, index int) bool) []V {
 	return result
 }
 
+// MapE manipulates a slice and transforms it to a slice of another type.
+func MapE[T any, R any](collection []T, iteratee func(item T, index int) (R, error)) ([]R, error) {
+	result := make([]R, len(collection))
+
+	var err error
+	for i, item := range collection {
+		result[i], err = iteratee(item, i)
+
+		if err != nil {
+			return result, err
+		}
+	}
+
+	return result, nil
+}
+
 // Map manipulates a slice and transforms it to a slice of another type.
 // Play: https://go.dev/play/p/OkPcYAhBo0D
 func Map[T any, R any](collection []T, iteratee func(item T, index int) R) []R {

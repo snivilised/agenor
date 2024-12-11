@@ -1,30 +1,41 @@
 package filtering
 
 import (
-	"cmp"
-	"io/fs"
+	"fmt"
 	"path/filepath"
-	"slices"
+	"regexp"
 	"strings"
 
 	"github.com/snivilised/agenor/core"
+	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/third/lo"
+)
+
+const (
+	excludeExtSymbol = '!'
+	wildcard         = "*"
+	GlobExPattern    = `^(?P<base>.*?)\.(?P<neg>!)?(?P<ext>[^.]+)$`
 )
 
 func createGlobExFilter(def *core.FilterDef,
 	ifNotApplicable bool,
-) (core.TraverseFilter, error) {
+) (filter core.TraverseFilter, err error) {
 	var (
-		err                error
-		segments, suffixes []string
+		segments, patterns []string
+		gs                 *globSpec
 	)
-	if segments, suffixes, err = splitGlobExPattern(def.Pattern); err != nil {
+	if segments, patterns, err = splitGlobExPattern(def.Pattern); err != nil {
 		return nil, err
 	}
 
-	base, exclusion := splitGlob(segments[0])
+	// we ignore the scope on the filter because use of this type
+	// of filter implies the correct scope, ie file scope.
+	def.Scope = enums.ScopeFile
 
-	filter := &GlobEx{
+	directoryBase, directoryExclusion := splitGlob(segments[0])
+
+	gs, err = newSpec(directoryBase, directoryExclusion, patterns)
+	filter = &GlobEx{
 		Base: Base{
 			name:            def.Description,
 			scope:           def.Scope,
@@ -32,92 +43,164 @@ func createGlobExFilter(def *core.FilterDef,
 			negate:          def.Negate,
 			ifNotApplicable: ifNotApplicable,
 		},
-		baseGlob: base,
-		suffixes: lo.Map(suffixes, func(s string, _ int) string {
-			return strings.ToLower(strings.TrimPrefix(strings.TrimSpace(s), "."))
-		}),
-		anyExtension: slices.Contains(suffixes, "*"),
-		exclusion:    exclusion,
+		spec: gs,
 	}
 
-	return filter, nil
+	return filter, err
 }
 
 type GlobEx struct {
 	Base
-	baseGlob     string
-	suffixes     []string
-	anyExtension bool
-	exclusion    string
+	spec *globSpec
 }
 
-// IsMatch does this node match the filter
+func (f *GlobEx) IsApplicable(node *core.Node) bool {
+	if f.Base.IsApplicable(node) {
+		return f.isDirectoryMatch(node)
+	}
+
+	return false
+}
+
+func (f *GlobEx) isDirectoryMatch(node *core.Node) bool {
+	if node.Parent != nil {
+		name := strings.ToLower(node.Parent.Extension.Name)
+
+		if result, _ := filepath.Match(
+			f.spec.directoryGlob, name,
+		); !result {
+			return false
+		}
+
+		if excluded, _ := filepath.Match(
+			f.spec.directoryExclusion, name,
+		); excluded {
+			return false
+		}
+	}
+
+	return true
+}
+
+// IsMatch does this node match the filter; It's important to note that
+// IfNotApplicable on the filter definition should be set correctly to avoid
+// an unexpected result in certain situations. By default, IfNotApplicable = true,
+// but this behaviour could cause confusion if not well understood. If for example
+// using a filter pattern like "c*|*.*", (which means any file whose parent
+// directory starts with "c"), files whose parent directory doesn't match
+// this condition still pass through. This is because, when this filter is
+// not applicable to non conforming files, returning IfNotApplicable's default
+// value of true, will permit the non conforming file to be invoked. To resolve
+// this situation, the client should also set the filter's IfNotApplicable to false.
 func (f *GlobEx) IsMatch(node *core.Node) bool {
 	if f.IsApplicable(node) {
-		result := lo.TernaryF(node.IsDirectory(),
-			func() bool {
-				result, _ := filepath.Match(f.baseGlob, strings.ToLower(node.Extension.Name))
-
-				return result
-			},
-			func() bool {
-				return filterFileByGlobEx(
-					node.Extension.Name, f.baseGlob, f.exclusion, f.suffixes, f.anyExtension,
-				)
-			},
-		)
-
-		return f.invert(result)
+		return f.invert(f.spec.IsMatch(node.Extension.Name))
 	}
 
 	return f.ifNotApplicable
 }
 
-// ChildGlobExFilter ================================================================
+// patternSpec represents a file pattern specification, which consists of
+// the base and extension parts
+type (
+	patternSpec struct {
+		base       string
+		ext        string
+		grossExt   string
+		matcher    string
+		excludeExt bool
+	}
 
-type ChildGlobExFilter struct {
-	Child
-	baseGlob     string
-	exclusion    string
-	suffixes     []string
-	anyExtension bool
+	globSpec struct {
+		specs              []*patternSpec // */<excl>|*.o*.flac,f*.jpg
+		directoryGlob      string         // *
+		directoryExclusion string         // <excl>
+	}
+
+	indexCaptures struct {
+		dot, star int
+		base, ext string
+	}
+
+	extractor  func(pattern string) (ext, gross, match string)
+	indexFuncs map[enums.GlobExtraction]extractor
+)
+
+func parse(pattern string, re *regexp.Regexp) (spec *patternSpec, err error) {
+	subMatches := re.FindStringSubmatch(pattern)
+
+	if subMatches == nil {
+		return nil, fmt.Errorf("invalid glob-ex sub-pattern '%v' (match failed)", pattern)
+	}
+
+	result := make(map[string]string)
+
+	for i, name := range re.SubexpNames() {
+		if i != 0 && name != "" {
+			result[name] = subMatches[i]
+		}
+	}
+
+	ext := result["ext"]
+	base := result["base"]
+	grossExt := "." + ext
+
+	return &patternSpec{
+		base:       base,
+		ext:        ext,
+		grossExt:   grossExt,
+		excludeExt: result["neg"] == string(excludeExtSymbol),
+		matcher: lo.Ternary(base == "",
+			wildcard+grossExt,
+			base+grossExt,
+		),
+	}, nil
 }
 
-func (f *ChildGlobExFilter) Matching(children []fs.DirEntry) []fs.DirEntry {
-	return lo.Filter(children, func(entry fs.DirEntry, _ int) bool {
-		name := entry.Name()
+func newSpec(directoryBase, directoryExclusion string, patterns []string) (*globSpec, error) {
+	re := regexp.MustCompile(GlobExPattern)
 
-		return f.invert(filterFileByGlobEx(
-			name, f.baseGlob, f.exclusion, f.suffixes, f.anyExtension,
-		))
+	specs, err := lo.MapE(patterns, func(pattern string, _ int) (*patternSpec, error) {
+		pattern = strings.ToLower(strings.TrimSpace(pattern))
+
+		return parse(pattern, re)
 	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &globSpec{
+		specs:              specs,
+		directoryGlob:      directoryBase,
+		directoryExclusion: directoryExclusion,
+	}, nil
 }
 
-func filterFileByGlobEx(name, base, exclusion string,
-	suffixes []string, anyExtension bool,
-) bool {
-	extension := filepath.Ext(name)
-	baseName := strings.ToLower(strings.TrimSuffix(name, extension))
-
-	if baseMatch, _ := filepath.Match(base, baseName); !baseMatch {
+func (s *patternSpec) excluded(name string) bool {
+	if !s.excludeExt {
 		return false
 	}
 
-	if excluded, _ := filepath.Match(exclusion, baseName); excluded {
-		return false
+	m, _ := filepath.Match(s.matcher, name)
+	return m
+}
+
+func (s *patternSpec) match(name string) bool {
+	m, _ := filepath.Match(s.matcher, name)
+	return m
+}
+
+func (s globSpec) IsMatch(name string) bool { //nolint: gocritic
+	for _, spec := range s.specs {
+		if spec.excluded(name) {
+			return false
+		}
+
+		if spec.excludeExt || spec.match(name) {
+			return true
+		}
 	}
 
-	return cmp.Or(
-		func() bool {
-			return anyExtension
-		}(),
-		func() bool {
-			return extension == "" && len(suffixes) == 0
-		}(),
-		func() bool {
-			return lo.Contains(
-				suffixes, strings.ToLower(strings.TrimPrefix(extension, ".")),
-			)
-		}(),
-	)
+	return false
 }

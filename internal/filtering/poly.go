@@ -17,6 +17,11 @@ import (
 // the current node is a filter as the client callback will only be invoked
 // for the file if its parent directory passes the poly directory filter and
 // the file passes the poly file filter.
+//
+// NB: the Poly filter is similar to glob-ex filter. The difference is that
+// the glob-ex filter is fixed to matching by globs and introduces new
+// proprietary syntax for the format of its pattern. A Poly filter by contrast
+// can use any filter implementation for both the file and directory components.
 type Poly struct {
 	// File is the filter that applies to a file. Note that the client does
 	// not have to set the File scope as this is enforced automatically as
