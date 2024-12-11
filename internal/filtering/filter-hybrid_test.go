@@ -222,134 +222,17 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		Entry(nil, &lab.HybridFilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directory(with files): glob child filter",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeDirectoriesWithFiles,
-				ExpectedNoOf: lab.Quantities{
-					Directories: 6,
-					Children: map[string]int{
-						"Northern Council": 2,
-						"Teenage Color":    2,
-						"Innerworld":       2,
-					},
-				},
-			},
-			NodeDef: core.FilterDef{
-				Type:        enums.FilterTypeGlob,
-				Description: "directories contains o",
-				Pattern:     "*o*",
-				Scope:       enums.ScopeDirectory,
-			},
-			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "items with '.flac' suffix",
-				Pattern:     "*|flac",
-			},
-		}),
-
-		Entry(nil, &lab.HybridFilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directory(with files): glob child filter (negate)",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeDirectoriesWithFiles,
-				ExpectedNoOf: lab.Quantities{
-					Directories: 2,
-					Children: map[string]int{
-						"Night Drive": 3,
-					},
-				},
-			},
-			NodeDef: core.FilterDef{
-				Type:        enums.FilterTypeGlob,
-				Description: "directories don't contain o",
-				Pattern:     "*o*",
-				Scope:       enums.ScopeDirectory,
-				Negate:      true,
-			},
-			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "items without '.txt' suffix",
-				Pattern:     "*|txt",
-				Negate:      true,
-			},
-		}),
-
-		Entry(nil, &lab.HybridFilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directory(with files): glob child filter",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeDirectoriesWithFiles,
-				ExpectedNoOf: lab.Quantities{
-					Directories: 6,
-					Children: map[string]int{
-						"Northern Council": 2,
-						"Teenage Color":    2,
-						"Innerworld":       2,
-					},
-				},
-				ExpectedErr: locale.ErrFilterCustomNotSupported,
-			},
-			NodeDef: core.FilterDef{
-				Type:        enums.FilterTypeGlob,
-				Description: "directories contains o",
-				Pattern:     "*o*",
-				Scope:       enums.ScopeDirectory,
-			},
-			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeCustom,
-				Description: "items with '.flac' suffix",
-				Pattern:     "*|flac",
-			},
-		}),
-
-		Entry(nil, &lab.HybridFilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directory(with files): glob child filter (negate)",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeDirectoriesWithFiles,
-				ExpectedNoOf: lab.Quantities{
-					Directories: 2,
-					Children: map[string]int{
-						"Night Drive": 3,
-					},
-				},
-			},
-			NodeDef: core.FilterDef{
-				Type:        enums.FilterTypeGlob,
-				Description: "directories don't contain o",
-				Pattern:     "*o*",
-				Scope:       enums.ScopeDirectory,
-				Negate:      true,
-			},
-			ChildDef: core.ChildFilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "items without '.txt' suffix",
-				Pattern:     "*|txt",
-				Negate:      true,
-			},
-		}),
-
 		// === error ==============================================================
 
 		Entry(nil, &lab.HybridFilterTE{
 			DescribedTE: lab.DescribedTE{
-				Given:  "malformed glob ex filter (missing |)",
-				Should: "fail",
+				Given:  "glob-ex filter type created for children",
+				Should: "fail with not supported error",
 			},
 			NaviTE: lab.NaviTE{
 				Relative:     lab.Static.RetroWave,
 				Subscription: enums.SubscribeDirectoriesWithFiles,
-				ExpectedErr:  locale.NewInvalidIncaseFilterDefError("*.flac"),
+				ExpectedErr:  locale.ErrFilterChildGlobExNotSupported,
 			},
 			NodeDef: core.FilterDef{
 				Type:        enums.FilterTypeGlob,

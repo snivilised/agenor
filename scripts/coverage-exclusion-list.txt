@@ -2,5 +2,6 @@ github.com/snivilised/agenor/enums
 github.com/snivilised/agenor/internal/filtering/constant.go
 github.com/snivilised/agenor/internal/third
 github.com/snivilised/agenor/internal/laboratory
+github.com/snivilised/agenor/test/hanno
 github.com/snivilised/agenor/test/hydra
 github.com/snivilised/agenor/test/cmd

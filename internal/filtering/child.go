@@ -1,9 +1,6 @@
 package filtering
 
 import (
-	"slices"
-	"strings"
-
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/third/lo"
@@ -16,32 +13,6 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 	)
 
 	switch def.Type {
-	case enums.FilterTypeGlobEx:
-		var (
-			err                error
-			segments, suffixes []string
-		)
-
-		if segments, suffixes, err = splitGlobExPattern(def.Pattern); err != nil {
-			return nil, locale.NewInvalidIncaseFilterDefError(def.Pattern)
-		}
-
-		base, exclusion := splitGlob(segments[0])
-
-		filter = &ChildGlobExFilter{
-			Child: Child{
-				Name:    def.Description,
-				Pattern: def.Pattern,
-				Negate:  def.Negate,
-			},
-			baseGlob: base,
-			suffixes: lo.Map(suffixes, func(s string, _ int) string {
-				return strings.ToLower(strings.TrimPrefix(strings.TrimSpace(s), "."))
-			}),
-			anyExtension: slices.Contains(suffixes, "*"),
-			exclusion:    exclusion,
-		}
-
 	case enums.FilterTypeRegex:
 		filter = &ChildRegex{
 			Child: Child{
@@ -59,6 +30,9 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 				Negate:  def.Negate,
 			},
 		}
+
+	case enums.FilterTypeGlobEx:
+		return nil, locale.ErrFilterChildGlobExNotSupported
 
 	case enums.FilterTypeCustom:
 		return nil, locale.ErrFilterCustomNotSupported

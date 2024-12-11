@@ -201,7 +201,7 @@ func FormatHybridFilterTestDescription(entry *HybridFilterTE) string {
 }
 
 func FormatFilterTestDescription(entry *FilterTE) string {
-	return fmt.Sprintf("Given: %v 🧪 should: %v", entry.DescribedTE.Given, entry.DescribedTE.Should)
+	return fmt.Sprintf("Given: %v 🧪 should: apply filter", entry.DescribedTE.Given)
 }
 
 func FormatFilterErrataTestDescription(entry *FilterErrataTE) string {

@@ -44,7 +44,7 @@ var _ = Describe("filtering", Ordered, func() {
 						Node: &core.FilterDef{
 							Type:        enums.FilterTypeGlobEx,
 							Description: "nodes with 'flac' suffix",
-							Pattern:     "*|flac",
+							Pattern:     "*|*.flac",
 							Scope:       enums.ScopeAll,
 						},
 					}
@@ -156,7 +156,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		// === universal =====================================================
 
-		Entry(nil, &lab.FilterTE{
+		Entry(nil, &lab.FilterTE{ // DUFF
 			DescribedTE: lab.DescribedTE{
 				Given: "universal(any scope): glob ex filter",
 			},
@@ -167,10 +167,10 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "nodes with 'flac' suffix",
-			Pattern:     "*|flac",
+			Pattern:     "*|*.flac",
 			Scope:       enums.ScopeAll,
 		}),
 
@@ -185,7 +185,7 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|.flac",
@@ -200,30 +200,29 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:       19,
+					Files:       22,
 					Directories: 5,
 				},
 				Mandatory:  []string{"front.jpg"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"vinyl-info.ORTOFON-2M-BLUE.SL1210.DJM500.BALANCE.REASON.SPINCLEAN.MAX-GAIN.txt"},
 			},
 			Description: "items with 'flac' suffix",
-			Pattern:     "*|flac,jpg",
+			Pattern:     "*|*.flac,*.jpg",
 			Scope:       enums.ScopeAll,
 		}),
 
 		Entry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
-				Given: "universal(any scope): glob ex filter, without extension",
+				Given: "universal(any scope): glob ex filter, without file globs",
 			},
 			NaviTE: lab.NaviTE{
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
-					Files:       3,
+					Files:       0,
 					Directories: 5,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
-				Prohibited: []string{"01 - Hotel Hobbies.flac"},
+				Prohibited: []string{"01 - Hotel Hobbies.flac", "cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|",
@@ -244,9 +243,8 @@ var _ = Describe("filtering", Ordered, func() {
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "files without .flac suffix",
-			Pattern:     "*|flac",
+			Pattern:     "*|*.!flac",
 			Scope:       enums.ScopeFile,
-			Negate:      true,
 		}),
 
 		Entry(nil, &lab.FilterTE{
@@ -260,88 +258,10 @@ var _ = Describe("filtering", Ordered, func() {
 					Files:       16,
 					Directories: 5,
 				},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with '.flac' suffix",
-			Pattern:     "*|flac",
-		}),
-
-		Entry(nil, &lab.FilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "universal(any scope): glob ex filter, any extension",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: lab.Quantities{
-					Files:       4,
-					Directories: 1,
-				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
-				Prohibited: []string{"01 - Hotel Hobbies.flac"},
-			},
-			Description: "starts with c, any extension",
-			Pattern:     "c*|*",
-			Scope:       enums.ScopeAll,
-		}),
-
-		// === directories ===================================================
-
-		Entry(nil, &lab.FilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directories(any scope): glob ex filter",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeDirectories,
-				ExpectedNoOf: lab.Quantities{
-					Files:       0,
-					Directories: 2,
-				},
-				Mandatory:  []string{"Marillion"},
-				Prohibited: []string{"Fugazi"},
-			},
-			Description: "directories starting with M",
-			Pattern:     "M*|",
-			Scope:       enums.ScopeDirectory,
-		}),
-
-		Entry(nil, &lab.FilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "directories(directory scope): glob ex filter (negate)",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeDirectories,
-				ExpectedNoOf: lab.Quantities{
-					Files:       0,
-					Directories: 3,
-				},
-				Mandatory:  []string{"Fugazi"},
-				Prohibited: []string{"Marillion"},
-			},
-			Description: "directories NOT starting with M",
-			Pattern:     "M*|",
-			Scope:       enums.ScopeDirectory,
-			Negate:      true,
-		}),
-
-		Entry(nil, &lab.FilterTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "universal(undefined scope): glob ex filter",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
-				Subscription: enums.SubscribeDirectories,
-				ExpectedNoOf: lab.Quantities{
-					Files:       0,
-					Directories: 2,
-				},
-				Mandatory:  []string{"Marillion"},
-				Prohibited: []string{"Fugazi"},
-			},
-			Description: "directories starting with M",
-			Pattern:     "M*|",
+			Pattern:     "*|*.flac",
 		}),
 
 		// === files =========================================================
@@ -354,14 +274,13 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       16,
-					Directories: 0,
+					Files: 16,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
-			Pattern:     "*|flac",
+			Pattern:     "*|*.flac",
 			Scope:       enums.ScopeFile,
 		}),
 
@@ -373,11 +292,10 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       16,
-					Directories: 0,
+					Files: 16,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with 'flac' suffix",
 			Pattern:     "*|.flac",
@@ -392,33 +310,34 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       19,
-					Directories: 0,
+					Files: 22,
 				},
 				Mandatory:  []string{"front.jpg"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"vinyl-info.ORTOFON-2M-BLUE.SL1210.DJM500.BALANCE.REASON.SPINCLEAN.MAX-GAIN.txt"},
 			},
 			Description: "items with 'flac' suffix",
-			Pattern:     "*|flac,jpg",
+			Pattern:     "*|*.flac,*.jpg",
 			Scope:       enums.ScopeFile,
 		}),
 
 		Entry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
-				Given: "file(file scope): glob ex filter, without extension",
+				Given: "files(file scope): glob ex filter, with multiple extensions and body",
 			},
 			NaviTE: lab.NaviTE{
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       3,
-					Directories: 0,
+					Files: 8,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
-				Prohibited: []string{"01 - Hotel Hobbies.flac"},
+				Mandatory: []string{"front.jpg"},
+				Prohibited: []string{
+					"02 - Warm Wet Circles.flac",    // fails-by: *o*.flac
+					"cover-clutching-at-straws.jpg", // fails-by: f*.jpg
+				},
 			},
 			Description: "items with 'flac' suffix",
-			Pattern:     "*|",
+			Pattern:     "*|*o*.flac,f*.jpg",
 			Scope:       enums.ScopeFile,
 		}),
 
@@ -430,16 +349,14 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       7,
-					Directories: 0,
+					Files: 7,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
 			Description: "files without .flac suffix",
-			Pattern:     "*|flac",
+			Pattern:     "*|*.!flac",
 			Scope:       enums.ScopeFile,
-			Negate:      true,
 		}),
 
 		Entry(nil, &lab.FilterTE{
@@ -450,40 +367,55 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       16,
-					Directories: 0,
+					Files: 16,
 				},
 				Mandatory:  []string{"01 - Hotel Hobbies.flac"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description: "items with '.flac' suffix",
-			Pattern:     "*|flac",
+			Pattern:     "*|*.flac",
 		}),
 
 		Entry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
-				Given: "file(any scope): glob ex filter, any extension",
+				Given: "file(any scope): IfNotApplicable=false, glob ex filter, any extension",
 			},
 			NaviTE: lab.NaviTE{
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       4,
-					Directories: 0,
+					Files: 8,
 				},
-				Mandatory:  []string{"cover-clutching-at-straws-jpg"},
-				Prohibited: []string{"01 - Hotel Hobbies.flac"},
+				Mandatory:  []string{"cover-clutching-at-straws.jpg"},
+				Prohibited: []string{"01 - Assassing.flac"},
 			},
-			Description: "starts with c, any extension",
-			Pattern:     "c*|*",
-			Scope:       enums.ScopeAll,
+			Description:     "directory starts with c, any extension",
+			Pattern:         "c*|.*",
+			IfNotApplicable: enums.TriStateBoolFalse,
 		}),
 
 		// === ifNotApplicable ===============================================
 
 		Entry(nil, &lab.FilterTE{
 			DescribedTE: lab.DescribedTE{
-				Given: "universal(leaf scope): glob ex filter (ifNotApplicable=true)",
+				Given: "file(any scope): glob ex filter, any extension (ifNotApplicable=true)",
+			},
+			NaviTE: lab.NaviTE{
+				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
+				Subscription: enums.SubscribeFiles,
+				ExpectedNoOf: lab.Quantities{
+					Files: 23,
+				},
+				Mandatory: []string{"cover-clutching-at-straws.jpg"},
+			},
+			Description:     "directory starts with c, any extension",
+			Pattern:         "c*|.*",
+			IfNotApplicable: enums.TriStateBoolTrue, // see GlobEx.IsMatch description
+		}),
+
+		Entry(nil, &lab.FilterTE{
+			DescribedTE: lab.DescribedTE{
+				Given: "universal: glob ex filter (ifNotApplicable=true)",
 			},
 			NaviTE: lab.NaviTE{
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
@@ -493,11 +425,10 @@ var _ = Describe("filtering", Ordered, func() {
 					Directories: 5,
 				},
 				Mandatory:  []string{"Marillion"},
-				Prohibited: []string{"cover-clutching-at-straws-jpg"},
+				Prohibited: []string{"cover-clutching-at-straws.jpg"},
 			},
 			Description:     "leaf items with 'flac' suffix",
-			Pattern:         "*|flac",
-			Scope:           enums.ScopeLeaf,
+			Pattern:         "*|*.flac",
 			IfNotApplicable: enums.TriStateBoolTrue,
 		}),
 
@@ -510,12 +441,12 @@ var _ = Describe("filtering", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 				ExpectedNoOf: lab.Quantities{
 					Files:       16,
-					Directories: 4,
+					Directories: 0,
 				},
 				Prohibited: []string{"Marillion"},
 			},
 			Description:     "items with '.flac' suffix",
-			Pattern:         "*|flac",
+			Pattern:         "*|*.flac",
 			Scope:           enums.ScopeLeaf,
 			IfNotApplicable: enums.TriStateBoolFalse,
 		}),
@@ -530,14 +461,13 @@ var _ = Describe("filtering", Ordered, func() {
 				Relative:     "rock/PROGRESSIVE-ROCK/Marillion",
 				Subscription: enums.SubscribeFiles,
 				ExpectedNoOf: lab.Quantities{
-					Files:       12,
-					Directories: 0,
+					Files: 12,
 				},
 				Prohibited: []string{"01 - Hotel Hobbies.flac"},
 			},
-			Description: "files starting with 0, except 01 items and flac suffix",
-			Pattern:     "0*/*01*|flac",
-			Scope:       enums.ScopeFile,
+			Description:     "files starting with 0, except 01 items and flac suffix",
+			Pattern:         "*/c*|*.flac",
+			IfNotApplicable: enums.TriStateBoolFalse,
 		}),
 	)
 })

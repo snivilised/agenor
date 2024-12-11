@@ -227,90 +227,6 @@ var _ = Describe("feature", Ordered, func() {
 			},
 		}),
 
-		// === universal(file:extended-glob; directory:glob) =================
-
-		Entry(nil, &lab.PolyTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "poly - files:extended-glob; directories:glob",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: lab.Quantities{
-					// file is 2 not 3 because *i* is case sensitive so Innerworld is not a match
-					// The next 2 tests regex/extended-glob test case, fixes this because they
-					// have better control over case sensitivity
-					//
-					Files:       2,
-					Directories: 8,
-				},
-			},
-			File: core.FilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "files: txt files starting with vinyl",
-				Pattern:     "vinyl*|txt",
-				Scope:       enums.ScopeFile,
-			},
-			Directory: core.FilterDef{
-				Type:        enums.FilterTypeGlob,
-				Description: "directories: contains i (case sensitive)",
-				Pattern:     "*i*",
-				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
-			},
-		}),
-
-		Entry(nil, &lab.PolyTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "poly - files:extended-glob; directories:regex",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: lab.Quantities{
-					Files:       3,
-					Directories: 8,
-				},
-			},
-			File: core.FilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "files: txt files starting with vinyl",
-				Pattern:     "vinyl*|txt",
-				Scope:       enums.ScopeFile,
-			},
-			Directory: core.FilterDef{
-				Type:        enums.FilterTypeRegex,
-				Description: "directories: contains i (case sensitive)",
-				Pattern:     "[iI]",
-				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
-			},
-		}),
-
-		Entry(nil, &lab.PolyTE{
-			DescribedTE: lab.DescribedTE{
-				Given: "poly - files:extended-glob; directories:extended-glob",
-			},
-			NaviTE: lab.NaviTE{
-				Relative:     lab.Static.RetroWave,
-				Subscription: enums.SubscribeUniversal,
-				ExpectedNoOf: lab.Quantities{
-					Files:       3,
-					Directories: 8,
-				},
-			},
-			File: core.FilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "files: txt files starting with vinyl",
-				Pattern:     "vinyl*|txt",
-				Scope:       enums.ScopeFile,
-			},
-			Directory: core.FilterDef{
-				Type:        enums.FilterTypeGlobEx,
-				Description: "directories: contains i (case sensitive)",
-				Pattern:     "*i*|",
-				Scope:       enums.ScopeDirectory | enums.ScopeLeaf,
-			},
-		}),
-
 		// For the poly filter, the file/directory scopes must be set correctly, but because
 		// they can be set automatically, the client is not forced to set them. This test
 		// checks that when the file/directory scopes are not set, then poly filtering still works
@@ -331,7 +247,6 @@ var _ = Describe("feature", Ordered, func() {
 				Type:        enums.FilterTypeRegex,
 				Description: "files: starts with vinyl",
 				Pattern:     "^vinyl",
-				// file scope omitted
 			},
 			Directory: core.FilterDef{
 				Type:        enums.FilterTypeRegex,

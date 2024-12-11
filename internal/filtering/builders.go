@@ -142,7 +142,7 @@ func splitGlobExPattern(pattern string) (segments, suffixes []string, err error)
 	suffixes = strings.Split(segments[1], ",")
 
 	suffixes = lo.Reject(suffixes, func(item string, _ int) bool {
-		return item == ""
+		return item == "" || item == string(excludeExtSymbol)
 	})
 
 	return segments, suffixes, nil
