@@ -14,7 +14,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
-	github.com/nicksnyder/go-i18n/v2 v2.4.1
+	github.com/nicksnyder/go-i18n/v2 v2.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/snivilised/li18ngo v0.1.9
