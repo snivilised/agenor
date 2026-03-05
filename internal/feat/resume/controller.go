@@ -11,6 +11,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// Controller controls the traversal.
 type Controller struct {
 	med      enclave.Mediator
 	relic    *pref.Relic
@@ -18,25 +19,30 @@ type Controller struct {
 	strategy Strategy
 }
 
+// Ignite ignites the controller.
 func (c *Controller) Ignite(ignition *enclave.Ignition) {
 	c.strategy.ignite()
 	c.med.Ignite(ignition)
 }
 
+// Result returns the result of the traversal.
 func (c *Controller) Result(ctx context.Context) *enclave.KernelResult {
 	return c.med.Result(ctx)
 }
 
+// Strategy returns the strategy of the controller.
 func (c *Controller) Strategy() Strategy {
 	return c.strategy
 }
 
+// Snooze snoozes the controller.
 func (c *Controller) Snooze(ctx context.Context,
 	_ *core.ActiveState,
 ) (*enclave.KernelResult, error) {
 	return c.Result(ctx), nil
 }
 
+// Bye is called when the traversal is finished.
 func (c *Controller) Bye(result core.TraverseResult) {
 	c.med.Bye(result)
 }
@@ -74,6 +80,7 @@ func newStrategy(inception *kernel.Inception,
 	return strategy
 }
 
+// Navigate navigates the tree within the context of resume.
 func (c *Controller) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	if err := c.strategy.init(c.load); err != nil {
 		return c.Result(ctx), err

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/test/hanno"
@@ -49,6 +49,7 @@ var _ = Describe("error messages", Ordered, func() {
 				const (
 					expected = "invalid glob ex filter definition; pattern is missing separator, pattern: foo"
 				)
+
 				text := locale.NewInvalidExtGlobFilterMissingSeparatorError(
 					"foo",
 				).Error()
@@ -85,7 +86,8 @@ var _ = Describe("error messages", Ordered, func() {
 				const (
 					expected = "invalid incase filter definition; pattern is missing separator, pattern: foo"
 				)
-				text := locale.NewInvalidIncaseFilterDefError(
+
+				text := locale.NewInvalidInCaseFilterDefError(
 					"foo",
 				).Error()
 				Expect(text).To(Equal(expected))
@@ -94,9 +96,9 @@ var _ = Describe("error messages", Ordered, func() {
 
 		When("given: matching error", func() {
 			It("🧪 should: affirm", func() {
-				err := locale.NewInvalidIncaseFilterDefError("bar")
+				err := locale.NewInvalidInCaseFilterDefError("bar")
 				Expect(
-					locale.IsInvalidIncaseFilterDefError(err),
+					locale.IsInvalidInCaseFilterDefError(err),
 				).To(BeTrue(),
 					"error does not match InvalidIncaseFilterDef",
 				)
@@ -107,7 +109,7 @@ var _ = Describe("error messages", Ordered, func() {
 			It("🧪 should: reject", func() {
 				err := errors.New("fake")
 				Expect(
-					locale.IsInvalidIncaseFilterDefError(err),
+					locale.IsInvalidInCaseFilterDefError(err),
 				).To(BeFalse(),
 					"not matching error should not match InvalidIncaseFilterDef",
 				)

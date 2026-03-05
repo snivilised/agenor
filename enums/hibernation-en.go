@@ -6,6 +6,7 @@ package enums
 type Hibernation uint
 
 const (
+	// HibernationUndefined represents the undefined hibernation state
 	HibernationUndefined Hibernation = iota // undefined
 
 	// HibernationPending conditional listening is awaiting activation

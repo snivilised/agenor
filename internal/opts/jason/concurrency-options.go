@@ -1,8 +1,4 @@
-package json
-
-// TODO: can't have package name that is json as that clashes
-// with the one in standard library at encoding/json, so need
-// to rename; perhaps to js.
+package jason
 
 type (
 	// ConcurrencyOptions specifies options used for current traversal sessions

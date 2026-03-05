@@ -2,20 +2,23 @@ package persist
 
 import (
 	"github.com/snivilised/agenor/core"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/pref"
 )
 
-// 📦 pkg: persist - defines marshalling functionality. This package is
-// required in order to avoid the circular dependency that would be created
-// if these functions were defined in opts.json.
-
 const (
-	JSONMarshalNoPrefix      = ""
+	// JSONMarshalNoPrefix is the prefix to use when marshalling options to JSON
+	// without any prefix.
+	JSONMarshalNoPrefix = ""
+
+	// JSONMarshal2SpacesIndent is the indent to use when marshalling options to JSON.
 	JSONMarshal2SpacesIndent = "  "
 )
 
+// ToJSON converts the given pref.Options to a json.Options struct, which can be
+// marshalled to JSON. This is required in order to avoid the circular dependency
+// that would be created if the json.Options struct were defined in the pref package.
 func ToJSON(o *pref.Options) *json.Options {
 	return &json.Options{
 		Behaviours: json.NavigationBehaviours{
@@ -83,6 +86,9 @@ func ToJSON(o *pref.Options) *json.Options {
 	}
 }
 
+// NodeFilterDefToJSON converts a core.FilterDef to a json.FilterDef. This
+// is required in order to avoid the circular dependency that would be
+// created if the json.FilterDef struct were defined in the core package.
 func NodeFilterDefToJSON(def *core.FilterDef) *json.FilterDef {
 	return lo.TernaryF(def != nil,
 		func() *json.FilterDef {
@@ -100,6 +106,7 @@ func NodeFilterDefToJSON(def *core.FilterDef) *json.FilterDef {
 	)
 }
 
+// NodePolyDefToJSON converts a core.PolyFilterDef to a json.PolyFilterDef.
 func NodePolyDefToJSON(poly *core.PolyFilterDef) *json.PolyFilterDef {
 	if poly == nil {
 		return nil
@@ -111,6 +118,7 @@ func NodePolyDefToJSON(poly *core.PolyFilterDef) *json.PolyFilterDef {
 	}
 }
 
+// FromJSON converts a json.Options struct to a pref.Options struct.
 func FromJSON(jo *json.Options) *pref.Options {
 	o := pref.DefaultOptions()
 
@@ -181,6 +189,7 @@ func FromJSON(jo *json.Options) *pref.Options {
 	return o
 }
 
+// NodeFilterDefFromJSON converts a json.FilterDef to a core.FilterDef.
 func NodeFilterDefFromJSON(def *json.FilterDef) *core.FilterDef {
 	return lo.TernaryF(def != nil,
 		func() *core.FilterDef {
@@ -200,6 +209,7 @@ func NodeFilterDefFromJSON(def *json.FilterDef) *core.FilterDef {
 	)
 }
 
+// NodePolyDefFromJSON converts a json.PolyFilterDef to a core.PolyFilterDef.
 func NodePolyDefFromJSON(poly *json.PolyFilterDef) *core.PolyFilterDef {
 	if poly == nil {
 		return nil

@@ -3,8 +3,8 @@ package sampling_test
 import (
 	"fmt"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -31,6 +31,7 @@ var _ = Describe("feature", Ordered, func() {
 		)
 
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave, "edm")
+
 		Expect(li18ngo.Use()).To(Succeed())
 	})
 
@@ -51,6 +52,7 @@ var _ = Describe("feature", Ordered, func() {
 								GinkgoWriter.Printf(
 									"---> 🍯 EXAMPLE-SAMPLE-CALLBACK: '%v'\n", node.Path,
 								)
+
 								return nil
 							},
 							GetForest: func(_ string) *core.Forest {
@@ -88,14 +90,15 @@ var _ = Describe("feature", Ordered, func() {
 			once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
+
 				recall[node.Extension.Name] = len(node.Children)
 
 				return nil
 			}
 
-			path := lo.Ternary(entry.NaviTE.Relative == "",
+			path := lo.Ternary(entry.Relative == "",
 				lab.Static.RetroWave,
-				entry.NaviTE.Relative,
+				entry.Relative,
 			)
 
 			callback := func(servant age.Servant) error {

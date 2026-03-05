@@ -25,7 +25,6 @@ func MapE[T any, R any](collection []T, iteratee func(item T, index int) (R, err
 	var err error
 	for i, item := range collection {
 		result[i], err = iteratee(item, i)
-
 		if err != nil {
 			return result, err
 		}
@@ -133,6 +132,7 @@ func Uniq[T comparable](collection []T) []T {
 		}
 
 		seen[item] = struct{}{}
+
 		result = append(result, item)
 	}
 

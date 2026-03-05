@@ -18,7 +18,6 @@ type samplerScheme struct {
 
 func (s *samplerScheme) create() error {
 	filter, err := filtering.NewSample(s.o.Filter.Sample, &s.o.Sampling)
-
 	if err != nil {
 		return err
 	}

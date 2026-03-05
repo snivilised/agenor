@@ -1,7 +1,7 @@
 package enclave_test
 
 import (
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
@@ -33,6 +33,7 @@ var _ = Describe("KernelResult", func() {
 		DescribeTable("Times",
 			func(entry *resultTE) {
 				entry.arrange(trig)
+
 				result := enclave.NewResult(sess,
 					reporter,
 					complete,

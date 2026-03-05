@@ -6,15 +6,15 @@ package enums
 type EntryType uint
 
 const (
-	// EntryTypeDirectory
+	// EntryTypeDirectory represents a directory entry.
 	//
 	EntryTypeDirectory EntryType = iota // directory-entry
 
-	// EntryTypeFile
+	// EntryTypeFile represents a file entry.
 	//
 	EntryTypeFile // file-entry
 
-	// EntryTypeAll
+	// EntryTypeAll represents both directory and file entries.
 	//
 	EntryTypeAll // all-entries
 )

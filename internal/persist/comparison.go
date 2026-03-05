@@ -5,47 +5,74 @@ import (
 
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/agenor/pref"
 )
 
-const (
-	Anon = "ANON"
-)
-
+// UnequalValueError represents a comparison error for a marshaled
+// entity. It indicates which field failed the comparison and the
+// values being compared.
 type UnequalValueError[T any] struct {
+	// Field is the name of the field that is not equal.
 	Field string
+
+	// Value is the value of the field in the pref.Options instance.
 	Value T
+
+	// Other is the value of the field in the json.Options instance.
 	Other T
 }
 
+// Error returns a string representation of the error, which includes the field name
+// and the values of the field in both instances.
 func (e UnequalValueError[T]) Error() string {
 	s := fmt.Sprintf("unequal(%v) => value: %v, other: %v", e.Field, e.Value, e.Other)
 
 	return s
 }
 
+// Unwrap returns the underlying error, which is locale.ErrUnEqualConversion. This
+// allows us to use errors.Is to check if the error is an UnequalValueError, and also
+// to check if it is a locale.ErrUnEqualConversion.
 func (UnequalValueError[T]) Unwrap() error {
 	return locale.ErrUnEqualConversion
 }
 
+// UnequalPtrError is used to compare pointer fields in the pref.Options instance to the
+// derived json.Options instance, and return an error if they are not equal. This is required
+// because some fields in pref.Options are pointers, and we need to check if they are nil
+// before comparing their values.
 type UnequalPtrError[T any, O any] struct {
+	// Field is the name of the field that is not equal.
 	Field string
+
+	// Value is the value of the field in the pref.Options instance.
 	Value *T
+
+	// Other is the value of the field in the json.Options instance.
 	Other *O
 }
 
+// Error returns a string representation of the error, which includes the field name
+// and the values of the field in both instances.
 func (e UnequalPtrError[T, O]) Error() string {
 	s := fmt.Sprintf("unequal-ptr(%v) => value: %v, other: %v", e.Field, e.Value, e.Other)
 
 	return s
 }
 
+// Unwrap returns the underlying error, which is locale.ErrUnEqualConversion. This
+// allows us to use errors.Is to check if the error is an UnequalPtrError, and also
+// to check if it is a locale.ErrUnEqualConversion.
 func (UnequalPtrError[T, O]) Unwrap() error {
 	return locale.ErrUnEqualConversion
 }
 
+// Equals compares the pref.Options instance to the derived json.Options instance, and returns
+// an error if they are not equal. This is used to verify that the conversion from pref.Options
+// to json.Options and back to pref.Options is consistent, and that no information is lost in the
+// process.
 func (c *Comparison) Equals() error {
 	return equalOptions(c.O, c.JO)
 }

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/internal/third/bus"
@@ -57,6 +57,7 @@ var _ = Describe("Bus", func() {
 		// TestNew...
 		It("🧪 should: run with valid generator", func() {
 			var fn bus.Next = func() string { return fake }
+
 			_, err := bus.New(fn)
 			Expect(err).To(Succeed())
 		})
@@ -97,12 +98,14 @@ var _ = Describe("Bus", func() {
 			When("with handler", func() {
 				It("🧪 should: tbd", func() {
 					ctx := context.Background()
+
 					registerFakeHandler(b, "test")
 
 					err := b.Emit(ctx, topicCommentCreated, "my comment with handler")
 					if err != nil {
 						Fail(fmt.Sprintf("emit failed: %v", err))
 					}
+
 					b.DeregisterHandler("test")
 				})
 			})
@@ -149,12 +152,14 @@ var _ = Describe("Bus", func() {
 			When("with handler", func() {
 				It("🧪 should: tbd", func() {
 					ctx := context.Background()
+
 					registerFakeHandler(b, "test")
 
 					err := b.EmitWithOpts(ctx, topicCommentCreated, "my comment with handler")
 					if err != nil {
 						Fail(fmt.Sprintf("emit failed: %v", err))
 					}
+
 					b.DeregisterHandler("test")
 				})
 			})
@@ -177,6 +182,7 @@ var _ = Describe("Bus", func() {
 		When("register", func() {
 			It("🧪 should: return registered topics", func() {
 				topics := []string{topicUserCreated, topicUserDeleted}
+
 				b := setup(topics...)
 				defer tearDown(b, topics...)
 
@@ -223,6 +229,7 @@ var _ = Describe("Bus", func() {
 	When("deregister", func() {
 		It("🧪 should: ", func() {
 			topics := []string{topicUserCreated, topicUserDeleted, topicUserUpdated}
+
 			b := setup(topics...)
 			defer tearDown(b)
 

@@ -1,9 +1,6 @@
 package age
 
 import (
-	"io/fs"
-
-	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/internal/enclave"
 	"github.com/snivilised/agenor/internal/kernel"
 	"github.com/snivilised/agenor/internal/opts"
@@ -17,6 +14,11 @@ type optionHarvest struct {
 	loaded *opts.LoadInfo
 }
 
+// Options returns the final options after applying any necessary adjustments
+// based on the loaded configuration. It ensures that certain concurrency
+// settings are set appropriately, especially when cascading behaviour is
+// involved. The method takes into account the loaded configuration if available,
+// otherwise it uses the initially provided options.
 func (a *optionHarvest) Options() *pref.Options {
 	return a.afterwards(lo.TernaryF(a.loaded != nil,
 		func() *pref.Options {
@@ -28,10 +30,17 @@ func (a *optionHarvest) Options() *pref.Options {
 	))
 }
 
+// Binder returns the binder associated with the options. The binder is used to
+// manage the relationships between options and their sources, allowing for
+// dynamic updates and adjustments based on the configuration loading process.
 func (a *optionHarvest) Binder() *opts.Binder {
 	return a.binder
 }
 
+// Loaded returns the LoadInfo containing details about the loaded configuration,
+// including the final options and any relevant metadata. This information can be
+// used to understand how the options were derived and to make informed decisions
+// about further adjustments or actions based on the loaded configuration.
 func (a *optionHarvest) Loaded() *opts.LoadInfo {
 	return a.loaded
 }
@@ -54,17 +63,6 @@ func (a *optionHarvest) afterwards(o *pref.Options) *pref.Options {
 	return o
 }
 
-// optionsBuilder
-type optionsBuilder interface {
-	build(ext extent) (enclave.OptionHarvest, error)
-}
-
-type optionBuilder func(ext extent) (enclave.OptionHarvest, error)
-
-func (fn optionBuilder) build(ext extent) (enclave.OptionHarvest, error) {
-	return fn(ext)
-}
-
 type pluginsBuilder interface {
 	build(o *pref.Options,
 		ext extent,
@@ -85,26 +83,6 @@ func (fn activated) build(o *pref.Options,
 	others ...enclave.Plugin,
 ) ([]enclave.Plugin, error) {
 	return fn(o, ext, artefacts, others...)
-}
-
-type fsBuilder interface {
-	build(path string) fs.FS
-}
-
-type filesystem func(path string) fs.FS
-
-func (fn filesystem) build(path string) fs.FS {
-	return fn(path)
-}
-
-type extentBuilder interface {
-	build(forest *core.Forest) extent
-}
-
-type extension func(forest *core.Forest) extent
-
-func (fn extension) build(forest *core.Forest) extent {
-	return fn(forest)
 }
 
 type scaffoldBuilder interface {

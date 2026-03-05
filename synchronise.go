@@ -25,10 +25,6 @@ type trunk struct {
 	err error
 }
 
-func (t *trunk) extent() extent {
-	return t.ext
-}
-
 func (t *trunk) IsComplete() bool {
 	return t.ext.complete()
 }
@@ -52,6 +48,7 @@ type concurrent struct {
 func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
 	defer func() {
 		c.close()
+
 		if c.pool != nil {
 			c.pool.Release(ctx)
 		}
@@ -99,6 +96,7 @@ func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error
 		err := errors.Wrap(c.err, locale.ErrWorkerPoolCreationFailed.Error())
 		return c.kc.Result(ctx), err
 	}
+
 	c.open(ctx)
 
 	if c.o.Concurrency.Output.On != nil {

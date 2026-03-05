@@ -1,8 +1,8 @@
 package collections_test
 
 import (
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ginkgo ok
-	. "github.com/onsi/gomega"    //nolint:revive // gomega ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/collections"
 )
@@ -27,7 +27,6 @@ var _ = Describe("Stack", func() {
 				stack := collections.NewStack[string]()
 				_, err := stack.Pop()
 				Expect(err).To(MatchError("internal: stack is empty"))
-
 			})
 		})
 		When("stack is NOT empty", func() {
@@ -41,6 +40,7 @@ var _ = Describe("Stack", func() {
 					size        = uint(6)
 					expectedPop = "violet"
 				)
+
 				withExpectedPop := &WithExpectedPop{
 					stack:  stack,
 					popped: expectedPop,
@@ -63,6 +63,7 @@ var _ = Describe("Stack", func() {
 					size        = uint(6)
 					expectedPop = "violet"
 				)
+
 				withExpectedPop := &WithExpectedPop{
 					stack:  stack,
 					popped: expectedPop,
@@ -95,6 +96,7 @@ var _ = Describe("Stack", func() {
 		When("stack not empty", func() {
 			It("🧪 should: return correct current value", func() {
 				stack := collections.NewStackWith([]string{"north", "east", "south", "west"})
+
 				const (
 					size    = uint(4)
 					current = "west"

@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"sync"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -34,6 +34,7 @@ var _ = Describe("director error", Ordered, func() {
 		handler = func(_ age.Servant) error {
 			return nil
 		}
+
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{

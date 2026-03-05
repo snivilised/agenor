@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive,stylecheck // ok
-	. "github.com/onsi/gomega"    //nolint:revive,stylecheck // ok
+	. "github.com/onsi/ginkgo/v2" //nolint:staticcheck // ok
+	. "github.com/onsi/gomega"    //nolint:staticcheck // ok
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -13,6 +13,7 @@ import (
 	"github.com/snivilised/agenor/life"
 )
 
+// Begin is a life.BeginHandler that prints the tree name.
 func Begin(em string) life.BeginHandler {
 	return func(state *life.BeginState) {
 		GinkgoWriter.Printf(
@@ -21,6 +22,7 @@ func Begin(em string) life.BeginHandler {
 	}
 }
 
+// End is a life.EndHandler that prints the tree name.
 func End(em string) life.EndHandler {
 	return func(_ core.TraverseResult) {
 		GinkgoWriter.Printf(
@@ -29,6 +31,8 @@ func End(em string) life.EndHandler {
 	}
 }
 
+// UniversalCallback is a core.Client that prints the node path and depth
+// and is used for universal subscriptions.
 func UniversalCallback(name string) core.Client {
 	return func(servant age.Servant) error {
 		node := servant.Node()
@@ -42,6 +46,8 @@ func UniversalCallback(name string) core.Client {
 	}
 }
 
+// DirectoriesCallback is a core.Client that prints the node path and depth
+// and is used for directory subscriptions.
 func DirectoriesCallback(name string) core.Client {
 	return func(servant age.Servant) error {
 		node := servant.Node()
@@ -60,6 +66,8 @@ func DirectoriesCallback(name string) core.Client {
 	}
 }
 
+// FilesCallback is a core.Client that prints the node path and depth
+// and is used for file subscriptions.
 func FilesCallback(name string) core.Client {
 	return func(servant age.Servant) error {
 		node := servant.Node()
@@ -73,6 +81,8 @@ func FilesCallback(name string) core.Client {
 	}
 }
 
+// DirectoriesCaseSensitiveCallback is a core.Client that prints the node path and depth
+// and is used for directory subscriptions.
 func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 	recall := make(Recall)
 
@@ -98,6 +108,7 @@ func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 	}
 }
 
+// PanicAt is a core.Client that panics when the node name matches the given name.
 func PanicAt(at string) core.Client {
 	return func(servant core.Servant) error {
 		node := servant.Node()

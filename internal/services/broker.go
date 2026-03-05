@@ -4,21 +4,30 @@ import (
 	"github.com/snivilised/agenor/internal/third/bus"
 )
 
-// 📦 pkg: services - can contain anything which is a cross cutting concern
-// so much so that explicitly passing them around just results in
-// tighter coupling.
-
 const (
-	format                  = "%03d"
-	TopicInitPlugins        = "topic:init.plugins"
+	format = "%03d"
+	// TopicInitPlugins topic used to indicate initialisation of plugins.
+	TopicInitPlugins = "topic:init.plugins"
+
+	// TopicInterceptNavigator topic used to indicate navigator can
+	// creation can be intercepted.
 	TopicInterceptNavigator = "topic:intercept.navigator"
+
+	// TopicNavigationComplete topic used to indicate navigation has completed.
 	TopicNavigationComplete = "topic:navigation.complete"
-	TopicOptionsAnnounce    = "topic:options.announce"
-	TopicOptionsBefore      = "topic:options.before"
-	TopicOptionsComplete    = "topic:options.complete"
+
+	// TopicOptionsAnnounce topic used to indicate options have been processed.
+	TopicOptionsAnnounce = "topic:options.announce"
+
+	// TopicOptionsBefore topic used to indicate options are about to be processed.
+	TopicOptionsBefore = "topic:options.before"
+
+	// TopicOptionsComplete topic used to indicate options have been processed.
+	TopicOptionsComplete = "topic:options.complete"
 )
 
 var (
+	// Broker is the broker instance
 	Broker *bus.Broker
 	topics = []string{
 		TopicInitPlugins,
@@ -35,16 +44,18 @@ func init() {
 }
 
 type (
+	// InitBroker is the broker initialisation interface
 	InitBroker interface {
+		// Available indicates availability of the broker
 		Available(b *bus.Broker)
 	}
 )
 
+// Reset creates a new Broker
 func Reset() *bus.Broker {
 	b, err := bus.New(&bus.Sequential{
 		Format: format,
 	})
-
 	if err != nil {
 		panic(err)
 	}

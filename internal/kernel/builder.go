@@ -8,32 +8,47 @@ import (
 )
 
 type (
+	// Artefacts is the result of building a navigator.
 	Artefacts struct {
+		// Kontroller is the kernel controller.
 		Kontroller enclave.KernelController
-		Mediator   enclave.Mediator
-		Resources  *enclave.Resources
-		IfResult   core.Completion
-		Error      error
+		// Mediator is the mediator.
+		Mediator enclave.Mediator
+		// Resources is the resources.
+		Resources *enclave.Resources
+		// IfResult is the result of the navigation.
+		IfResult core.Completion
+		// Error is the error.
+		Error error
 	}
 
+	// Inception is the input to the builder.
 	Inception struct {
-		Facade       pref.Facade
+		// Facade is the facade.
+		Facade pref.Facade
+		// Subscription is the subscription.
 		Subscription enums.Subscription
-		Harvest      enclave.OptionHarvest
-		Resources    *enclave.Resources
+		// Harvest is the harvest.
+		Harvest enclave.OptionHarvest
+		// Resources is the resources.
+		Resources *enclave.Resources
 	}
 
+	// NavigatorBuilder is the interface for building a navigator.
 	NavigatorBuilder interface {
 		Build(inception *Inception) *Artefacts
 	}
 
+	// Builder is a function that builds a navigator.
 	Builder func(inception *Inception) *Artefacts
 )
 
+// Build builds a navigator.
 func (fn Builder) Build(inception *Inception) *Artefacts {
 	return fn(inception)
 }
 
+// NavigationTree returns the navigation tree.
 func (i *Inception) NavigationTree() string {
 	if using, ok := i.Facade.(*pref.Using); ok {
 		return using.Tree

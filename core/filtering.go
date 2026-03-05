@@ -6,9 +6,9 @@ import (
 	"github.com/snivilised/agenor/enums"
 )
 
-// TraverseFilter filter that can be applied to file system entries. When specified,
-// the callback will only be invoked for file system nodes that pass the filter.
 type (
+	// TraverseFilter filter that can be applied to file system entries. When specified,
+	// the callback will only be invoked for file system nodes that pass the filter.
 	TraverseFilter interface {
 		// Description describes filter
 		Description() string
@@ -30,6 +30,7 @@ type (
 		Scope() enums.FilterScope
 	}
 
+	// FilterDef defines a filter that can be applied to file system entries.
 	FilterDef struct {
 		// Type specifies the type of filter (mandatory)
 		Type enums.FilterType
@@ -59,14 +60,15 @@ type (
 		Poly *PolyFilterDef
 	}
 
+	// PolyFilterDef defines a filter that can be applied to a directory's collection of entries
+	// when subscription is set to ScopeDirectory or ScopeAllEntries
 	PolyFilterDef struct {
 		File      FilterDef
 		Directory FilterDef
 	}
 
 	// ChildTraverseFilter filter that can be applied to a directory's collection of entries
-	// when subscription is
-
+	// when subscription is set to ScopeDirectory or ScopeAllEntries
 	ChildTraverseFilter interface {
 		// Description describes filter
 		Description() string
@@ -83,6 +85,8 @@ type (
 		Matching(children []fs.DirEntry) []fs.DirEntry
 	}
 
+	// ChildFilterDef defines a filter that can be applied to a directory's collection of entries
+	// when subscription is set to ScopeDirectory or ScopeAllEntries
 	ChildFilterDef struct {
 		// Type specifies the type of filter (mandatory)
 		Type enums.FilterType
@@ -97,6 +101,8 @@ type (
 		Negate bool
 	}
 
+	// SampleFilterDef defines a filter that can be applied to a directory's collection of entries
+	// when subscription is set to ScopeDirectory or ScopeAllEntries
 	SampleFilterDef struct {
 		// Type specifies the type of filter (mandatory)
 		Type enums.FilterType
@@ -124,6 +130,9 @@ type (
 		//
 		Custom SampleTraverseFilter
 	}
+
+	// SampleTraverseFilter filter that can be applied to a directory's collection of entries
+	// when subscription is set to ScopeDirectory or ScopeAllEntries
 	SampleTraverseFilter interface {
 		// Description describes filter
 		Description() string
@@ -137,6 +146,9 @@ type (
 	}
 )
 
+// BenignNodeFilterDef is a filter definition that matches all nodes and can
+// be used as a default filter when no filtering is desired. It uses a regex
+// pattern that matches any string (".") and applies to the entire tree (ScopeTree).
 var BenignNodeFilterDef = FilterDef{
 	Type:        enums.FilterTypeRegex,
 	Description: "benign allow all",

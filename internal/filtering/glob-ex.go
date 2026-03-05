@@ -14,7 +14,10 @@ import (
 const (
 	excludeExtSymbol = '!'
 	wildcard         = "*"
-	GlobExPattern    = `^(?P<base>.*?)\.(?P<neg>!)?(?P<ext>[^.]+)$`
+
+	// GlobExPattern matches a file pattern specification, which consists of
+	// the base and extension parts
+	GlobExPattern = `^(?P<base>.*?)\.(?P<neg>!)?(?P<ext>[^.]+)$`
 )
 
 func createGlobExFilter(def *core.FilterDef,
@@ -24,6 +27,7 @@ func createGlobExFilter(def *core.FilterDef,
 		segments, patterns []string
 		gs                 *globSpec
 	)
+
 	if segments, patterns, err = splitGlobExPattern(def.Pattern); err != nil {
 		return nil, err
 	}
@@ -49,11 +53,17 @@ func createGlobExFilter(def *core.FilterDef,
 	return filter, err
 }
 
+// GlobEx is a filter that matches files based on a glob pattern. An extended
+// glob pattern allows for multiple patterns to be defined that is applied to
+// the filename itself as well as a pattern that is applied to the file's parent
+// directory.
 type GlobEx struct {
 	Base
 	spec *globSpec
 }
 
+// IsApplicable determines if the filter is applicable to the given node.
+// It returns true if the filter matches the node, false otherwise.
 func (f *GlobEx) IsApplicable(node *core.Node) bool {
 	if f.Base.IsApplicable(node) {
 		return f.isDirectoryMatch(node)
@@ -116,14 +126,6 @@ type (
 		directoryGlob      string         // *
 		directoryExclusion string         // <excl>
 	}
-
-	indexCaptures struct {
-		dot, star int
-		base, ext string
-	}
-
-	extractor  func(pattern string) (ext, gross, match string)
-	indexFuncs map[enums.GlobExtraction]extractor
 )
 
 func parse(pattern string, re *regexp.Regexp) (spec *patternSpec, err error) {
@@ -165,7 +167,6 @@ func newSpec(directoryBase, directoryExclusion string, patterns []string) (*glob
 
 		return parse(pattern, re)
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -183,6 +184,7 @@ func (s *patternSpec) excluded(name string) bool {
 	}
 
 	m, _ := filepath.Match(s.matcher, name)
+
 	return m
 }
 
@@ -191,7 +193,8 @@ func (s *patternSpec) match(name string) bool {
 	return m
 }
 
-func (s globSpec) IsMatch(name string) bool { //nolint: gocritic
+// IsMatch determines if the glob spec matches the given name.
+func (s globSpec) IsMatch(name string) bool {
 	for _, spec := range s.specs {
 		if spec.excluded(name) {
 			return false

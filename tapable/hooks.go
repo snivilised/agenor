@@ -5,12 +5,34 @@ import (
 )
 
 type (
+	// Hooks contains the controllers for all the hooks that can be registered to
+	// during traversal. Each hook is defined by its default function, and the
+	// broadcaster function that is used to chain additional functionality to the
+	// default when clients call the Chain method on the hook controller.
 	Hooks struct {
-		FileSubPath      Hook[core.SubPathHook, core.ChainSubPathHook]
+		// FileSubPath is a hook that allow clients to modify the sub-path
+		// that is used for a file.
+		FileSubPath Hook[core.SubPathHook, core.ChainSubPathHook]
+
+		// DirectorySubPath is a hook that allow clients to modify the sub-path
+		// that is used for a directory.
 		DirectorySubPath Hook[core.SubPathHook, core.ChainSubPathHook]
-		ReadDirectory    Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
-		QueryStatus      Hook[core.QueryStatusHook, core.ChainQueryStatusHook]
-		Sort             Hook[core.SortHook, core.ChainSortHook]
+
+		// ReadDirectory is a hook that allows clients to override the reading of
+		// the contents directory.
+		ReadDirectory Hook[core.ReadDirectoryHook, core.ChainReadDirectoryHook]
+
+		// QueryStatus is a hook that allows clients to override the querying of
+		// a node's status. QueryStatus is only used for the top node of a traversal,
+		// and is not used for any other nodes. This is because the top node is the
+		// only node that is not guaranteed to exist in the forest, and therefore
+		// may require special handling.
+		QueryStatus Hook[core.QueryStatusHook, core.ChainQueryStatusHook]
+
+		// Sort is a hook that allows clients to override the sorting of a directory's
+		// contents. This is used in conjunction with the SortBehaviour to determine
+		// how the sorting should be applied.
+		Sort Hook[core.SortHook, core.ChainSortHook]
 	}
 
 	// HookCtrl contains the handler function to be invoked.
@@ -43,35 +65,9 @@ type (
 		// get returns the collection of interested listeners
 		get() []C
 	}
-
-	// ProvideListeners represents an entity that contains the list of listeners
-	// that needs to be provided to the hook broadcaster.
-	ProvideListeners[C any] func() []C
 )
 
-func (fn ProvideListeners[C]) get() []C {
-	return fn()
-}
-
 type (
-	// broadcastAdapter adapts a default hook so that it can be broadcasted to
-	// all members in the chain.
-	// F: core hook function
-	// C: chained client hook, ie the hook the client provides when they call Chain
-	// B: pre-defined broadcaster function
-	broadcastAdapter[F, C, B any] interface {
-		// attach effectively adds a new listener to the broadcast chain
-		// which in itself is attached to the default hook. That is to say,
-		// initially, each hook is defined to run default functionality. If
-		// an entity registers interest in augmenting the default functionality
-		// by invoking Chain on the HookCtrl, then the broadcaster is employed
-		// to invoke the default hook, the result (if a result is generated) of
-		// which is passed down the invocation chain. This allows subsequent
-		// parties to modify the ultimate result.
-		attach(def F, provider listenerProvider[C], broadcaster B) F
-	}
-
-	// attacher
 	attacher[F, C, B any] func(def F, provider listenerProvider[C], broadcaster B) F
 )
 
@@ -98,10 +94,19 @@ func NewHookCtrl[F, C, B any](
 	}
 }
 
+// Tap registers the handler as the function to be invoked when the hook is invoked.
+// This replaces any previously registered handler, and does not chain to the
+// default functionality. If the client wishes to chain to the default functionality,
+// they should use the Chain method instead.
 func (c *HookCtrl[F, C, B]) Tap(handler F) {
 	c.handler = handler
 }
 
+// Chain registers the handler as the function to be invoked when the hook is invoked.
+// This chains to the default functionality, and any previously registered handlers,
+// by converting the handler into a broadcaster, and invoking the adapter to
+// attach this broadcaster to the default function. If the client wishes to
+// replace the default functionality entirely, they should use the Tap method instead.
 func (c *HookCtrl[F, C, B]) Chain(handler C) {
 	if c.listeners == nil {
 		c.listeners = []C{handler}
@@ -113,14 +118,22 @@ func (c *HookCtrl[F, C, B]) Chain(handler C) {
 	c.listeners = append(c.listeners, handler)
 }
 
+// Default returns the default function for the hook, which is the function that is
+// invoked if no handlers are registered, or if the handlers chain to the default
+// functionality.
 func (c *HookCtrl[F, C, B]) Default() F {
 	return c.def
 }
 
+// Invoke returns the current handler for the hook, which is the function that is
+// invoked when the hook is invoked. This may be the default function if no handlers
+// have been registered, or it may be a chained function if handlers have been
+// registered using the Chain method, or it may be a completely replaced function
+// if a handler has been registered using the Tap method.
 func (c *HookCtrl[F, C, B]) Invoke() F {
 	return c.handler
 }
 
-func (c *HookCtrl[F, C, B]) get() []C {
+func (c *HookCtrl[F, C, B]) get() []C { //nolint:unused // ok
 	return c.listeners
 }

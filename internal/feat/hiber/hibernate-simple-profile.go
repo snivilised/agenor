@@ -22,16 +22,16 @@ func (p *simple) init(controls *life.Controls) error {
 	p.states = p.create()
 	p.controls = controls
 
-	if p.common.ho.WakeAt != nil {
-		filter, err := filtering.New(p.common.ho.WakeAt, p.common.fo)
+	if p.ho.WakeAt != nil {
+		filter, err := filtering.New(p.ho.WakeAt, p.fo)
 		if err != nil {
 			return err
 		}
 
-		p.common.triggers.wake = filter
+		p.triggers.wake = filter
 
-		if p.common.triggers.sleep == nil {
-			p.common.triggers.sleep = filtering.NewProhibitiveTraverseFilter(
+		if p.triggers.sleep == nil {
+			p.triggers.sleep = filtering.NewProhibitiveTraverseFilter(
 				&core.FilterDef{
 					Description: li18ngo.Text(locale.ProhibitiveWordTemplData{}),
 				},
@@ -39,16 +39,16 @@ func (p *simple) init(controls *life.Controls) error {
 		}
 	}
 
-	if p.common.ho.SleepAt != nil {
-		filter, err := filtering.New(p.common.ho.SleepAt, p.common.fo)
+	if p.ho.SleepAt != nil {
+		filter, err := filtering.New(p.ho.SleepAt, p.fo)
 		if err != nil {
 			return err
 		}
 
-		p.common.triggers.sleep = filter
+		p.triggers.sleep = filter
 
-		if p.common.triggers.wake == nil {
-			p.common.triggers.wake = filtering.NewPermissiveTraverseFilter(
+		if p.triggers.wake == nil {
+			p.triggers.wake = filtering.NewPermissiveTraverseFilter(
 				&core.FilterDef{
 					Description: li18ngo.Text(locale.PermissiveWordTemplData{}),
 				},
@@ -56,7 +56,7 @@ func (p *simple) init(controls *life.Controls) error {
 		}
 	}
 
-	p.transition(launch(p.common.ho))
+	p.transition(launch(p.ho))
 
 	return nil
 }
@@ -73,11 +73,11 @@ func (p *simple) create() hibernateStates {
 	return hibernateStates{
 		enums.HibernationPending: state{
 			next: func(_ core.Servant, node *core.Node, _ enclave.Inspection) (bool, error) {
-				if p.common.triggers.wake.IsMatch(node) {
-					p.controls.Wake.Dispatch()(p.common.triggers.wake.Description())
+				if p.triggers.wake.IsMatch(node) {
+					p.controls.Wake.Dispatch()(p.triggers.wake.Description())
 					p.transition(enums.HibernationActive)
 
-					if p.common.ho.Behaviour.InclusiveWake {
+					if p.ho.Behaviour.InclusiveWake {
 						return true, nil
 					}
 				}
@@ -88,13 +88,14 @@ func (p *simple) create() hibernateStates {
 
 		enums.HibernationActive: state{
 			next: func(_ core.Servant, node *core.Node, _ enclave.Inspection) (bool, error) {
-				if p.common.triggers.sleep.IsMatch(node) {
-					p.controls.Sleep.Dispatch()(p.common.triggers.sleep.Description())
+				if p.triggers.sleep.IsMatch(node) {
+					p.controls.Sleep.Dispatch()(p.triggers.sleep.Description())
 					p.transition(enums.HibernationRetired)
 
-					if p.common.ho.Behaviour.InclusiveSleep {
+					if p.ho.Behaviour.InclusiveSleep {
 						return true, nil
 					}
+
 					return false, nil
 				}
 

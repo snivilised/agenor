@@ -12,15 +12,14 @@ import (
 // invoke. Therefore, the client has to know that when its function is called back,
 // there will be no DirEntry for the tree node.
 type Node struct {
-	Path        string
-	Entry       fs.DirEntry // contains a FileInfo via Info() function
-	Info        fs.FileInfo // optional file info instance
-	Extension   Extension   // extended information about the directory entry
-	Error       error
-	Children    []fs.DirEntry
-	Parent      *Node
-	filteredOut bool
-	dir         bool
+	Path      string        // full path to the file system entity represented by this node
+	Entry     fs.DirEntry   // contains a FileInfo via Info() function
+	Info      fs.FileInfo   // optional file info instance
+	Extension Extension     // extended information about the directory entry
+	Error     error         // error encountered when creating this node, if any
+	Children  []fs.DirEntry // children of this node, if it is a directory.
+	Parent    *Node         // parent of this node, nil if this is the tree node
+	dir       bool          // indicates whether this node is a directory
 }
 
 // Extension provides extended information if the client requests

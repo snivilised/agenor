@@ -5,14 +5,14 @@ import (
 	"os"
 	"testing/fstest"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	lab "github.com/snivilised/agenor/internal/laboratory"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/internal/persist"
 	"github.com/snivilised/agenor/pref"
 	"github.com/snivilised/li18ngo"
@@ -115,25 +115,6 @@ func createJSONSampleFilterFromCoreWithPoly(
 	}
 }
 
-func createJSONSampleFilterDefFromCore(def *core.SampleFilterDef) *json.SampleFilterDef {
-	return &json.SampleFilterDef{
-		Type:        def.Type,
-		Description: def.Description,
-		Pattern:     def.Pattern,
-		Scope:       def.Scope,
-		Negate:      def.Negate,
-	}
-}
-
-func createJSONSampleFilterDefFromCoreWithPoly(def *core.SampleFilterDef,
-	poly *json.PolyFilterDef,
-) *json.SampleFilterDef {
-	result := createJSONSampleFilterDefFromCore(def)
-	result.Poly = poly
-
-	return result
-}
-
 var _ = Describe("Marshaler", Ordered, func() {
 	var (
 		fS       age.TraversalFS
@@ -161,6 +142,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 
 	BeforeAll(func() {
 		Expect(li18ngo.Use()).To(Succeed())
+
 		readPath = source + "/" + restoreFile
 	})
 
@@ -219,7 +201,6 @@ var _ = Describe("Marshaler", Ordered, func() {
 				Directory: jsonNodeFilterDef,
 			},
 		}
-
 	})
 
 	Context("map-fs", func() {

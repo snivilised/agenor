@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// PrimeArtefacts primes the artefacts for the navigator.
 func PrimeArtefacts(inception *Inception,
 	sealer enclave.GuardianSealer,
 ) *Artefacts {

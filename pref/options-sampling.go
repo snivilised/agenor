@@ -6,7 +6,10 @@ import (
 )
 
 type (
-	// SamplingOptions
+	// SamplingOptions contains options relating to sampling, which is the
+	// process of selecting a subset of entries from a directory's contents
+	// during traversal. Sampling can be used to limit the number of entries
+	// processed, or to select specific entries based on certain criteria.
 	SamplingOptions struct {
 		// Type the type of sampling to use
 		Type enums.SampleType
@@ -31,11 +34,20 @@ type (
 	// EntryQuantities contains specification of no of files and directories
 	// used in various contexts, but primarily sampling.
 	EntryQuantities struct {
-		Files       uint
+		// Files specifies the number of files to include in the sample
+		Files uint
+
+		// Directories specifies the number of directories to include in the sample
 		Directories uint
 	}
 
-	// SamplingIterationOptions
+	// SamplingIterationOptions contains options for customising the sampling process,
+	// which is the process of selecting a subset of entries from a directory's contents
+	// during traversal. This is used when the client requires an alternative way of
+	// creating a sample, eg to take all files greater than a certain size, instead
+	// of using the default way to sample which is either by slicing the directory's
+	// contents or by using the filter to select either the first/last n entries
+	// (using the SamplingOptions).
 	SamplingIterationOptions struct {
 		// Each enables customisation of the sampling functionality, instead of using
 		// the defined filter. A directory's contents is sampled according to this
@@ -63,7 +75,10 @@ type (
 	// loop should continue to consider more entries to be included in the sample. So
 	// set Files/Directories flags to true, when enough of those items have been included.
 	EnoughAlready struct {
-		Files       bool
+		// Files indicates whether enough files have been included in the sample.
+		Files bool
+
+		// Directories indicates whether enough directories have been included in the sample.
 		Directories bool
 	}
 
@@ -71,11 +86,18 @@ type (
 	// they should be set inside the while predicate. Note, the Enough field is only
 	// appropriate when using the universal navigator.
 	FilteredInfo struct {
+		// Counts the number of files and directories that have been included in the sample
+		// so far.
 		Counts EntryQuantities
+
+		// Enough indicates whether enough files and directories have been included in the sample.
 		Enough EnoughAlready
 	}
 )
 
+// IsSamplingActive returns true if sampling is active, which is determined by checking
+// if the sampling type is not undefined. If the sampling type is undefined, it means
+// that no sampling will be applied during traversal, and all entries will be processed.
 func (o SamplingOptions) IsSamplingActive() bool {
 	return o.Type != enums.SampleTypeUndefined
 }

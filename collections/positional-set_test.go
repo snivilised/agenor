@@ -3,8 +3,8 @@ package collections_test
 import (
 	"fmt"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/collections"
 	lab "github.com/snivilised/agenor/internal/laboratory"
@@ -28,14 +28,6 @@ func assertColoursAreInOrder(set *collections.PositionalSet[string]) {
 }
 
 var _ = Describe("PositionalSet", func() {
-	type (
-		orderingStringTE struct {
-			given  string
-			should string
-			roles  []string
-		}
-	)
-
 	var (
 		set *collections.PositionalSet[string]
 	)
@@ -153,6 +145,7 @@ var _ = Describe("PositionalSet", func() {
 				richard, _ := set.Position("richard")
 				of, _ := set.Position("of")
 				york, _ := set.Position("york")
+
 				Expect(richard < of).To(BeTrue())
 				Expect(richard < york).To(BeTrue())
 			})
@@ -171,6 +164,7 @@ var _ = Describe("PositionalSet", func() {
 		When("multiple items inserted out of order", func() {
 			It("🧪 should: return items defined by order", func() {
 				set.All(scrambled...)
+
 				expected := append(append([]string{}, rainbow...), "ANCHOR")
 				Expect(set.Items()).To(HaveExactElements(expected))
 			})
@@ -179,6 +173,7 @@ var _ = Describe("PositionalSet", func() {
 		When("partial items inserted in order", func() {
 			It("🧪 should: return items defined by order", func() {
 				set.All("vain", "battle", "york")
+
 				expected := []string{"york", "battle", "vain", "ANCHOR"}
 				Expect(set.Items()).To(HaveExactElements(expected))
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ginkgo ok
-	. "github.com/onsi/gomega"    //nolint:revive // gomega ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/collections"
 	"github.com/snivilised/agenor/internal/third/lo"
@@ -332,6 +332,7 @@ var _ = Describe("Iterators", func() {
 					for current := forwardIt.Start(); forwardIt.Valid(); current = forwardIt.Next() {
 						_ = current
 					}
+
 					forwardIt.Reset([]sleeve{
 						&record{name: "happiness is a butterfly"},
 						&record{name: "hope is a dangerous thing ..."},
@@ -354,6 +355,7 @@ var _ = Describe("Iterators", func() {
 					for current := reverseIt.Start(); reverseIt.Valid(); current = reverseIt.Next() {
 						_ = current
 					}
+
 					reverseIt.Reset([]sleeve{
 						&record{name: "happiness is a butterfly"},
 						&record{name: "hope is a dangerous thing ..."},
@@ -393,6 +395,7 @@ var _ = Describe("Iterators", func() {
 	Context("single item sequence", func() {
 		Context("forward iterator", func() {
 			var forwardIt collections.Iterator[sleeve]
+
 			BeforeEach(func() {
 				forwardIt = getSleeveIt(ForwardIterator, []sleeve{&record{name: "love song"}})
 			})
@@ -419,6 +422,7 @@ var _ = Describe("Iterators", func() {
 
 		Context("reverse iterator", func() {
 			var reverseIt collections.Iterator[sleeve]
+
 			BeforeEach(func() {
 				reverseIt = getSleeveIt(ReverseIterator, []sleeve{&record{name: "love song"}})
 			})
@@ -507,17 +511,20 @@ var _ = Describe("Iterators", func() {
 			Context("full iteration", func() {
 				It("🧪 should: iterate entire sequence (standard)", func() {
 					actual := []string{}
+
 					for current := forwardIt.Start(); forwardIt.Valid(); current = forwardIt.Next() {
 						song := current.song()
 						actual = append(actual, song)
 						GinkgoWriter.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
 					}
+
 					expected := []string{"01 - cinnamon girl", "02 - how to disappear", "03 - california"}
 					Expect(actual).To(HaveExactElements(expected))
 				})
 
 				It("🧪 should: iterate entire sequence (do-while)", func() {
 					actual := []string{}
+
 					for current := forwardIt.Start(); ; {
 						song := current.song()
 						actual = append(actual, song)
@@ -528,6 +535,7 @@ var _ = Describe("Iterators", func() {
 							break
 						}
 					}
+
 					expected := []string{"01 - cinnamon girl", "02 - how to disappear", "03 - california"}
 					Expect(actual).To(HaveExactElements(expected))
 				})
@@ -587,17 +595,20 @@ var _ = Describe("Iterators", func() {
 			Context("full iteration", func() {
 				It("🧪 should: iterate entire sequence (standard)", func() {
 					actual := []string{}
+
 					for current := reverseIt.Start(); reverseIt.Valid(); current = reverseIt.Next() {
 						song := current.song()
 						actual = append(actual, song)
 						GinkgoWriter.Printf("===> 🔈🔈🔈 song: '%v'\n", song)
 					}
+
 					expected := []string{"03 - california", "02 - how to disappear", "01 - cinnamon girl"}
 					Expect(actual).To(HaveExactElements(expected))
 				})
 
 				It("🧪 should: iterate entire sequence (do-while)", func() {
 					actual := []string{}
+
 					for current := reverseIt.Start(); ; {
 						song := current.song()
 						actual = append(actual, song)
@@ -608,11 +619,11 @@ var _ = Describe("Iterators", func() {
 							break
 						}
 					}
+
 					expected := []string{"03 - california", "02 - how to disappear", "01 - cinnamon girl"}
 					Expect(actual).To(HaveExactElements(expected))
 				})
 			})
-
 		})
 
 		Context("runnable", Ordered, func() {

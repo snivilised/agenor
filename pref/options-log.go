@@ -5,12 +5,18 @@ import (
 )
 
 type (
+	// AdminOptions defines options for admin related configurations.
 	AdminOptions struct {
+		// Path specifies the path for admin related files.
 		Path string
 	}
 
+	// MonitorOptions represents the options for monitoring the traversal process.
 	MonitorOptions struct {
-		Log   *slog.Logger
+		// Log is the logger used for logging messages during the traversal process.
+		Log *slog.Logger
+
+		// Admin specifies the options for admin related configurations.
 		Admin AdminOptions
 	}
 )

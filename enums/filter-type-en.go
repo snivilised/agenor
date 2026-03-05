@@ -2,9 +2,11 @@ package enums
 
 //go:generate stringer -type=FilterType -linecomment -trimprefix=Filter -output filter-type-en-auto.go
 
+// FilterType represents the type of filter to apply
 type FilterType uint
 
 const (
+	// FilterTypeUndefined represents the undefined filter type
 	FilterTypeUndefined FilterType = iota // undefined-filter
 
 	// FilterTypeGlobEx is the preferred filter type as it the most

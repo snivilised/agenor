@@ -5,6 +5,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// Bind creates a Binder and binds the Events to the Controls
 func Bind(o *pref.Options, active *core.ActiveState,
 	settings ...pref.Option,
 ) (*LoadInfo, *Binder, error) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -54,8 +54,7 @@ func (s arrangeSave) arrange() *saveAsserter {
 }
 
 type saveAsserter struct {
-	expectedErr error
-	directory   string
+	directory string
 }
 
 func (a *saveAsserter) assert(result core.TraverseResult, actual, expected error) {
@@ -82,6 +81,7 @@ var _ = Describe("Save", Ordered, func() {
 				}
 			},
 		)).To(Succeed())
+
 		from = lab.GetJSONPath()
 		jdir = lab.GetJSONDir()
 		core.Now = func() time.Time {
@@ -92,6 +92,7 @@ var _ = Describe("Save", Ordered, func() {
 
 	BeforeEach(func() {
 		services.Reset()
+
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
 		rS = tfs.New()
 	})

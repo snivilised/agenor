@@ -8,6 +8,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// IfActive returns a new plugin if the hibernate feature is active, otherwise nil.
 func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) enclave.Plugin {
 	if o.Hibernate.IsHibernateActive() {
 		return &plugin{
@@ -32,12 +33,15 @@ type plugin struct {
 	profile profile
 }
 
+// Next determines whether the servant should be filtered out or not, and
+// returns true if it should be filtered out.
 func (p *plugin) Next(servant core.Servant,
 	inspection enclave.Inspection,
 ) (bool, error) {
 	return p.profile.next(servant, servant.Node(), inspection)
 }
 
+// Init initializes the plugin, setting up the profile and decorating the plugin.
 func (p *plugin) Init(pi *enclave.PluginInit) error {
 	if err := p.profile.init(pi.Controls); err != nil {
 		return err

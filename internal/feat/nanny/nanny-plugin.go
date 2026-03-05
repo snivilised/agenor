@@ -1,7 +1,5 @@
 package nanny
 
-// 📦 pkg: nanny - handles a node's children for directories with children subscription
-
 import (
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
@@ -10,6 +8,14 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// IfActive returns a new nanny plugin if the subscription is directories with files
+// and no filtering is active, otherwise it returns nil.
+// The nanny plugin is responsible for handling the children of a node when the
+// directories with files subscription is active and no filtering is active.
+// It will sort the children of a node into files and directories, and then
+// assign the files to the node's children. The nanny plugin will also track
+// the number of child files found for each node. A new plugin if filtering
+// is active, otherwise nil.
 func IfActive(o *pref.Options,
 	sub enums.Subscription, mediator enclave.Mediator,
 ) enclave.Plugin {
@@ -32,6 +38,8 @@ type plugin struct {
 	crate enclave.Crate
 }
 
+// Next determines whether the servant should be filtered out or not,
+// and returns true if it should be filtered out.
 func (p *plugin) Next(servant core.Servant,
 	inspection enclave.Inspection,
 ) (bool, error) {
@@ -43,6 +51,7 @@ func (p *plugin) Next(servant core.Servant,
 	return true, nil
 }
 
+// Init initializes the plugin, setting up the metrics and decorating the plugin.
 func (p *plugin) Init(_ *enclave.PluginInit) error {
 	p.crate.Metrics = p.Mediator.Supervisor().Many(
 		enums.MetricNoChildFilesFound,

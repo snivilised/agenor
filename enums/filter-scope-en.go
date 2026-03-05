@@ -16,22 +16,24 @@ import (
 type FilterScope uint32
 
 const (
+	// ScopeUndefined represents the undefined scope
+	//
 	ScopeUndefined FilterScope = 0 // undefined-scope
 
-	// ScopeTree, the Tree scope
+	// ScopeTree represents the tree scope
 	//
 	ScopeTree FilterScope = 1 << (iota - 1) // tree-scope
 
-	// ScopeTop, any node that is a direct descendent of the tree node
+	// ScopeTop represents any node that is a direct descendent of the tree node
 	//
 	ScopeTop // top-scope
 
-	// ScopeLeaf, for directories, any node that has no sub directories. For
-	// files, any node that appears under a leaf directory node
+	// ScopeLeaf represents for directories, any node that has no sub directories.
+	// For files, any node that appears under a leaf directory node
 	//
 	ScopeLeaf // leaf-scope
 
-	// ScopeIntermediate, apply filter to nodes which are neither leaf or top nodes
+	// ScopeIntermediate apply filter to nodes which are neither leaf or top nodes
 	//
 	ScopeIntermediate // intermediate-scope
 
@@ -43,7 +45,8 @@ const (
 	//
 	ScopeDirectory // directory-scope
 
-	// ScopeCustom, client defined categorisation (yet to be confirmed)
+	// ScopeCustom represents client defined categorisation
+	// (TODO: yet to be confirmed)
 	//
 	ScopeCustom // custom-scope
 

@@ -3,8 +3,8 @@ package tapable_test
 import (
 	"io/fs"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -145,7 +145,6 @@ var _ = Describe("Tapable", Ordered, func() {
 					Expect(invoked).To(BeTrue(), "DirectorySubPath hook not invoked")
 				})
 			})
-
 		})
 
 		Context("ReadDirectory", func() {
@@ -153,6 +152,7 @@ var _ = Describe("Tapable", Ordered, func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
 						path := lab.Static.RetroWave
+
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -175,6 +175,7 @@ var _ = Describe("Tapable", Ordered, func() {
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
 						path := lab.Static.RetroWave
+
 						o.Hooks.ReadDirectory.Chain(
 							func(result []fs.DirEntry, err error,
 								_ fs.ReadDirFS, _ string,
@@ -227,6 +228,7 @@ var _ = Describe("Tapable", Ordered, func() {
 				When("single", func() {
 					It("🧪 should: invoke", func() {
 						path := lab.Static.RetroWave
+
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,
@@ -245,6 +247,7 @@ var _ = Describe("Tapable", Ordered, func() {
 				When("multiple", func() {
 					It("🧪 should: broadcast", func() {
 						path := lab.Static.RetroWave
+
 						o.Hooks.QueryStatus.Chain(
 							func(result fs.FileInfo, err error,
 								_ fs.StatFS, _ string,

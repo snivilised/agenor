@@ -8,10 +8,7 @@ import (
 	"github.com/snivilised/agenor/enums"
 )
 
-// 📦 pkg: level - contains functionality concerned only with depth
-// management.
-
-// Periscope: depth and scope manager
+// Periscope depth and scope manager
 type Periscope struct {
 	depth int
 }
@@ -28,6 +25,10 @@ func (p *Periscope) Offset(by int) {
 	p.depth += by
 }
 
+// Scope returns the scope of the current node based on whether it is a leaf
+// and the current depth. The scope is determined using bitwise operations on
+// the enums.FilterScope values, allowing for combinations of scopes to be
+// represented efficiently.
 func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 	result := enums.ScopeIntermediate
 
@@ -52,10 +53,16 @@ func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 	return result
 }
 
+// Depth returns the current depth of the periscope, adjusted by a decrement
+// to account for the initial state where depth is zero before any descent
+// has occurred. This allows the depth to reflect the actual level of traversal
+// in the directory structure, where a depth of zero corresponds to the
+// root level.
 func (p *Periscope) Depth() int {
 	return p.depth - 1
 }
 
+// Delta checks the tree path, with the path of the current node
 func (p *Periscope) Delta(tree, current string) (err error) {
 	rootSize := len(strings.Split(tree, string(filepath.Separator)))
 	currentSize := len(strings.Split(current, string(filepath.Separator)))
@@ -67,6 +74,12 @@ func (p *Periscope) Delta(tree, current string) (err error) {
 	return nil
 }
 
+// Descend increments the depth of the periscope and checks if it exceeds
+// the specified maximum depth. If the maximum depth is exceeded, it returns
+// false, indicating that the traversal should not continue deeper. Otherwise,
+// it returns true, allowing the traversal to proceed to the next level. The use
+// of a maximum depth helps to prevent infinite recursion and allows for
+// controlled traversal of directory structures.
 func (p *Periscope) Descend(maximum uint) bool {
 	if maximum > 0 && p.depth > int(maximum) { //nolint:gosec // ok
 		return false
@@ -77,6 +90,12 @@ func (p *Periscope) Descend(maximum uint) bool {
 	return true
 }
 
+// Ascend decrements the depth of the periscope, allowing the traversal to
+// move back up the directory structure. This is typically called after
+// processing a directory's contents, signaling that the traversal is moving
+// back up to the parent level. By managing the depth in this way, the periscope
+// can accurately track the current level of traversal and ensure that operations
+// are performed at the correct depth in the directory hierarchy.
 func (p *Periscope) Ascend() {
 	p.depth--
 }

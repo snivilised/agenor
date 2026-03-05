@@ -7,11 +7,13 @@ import (
 )
 
 type (
+	// SubPathBroadcaster is a function type that defines the signature for broadcasting sub-path hooks.
 	SubPathBroadcaster func(def core.SubPathHook,
 		provider listenerProvider[core.ChainSubPathHook],
 	) core.SubPathHook
 )
 
+// GetSubPathBroadcaster creates a new SubPathHook that broadcasts to all registered listeners.
 func GetSubPathBroadcaster(def core.SubPathHook,
 	provider listenerProvider[core.ChainSubPathHook],
 ) core.SubPathHook {
@@ -26,6 +28,8 @@ func GetSubPathBroadcaster(def core.SubPathHook,
 	}
 }
 
+// SubPathAttacher creates a new SubPathHook that attaches the broadcaster to
+// the provided definition and provider.
 func SubPathAttacher(def core.SubPathHook,
 	provider listenerProvider[core.ChainSubPathHook],
 	broadcaster SubPathBroadcaster,
@@ -36,11 +40,15 @@ func SubPathAttacher(def core.SubPathHook,
 }
 
 type (
+	// ReadDirectoryBroadcaster is a function type that defines the signature for
+	// broadcasting read directory hooks.
 	ReadDirectoryBroadcaster func(def core.ReadDirectoryHook,
 		provider listenerProvider[core.ChainReadDirectoryHook],
 	) core.ReadDirectoryHook
 )
 
+// GetReadDirectoryBroadcaster creates a new ReadDirectoryHook that
+// broadcasts to all registered listeners.
 func GetReadDirectoryBroadcaster(def core.ReadDirectoryHook,
 	provider listenerProvider[core.ChainReadDirectoryHook],
 ) core.ReadDirectoryHook {
@@ -55,6 +63,8 @@ func GetReadDirectoryBroadcaster(def core.ReadDirectoryHook,
 	}
 }
 
+// ReadDirectoryAttacher creates a new ReadDirectoryHook that attaches the broadcaster to
+// the provided definition and provider.
 func ReadDirectoryAttacher(def core.ReadDirectoryHook,
 	provider listenerProvider[core.ChainReadDirectoryHook],
 	broadcaster ReadDirectoryBroadcaster,
@@ -65,11 +75,15 @@ func ReadDirectoryAttacher(def core.ReadDirectoryHook,
 }
 
 type (
+	// QueryStatusBroadcaster is a function type that defines the signature for
+	// broadcasting query status hooks.
 	QueryStatusBroadcaster func(def core.QueryStatusHook,
 		provider listenerProvider[core.ChainQueryStatusHook],
 	) core.QueryStatusHook
 )
 
+// GetQueryStatusBroadcaster creates a new QueryStatusHook that broadcasts to
+// all registered listeners.
 func GetQueryStatusBroadcaster(def core.QueryStatusHook,
 	provider listenerProvider[core.ChainQueryStatusHook],
 ) core.QueryStatusHook {
@@ -84,6 +98,8 @@ func GetQueryStatusBroadcaster(def core.QueryStatusHook,
 	}
 }
 
+// QueryStatusAttacher creates a new QueryStatusHook that attaches the broadcaster to
+// the provided definition and provider.
 func QueryStatusAttacher(def core.QueryStatusHook,
 	provider listenerProvider[core.ChainQueryStatusHook],
 	broadcaster QueryStatusBroadcaster,
@@ -94,11 +110,15 @@ func QueryStatusAttacher(def core.QueryStatusHook,
 }
 
 type (
+	// SortBroadcaster is a function type that defines the signature for
+	// broadcasting sort hooks.
 	SortBroadcaster func(def core.SortHook,
 		provider listenerProvider[core.ChainSortHook],
 	) core.SortHook
 )
 
+// GetSortBroadcaster creates a new SortHook that broadcasts to all
+// registered listeners.
 func GetSortBroadcaster(def core.SortHook,
 	provider listenerProvider[core.ChainSortHook],
 ) core.SortHook {
@@ -111,6 +131,8 @@ func GetSortBroadcaster(def core.SortHook,
 	}
 }
 
+// SortAttacher creates a new SortHook that attaches the broadcaster to
+// the provided definition and provider.
 func SortAttacher(def core.SortHook,
 	provider listenerProvider[core.ChainSortHook],
 	broadcaster SortBroadcaster,

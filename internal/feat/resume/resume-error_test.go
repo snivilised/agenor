@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/fs"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -40,6 +40,7 @@ var _ = Describe("Resume Error", Ordered, func() {
 
 	BeforeEach(func() {
 		services.Reset()
+
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
 		from = lab.GetJSONPath()
 	})

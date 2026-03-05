@@ -1,3 +1,11 @@
+// Package main provides a test command-line utility for navigating a file
+// system tree using the Agenor library. It allows users to specify a
+// path, subscription type (file or directory), filters, and glob patterns
+// to control which nodes are included in the navigation. The utility
+// prints the structure of the file system tree to the console, indicating
+// directories and files with different icons. It also includes hooks for
+// filtering directory entries and displays metrics about the number of
+// directories and files invoked during navigation.
 package main
 
 import (
@@ -148,7 +156,6 @@ func navigate(n *navigation) {
 		}),
 		age.WithHookReadDirectory(readEntriesHook),
 	)).Navigate(ctx)
-
 	if err != nil {
 		fmt.Printf("%v \n", err)
 		os.Exit(1)

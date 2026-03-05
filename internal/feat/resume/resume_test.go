@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -26,8 +26,6 @@ import (
 const (
 	verbose = false
 )
-
-var noOp = func(string) {}
 
 var _ = Describe("Resume", Ordered, func() {
 	var (
@@ -70,6 +68,7 @@ var _ = Describe("Resume", Ordered, func() {
 				once := func(node *age.Node) error { //nolint:unparam // return nil error ok
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
+
 					recall[node.Extension.Name] = len(node.Children)
 
 					return nil

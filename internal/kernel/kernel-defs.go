@@ -9,33 +9,33 @@ import (
 	nef "github.com/snivilised/nefilim"
 )
 
-// 📦 pkg: kernel - contains the core traversal functionality. Kernel
-// is concerned only with the core task of navigation. Supplementary
-// functionality is implemented externally in plugins.
-
 type (
-	// NavigatorImpl
+	// NavigatorImpl is the implementation of the navigator which is
+	// prescribed by the subscription type.
 	NavigatorImpl interface {
-		// Ignite
+		// Ignite sparks the navigator into life after initialisation
+		// has taken place.
 		Ignite(ignition *enclave.Ignition)
 
-		// Top
+		// Top starts the traversal at the top of the tree.
 		Top(ctx context.Context,
 			ns *navigationStatic,
 		) (*enclave.KernelResult, error)
 
-		// Traverse
+		// Traverse main navigation action
 		Traverse(ctx context.Context,
 			ns *navigationStatic,
 			servant core.Servant,
 		) (bool, error)
 
-		// Result
+		// Result returns the result of the traversal.
 		Result(ctx context.Context) *enclave.KernelResult
 	}
 
-	// NavigatorDriver
+	// NavigatorDriver is the driver of the navigator.
 	NavigatorDriver interface {
+		// Impl returns the navigator implementation which is
+		// prescribed by the subscription type.
 		Impl() NavigatorImpl
 	}
 
@@ -61,7 +61,7 @@ type (
 		// really need a state machine, because the chain is able to fulfill this
 		// purpose.
 		//
-		// but wait, let's think about wake and sleep. In the normal scenario,
+		// But wait, let's think about wake and sleep. In the normal scenario,
 		// fastward will start off in sleeping mode and the filter will be a
 		// wake condition. Once we encounter the wake condition, the hibernation
 		// decorator needs to be removed. But how do we know that the top of the
@@ -77,18 +77,17 @@ type (
 		// an error is returned.
 		Decorate(link enclave.Link) error
 
-		// Invoke executes the chain which may or may not end up resulting in
-		// the invocation of the client's callback, depending on the contents
-		// of the chain.
-		// Invoke(node *core.Node) error
-
 		// Unwind removes last link in the chain which is expected to be of
 		// role specified.
 		Unwind(role enums.Role) error
 	}
 
-	// Invokable
+	// Invokable is the invokable interface. It is used to invoke the chain
+	// of decorators.
 	Invokable interface {
+		// Invoke executes the chain which may or may not end up resulting in
+		// the invocation of the client's callback, depending on the contents
+		// of the chain.
 		Invoke(servant core.Servant, inspection enclave.Inspection) error
 	}
 

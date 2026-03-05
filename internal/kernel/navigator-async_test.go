@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -155,6 +155,7 @@ var _ = Describe("Navigator", Ordered, func() {
 				if entry.Consume {
 					on = func(outs core.OutputStream) {
 						wg.Add(1)
+
 						go consumeOk(ctx, outs, &wg)
 					}
 				}
@@ -163,6 +164,7 @@ var _ = Describe("Navigator", Ordered, func() {
 					GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
 						entry.Resume.At, entry.Subscription,
 					)
+
 					active.Tree = lab.Static.RetroWave
 					active.Depth = 2
 					active.TraverseDescription.IsRelative = true

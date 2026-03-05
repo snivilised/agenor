@@ -78,7 +78,7 @@ func newForwardIt[T any](elements []T, zero T) *forwardIterator[T] {
 // panic. If the collection contains structs, then pass in an empty struct
 // as the nil value.
 func ForwardIt[T any](elements []T, zero T) Iterator[T] {
-	return newForwardIt[T](elements, zero)
+	return newForwardIt(elements, zero)
 }
 
 func newReverseIt[T any](elements []T, zero T) *reverseIterator[T] {
@@ -95,7 +95,7 @@ func newReverseIt[T any](elements []T, zero T) *reverseIterator[T] {
 // slice is empty, then a nil iterator is returned. (NB: please remember to check
 // for a nil interface correctly; see the helper function IsNil in utils).
 func ReverseIt[T any](elements []T, zero T) Iterator[T] {
-	return newReverseIt[T](elements, zero)
+	return newReverseIt(elements, zero)
 }
 
 type baseIterator[T any] struct {
@@ -125,6 +125,7 @@ func (i *forwardIterator[T]) Start() T {
 	}
 
 	const initial = 0
+
 	i.current = initial
 
 	return i.container[i.current]
@@ -165,6 +166,7 @@ func (i *reverseIterator[T]) Start() T {
 	}
 
 	const offset = 1
+
 	i.current = len(i.container) - offset
 
 	return i.container[i.current]

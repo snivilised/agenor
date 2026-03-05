@@ -6,8 +6,15 @@ package enums
 type SampleType uint
 
 const (
+	// SampleTypeUndefined undefined sample type
 	SampleTypeUndefined SampleType = iota // undefined-sample
-	SampleTypeSlice                       // slice-sample
-	SampleTypeFilter                      // filter-sample
-	SampleTypeCustom                      // custom-sample
+
+	// SampleTypeSlice slice sample type
+	SampleTypeSlice // slice-sample
+
+	// SampleTypeFilter filter sample type
+	SampleTypeFilter // filter-sample
+
+	// SampleTypeCustom custom sample type
+	SampleTypeCustom // custom-sample
 )

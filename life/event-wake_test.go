@@ -1,8 +1,8 @@
 package life_test
 
 import (
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/snivilised/agenor/internal/opts"
 )
 
@@ -38,6 +38,7 @@ var _ = Describe("event", func() {
 					Expect(invoked).To(BeFalse(), "notification not muted")
 
 					invoked = false
+
 					binder.Controls.Wake.Unmute()
 					binder.Controls.Wake.Dispatch()(description)
 					Expect(invoked).To(BeTrue(), "notification not muted")
@@ -61,6 +62,7 @@ var _ = Describe("event", func() {
 					Expect(count).To(Equal(2), "not all listeners were invoked for first notification")
 
 					count = 0
+
 					o.Events.Wake.On(func(_ string) {
 						count++
 					})

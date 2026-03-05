@@ -1,9 +1,7 @@
 package tapable
 
-// 📦 pkg: tapable - enables entities to expose hooks
-
 type (
-	// Invokable
+	// Invokable represents an entity that can be invoked to return a function of type F.
 	// F: core hook function
 	Invokable[F any] interface {
 		// Invoke returns the hook function for execution.
@@ -29,13 +27,15 @@ type (
 		Default() F
 	}
 
-	// Announce
+	// Announce is the function type that defines what to broadcast to multiple listeners.
 	Announce[F any] func(listeners []F) F
 
-	// Dispatcher
-	// F: core hook function
+	// Dispatcher is the struct that holds the core hook function and the broadcaster function.
 	Dispatcher[F any] struct {
-		Invoke      F
+		// Invoke is the core hook function that will be executed when the hook is called.
+		Invoke F
+
+		// Broadcaster is the function that defines what to broadcast to multiple listeners.
 		Broadcaster Announce[F]
 	}
 )

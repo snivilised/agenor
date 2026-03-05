@@ -15,6 +15,8 @@ func IsNoSubordinateHybridSchemesDefinedError(err error) bool {
 	return errors.Is(err, ErrNoSubordinateHybridSchemesDefined)
 }
 
+// ErrNoSubordinateHybridSchemesDefined is returned when a filter scheme is invalid,
+// meaning that both the primary and child schemes are not set.
 var ErrNoSubordinateHybridSchemesDefined = errors.New(
 	"invalid filter scheme, both primary and child not set",
 )

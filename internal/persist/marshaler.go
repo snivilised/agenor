@@ -6,7 +6,7 @@ import (
 
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/internal/enclave"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/pref"
 	nef "github.com/snivilised/nefilim"
 )
@@ -20,35 +20,63 @@ type (
 	// time.
 	TamperFunc func(result *MarshalResult)
 
+	// MarshalRequest is the input for the Marshal function
 	MarshalRequest struct {
+		// Active is the active state to be marshaled
 		Active *core.ActiveState
-		O      *pref.Options
-		Path   string
-		Perm   fs.FileMode
-		FS     nef.WriteFileFS
+
+		// O is the options to be marshaled
+		O *pref.Options
+
+		// Path is the file path to write the marshaled data to
+		Path string
+
+		// Perm is the file permissions to use when writing the marshaled data
+		Perm fs.FileMode
+
+		// FS is the file system to use for writing the marshaled data
+		FS nef.WriteFileFS
 	}
 
+	// MarshalResult is the output of the Marshal function
 	MarshalResult struct {
+		// Active is the active state that was marshaled
 		Active *core.ActiveState
-		JO     *json.Options
+
+		//
+		JO *json.Options
 	}
 
+	// UnmarshalRequest is the input for the Unmarshal function
 	UnmarshalRequest struct {
+		// Restore is the restore state containing the file path and file
+		// system to read the marshaled data from
 		Restore *enclave.RestoreState
 	}
 
+	// UnmarshalResult is the output of the Unmarshal function
 	UnmarshalResult struct {
+		// Active is the active state that was unmarshaled
 		Active *core.ActiveState
-		JO     *json.Options
-		O      *pref.Options
+
+		// JO is the JSON options that were unmarshaled
+		JO *json.Options
+
+		// O is the options that were unmarshaled
+		O *pref.Options
 	}
 
+	// Comparison is a struct used to compare the JSON options and the pref options
 	Comparison struct {
+		// JO is the JSON options to compare
 		JO *json.Options
-		O  *pref.Options
+
+		// O is the pref options to compare
+		O *pref.Options
 	}
 )
 
+// Marshal marshals the request
 func Marshal(request *MarshalRequest) (*MarshalResult, error) {
 	jo := ToJSON(request.O)
 	result := &MarshalResult{
@@ -60,7 +88,6 @@ func Marshal(request *MarshalRequest) (*MarshalResult, error) {
 		result,
 		JSONMarshalNoPrefix, JSONMarshal2SpacesIndent,
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -75,11 +102,11 @@ func Marshal(request *MarshalRequest) (*MarshalResult, error) {
 	return result, request.FS.WriteFile(request.Path, data, request.Perm)
 }
 
+// Unmarshal unpacks the incoming request
 func Unmarshal(request *UnmarshalRequest,
 	tampers ...TamperFunc,
 ) (*UnmarshalResult, error) {
 	bytes, err := request.Restore.FS.ReadFile(request.Restore.Path)
-
 	if err != nil {
 		return nil, err
 	}

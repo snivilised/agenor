@@ -14,16 +14,11 @@ const (
 )
 
 type (
-	strategyTheme struct {
-		label string
-	}
-
 	strategyInvokeInfo struct {
 		files   uint
 		folders uint
 	}
 
-	strategyThemes      map[enums.ResumeStrategy]strategyTheme
 	strategyInvocations map[enums.ResumeStrategy]strategyInvokeInfo
 
 	resumeTestProfile struct {
@@ -64,10 +59,6 @@ var (
 	textFiles = []string{
 		"vinyl-info.teenage-color.txt",
 		"vinyl-info.innerworld.txt",
-	}
-	strategies = []enums.ResumeStrategy{
-		enums.ResumeStrategyFastward,
-		enums.ResumeStrategySpawn,
 	}
 
 	profiles = profileThemes{

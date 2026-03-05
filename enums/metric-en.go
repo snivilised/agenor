@@ -2,6 +2,7 @@ package enums
 
 //go:generate stringer -type=Metric -linecomment -trimprefix=Metric -output metric-en-auto.go
 
+// Metric represents the type of metric to collect
 type Metric uint
 
 // if new metrics are added, ensure that navigationMetricsFactory.new is kept

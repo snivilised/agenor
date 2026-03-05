@@ -36,7 +36,7 @@ type Poly struct {
 	Directory core.TraverseFilter
 }
 
-// Description
+// Description returns the description of the poly filter.
 func (f *Poly) Description() string {
 	return fmt.Sprintf("Poly - FILE: '%v', DIRECTORY: '%v'",
 		f.File.Description(), f.Directory.Description(),

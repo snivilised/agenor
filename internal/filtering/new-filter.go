@@ -5,6 +5,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// New creates a new filter based on the given definition and options.
 func New(definition *core.FilterDef,
 	fo *pref.FilterOptions,
 ) (core.TraverseFilter, error) {

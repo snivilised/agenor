@@ -1,3 +1,5 @@
+// Package main implements a multi-threaded file system navigator for
+// test/demonstration purposes.
 package main
 
 import (
@@ -25,8 +27,7 @@ import (
 )
 
 const (
-	usage   = `Usage: go run nexus \n\t-path <relative-path> \n\t[-sub <file|dir>] \n\t[-filter]`
-	verbose = false
+	usage = `Usage: go run nexus \n\t-path <relative-path> \n\t[-sub <file|dir>] \n\t[-filter]`
 )
 
 type multiFlag []string
@@ -92,7 +93,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	size := uint(*now)
+	size := uint(*now) //nolint:gosec // ok
 	options := []pref.Option{
 		age.WithOnBegin(func(state *life.BeginState) {
 			fmt.Printf(

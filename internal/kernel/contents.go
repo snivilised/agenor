@@ -11,6 +11,7 @@ import (
 	nef "github.com/snivilised/nefilim"
 )
 
+// NewContents creates a new contents.
 func NewContents(behaviour *pref.SortBehaviour,
 	hook tapable.Hook[core.SortHook, core.ChainSortHook],
 	entries []fs.DirEntry,
@@ -36,10 +37,12 @@ type Contents struct {
 	hook        tapable.Hook[core.SortHook, core.ChainSortHook]
 }
 
+// Directories returns the directories.
 func (c *Contents) Directories() []fs.DirEntry {
 	return c.directories
 }
 
+// Files returns the files.
 func (c *Contents) Files() []fs.DirEntry {
 	return c.files
 }

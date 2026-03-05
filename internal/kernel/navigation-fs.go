@@ -10,5 +10,6 @@ func read(sys fs.ReadDirFS, o *readOptions, path string) (*Contents, error) {
 	contents := NewContents(
 		o.behaviour, o.hooks.sort, entries,
 	)
+
 	return contents, err
 }
