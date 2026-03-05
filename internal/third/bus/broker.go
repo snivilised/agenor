@@ -27,6 +27,7 @@ type (
 
 	// IDGenerator is a sequential unique id generator interface
 	IDGenerator interface {
+		// Generate generates a unique id as string
 		Generate() string
 	}
 
@@ -40,14 +41,14 @@ type (
 		Data       interface{} // actual message data
 	}
 
-	// Handler is a receiver for message reference with the given regex pattern
+	// Handler is a receiver for message
 	Handler struct {
 		key string
 
-		// handler func to process messages
+		// Handle is a receiver for message
 		Handle func(ctx context.Context, m Message)
 
-		// topic matcher as regex pattern
+		// Matcher is a topic matcher
 		Matcher string
 	}
 
@@ -56,6 +57,7 @@ type (
 
 	ctxKey int8
 
+	// BrokerError is a custom error type for bus
 	BrokerError struct {
 		message string
 	}
@@ -132,6 +134,7 @@ func (b *Broker) Emit(ctx context.Context,
 	}
 
 	source, _ := ctx.Value(CtxKeySource).(string)
+
 	txID, _ := ctx.Value(CtxKeyTxID).(string)
 	if txID == empty {
 		txID = b.gen()
@@ -173,9 +176,11 @@ func (b *Broker) EmitWithOpts(ctx context.Context,
 	if e.TxID == empty {
 		e.TxID = b.gen()
 	}
+
 	if e.ID == empty {
 		e.ID = b.gen()
 	}
+
 	if e.OccurredAt.IsZero() {
 		e.OccurredAt = time.Now()
 	}
@@ -261,6 +266,7 @@ func (n Next) Generate() string {
 
 func (b *Broker) registerHandler(h Handler) {
 	b.deregisterHandler(h.key)
+
 	b.handlers[h.key] = h
 	for _, t := range b.handlerTopicSubscriptions(h.key) {
 		b.registerTopicHandler(t, h)
@@ -272,6 +278,7 @@ func (b *Broker) deregisterHandler(handlerKey string) {
 		for _, t := range b.handlerTopicSubscriptions(handlerKey) {
 			b.deregisterTopicHandler(t, handlerKey)
 		}
+
 		delete(b.handlers, handlerKey)
 	}
 }
@@ -282,10 +289,12 @@ func (b *Broker) registerTopicHandler(topic string, h Handler) {
 
 func (b *Broker) deregisterTopicHandler(topic, handlerKey string) {
 	l := len(b.topics[topic])
+
 	for i, h := range b.topics[topic] {
 		if h.key == handlerKey {
 			b.topics[topic][i] = b.topics[topic][l-1]
 			b.topics[topic] = b.topics[topic][:l-1]
+
 			break
 		}
 	}
@@ -316,6 +325,7 @@ func (b *Broker) buildHandlers(topic string) []Handler {
 
 func (b *Broker) handlerTopicSubscriptions(handlerKey string) []string {
 	var subscriptions []string
+
 	h, ok := b.handlers[handlerKey]
 	if !ok {
 		return subscriptions
@@ -326,6 +336,7 @@ func (b *Broker) handlerTopicSubscriptions(handlerKey string) []string {
 			subscriptions = append(subscriptions, topic)
 		}
 	}
+
 	return subscriptions
 }
 
@@ -333,11 +344,13 @@ func (e *BrokerError) Error() string {
 	return e.message
 }
 
+// Sequential is an implementation of IDGenerator for bus.Next fn type
 type Sequential struct {
 	Format string
 	id     int
 }
 
+// Generate implements IDGenerator interface
 func (g *Sequential) Generate() string {
 	g.id++
 

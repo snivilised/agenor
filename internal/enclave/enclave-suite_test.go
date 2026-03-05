@@ -1,13 +1,12 @@
 package enclave_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/snivilised/agenor/enums"
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
@@ -32,14 +31,6 @@ type session struct {
 	started time.Time
 }
 
-func (s *session) start() {
-	s.started = time.Now()
-}
-
-func (s *session) finish(_ *enclave.KernelResult) {
-
-}
-
 func (s *session) IsComplete() bool {
 	return false
 }
@@ -50,10 +41,6 @@ func (s *session) StartedAt() time.Time {
 
 func (s *session) Elapsed() time.Duration {
 	return time.Since(s.started)
-}
-
-func (s *session) exec(_ context.Context) (*enclave.KernelResult, error) {
-	return &enclave.KernelResult{}, nil
 }
 
 type asserter struct {

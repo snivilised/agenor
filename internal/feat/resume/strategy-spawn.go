@@ -67,10 +67,12 @@ func (s *spawnStrategy) crown(ctx context.Context,
 		// reach the top, so we're done
 		//
 		s.complete = true
+
 		return s.kc.Result(ctx), nil
 	}
 
 	parent, child := s.calc.Split(conc.current)
+
 	following, err := s.following(parent,
 		child,
 		conc.inclusive,
@@ -83,7 +85,6 @@ func (s *spawnStrategy) crown(ctx context.Context,
 	following.siblings.Sort(enums.EntryTypeDirectory)
 
 	result, err := s.seed(ctx, parent, following.siblings.All())
-
 	if err != nil {
 		return result, err
 	}
@@ -103,8 +104,8 @@ func (s *spawnStrategy) seed(ctx context.Context,
 
 	for _, entry := range entries {
 		top := s.calc.Join(parent, entry.Name())
-		intermediate, err := s.mediator.Spawn(ctx, top)
 
+		intermediate, err := s.mediator.Spawn(ctx, top)
 		if err != nil {
 			return intermediate, err
 		}
@@ -117,7 +118,6 @@ func (s *spawnStrategy) following(parent, anchor string,
 	inclusive bool,
 ) (*shard, error) {
 	entries, err := s.mediator.Read(parent)
-
 	if err != nil {
 		return nil, err
 	}

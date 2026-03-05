@@ -12,6 +12,7 @@ import (
 )
 
 type (
+	// Options contains all the options that can be set by the client to adjust the way navigation occurs.
 	Options struct {
 		// Behaviours collection of behaviours that adjust the way navigation occurs,
 		// that can be tweaked by the client.
@@ -73,7 +74,10 @@ func IfOption(condition bool, option Option) Option {
 // Option is pre-created, regardless of the condition.
 type ConditionalOption func() Option
 
-// IfOptionF
+// IfOptionF provides conditional option selection. IfOptionF accepts a condition
+// and a ConditionalOption function. If the condition evaluates to true, the
+// ConditionalOption function is executed to produce and return an Option. If the
+// condition is false, nil is returned, indicating that no option should be applied.
 func IfOptionF(condition bool, option ConditionalOption) Option {
 	if condition {
 		return option()
@@ -118,7 +122,7 @@ func DefaultOptions() *Options {
 			},
 		},
 		Concurrency: ConcurrencyOptions{
-			NoW: uint(runtime.NumCPU()),
+			NoW: uint(runtime.NumCPU()), //nolint:gosec // ok
 		},
 		Hooks: newHooks(),
 		Monitor: MonitorOptions{

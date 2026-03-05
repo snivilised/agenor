@@ -72,6 +72,7 @@ func newResumePlatform(facade pref.Facade,
 		},
 		relic: relic,
 	}
+
 	harvest, err := ext.options(addons, settings...)
 	if err != nil {
 		return resume.base.pacify(facade, settings...),

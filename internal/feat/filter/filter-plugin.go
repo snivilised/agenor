@@ -1,7 +1,5 @@
 package filter
 
-// 📦 pkg: filter - defines filters
-
 import (
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
@@ -10,6 +8,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// IfActive returns a new plugin if filtering is active, otherwise nil
 func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) enclave.Plugin {
 	if o.Filter.IsFilteringActive() {
 		return &plugin{
@@ -34,6 +33,7 @@ type plugin struct {
 	scheme scheme
 }
 
+// Register registers the plugin with the kernel controller.
 func (p *plugin) Register(kc enclave.KernelController) error {
 	if err := p.BasePlugin.Register(kc); err != nil {
 		return err
@@ -42,12 +42,17 @@ func (p *plugin) Register(kc enclave.KernelController) error {
 	return p.scheme.create()
 }
 
+// Next determines whether the servant should be filtered out or not,
+// and returns true if it should be filtered out.
 func (p *plugin) Next(servant core.Servant,
 	inspection enclave.Inspection,
 ) (bool, error) {
 	return p.scheme.next(servant, inspection)
 }
 
+// Init initializes the plugin, setting up necessary metrics and
+// preparing the scheme for operation. It also decorates the plugin
+// with any additional functionality provided by the mediator.
 func (p *plugin) Init(pi *enclave.PluginInit) error {
 	p.crate.Metrics = p.Mediator.Supervisor().Many(
 		enums.MetricNoDirectoriesFilteredOut,

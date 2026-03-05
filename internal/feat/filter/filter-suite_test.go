@@ -1,15 +1,13 @@
 package filter_test
 
 import (
-	"path/filepath"
 	"testing"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/enums"
 	lab "github.com/snivilised/agenor/internal/laboratory"
-	"github.com/snivilised/agenor/internal/third/lo"
 )
 
 func TestFilter(t *testing.T) {
@@ -17,67 +15,44 @@ func TestFilter(t *testing.T) {
 	RunSpecs(t, "Filter Suite")
 }
 
+// FilterTE represents a test case for filter testing.
 type FilterTE struct {
 	lab.NaviTE
-	Description     string
-	Pattern         string
-	Scope           enums.FilterScope
-	Negate          bool
-	ErrorContains   string
+	// Description provides a human-readable explanation of the test case
+	Description string
+
+	// Pattern is the filter pattern to be applied during the test
+	Pattern string
+
+	// Scope defines the scope of the filter (e.g., file, directory, or both)
+	Scope enums.FilterScope
+
+	// Negate indicates whether the filter should be negated (i.e.,
+	// exclude matches instead of including them)
+	Negate bool
+
+	// ErrorContains specifies a substring that should be present in the error
+	// message if the filter fails
+	ErrorContains string
+
+	// IfNotApplicable indicates how the filter should behave if it is not applicable
+	// to the current node (e.g., if the filter is designed for files but is
+	// applied to a directory)
 	IfNotApplicable enums.TriStateBool
-	Custom          core.TraverseFilter
-	Type            enums.FilterType
-	Sample          core.SampleTraverseFilter
+
+	// Custom allows for a custom filter function to be provided for more complex
+	// filtering logic that cannot be captured by the other fields
+	Custom core.TraverseFilter
+
+	// Type specifies the type of filter being tested (e.g., glob, regex, etc.)
+	Type enums.FilterType
+
+	// Sample provides a sample servant that can be used for testing the filter
+	Sample core.SampleTraverseFilter
 }
 
 type PolyTE struct {
 	lab.NaviTE
 	File      core.FilterDef
 	Directory core.FilterDef
-}
-
-type customFilter struct {
-	name            string
-	pattern         string
-	scope           enums.FilterScope
-	negate          bool
-	ifNotApplicable bool
-}
-
-// Description describes filter
-func (f *customFilter) Description() string {
-	return f.name
-}
-
-func (f *customFilter) Validate() error {
-	if f.scope == enums.ScopeUndefined {
-		f.scope = enums.ScopeAll
-	}
-
-	return nil
-}
-
-func (f *customFilter) Source() string {
-	return f.pattern
-}
-
-func (f *customFilter) invert(result bool) bool {
-	return lo.Ternary(f.negate, !result, result)
-}
-
-func (f *customFilter) IsMatch(node *core.Node) bool {
-	if f.IsApplicable(node) {
-		matched, _ := filepath.Match(f.pattern, node.Extension.Name)
-		return f.invert(matched)
-	}
-
-	return f.ifNotApplicable
-}
-
-func (f *customFilter) IsApplicable(node *core.Node) bool {
-	return (f.scope & node.Extension.Scope) > 0
-}
-
-func (f *customFilter) Scope() enums.FilterScope {
-	return f.scope
 }

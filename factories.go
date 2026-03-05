@@ -16,13 +16,13 @@ func Run(wg pants.WaitGroup) NavigatorFactory {
 	}
 }
 
-type factory struct {
-}
-
 type walkerFac struct {
-	factory
 }
 
+// Configure builds a driver with a session that is configured for sequential
+// traversal. It uses the Builders to construct the necessary artefacts for
+// the session, including the kernel controller, options, extent, and plugins.
+// The resulting driver is returned as a Navigator.
 func (f *walkerFac) Configure(addons ...Addon) Director {
 	return director(func(bs *Builders) Navigator {
 		artefacts, err := bs.buildAll(addons...)
@@ -44,10 +44,12 @@ func (f *walkerFac) Configure(addons ...Addon) Director {
 }
 
 type runnerFac struct {
-	factory
 	wg pants.WaitGroup
 }
 
+// Configure builds a driver with a session that is configured for concurrent traversal.
+// It uses the Builders to construct the necessary artefacts for
+// the session, including the kernel controller, options, extent, and plugins.
 func (f *runnerFac) Configure(addons ...Addon) Director {
 	return director(func(bs *Builders) Navigator {
 		artefacts, err := bs.buildAll(addons...)
@@ -71,5 +73,6 @@ func (f *runnerFac) Configure(addons ...Addon) Director {
 }
 
 type (
+	// Addon is a type that can be added to a session.
 	Addon interface{}
 )

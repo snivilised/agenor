@@ -4,8 +4,6 @@ import (
 	"github.com/snivilised/agenor/core"
 )
 
-// 📦 pkg: life - represents life cycle events; can't use prefs
-
 // beforeX
 // afterX
 
@@ -13,6 +11,9 @@ import (
 // afterOptions
 
 type (
+	// Event is the interface for life cycle events, which can be subscribed
+	// to by handlers. The type parameter F represents the type of the
+	// handler function that can be subscribed to the event.
 	Event[F any] interface {
 		// On subscribes to a life cycle event
 		On(handler F)
@@ -22,7 +23,11 @@ type (
 	// be used by any notification with this signature.
 	SimpleHandler func()
 
+	// BeginState represents the state at the beginning of traversal, which can be
+	// used by the BeginHandler to provide context about the traversal.
 	BeginState struct {
+		// Tree represents the tree being traversed. This can be used by the BeginHandler
+		// to provide context about the traversal.
 		Tree string
 	}
 

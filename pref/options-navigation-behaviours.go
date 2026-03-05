@@ -1,13 +1,27 @@
 package pref
 
 type (
-	// SubPathBehaviour
+	// SubPathBehaviour behaviours relating to handling of sub-path calculation
 	SubPathBehaviour struct {
+		// KeepTrailingSep defines whether to keep the trailing separator in
+		// the sub-path. By default, the trailing separator is removed from
+		// the sub-path. This option can be useful in scenarios where the presence
+		// of a trailing separator is significant, such as when distinguishing between
+		// directories and files. When KeepTrailingSep is set to true, the sub-path
+		// will retain the trailing separator if it was present in the original path.
+		// When set to false (the default), the trailing separator will be removed
+		// from the sub-path.
+		//
+		// Example:
+		// - Original path: "/path/to/directory/"
+		//   - Sub-path with KeepTrailingSep = true: "directory/"
+		//   - Sub-path with KeepTrailingSep = false: "directory"
 		KeepTrailingSep bool
 	}
-	// SortBehaviour
+
+	// SortBehaviour behaviours relating to sorting of a directory's entries.
 	SortBehaviour struct {
-		// case sensitive traversal order
+		// IsCaseSensitive defines whether the traversal order is case sensitive.
 		//
 		IsCaseSensitive bool
 
@@ -17,15 +31,20 @@ type (
 		SortFilesFirst bool
 	}
 
-	// HibernationBehaviour
+	// HibernationBehaviour defines behaviours relating to hibernation of the navigator.
 	HibernationBehaviour struct {
-		InclusiveWake  bool
+		// InclusiveWake when wake occurs, permit client callback to
+		// be invoked for the current node. Inclusive, true by default
+		InclusiveWake bool
+
+		// InclusiveSleep when sleep occurs, permit client callback to
+		// be invoked for the current node. Exclusive, false by default.
 		InclusiveSleep bool
 	}
 
+	// CascadeBehaviour behaviours relating to how deep to navigate
 	CascadeBehaviour struct {
 		// Depth sets a maximum traversal depth
-		//
 		Depth uint
 
 		// NoRecurse is an alternative to using Depth, but limits the traversal
@@ -38,13 +57,13 @@ type (
 		NoRecurse bool
 	}
 
-	// NavigationBehaviours
+	// NavigationBehaviours defines all navigation behaviours for the navigator.
 	NavigationBehaviours struct {
 		// SubPath, behaviours relating to handling of sub-path calculation
 		//
 		SubPath SubPathBehaviour
 
-		// Sort, behaviours relating to sorting of a directory's entries.
+		// Sort behaviours relating to sorting of a directory's entries.
 		//
 		Sort SortBehaviour
 

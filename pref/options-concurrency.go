@@ -7,8 +7,8 @@ import (
 	"github.com/snivilised/agenor/core"
 )
 
-// ConcurrencyOptions specifies options used for current traversal sessions
 type (
+	// InputOptions defines options for input channel properties
 	InputOptions struct {
 		// Size specifies the size of the input channel, if not specified, this
 		// will default to the number of workers requested via NoW(WithNow). The
@@ -19,6 +19,7 @@ type (
 		Size uint
 	}
 
+	// OutputOptions defines options for output channel properties
 	OutputOptions struct {
 		// Size specifies the size of the output channel. If set to 0, the
 		// size will revert to the number of workers requested via NoW(WithNow).
@@ -47,6 +48,7 @@ type (
 		On core.OutputFunc
 	}
 
+	// ConcurrencyOptions defines options for concurrency channel properties
 	ConcurrencyOptions struct {
 		// NoW specifies the number of go-routines to use in the worker
 		// pool used for concurrent traversal sessions requested by using
@@ -66,7 +68,7 @@ type (
 // CPU count, optimising performance based on the system's processing capabilities.
 func WithCPU() Option {
 	return func(o *Options) error {
-		o.Concurrency.NoW = uint(runtime.NumCPU())
+		o.Concurrency.NoW = uint(runtime.NumCPU()) //nolint:gosec // ok
 
 		return nil
 	}

@@ -1,3 +1,11 @@
+// Package hanno provides utilities for building a virtual file system tree
+// based on an XML index file. It includes functions for creating a virtual
+// tree from a predefined XML structure (like Musico) or from a custom XML
+// file. The virtual tree is built in memory using a luna.MemFS, and the code
+// allows for filtering which paths to include in the tree based on specified
+// portions of the path. The IOProvider struct is used to abstract the reading
+// and writing of files and directories, allowing for flexibility in how the
+// virtual tree is constructed and displayed.
 package hanno
 
 import (
@@ -172,10 +180,6 @@ func newMemWriteProvider(fS *luna.MemFS,
 }
 
 type (
-	entryExists interface {
-		exists(path string) bool
-	}
-
 	existsEntry func(path string) bool
 
 	display func(path string, exists existsEntry)
@@ -213,17 +217,24 @@ type (
 		out directoryWriter
 	}
 
+	// IOProvider provides the necessary handlers for reading and writing files
+	// and directories, as well as a filter for determining which paths to include
+	// when building the virtual tree. It is used by the virtualTree to interact
+	// with the file system during the walk process.
 	IOProvider struct {
 		filter    filter
 		file      fileHandler
 		directory directoryHandler
 	}
 
+	// Tree represents the structure of the XML file used to build the virtual tree.
 	Tree struct {
 		XMLName xml.Name  `xml:"tree"`
 		Root    Directory `xml:"directory"`
 	}
 
+	// Directory represents a directory in the virtual tree, which can contain files
+	// and subdirectories.
 	Directory struct {
 		XMLName     xml.Name    `xml:"directory"`
 		Name        string      `xml:"name,attr"`
@@ -231,6 +242,7 @@ type (
 		Directories []Directory `xml:"directory"`
 	}
 
+	// File represents a file in the virtual tree, which has a name and text content.
 	File struct {
 		XMLName xml.Name `xml:"file"`
 		Name    string   `xml:"name,attr"`
@@ -244,10 +256,6 @@ func (fn readFile) read(name string) ([]byte, error) {
 
 func (fn writeFile) write(name string, data []byte, perm os.FileMode, show display) error {
 	return fn(name, data, perm, show)
-}
-
-func (fn existsEntry) exists(path string) bool {
-	return fn(path)
 }
 
 func (fn writeDirectory) write(path string, perm os.FileMode, show display, isRoot bool) error {
@@ -274,7 +282,6 @@ type virtualTree struct {
 
 func (r *virtualTree) read() (*Directory, error) {
 	data, err := r.provider.file.in.read(r.index)
-
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +322,6 @@ func (r *virtualTree) dec() {
 
 func (r *virtualTree) walk() error {
 	top, err := r.read()
-
 	if err != nil {
 		return err
 	}
@@ -325,7 +331,7 @@ func (r *virtualTree) walk() error {
 	return r.dir(*top, true)
 }
 
-func (r *virtualTree) dir(dir Directory, isRoot bool) error { //nolint:gocritic // performance is not a concern
+func (r *virtualTree) dir(dir Directory, isRoot bool) error {
 	if !isRoot {
 		// We dont to add the root because only the descendents of the root
 		// should be added

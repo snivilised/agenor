@@ -6,12 +6,12 @@ import (
 
 // 🌷 prohibitive Word
 
-// PatternTemplData
+// ProhibitiveWordTemplData is the template data for the message indicating a prohibitive word.
 type ProhibitiveWordTemplData struct {
 	agenorTemplData
 }
 
-// Message
+// Message creates a new i18n message using the template data.
 func (td ProhibitiveWordTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "prohibitive.word",
@@ -22,12 +22,12 @@ func (td ProhibitiveWordTemplData) Message() *i18n.Message {
 
 // 🌷 permissive Word
 
-// PatternTemplData
+// PermissiveWordTemplData is the template data for the message indicating a permissive word.
 type PermissiveWordTemplData struct {
 	agenorTemplData
 }
 
-// Message
+// Message creates a new i18n message using the template data.
 func (td PermissiveWordTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "permissive.word",

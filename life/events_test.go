@@ -1,8 +1,8 @@
 package life_test
 
 import (
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/life"
@@ -33,6 +33,7 @@ var _ = Describe("controls", Ordered, func() {
 			//
 			events.Begin.On(func(state *life.BeginState) {
 				begun = true
+
 				Expect(state.Tree).To(Equal(path))
 			})
 

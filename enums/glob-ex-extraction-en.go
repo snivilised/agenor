@@ -2,9 +2,11 @@ package enums
 
 //go:generate stringer -type=GlobExtraction -linecomment -trimprefix=GlobExtraction -output glob-ex-en-auto.go
 
+// GlobExtraction represents the type of glob extraction to apply
 type GlobExtraction uint
 
 const (
+	// GlobExtractionUndefined represents the undefined glob extraction
 	GlobExtractionUndefined GlobExtraction = iota // undefined
 
 	// GlobExtractionStarDot denotes a pattern leading with "*.";

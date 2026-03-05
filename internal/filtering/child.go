@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/agenor/locale"
 )
 
+// NewChild creates a new child filter.
 func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 	var (
 		filter core.ChildTraverseFilter
@@ -56,19 +57,25 @@ func NewChild(def *core.ChildFilterDef) (core.ChildTraverseFilter, error) {
 
 // Child filter used when subscription is DirectoriesWithFiles
 type Child struct {
-	Name    string
+	// Name is the child filter name
+	Name string
+	// Pattern is the child filter pattern
 	Pattern string
-	Negate  bool
+	// Negate is true if the filter should be negated
+	Negate bool
 }
 
+// Description returns the description of the filter
 func (f *Child) Description() string {
 	return f.Name
 }
 
+// Validate validates the filter
 func (f *Child) Validate() error {
 	return nil
 }
 
+// Source returns the pattern of the filter
 func (f *Child) Source() string {
 	return f.Pattern
 }

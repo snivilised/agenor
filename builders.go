@@ -25,7 +25,6 @@ type Builders struct {
 	scaffold  scaffoldBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
-	extent    extentBuilder
 }
 
 func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
@@ -75,7 +74,6 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 		artefacts,
 		ext.plugin(artefacts),
 	)
-
 	if err != nil {
 		o.Monitor.Log.Error(err.Error())
 

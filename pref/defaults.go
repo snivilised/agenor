@@ -68,12 +68,17 @@ func difference(parent, child string) string {
 	return tail(child, len(parent))
 }
 
-// RootItemSubPathHook
+// RootItemSubPathHook returns the sub path for a root item. The sub path is the
+// difference between the tree path and the node path. This is because the root
+// item is the only item that has a path that is not a sub path of its parent.
 func RootItemSubPathHook(info *core.SubPathInfo) string {
 	return difference(info.Tree, info.Node.Path)
 }
 
-// DefaultSubPathHook
+// DefaultSubPathHook returns the sub path for a node. The sub path is the
+// difference between the tree path and the node path. If the node is a top
+// level item then the sub path is either an empty string or a separator
+// depending on the value of KeepTrailingSep.
 func DefaultSubPathHook(info *core.SubPathInfo) string {
 	if info.Node.Extension.Scope == enums.ScopeTop {
 		return lo.Ternary(info.KeepTrailingSep, string(filepath.Separator), "")
@@ -82,14 +87,21 @@ func DefaultSubPathHook(info *core.SubPathInfo) string {
 	return difference(info.Tree, info.Node.Extension.Parent)
 }
 
+// DefaultFaultHandler is the default handler for navigation faults. It simply
+// returns the error contained in the fault.
 func DefaultFaultHandler(fault *NavigationFault) error {
 	return fault.Err
 }
 
+// DefaultPanicHandler is the default handler for panics. It simply saves the
+// panic data using the provided recovery mechanism and returns the resulting
+// path and error.
 func DefaultPanicHandler(recovery Recovery, data RescueData) (string, error) {
 	return recovery.Save(data)
 }
 
+// DefaultSkipHandler is the default handler for skipping traversal. It simply
+// returns a nil error and indicates that no traversal should be skipped.
 func DefaultSkipHandler(*core.Node,
 	core.DirectoryContents, error,
 ) (enums.SkipTraversal, error) {

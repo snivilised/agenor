@@ -13,6 +13,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// FastwardFilter is a filter that is used to fastward through the tree.
 type FastwardFilter struct {
 	source      string
 	description string
@@ -32,7 +33,7 @@ func (f *FastwardFilter) Validate() error {
 	return nil
 }
 
-// Source, filter definition (comes from filter definition Pattern)
+// Source filter definition (comes from filter definition Pattern)
 func (f *FastwardFilter) Source() string {
 	return f.source
 }
@@ -48,14 +49,16 @@ func (f *FastwardFilter) IsApplicable(node *core.Node) bool {
 		(!node.IsDirectory() && f.scope.IsFile())
 }
 
-// Scope, what items this filter applies to
+// Scope what items this filter applies to
 func (f *FastwardFilter) Scope() enums.FilterScope {
 	return f.scope
 }
 
+// FastwardGuardianSealer is a guardian sealer that is used to fastward through the tree.
 type FastwardGuardianSealer struct {
 }
 
+// Seal seals the guardian.
 func (g *FastwardGuardianSealer) Seal(top enclave.Link) error {
 	if top.Role() == enums.RoleHibernate {
 		return core.ErrGuardianCantDecorateItemSealed
@@ -64,10 +67,12 @@ func (g *FastwardGuardianSealer) Seal(top enclave.Link) error {
 	return nil
 }
 
+// IsSealed returns true if the guardian is sealed.
 func (g *FastwardGuardianSealer) IsSealed(enclave.Link) bool {
 	return false
 }
 
+// fastwardStrategy is a strategy that is used to fastward through the tree.
 type fastwardStrategy struct {
 	baseStrategy
 	enclave.Link
@@ -75,6 +80,7 @@ type fastwardStrategy struct {
 	filter core.TraverseFilter
 }
 
+// Init initializes the strategy.
 func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 	// We don't use the Hibernate.Wake/Sleep-At, as those are defined by the client.
 	// Instead we just need to create a filter on the fly from the load state...
@@ -100,13 +106,14 @@ func (s *fastwardStrategy) init(load *opts.LoadInfo) (err error) {
 		},
 	)
 
-	if err := s.mediator.Decorate(s); err != nil {
-		return err
+	if e := s.mediator.Decorate(s); e != nil {
+		return e
 	}
 
 	return err
 }
 
+// Ignite ignites the strategy.
 func (s *fastwardStrategy) ignite() {
 	s.resources.Binder.Controls.MuteAll()
 }
@@ -133,10 +140,12 @@ func (s *fastwardStrategy) Role() enums.Role {
 	return enums.RoleFastward
 }
 
+// Resume resumes the strategy.
 func (s *fastwardStrategy) resume(ctx context.Context) (*enclave.KernelResult, error) {
 	return s.mediator.Snooze(ctx, s.active)
 }
 
+// IfResult returns true if the strategy should return a result.
 func (s *fastwardStrategy) ifResult() bool {
 	return true
 }

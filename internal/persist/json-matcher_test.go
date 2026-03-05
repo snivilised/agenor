@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/onsi/gomega/types"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/internal/persist"
 
 	"github.com/snivilised/agenor/pref"

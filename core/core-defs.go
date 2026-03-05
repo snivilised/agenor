@@ -1,3 +1,5 @@
+// Package core contains universal definitions and handles user facing cross
+// cutting concerns.
 package core
 
 import (
@@ -9,36 +11,51 @@ import (
 	"github.com/snivilised/agenor/tfs"
 )
 
-// 📦 pkg: core - contains universal definitions and handles user facing cross
-// cutting concerns.
-
 type (
 	// ResultCompletion used to determine if the result really represents
 	// final navigation completion.
 	ResultCompletion interface {
+		// IsComplete returns true if the traversal has completed successfully
+		// and false otherwise.
 		IsComplete() bool
 	}
 
-	// Completion
+	// Completion is a function type that can be used to determine if a traversal
+	// has completed successfully. It returns true if the traversal is complete
+	// and false otherwise.
 	Completion func() bool
 
 	// Session represents a traversal session and keeps tracks of
 	// timing.
 	Session interface {
 		ResultCompletion
+
+		// StartedAt returns the time when the traversal session started.
 		StartedAt() time.Time
+
+		// Elapsed returns the duration of the traversal session.
 		Elapsed() time.Duration
 	}
 
 	// TraverseResult represents the result of a traversal
 	TraverseResult interface {
+		// Metrics returns the metrics collected during the traversal. This allows
+		// the client to access performance data and other relevant information
+		// about the traversal.
 		Metrics() Reporter
+
+		// Session returns the session information for the traversal, including
+		// timing and completion status. This allows the client to access details
+		// about the traversal session and determine if it completed successfully.
 		Session() Session
 	}
 
 	// Servant provides the client with facility to request properties
 	// about the current navigation node.
 	Servant interface {
+		// Node returns the current node being processed during traversal. This allows
+		// the client to access information about the file system entity (file or directory)
+		// that is currently being handled by the traversal process.
 		Node() *Node
 	}
 
@@ -62,27 +79,58 @@ type (
 
 	// FsDescription description of a file system
 	FsDescription struct {
+		// IsRelative indicates whether the file system is relative or absolute. This
+		// can be used to determine how to interpret paths and perform operations on
+		// the file system during traversal.
 		IsRelative bool
 	}
 
 	// Permissions used to hold default permissions
 	Permissions struct {
+		// File represents file mode permission.
 		File fs.FileMode
-		Dir  fs.FileMode
+
+		// Dir represents directory mode permission.
+		Dir fs.FileMode
 	}
 
 	// ActiveState represents state that needs to be persisted alongside
 	// the options in order for resume to work.
 	ActiveState struct {
-		Tree                string
+		// Tree represents the root of the traversal.
+		Tree string
+
+		// TraverseDescription provides a description of the file system being traversed.
 		TraverseDescription FsDescription
-		ResumeDescription   FsDescription
-		Subscription        enums.Subscription
-		Hibernation         enums.Hibernation
-		CurrentPath         string
-		IsDir               bool
-		Depth               int
-		Metrics             Metrics
+
+		// ResumeDescription provides a description of the file system used for resume operations.
+		ResumeDescription FsDescription
+
+		// Subscription represents the subscription of the traversal.
+		Subscription enums.Subscription
+
+		// Hibernation represents the hibernation state of the traversal.
+		Hibernation enums.Hibernation
+
+		// CurrentPath represents the current path being processed during traversal. This allows
+		// the client to track the progress of the traversal and determine where it is in the
+		// file system hierarchy.
+		CurrentPath string
+
+		// IsDir indicates whether the current path is a directory or a file. This can be used
+		// to determine how to handle the current node during traversal, as directories and files
+		// may require different processing.
+		IsDir bool
+
+		// Depth represents the current depth of the traversal in the file system hierarchy. This can be used
+		// to track how deep the traversal has gone and can be useful for implementing depth-based
+		// logic or optimizations during the traversal process.
+		Depth int
+
+		// Metrics represents the metrics collected during the traversal. This allows the client to access
+		// performance data and other relevant information about the traversal, which can be useful for
+		// monitoring and optimizing the traversal process.
+		Metrics Metrics
 	}
 
 	// TimeFunc get time
@@ -103,10 +151,14 @@ type (
 	HibernateHandler func(description string)
 )
 
+// IsComplete returns true if the traversal has completed successfully and false otherwise.
 func (fn Completion) IsComplete() bool {
 	return fn()
 }
 
+// Clone creates a copy of the ActiveState instance. This can be useful for creating
+// a new instance with the same state without modifying the original, allowing for
+// safe concurrent access or preserving the original state for future reference.
 func (s *ActiveState) Clone() *ActiveState {
 	c := *s
 	return &c
@@ -117,13 +169,17 @@ const (
 	// into the resume file. This is a fixed format in order to enable
 	// easy processing of resume files.
 	FileSystemTimeFormat = "2006-01-02_15-04-05"
-	PackageName          = "agenor"
-	filePerm             = 0o644
-	dirPerm              = 0o755
+
+	// PackageName is the name of the package, used for constructing paths to
+	// store administrative files and directories.
+	PackageName = "agenor"
+
+	filePerm = 0o644
+	dirPerm  = 0o755
 )
 
 var (
-	// Now, the function used to compute the current time
+	// Now is the function used to compute the current time
 	Now TimeFunc
 
 	// Perms defines the default permissions used to create administrative

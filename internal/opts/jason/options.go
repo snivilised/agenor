@@ -1,4 +1,4 @@
-package json
+package jason
 
 type (
 	// Options defines the JSON persist format for options.

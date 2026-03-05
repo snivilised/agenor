@@ -3,8 +3,8 @@ package kernel_test
 import (
 	"path/filepath"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -34,6 +34,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			lab.Static.RetroWave,
 			filepath.Join("rock", "metal"),
 		)
+
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
@@ -54,6 +55,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				node := servant.Node()
 				_, found := recall[node.Path] // TODO: should this be name not path?
 				Expect(found).To(BeFalse())
+
 				recall[node.Path] = len(node.Children)
 
 				return entry.Callback(servant)

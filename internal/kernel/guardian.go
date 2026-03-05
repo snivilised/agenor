@@ -19,9 +19,11 @@ type (
 )
 
 type (
+	// NodeInvoker is a function that invokes the client function for a node.
 	NodeInvoker func(servant core.Servant, inspection enclave.Inspection) error
 )
 
+// Invoke invokes the client function for a node.
 func (fn NodeInvoker) Invoke(servant core.Servant,
 	inspection enclave.Inspection,
 ) error {
@@ -36,6 +38,8 @@ type anchor struct {
 	crate        enclave.Crate
 }
 
+// Next determines whether the servant should be filtered out or not, and
+// returns true if it should be filtered out.
 func (a *anchor) Next(servant core.Servant, _ enclave.Inspection) (bool, error) {
 	node := servant.Node()
 	if metric := lo.Ternary(node.IsDirectory(),
@@ -48,10 +52,12 @@ func (a *anchor) Next(servant core.Servant, _ enclave.Inspection) (bool, error) 
 	return false, a.client(servant)
 }
 
+// Role returns the role of the anchor.
 func (a *anchor) Role() enums.Role {
 	return enums.RoleAnchor
 }
 
+// swap replaces the client with a new one.
 func (a *anchor) swap(decorator core.Client) core.Client {
 	swap := a.client
 	a.client = decorator
@@ -111,6 +117,7 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	})
 }
 
+// Decorate adds a decorator to the chain.
 // role indicates the guise under which the decorator is being applied.
 // Not all roles can be decorated (sealed). The fastward-resume decorator is
 // sealed. If an attempt is made to Decorate a sealed decorator,
@@ -129,6 +136,7 @@ func (g *guardian) Decorate(link enclave.Link) error {
 	return nil
 }
 
+// Unwind removes a decorator from the chain.
 func (g *guardian) Unwind(role enums.Role) error {
 	if role == enums.RoleAnchor {
 		return nil
@@ -161,6 +169,7 @@ func (g *guardian) iterate(servant core.Servant, inspection enclave.Inspection) 
 	return nil
 }
 
+// Swap replaces the client with a new one.
 func (g *guardian) Swap(decorator core.Client) {
 	_ = g.anchor.swap(decorator)
 }
@@ -170,10 +179,12 @@ func (g *guardian) Swap(decorator core.Client) {
 type Benign struct {
 }
 
+// Seal seals the decorator, preventing it from being decorated.
 func (m *Benign) Seal(enclave.Link) error {
 	return nil
 }
 
+// IsSealed returns true if the decorator is sealed.
 func (m *Benign) IsSealed(enclave.Link) bool {
 	return false
 }

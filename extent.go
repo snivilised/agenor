@@ -9,7 +9,6 @@ import (
 	"github.com/snivilised/agenor/internal/opts"
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/pref"
-	"github.com/snivilised/agenor/tfs"
 )
 
 type (
@@ -22,10 +21,6 @@ type (
 		complete() bool
 	}
 )
-
-type fileSystems struct {
-	fS tfs.TraversalFS
-}
 
 type baseExtent struct {
 	trees *core.Forest

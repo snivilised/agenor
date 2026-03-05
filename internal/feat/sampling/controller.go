@@ -12,14 +12,15 @@ import (
 )
 
 type controller struct {
-	o      *pref.SamplingOptions
-	filter core.ChildTraverseFilter
+	o *pref.SamplingOptions
 }
 
 func (p *controller) Role() enums.Role {
 	return enums.RoleSampler
 }
 
+// Next determines whether the servant should be filtered out or not, and
+// returns true if it should be filtered out.
 func (p *controller) Next(_ core.Servant, _ enclave.Inspection) (bool, error) {
 	return true, nil
 }
@@ -35,10 +36,6 @@ func (p *controller) sample(result []fs.DirEntry, _ error,
 		o:           p.o,
 	}), nil
 }
-
-type (
-	samplerFunc func(n uint, entries []fs.DirEntry) []fs.DirEntry
-)
 
 type readResult struct {
 	files       []fs.DirEntry

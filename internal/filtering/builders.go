@@ -63,6 +63,7 @@ func buildPolyNodeFilter(definition *core.FilterDef,
 	if definition.Type != enums.FilterTypePoly {
 		return nil, nil
 	}
+
 	polyDef := fo.Node.Poly
 
 	// enforce the correct filter scopes
@@ -78,7 +79,6 @@ func buildPolyNodeFilter(definition *core.FilterDef,
 	}
 
 	file, err := buildConstituent(&polyDef.File, fo, nativeFn, customFn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,6 @@ func buildPolyNodeFilter(definition *core.FilterDef,
 	}
 
 	directory, err := buildConstituent(&polyDef.Directory, fo, nativeFn, customFn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -114,13 +113,12 @@ func buildConstituent(definition *core.FilterDef,
 			return nativeFn(definition)
 		},
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
-	if err := filter.Validate(); err != nil {
-		return nil, err
+	if e := filter.Validate(); e != nil {
+		return nil, e
 	}
 
 	return filter, err

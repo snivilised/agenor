@@ -60,9 +60,9 @@ func (s *hybridScheme) next(servant core.Servant,
 		if invokeNext && s.nanny != nil {
 			// The nanny has no say in wether the next link is invoked,
 			// therefore we ignore its next result
-			_, err := s.nanny.next(servant, inspection)
+			_, e := s.nanny.next(servant, inspection)
 
-			return invokeNext, err
+			return invokeNext, e
 		}
 
 		return invokeNext, err

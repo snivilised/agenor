@@ -39,6 +39,8 @@ func (f *Glob) IsMatch(node *core.Node) bool {
 
 // ChildGlobFilter ============================================================
 
+// ChildGlob is a filter that matches files based on a glob pattern.
+// It is applied to the children of a directory.
 type ChildGlob struct {
 	Child
 }
@@ -66,6 +68,8 @@ type SampleGlob struct {
 	Sample
 }
 
+// Matching returns the collection of files contained within this
+// node's directory that matches this filter.
 func (f *SampleGlob) Matching(entries []fs.DirEntry) []fs.DirEntry {
 	filterable, bypass := f.fetch(entries)
 

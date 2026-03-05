@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -147,7 +147,6 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 						wg.Wait()
 						Expect(err).To(Succeed())
-
 					})
 				})
 			})

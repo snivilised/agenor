@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing/fstest"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -15,7 +15,7 @@ import (
 	"github.com/snivilised/agenor/internal/enclave"
 	lab "github.com/snivilised/agenor/internal/laboratory"
 	"github.com/snivilised/agenor/internal/opts"
-	"github.com/snivilised/agenor/internal/opts/json"
+	json "github.com/snivilised/agenor/internal/opts/jason"
 	"github.com/snivilised/agenor/internal/persist"
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/locale"
@@ -77,7 +77,8 @@ func marshal(entry *marshalTE, fS age.TraversalFS) *tampered {
 	}).Equals()
 
 	Expect(e).NotTo(Succeed(), "MARSHAL")
-	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
+
+	if e != nil && entry.checkerTE != nil && entry.checker != nil {
 		Expect(entry.checker(entry.checkerTE, e)).To(Succeed(), "MARSHAL")
 	}
 
@@ -108,7 +109,7 @@ func unmarshal(entry *marshalTE, fS age.TraversalFS, restorePath string, t *tamp
 
 	Expect(e).NotTo(Succeed(), "UNMARSHAL")
 
-	if e != nil && entry.checkerTE != nil && entry.checkerTE.checker != nil {
+	if e != nil && entry.checkerTE != nil && entry.checker != nil {
 		Expect(entry.checker(entry.checkerTE, e)).To(Succeed(), "UNMARSHAL")
 	}
 }

@@ -4,6 +4,8 @@ package lo
 //
 // Copyright (c) 2022 Samuel Berthe
 
+// Ternary is a function that takes a condition and two values, and returns
+// one of the values based on the condition.
 func Ternary[T any](condition bool, ifOutput, elseOutput T) T {
 	if condition {
 		return ifOutput
@@ -12,6 +14,8 @@ func Ternary[T any](condition bool, ifOutput, elseOutput T) T {
 	return elseOutput
 }
 
+// TernaryF is the same as Ternary except the values defined must be functions
+// that return a value of type T
 func TernaryF[T any](condition bool, ifFunc, elseFunc func() T) T {
 	if condition {
 		return ifFunc()

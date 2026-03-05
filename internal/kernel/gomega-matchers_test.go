@@ -3,7 +3,7 @@ package kernel_test
 import (
 	"fmt"
 
-	. "github.com/onsi/gomega/types" //nolint:revive // ok
+	. "github.com/onsi/gomega/types"
 	"github.com/snivilised/agenor/core"
 	"github.com/snivilised/agenor/internal/filtering"
 )

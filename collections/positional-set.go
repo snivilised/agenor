@@ -5,10 +5,17 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+// Orderable is a constraint that allows only types that can be ordered
+// (e.g., integers, strings). This is used to ensure that the elements
+// in the PositionalSet can be compared and ordered.
 type Orderable interface {
 	constraints.Integer | string
 }
 
+// PositionalSet is a set that maintains the order of its elements based on a
+// predefined list. It allows insertion of elements in a specific order and
+// provides methods to check for containment, retrieve items in order, and get
+// the position of items.
 type PositionalSet[T Orderable] struct {
 	order       []T        // Defines the valid elements and their order
 	items       map[T]bool // Tracks which items are in the set
@@ -18,6 +25,11 @@ type PositionalSet[T Orderable] struct {
 	cache       []T
 }
 
+// NewPositionalSet creates a new PositionalSet with the given order and anchor.
+// The order slice defines the valid elements and their order, while the anchor
+// is a special element that is always present in the set and cannot be removed.
+// The function ensures that the anchor is included in the order and initializes
+// the internal structures of the PositionalSet.
 func NewPositionalSet[T Orderable](order []T, anchor T) *PositionalSet[T] {
 	o := lo.Reject(lo.Uniq(order), func(
 		item T, _ int,
@@ -37,6 +49,7 @@ func NewPositionalSet[T Orderable](order []T, anchor T) *PositionalSet[T] {
 	for i, item := range o {
 		ps.positions[item] = i
 	}
+
 	ps.items[anchor] = true
 
 	return ps
@@ -52,8 +65,10 @@ func (ps *PositionalSet[T]) Insert(item T) bool {
 		if _, found := ps.items[item]; found {
 			return false
 		}
+
 		ps.items[item] = true
 		ps.invalidated = true
+
 		return true
 	}
 
@@ -92,6 +107,7 @@ func (ps *PositionalSet[T]) Contains(item T) bool {
 	return ps.items[item]
 }
 
+// Top returns the first item in the set, in the defined order
 func (ps *PositionalSet[T]) Top() T {
 	return ps.Items()[0]
 }

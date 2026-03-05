@@ -1,7 +1,7 @@
-package json
+package jason
 
 type (
-	// HibernationBehaviour
+	// HibernationBehaviour defines the behavioural aspects of hibernation
 	HibernationBehaviour struct {
 		// InclusiveWake when wake occurs, permit client callback to
 		// be invoked for the current node. Inclusive, true by default
@@ -12,7 +12,7 @@ type (
 		InclusiveSleep bool `json:"hibernate-inclusive-sleep"`
 	}
 
-	// HibernateOptions
+	// HibernateOptions contains options relating to hibernation
 	HibernateOptions struct {
 		// WakeAt defines a filter for hibernation wake condition
 		WakeAt *FilterDef

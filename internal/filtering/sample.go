@@ -17,10 +17,12 @@ type (
 	candidates func(entries []fs.DirEntry) (wanted, others []fs.DirEntry)
 )
 
+// Sample is a filter that samples files or directories based on a pattern.
 type Sample struct {
 	Base
 }
 
+// NewSample creates a new sample filter based on the given definition and options.
 func NewSample(def *core.SampleFilterDef,
 	so *pref.SamplingOptions,
 ) (core.SampleTraverseFilter, error) {
@@ -64,6 +66,7 @@ func NewSample(def *core.SampleFilterDef,
 		if def.Custom == nil {
 			return nil, locale.ErrFilterIsNil
 		}
+
 		filter = def.Custom
 	case enums.FilterTypePoly:
 	case enums.FilterTypeUndefined:
@@ -112,6 +115,8 @@ func (f *Sample) fetch(entries []fs.DirEntry) (wanted, others []fs.DirEntry) {
 // GetMatching sampler func.
 type GetMatching func(entry fs.DirEntry, index int) bool
 
+// Matching returns the collection of files contained within this
+// node's directory that matches this filter.
 func (f *Sample) Matching(children []fs.DirEntry,
 	get GetMatching,
 ) []fs.DirEntry {

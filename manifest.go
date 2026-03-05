@@ -37,6 +37,7 @@ func manifest(active []enums.Role) []enums.Role {
 				slices.Contains(active, enums.RoleSampler) {
 				return false
 			}
+
 			return true
 		},
 		"nanny-defers-to-filter": func(current enums.Role, active, _ []enums.Role) bool {
@@ -44,6 +45,7 @@ func manifest(active []enums.Role) []enums.Role {
 				slices.Contains(active, enums.RoleClientFilter) {
 				return false
 			}
+
 			return true
 		},
 	}
@@ -58,6 +60,7 @@ func manifest(active []enums.Role) []enums.Role {
 			}) {
 				acc = append(acc, role)
 			}
+
 			return acc
 		},
 		initial,

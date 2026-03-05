@@ -1,4 +1,4 @@
-package json
+package jason
 
 import (
 	"github.com/snivilised/agenor/enums"
@@ -8,11 +8,17 @@ type (
 	// EntryQuantities contains specification of no of files and directories
 	// used in various contexts, but primarily sampling.
 	EntryQuantities struct {
-		Files       uint `json:"no-of-files"`
+		// Files no of files
+		Files uint `json:"no-of-files"`
+
+		// Directories no of directories
 		Directories uint `json:"no-of-directories"`
 	}
 
-	// SamplingOptions
+	// SamplingOptions contains options relating to sampling, which is the
+	// process of selecting a subset of entries from a directory's contents
+	// during traversal. Sampling can be used to limit the number of entries
+	// processed, or to select specific entries based on certain criteria.
 	SamplingOptions struct {
 		// Type the type of sampling to use
 		Type enums.SampleType `json:"sample-type"`

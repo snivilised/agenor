@@ -13,6 +13,7 @@ type BootStrapHook interface {
 type BootStrapHooks interface {
 }
 
+// BootStrapper exposes navigation hooks
 type BootStrapper interface {
 	Hooks() BootStrapHooks
 }
@@ -64,14 +65,6 @@ type BootStrapper interface {
 // 		To achieve this, we must place common definitions in core and ensure
 // that any feature does not depend on the kernel. Each feature must subscribe
 // to topics they're interested in, and emit a message to indicate completion.
-
-type bootstrap struct {
-	// should allow other entities to customise the boot phase, eg
-	// if there is a resumer in place, it should change the boot
-	// process to read the options from file, rather than getting
-	// the options.
-	//
-}
 
 // bs.on("some-event", func() { the "some-event", will be an enum, not string
 //		do something

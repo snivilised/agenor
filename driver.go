@@ -26,6 +26,7 @@ func (d *driver) init() {
 	})
 }
 
+// Navigate executes the navigation process using the session.
 func (d *driver) Navigate(ctx context.Context) (core.TraverseResult, error) {
 	d.init()
 	d.s.start()

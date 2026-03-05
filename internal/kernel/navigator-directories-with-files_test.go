@@ -1,8 +1,8 @@
 package kernel_test
 
 import (
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -28,6 +28,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 		)
 
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
+
 		Expect(li18ngo.Use(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
@@ -49,6 +50,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 					node := servant.Node()
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
+
 					recall[node.Extension.Name] = len(node.Children)
 
 					return entry.Callback(servant)

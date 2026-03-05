@@ -13,10 +13,6 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
-const (
-	noOverwrite = true
-)
-
 type (
 	ifActive func(o *pref.Options,
 		sub enums.Subscription, mediator enclave.Mediator,
@@ -46,6 +42,7 @@ func features(o *pref.Options,
 			if plugin != nil {
 				acc = append(acc, plugin)
 			}
+
 			return acc
 		},
 		lo.Reduce(all,
@@ -53,6 +50,7 @@ func features(o *pref.Options,
 				if plugin := query(o, ext.subscription(), artefacts.Mediator); plugin != nil {
 					acc = append(acc, plugin)
 				}
+
 				return acc
 			},
 			[]enclave.Plugin{},
@@ -61,7 +59,6 @@ func features(o *pref.Options,
 
 	for _, plugin := range plugins {
 		err = plugin.Register(artefacts.Kontroller)
-
 		if err != nil {
 			return nil, err
 		}

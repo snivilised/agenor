@@ -72,6 +72,7 @@ func Sum[T constraints.Float | constraints.Integer | constraints.Complex](collec
 	for _, val := range collection {
 		sum += val
 	}
+
 	return sum
 }
 

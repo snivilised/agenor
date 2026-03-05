@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
+// IfActive returns a new plugin if sampling is active, otherwise nil
 func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) enclave.Plugin {
 	if o.Sampling.IsSamplingActive() {
 		return &plugin{
@@ -22,10 +23,6 @@ func IfActive(o *pref.Options, _ enums.Subscription, mediator enclave.Mediator) 
 	}
 
 	return nil
-}
-
-type samplingOptions struct {
-	sampling *pref.SamplingOptions
 }
 
 type plugin struct {

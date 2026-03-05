@@ -10,16 +10,12 @@ import (
 	"github.com/snivilised/agenor/pref"
 )
 
-// 📦 pkg: resume - depends on hiber, filter and persist.
-// filter should also contain persistence concerns (actually
-// these may be internal modules, eg internal/serial/JSON).
-
 const (
-	badge             = "badge: resume"
 	followingSiblings = true
 )
 
 type (
+	// Strategy is the strategy of the resume controller.
 	Strategy interface {
 		init(load *opts.LoadInfo) error
 		ignite()

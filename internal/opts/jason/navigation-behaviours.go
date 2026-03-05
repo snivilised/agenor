@@ -1,10 +1,12 @@
-package json
+package jason
 
 type (
+	// SubPathBehaviour SubPath behaviours relating to handling of sub-path calculation
 	SubPathBehaviour struct {
 		KeepTrailingSep bool
 	}
 
+	// SortBehaviour Sort behaviours relating to sorting of a directory's entries.
 	SortBehaviour struct {
 		// case sensitive traversal order
 		//
@@ -16,6 +18,7 @@ type (
 		SortFilesFirst bool
 	}
 
+	// CascadeBehaviour Cascade controls how deep to navigate
 	CascadeBehaviour struct {
 		// Depth sets a maximum traversal depth
 		//
@@ -31,12 +34,13 @@ type (
 		NoRecurse bool
 	}
 
+	// NavigationBehaviours is the collection of behaviours relating to navigation.
 	NavigationBehaviours struct {
-		// SubPath, behaviours relating to handling of sub-path calculation
+		// SubPath behaviours relating to handling of sub-path calculation
 		//
 		SubPath SubPathBehaviour
 
-		// Sort, behaviours relating to sorting of a directory's entries.
+		// Sort behaviours relating to sorting of a directory's entries.
 		//
 		Sort SortBehaviour
 

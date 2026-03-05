@@ -1,18 +1,15 @@
 package pref
 
-// 📦 pkg: pref - contains user option definitions; do not use anything
-// in kernel (cyclic).
-
-const (
-	badge = "badge: option-requester"
-)
-
 type (
+	// RescueData is the data to be saved in case of a rescue.
 	RescueData interface {
+		// Data returns the data to be saved.
 		Data() interface{}
 	}
 
+	// Recovery is the interface for saving rescue data.
 	Recovery interface {
+		// Save saves the rescue data and returns the path write to.
 		Save(data RescueData) (string, error)
 	}
 )

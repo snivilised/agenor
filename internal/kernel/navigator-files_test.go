@@ -3,8 +3,8 @@ package kernel_test
 import (
 	"context"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	lab "github.com/snivilised/agenor/internal/laboratory"
@@ -47,7 +47,6 @@ var _ = Describe("NavigatorFiles", Ordered, func() {
 					)).Navigate(ctx)
 
 					Expect(err).To(Succeed())
-
 				})
 			})
 		})

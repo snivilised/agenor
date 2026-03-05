@@ -15,10 +15,17 @@ package enums
 type InternalRole uint
 
 const (
+	// InternalRoleRoleUndefined undefined role
 	InternalRoleRoleUndefined InternalRole = iota // undefined-role
-	InternalRoleLogger                            // logger-role
-	InternalRoleSampler                           // sampler-role
-	InternalRoleResume                            // resume-role
+
+	// InternalRoleLogger logger role
+	InternalRoleLogger // logger-role
+
+	// InternalRoleSampler sampler role
+	InternalRoleSampler // sampler-role
+
+	// InternalRoleResume resume role
+	InternalRoleResume // resume-role
 )
 
 // do we need to distinguish between internal and external entities. It looks

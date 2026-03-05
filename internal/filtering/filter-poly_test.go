@@ -3,8 +3,8 @@ package filtering_test
 import (
 	"regexp/syntax"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:revive // ok
-	. "github.com/onsi/gomega"    //nolint:revive // ok
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	age "github.com/snivilised/agenor"
 	"github.com/snivilised/agenor/core"
@@ -31,6 +31,7 @@ var _ = Describe("feature", Ordered, func() {
 		)
 
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
+
 		Expect(li18ngo.Use()).To(Succeed())
 	})
 
@@ -71,6 +72,7 @@ var _ = Describe("feature", Ordered, func() {
 									GinkgoWriter.Printf(
 										"---> 🍯 EXAMPLE-POLY-FILTER-CALLBACK: '%v'\n", node.Path,
 									)
+
 									return nil
 								},
 								GetForest: func(_ string) *core.Forest {
@@ -130,11 +132,13 @@ var _ = Describe("feature", Ordered, func() {
 					node.Extension.Scope,
 					traverseFilter.Scope(),
 				)
+
 				if lo.Contains(entry.Mandatory, node.Extension.Name) {
 					Expect(node).Should(MatchCurrentGlobFilter(traverseFilter))
 				}
 
 				recall[node.Extension.Name] = len(node.Children)
+
 				return nil
 			}
 			result, err := age.Walk().Configure().Extent(age.Prime(

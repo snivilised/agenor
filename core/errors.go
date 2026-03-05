@@ -171,7 +171,7 @@ var errResumeControllerNotSet = errors.New(
 
 // ❌ GuardianCantDecorateItemSealed error
 
-// ErrGuardianCantDecorateItemSealedError creates an untranslated error to
+// ErrGuardianCantDecorateItemSealed creates an untranslated error to
 // indicate last item is sealed
 var ErrGuardianCantDecorateItemSealed = errors.New(
 	"can't decorate, last item is sealed",
@@ -201,24 +201,39 @@ var errBrokerTopicNotFound = errors.New(
 
 // ❌ DetectedSpawnStackOverflow error
 
+// ErrDetectedSpawnStackOverflow is created if the Spawn resume strategy detects a stack
+// overflow, which is a protective measure to prevent infinite recursion in the case of a
+// malformed tree or an unexpected state during traversal. This error indicates that the
+// Spawn strategy has reached a depth that exceeds its safety threshold, and it has halted
+// further processing to avoid crashing the system.
 var ErrDetectedSpawnStackOverflow = errors.New(
 	"spawn resume stack-overflow protection",
 )
 
 // ❌ WrongPrimaryFacade error
 
+// ErrWrongPrimaryFacade is created if the client tries to create a primary platform
+// with a facade that is not of the expected type; ie not a *pref.Using. This is a
+// programming error, and indicates that the client has made a mistake in how they are
+// using the API.
 var ErrWrongPrimaryFacade = errors.New(
 	"wrong primary facade",
 )
 
 // ❌ WrongResumeFacade error
 
+// ErrWrongResumeFacade is created if the client tries to create a resume platform
+// with a facade that is not of the expected type; ie not a *pref.Relic. This is a
+// programming error, and indicates that the client has made a mistake in how they are
+// using the API.
 var ErrWrongResumeFacade = errors.New(
 	"wrong resume facade",
 )
 
 // ❌ Nil Forest error
 
+// ErrNilForest is created if the forest is nil when it shouldn't be. This is a programming
+// error, and indicates that the client has made a mistake in how they are using the API.
 var ErrNilForest = errors.New(
 	"forest is nil",
 )

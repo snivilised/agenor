@@ -41,6 +41,7 @@ func Find[T any](collection []T, predicate func(item T) bool) (T, bool) {
 	}
 
 	var result T
+
 	return result, false
 }
 

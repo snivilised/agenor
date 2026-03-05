@@ -39,12 +39,13 @@ func (f *RegExpr) Validate() error {
 	var (
 		err error
 	)
+
 	f.rex, err = regexp.Compile(f.pattern)
 
 	return err
 }
 
-// IsMatch
+// IsMatch returns true if the current node matches the regex filter.
 func (f *RegExpr) IsMatch(node *core.Node) bool {
 	if f.IsApplicable(node) {
 		return f.invert(f.rex.MatchString(node.Extension.Name))
@@ -55,20 +56,26 @@ func (f *RegExpr) IsMatch(node *core.Node) bool {
 
 // ChildRegexFilter ===========================================================
 
+// ChildRegex is a filter that matches files based on a regex pattern.
+// It is applied to the children of a directory.
 type ChildRegex struct {
 	Child
 	rex *regexp.Regexp
 }
 
+// Validate ensures the filter definition is valid, panics when invalid
 func (f *ChildRegex) Validate() error {
 	var (
 		err error
 	)
+
 	f.rex, err = regexp.Compile(f.Pattern)
 
 	return err
 }
 
+// Matching returns the collection of files contained within this
+// node's directory that matches this filter.
 func (f *ChildRegex) Matching(children []fs.DirEntry) []fs.DirEntry {
 	return lo.Filter(children, func(entry fs.DirEntry, _ int) bool {
 		return f.invert(f.rex.MatchString(entry.Name()))
@@ -97,11 +104,14 @@ func (f *SampleRegex) Validate() error {
 	var (
 		err error
 	)
+
 	f.rex, err = regexp.Compile(f.pattern)
 
 	return err
 }
 
+// Matching returns the collection of files contained within this
+// node's directory that matches this filter.
 func (f *SampleRegex) Matching(entries []fs.DirEntry) []fs.DirEntry {
 	filterable, bypass := f.fetch(entries)
 	filtered := lo.Filter(filterable, func(entry fs.DirEntry, _ int) bool {

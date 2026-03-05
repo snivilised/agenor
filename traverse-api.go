@@ -1,3 +1,6 @@
+// Package age (agenor) is the front line user facing interface to this module.
+// It sits on the top of the code stack and is allowed to use anything, but
+// nothing else can depend on definitions here, except unit tests.
 package age
 
 import (
@@ -11,12 +14,11 @@ import (
 	nef "github.com/snivilised/nefilim"
 )
 
-// 📦 pkg: agenor - is the front line user facing interface to this module. It sits
-// on the top of the code stack and is allowed to use anything, but nothing
-// else can depend on definitions here, except unit tests.
-
 type (
-	// Director
+	// Director is an interface that represents a director for creating Navigator instances. It
+	// defines a single method, Extent, which takes a Builders instance and returns a Navigator.
+	// The Director is responsible for orchestrating the construction of a Navigator based on
+	// the provided Builders and any configuration specified in the Addons.
 	Director interface {
 		// Extent represents the magnitude of the traversal; ie we can
 		// perform a full 'Prime' traversal, or 'Resume' from a previously
@@ -28,11 +30,16 @@ type (
 	director func(bs *Builders) Navigator
 )
 
+// Extent is a method of the Director interface that represents the magnitude of the traversal.
 func (fn director) Extent(bs *Builders) Navigator {
 	return fn(bs)
 }
 
-// NavigatorFactory
+// NavigatorFactory is a factory interface for creating Navigator instances. It defines a
+// single method, Configure, which takes a variable number of Addon arguments and returns
+// a Director. The Configure method is responsible for setting up the necessary configuration
+// and dependencies based on the provided Addons and returning a Director that can be used
+// to create Navigator instances with the specified configuration.
 type NavigatorFactory interface {
 	// Configure is a factory function that creates a navigator.
 	// We don't return an error here as that would make using the factory
@@ -45,48 +52,135 @@ type NavigatorFactory interface {
 
 type (
 	// 🌀 core
-	Client    = core.Client
+
+	// Client is the callback invoked for each file system node found
+	// during traversal.
+	Client = core.Client
+
+	// Navigator represents the core navigation interface. It is the main interface
+	// that users interact with to perform file system traversal. The Navigator interface
+	// defines a single method, Navigate, which takes a context and returns a TraverseResult
+	// and an error. The Navigate method is responsible for executing the traversal logic
+	// based on the provided context and returning the results of the traversal.
 	Navigator = core.Navigator
-	Node      = core.Node
-	Servant   = core.Servant
+
+	// Node represents a file system node, which can be either a file or a directory. It
+	// contains information about the node's path, type, and any extensions that may be associated with
+	// it. The Node struct is used to represent the individual elements of the file system that are
+	// encountered during traversal.
+	Node = core.Node
+
+	// Servant provides the client with facility to request properties
+	Servant = core.Servant
 
 	// 🌀 enums
-	Subscription   = enums.Subscription
+
+	// Subscription represents the types of file system nodes that can be subscribed to
+	// during traversal. It is used to specify whether the client wants to receive callbacks
+	// for files, directories, or both.
+	Subscription = enums.Subscription
+
+	// ResumeStrategy represents the strategies for resuming a traversal session. It is used to
+	// specify how the traversal should continue from a previously cancelled session, such as
+	// whether to spawn new sessions or fast-forward to the last known state.
 	ResumeStrategy = enums.ResumeStrategy
 
 	// 🌀 nef
-	ExistsInFS  = nef.ExistsInFS
-	Rel         = nef.Rel
-	RenameFS    = nef.RenameFS
+
+	// ExistsInFS contains methods that check the existence of file system items.
+	ExistsInFS = nef.ExistsInFS
+
+	// Rel represents generic info required to create a relative file system.
+	// Relative just means that a file system is created with a root path and
+	// the operations on the file system are invoked with paths that must be
+	// relative to the root.
+	Rel = nef.Rel
+
+	// RenameFS contains methods for renaming files and directories in a file system.
+	RenameFS = nef.RenameFS
+
+	// WriteFileFS contains methods for writing files in a file system.
 	WriteFileFS = nef.WriteFileFS
-	WriterFS    = nef.WriterFS
+
+	// WriterFS contains methods for writing files and directories in a file system.
+	WriterFS = nef.WriterFS
 
 	// 🌀 pref
+
+	// Accepter is the function signature for functions that can be accepted as options
+	// in the Addon interface.
 	Accepter = pref.Accepter
-	Head     = pref.Head
-	Option   = pref.Option
-	Options  = pref.Options
-	Relic    = pref.Relic
-	Using    = pref.Using
+
+	// Head represents the initial configuration of a traversal session. It is used
+	// to define the starting point and any initial settings for the traversal.
+	Head = pref.Head
+
+	// Option represents a configuration option that can be applied to a traversal
+	// session. It is used to specify various settings and behaviors for the traversal,
+	// such as filters, handlers, and other preferences.
+	Option = pref.Option
+
+	// Options represents a collection of configuration options that can be applied
+	// to a traversal session. It is used to group multiple options together for easier
+	// management and application to the traversal.
+	Options = pref.Options
+
+	// Relic represents a saved state of a traversal session that can be used to resume.
+	Relic = pref.Relic
+
+	// Using represents the dependencies required by an Addon to be applied to a
+	// traversal session.
+	Using = pref.Using
 
 	// 🌀 tfs
+
+	// TraversalFS represents the file system interface used for traversal. It defines
+	// the methods that must be implemented by any file system that is to be traversed
+	// using the Navigator. The TraversalFS interface includes methods for reading
+	// directories, reading files, and obtaining file information, among others. It
+	// serves as the abstraction layer between the traversal logic and the underlying
+	// file system, allowing for flexibility in the types of file systems that can be traversed.
 	TraversalFS = tfs.TraversalFS
 )
 
 const (
-	OutputChSize       = 10
+	// OutputChSize defines the size of the output channel used when WithOutput is specified.
+	OutputChSize = 10
+
+	// CheckCloseInterval defines the interval at which the output channel is checked for closure.
 	CheckCloseInterval = time.Second / 10
-	TimeoutOnSend      = time.Second * 2
+
+	// TimeoutOnSend defines the duration to wait when sending output before timing out.
+	TimeoutOnSend = time.Second * 2
 
 	// 🌀 enum: ResumeStrategy
-	ResumeStrategySpawn    = enums.ResumeStrategySpawn
+
+	// ResumeStrategySpawn indicates that when resuming a traversal session, new sessions
+	// should be spawned to continue the traversal from the last known state.
+	ResumeStrategySpawn = enums.ResumeStrategySpawn
+
+	// ResumeStrategyFastward indicates that when resuming a traversal session, the traversal
+	// should fast-forward to the last known state and continue from there, rather than
+	// spawning new sessions.
 	ResumeStrategyFastward = enums.ResumeStrategyFastward
 
 	// 🌀 enum:Subscribe
-	SubscribeFiles                = enums.SubscribeFiles
-	SubscribeDirectories          = enums.SubscribeDirectories
+
+	// SubscribeFiles indicates that the client wants to receive callbacks for file nodes
+	// during traversal.
+	SubscribeFiles = enums.SubscribeFiles
+
+	// SubscribeDirectories indicates that the client wants to receive callbacks for
+	// directory nodes during traversal.
+	SubscribeDirectories = enums.SubscribeDirectories
+
+	// SubscribeDirectoriesWithFiles indicates that the client wants to receive callbacks for
+	// both file and directory nodes during traversal.
 	SubscribeDirectoriesWithFiles = enums.SubscribeDirectoriesWithFiles
-	SubscribeUniversal            = enums.SubscribeUniversal
+
+	// SubscribeUniversal indicates that the client wants to receive callbacks for all file
+	// system nodes	during traversal, regardless of whether they are files or directories.
+	SubscribeUniversal = enums.SubscribeUniversal
 )
 
 var (
@@ -279,47 +373,3 @@ var (
 	// WithSubPathBehaviour defines all sub-path behaviours.
 	WithSubPathBehaviour = pref.WithSubPathBehaviour
 )
-
-// sub package description:
-//
-
-// This high level list assumes everything can use core and enums; dependencies
-// can only point downwards. NB: These restrictions do not apply to the unit tests;
-// eg, "life_test" defines tests that are dependent on "pref", but "life" is prohibited
-// from using "pref".
-// ============================================================================
-// 🔆 user interface layer
-// agenor: [everything]
-// ---
-//
-// 🔆 feature layer
-// resume: ["pref", "opts", "kernel"]
-// sampling: ["filter"]
-// hiber: ["filter", "services"]
-// filter: []
-//
-// 🔆 central layer
-// kernel: []
-// enclave: [pref, override]
-// opts: [pref]
-// override: [tapable], !("enclave")
-// ---
-//
-// 🔆 support layer
-// pref: ["life", "services", "persist(to-be-confirmed)"] actually, persist should be part of pref
-// persist: []
-// services: []
-// ---
-//
-// 🔆 intermediary layer
-// life: [], !("pref")
-// ---
-//
-// 🔆 platform layer
-// tapable: [core]
-// core: []
-// enums: [none]
-// tfs:
-// ---
-// ============================================================================
-//
