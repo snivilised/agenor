@@ -1,8 +1,8 @@
 package locale
 
 const (
-	// SourceID defines the ID (by convemtion the repo URL) required
-	// for i18n translation pureposes.
+	// SourceID defines the ID (by convention the repo URL) required
+	// for i18n translation purposes.
 	SourceID = "github.com/snivilised/agenor"
 )
 

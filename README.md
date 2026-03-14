@@ -50,7 +50,7 @@ This project provides a directory walker in the same vein as the ___Walk___ in s
 </p>
 
 - unit testing with [Ginkgo](https://onsi.github.io/ginkgo/)/[Gomega](https://onsi.github.io/gomega/)
-- implemented with [🐍 Cobra](https://cobra.dev/) cli framework, assisted by [🐲 Cobrass](https://github.com/snivilised/cobrass)
+- implemented with [🐍 Cobra](https://cobra.dev/) cli framework, assisted by [🍦 Sundae](https://github.com/snivilised/sundae)
 - i18n with [go-i18n](https://github.com/nicksnyder/go-i18n)
 - linting configuration and pre-commit hooks, (see: [linting-golang](https://freshman.tech/linting-golang/)).
 - uses [💥 lo](https://github.com/samber/lo)
