@@ -86,12 +86,12 @@ github.com/sagikazarmark/locafero v0.12.0 h1:/NQhBAkUb4+fH1jivKHWusDYFjMOOKU88ee
 github.com/sagikazarmark/locafero v0.12.0/go.mod h1:sZh36u/YSZ918v0Io+U9ogLYQJ9tLLBmM4eneO6WwsI=
 github.com/snivilised/li18ngo v0.1.10 h1:l0xiT278GdUjEmGIzUmM/UQ2/zlrVuc0kevmCU3Q4Qc=
 github.com/snivilised/li18ngo v0.1.10/go.mod h1:+Oc4DADP9XISZEDZLiiG1WLonZo309Dj4e/zBcsNHNw=
+github.com/snivilised/mamba v0.1.1 h1:njG8ievm3W7wKoWkj2HbHH6JA4PnklS5DX1l9kWta0A=
+github.com/snivilised/mamba v0.1.1/go.mod h1:Wc2BOpzlkCYkdrRHndZFBgqMr8Cziy3/gTSbZlbk6L0=
 github.com/snivilised/nefilim v0.1.11 h1:i8o4vb/4oNi6GVfTGUdUDqvINn8RyTmLdvVRW/aDu4A=
 github.com/snivilised/nefilim v0.1.11/go.mod h1:1dQJlIcxLIl7iY3/DyL/52gSLEJoAmaB6sQTFF79Ofc=
 github.com/snivilised/pants v0.1.5 h1:hh/rfws7V4qghL7k95AdI22BHZtS5g4BW5PDCxTE58w=
 github.com/snivilised/pants v0.1.5/go.mod h1:sheyn+EehmO6BEDgMNeXxQ8pR4TNjBm255QwAY1uX20=
-github.com/snivilised/sundae v0.1.2 h1:APZBgRBWkOAvYk2Por5tl7bNxgK4BksxrBWPpoz3YMU=
-github.com/snivilised/sundae v0.1.2/go.mod h1:oS0l3bVeB7bdnW5FGdmUxjsI38zwsyHGfvOKsYdZYGY=
 github.com/spf13/afero v1.15.0 h1:b/YBCLWAJdFWJTN9cLhiXXcD7mzKn9Dm86dNnfyQw1I=
 github.com/spf13/afero v1.15.0/go.mod h1:NC2ByUVxtQs4b3sIUphxK0NioZnmxgyCrfzeuq8lxMg=
 github.com/spf13/cast v1.10.0 h1:h2x0u2shc1QuLHfxi+cTJvs30+ZAHOGRic8uyGTDWxY=
@@ -175,8 +175,8 @@ google.golang.org/protobuf v1.23.0/go.mod h1:EGpADcykh3NcUnDUJcl1+ZksZNG86OlYog2
 google.golang.org/protobuf v1.36.7 h1:IgrO7UwFQGJdRNXH/sQux4R1Dj1WAKcLElzeeRaXV2A=
 google.golang.org/protobuf v1.36.7/go.mod h1:jduwjTPXsFjZGTmRluh+L6NjiWu7pchiJ2/5YcXBHnY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
-gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 h1:YR8cESwS4TdDjEe65xsg0ogRM/Nc3DYOhEAlW+xobZo=
-gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 h1:qIbj1fsPNlZgppZ+VLlY7N33q108Sa+fhmuc+sWQYwY=
+gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7/go.mod h1:dt/ZhP58zS4L8KSrWDmTeBkI65Dw0HsyUHuEVlX15mw=
