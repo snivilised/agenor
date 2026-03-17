@@ -8,9 +8,9 @@ import (
 	"github.com/snivilised/agenor/internal/third/lo"
 	"github.com/snivilised/agenor/locale"
 	"github.com/snivilised/li18ngo"
-	"github.com/snivilised/sundae/assist"
-	"github.com/snivilised/sundae/assist/cfg"
-	si18n "github.com/snivilised/sundae/locale"
+	"github.com/snivilised/mamba/assist"
+	"github.com/snivilised/mamba/assist/cfg"
+	si18n "github.com/snivilised/mamba/locale"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/text/language"
@@ -157,18 +157,18 @@ func handleLangSetting() {
 			Sources: li18ngo.TranslationFiles{
 				SourceID: li18ngo.TranslationSource{Name: ApplicationName},
 
-				// By adding in the source for sundae, we relieve the client from having
+				// By adding in the source for mamba, we relieve the client from having
 				// to do this. After-all, it should be taken as read that since any
 				// instantiation of jay (ie a project using this template) is by
-				// necessity dependent on sundae, it's source should be loaded so that a
+				// necessity dependent on mamba, it's source should be loaded so that a
 				// localizer can be created for it.
 				//
 				// The client app has to make sure that when their app is deployed,
-				// the translations file(s) for sundae are named as 'sundae', as you
+				// the translations file(s) for mamba are named as 'mamba', as you
 				// can see below, that is the name assigned to the app name of the
 				// source.
 				//
-				si18n.SundaeSourceID: li18ngo.TranslationSource{Name: "sundae"},
+				si18n.MambaSourceID: li18ngo.TranslationSource{Name: "mamba"},
 			},
 		}
 	})
