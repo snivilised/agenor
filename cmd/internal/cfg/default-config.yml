@@ -1,0 +1,91 @@
+# ==========================
+# Actions
+# ==========================
+actions:
+  # Transcode video with medium quality
+  komp-2:
+    cmd: "ffmpeg -i {{.path}} -q:v 2 {{.dir}}/{{.stem}}.mp4"
+    # Only apply to large video files
+    when: "isVideo && isLarge && !isHidden"
+  # Transcode video with lower quality
+  komp-18:
+    cmd: "ffmpeg -i {{.path}} -q:v 18 {{.dir}}/{{.stem}}.mp4"
+    when: "isVideo && size > 50MB"
+  # Upload to S3 bucket if transcoded file exists
+  upload-s3:
+    cmd: "aws s3 cp {{.dir}}/{{.stem}}.mp4 s3://mybucket/"
+    when: "exists({{.dir}}/{{.stem}}.mp4)"
+  # Generate a thumbnail for video
+  thumbnail:
+    cmd: "ffmpeg -i {{.path}} -vf 'thumbnail' -frames:v 1 {{.dir}}/{{.stem}}.jpg"
+    when: "isVideo"
+# ==========================
+# Pipelines
+# ==========================
+pipelines:
+  # Full video workflow: transcode + thumbnail + upload
+  video-workflow:
+    steps:
+      - komp-2
+      - thumbnail
+      - upload-s3
+
+  # Quick low-quality workflow
+  quick-transcode:
+    steps:
+      - komp-18
+      - upload-s3
+# ==========================
+# Flags
+# ==========================
+flags:
+  # Override the short codes for flags
+  short:
+    overrides:
+      cmds:
+        walk:
+          foo: F
+        run:
+          bar: Z
+  # invoke defines defaults for flags not specified on the command line. Flags
+  # defined here, override any that may be defined at the component level.
+  invoke:
+    cmds:
+      any:
+        files: 2
+        folders: 1
+  # defines default flag values on a component basis. So any command
+  # uses the sampler, can use the sampler defaults here. Defaults
+  # for other components can be defined here too, which cuts across
+  # all applicable commands. Can be overridden by invoke. 
+  component:
+    sampler:
+      files: 2
+      folders: 1
+# ==========================
+# Interaction
+# ==========================
+interaction:
+  tui:
+    per-item-delay: "1s"
+# ==========================
+# Advanced
+# ==========================
+advanced:
+  abort-on-error: false
+  overwrite-on-collision: false
+  extensions:
+    suffixes-csv: "jpg,jpeg,png"
+    transforms-csv: lower
+    map:
+      jpeg: jpg
+# ==========================
+# Logging
+# ==========================
+logging:
+  log-path: "~/snivilised/jay/jay.log"
+  max-size-in-mb: 10
+  max-backups: 3
+  max-age-in-days: 30
+  level: info
+  time-format: "2006-01-02 15:04:05"
