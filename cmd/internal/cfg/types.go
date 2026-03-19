@@ -65,7 +65,7 @@ type RawPipeline struct {
 	Steps []string `mapstructure:"steps"`
 }
 
-// FlagShortOverride captures per-command short-flag remappings.
+// FlagShortOverride captures per-command short-flag re-mappings.
 //
 //	flags.short.overrides.cmds.<cmd>.<flag> = <letter>
 type FlagShortOverride map[string]map[string]string

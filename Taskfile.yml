@@ -251,6 +251,15 @@ tasks:
     cmds:
       - govulncheck ./...
 
+  # === inspect GOMODCACHE ===================================
+
+  # run this to install inspec then invoke directly, eg:
+  # inspect github.com/spf13/cobra
+  # inspect --interfaces github.com/spf13/cobra
+  install-inspect:
+    cmds:
+      - go install ./tools/inspect
+
   # === i18n =================================================
 
   clear:

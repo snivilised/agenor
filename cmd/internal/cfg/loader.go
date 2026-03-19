@@ -231,15 +231,15 @@ func decode(v *viper.Viper) (*Config, error) {
 }
 
 // decodeSection extracts key from Viper and mapstructure-decodes it into dest.
-func decodeSection(v *viper.Viper, key string, cfg *mapstructure.DecoderConfig, dest any) error {
+func decodeSection(v *viper.Viper, key string, decoderCfg *mapstructure.DecoderConfig, dest any) error {
 	raw := v.Get(key)
 	if raw == nil {
 		// Section absent - leave dest at zero value.
 		return nil
 	}
 
-	cfg.Result = dest
-	decoder, err := mapstructure.NewDecoder(cfg)
+	decoderCfg.Result = dest
+	decoder, err := mapstructure.NewDecoder(decoderCfg)
 	if err != nil {
 		return fmt.Errorf("creating decoder for %q: %w", key, err)
 	}
@@ -250,7 +250,7 @@ func decodeSection(v *viper.Viper, key string, cfg *mapstructure.DecoderConfig, 
 }
 
 // decodeFlagsSection has custom logic because flags.short is nested deeply.
-func decodeFlagsSection(v *viper.Viper, dcfg *mapstructure.DecoderConfig, dest *FlagsConfig) error {
+func decodeFlagsSection(v *viper.Viper, decoderCfg *mapstructure.DecoderConfig, destinationCfg *FlagsConfig) error {
 	raw := v.Get("flags")
 	if raw == nil {
 		return nil
@@ -267,13 +267,13 @@ func decodeFlagsSection(v *viper.Viper, dcfg *mapstructure.DecoderConfig, dest *
 			if overridesRaw, ok := shortMap["overrides"]; ok {
 				if overridesMap, ok := toStringAnyMap(overridesRaw); ok {
 					if cmdsRaw, ok := overridesMap["cmds"]; ok {
-						dest.Short = make(FlagShortOverride)
+						destinationCfg.Short = make(FlagShortOverride)
 						if cmdsMap, ok := toStringAnyMap(cmdsRaw); ok {
 							for cmd, flagsRaw := range cmdsMap {
 								if flagsMap, ok := toStringAnyMap(flagsRaw); ok {
-									dest.Short[cmd] = make(map[string]string)
+									destinationCfg.Short[cmd] = make(map[string]string)
 									for flag, val := range flagsMap {
-										dest.Short[cmd][flag] = fmt.Sprintf("%v", val)
+										destinationCfg.Short[cmd][flag] = fmt.Sprintf("%v", val)
 									}
 								}
 							}
@@ -288,11 +288,11 @@ func decodeFlagsSection(v *viper.Viper, dcfg *mapstructure.DecoderConfig, dest *
 	if invokeRaw, ok := rawMap["invoke"]; ok {
 		if invokeMap, ok := toStringAnyMap(invokeRaw); ok {
 			if cmdsRaw, ok := invokeMap["cmds"]; ok {
-				dest.Invoke = make(FlagInvokeDefaults)
+				destinationCfg.Invoke = make(FlagInvokeDefaults)
 				if cmdsMap, ok := toStringAnyMap(cmdsRaw); ok {
 					for cmd, flagsRaw := range cmdsMap {
 						if flagsMap, ok := toStringAnyMap(flagsRaw); ok {
-							dest.Invoke[cmd] = flagsMap
+							destinationCfg.Invoke[cmd] = flagsMap
 						}
 					}
 				}
@@ -302,17 +302,17 @@ func decodeFlagsSection(v *viper.Viper, dcfg *mapstructure.DecoderConfig, dest *
 
 	// component  ─►  FlagComponentDefaults = map[component]map[flag]any
 	if compRaw, ok := rawMap["component"]; ok {
-		dest.Component = make(FlagComponentDefaults)
+		destinationCfg.Component = make(FlagComponentDefaults)
 		if compMap, ok := toStringAnyMap(compRaw); ok {
 			for comp, flagsRaw := range compMap {
 				if flagsMap, ok := toStringAnyMap(flagsRaw); ok {
-					dest.Component[comp] = flagsMap
+					destinationCfg.Component[comp] = flagsMap
 				}
 			}
 		}
 	}
 
-	_ = dcfg // reserved for future hook composition
+	_ = decoderCfg // reserved for future hook composition
 	return nil
 }
 
