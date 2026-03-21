@@ -1,15 +1,14 @@
-# CLAUDE.md - agenor
+# CLAUDE.md - jaywalk
 
 ## Project Overview
 
-`agenor` is a file system traversal library that navigates directory trees and notifies
+`jaywalk` is a file system traversal library that navigates directory trees and notifies
 callers of events at each node. It extends the standard `filepath.Walk` with: regex/glob
 filtering, hibernation (deferred activation of callbacks until a condition is met),
 resume from a previously interrupted session, concurrent navigation via pants worker pool,
 and hook-able traversal behaviour.
 
 - **Module**: `github.com/snivilised/jaywalk`
-- **Package alias**: `age` (import as `jw "github.com/snivilised/jaywalk"`)
 - **Docs**: <https://pkg.go.dev/github.com/snivilised/jaywalk>
 
 ## Build & Test Commands
@@ -24,33 +23,42 @@ This rule does not apply to unit tests.
 
 ```txt
 🔆 user interface layer
-  age (root package)      - public API; may use everything
+  src/agenor (root package)                - public API; may use everything
 
 🔆 feature layer
-  internal/feat/resume    - depends on pref, opts, kernel
-  internal/feat/sampling  - depends on filter
-  internal/feat/hiber     - depends on filter, services
-  internal/feat/filter    - no internal deps
+  src/agenor/internal/feat/resume          - depends on pref, opts, kernel
+  src/agenor/internal/feat/sampling        - depends on filter
+  src/agenor/internal/feat/hiber           - depends on filter, services
+  src/agenor/internal/feat/filter          - no internal deps
 
 🔆 central layer
-  internal/kernel         - no internal deps
-  internal/enclave        - depends on pref, override
-  internal/opts           - depends on pref
-  internal/override       - depends on tapable; must not use enclave
+  src/agenor/internal/kernel               - no internal deps
+  src/agenor/internal/enclave              - depends on pref, override
+  src/agenor/internal/opts                 - depends on pref
+  src/agenor/internal/override             - depends on tapable; must not use enclave
 
 🔆 support layer
-  pref                    - depends on life, services, persist
-  internal/persist        - no internal deps
-  internal/services       - no internal deps
+  src/agenor/pref                          - depends on life, services, persist
+  src/agenor/internal/persist              - no internal deps
+  src/internal/services                    - no internal deps
 
 🔆 intermediary layer
-  life                    - no internal deps; must not use pref
+  src/agenor/life                          - no internal deps; must not use pref
 
 🔆 platform layer
-  tapable                 - depends on core
-  core                    - no internal deps
-  enums                   - no deps
-  tfs                     - no internal deps
+  src/agenor/tapable                       - depends on core
+  src/agenor/core                          - no internal deps
+  src/agenor/enums                         - no deps
+  src/agenor/tfs                           - no internal deps
+
+🔆 shared internal layer
+  src/internal/third                       - no internal deps; visible to all of src/
+  src/internal/services                    - no internal deps; visible to all of src/
+
+🔆 cli layer
+  src/app/command                          - depends on src/app/controller
+  src/app/controller                       - depends on src/app/dispatch, src/agenor
+  src/app/dispatch                         - depends on src/agenor; no upward deps
 ```
 
 ## Core API
@@ -70,10 +78,10 @@ The low-level API composes these explicitly:
 
 ```go
 // Walk/Prime
-jw.Walk().Configure().Extent(jw.Prime(facade, opts...)).Navigate(ctx)
+agenor.Walk().Configure().Extent(agenor.Prime(facade, opts...)).Navigate(ctx)
 
 // Run/Resume
-jw.Run(wg).Configure().Extent(jw.Resume(facade, opts...)).Navigate(ctx)
+agenor.Run(wg).Configure().Extent(agenor.Resume(facade, opts...)).Navigate(ctx)
 ```
 
 ### Scenario composites
@@ -92,10 +100,10 @@ lint warnings from bare literals:
 
 ```go
 const isPrime = true
-jw.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
+agenor.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
 
 var wg sync.WaitGroup
-jw.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
+agenor.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
 wg.Wait()
 ```
 
@@ -113,42 +121,42 @@ relic := &pref.Relic{...}   // resume sessions only
 
 ### Enums
 
-All enum values are in the `enums` package. Do not use `jw.` prefixed aliases
+All enum values are in the `enums` package. Do not use `agenor.` prefixed aliases
 for enum values - use `enums.` directly:
 
 ```go
-enums.SubscribeFiles            // not jw.SubscribeFiles
-enums.MetricNoFilesInvoked      // not jw.MetricNoFilesInvoked
+enums.SubscribeFiles            // not agenor.SubscribeFiles
+enums.MetricNoFilesInvoked      // not agenor.MetricNoFilesInvoked
 enums.ResumeStrategyFastward
 ```
 
 ### Options (With* functions)
 
 Options are passed as variadic `...pref.Option` to `Prime`/`Resume` or to a composite.
-All `With*` option constructors are re-exported from the root `age` package:
+All `With*` option constructors are re-exported from the root `agenor` package:
 
 ```go
-jw.WithFilter(...)
-jw.WithDepth(5)
-jw.WithOnBegin(handler)
-jw.WithCPU              // use all available CPUs for Run
-jw.WithNoW(n)           // use n workers for Run
+agenor.WithFilter(...)
+agenor.WithDepth(5)
+agenor.WithOnBegin(handler)
+agenor.WithCPU              // use all available CPUs for Run
+agenor.WithNoW(n)           // use n workers for Run
 ```
 
-Use `jw.IfOption` / `jw.IfOptionF` / `jw.IfElseOptionF` for conditional options.
+Use `agenor.IfOption` / `agenor.IfOptionF` / `agenor.IfElseOptionF` for conditional options.
 
 ## Key Types
 
 | Type | Package | Purpose |
 | --- | --- | --- |
-| `jw.Node` | `core` | A file system node passed to the client callback |
-| `jw.Servant` | `core` | Provides the client with traversal properties |
-| `jw.Client` | `core` | The callback signature: `func(node *jw.Node) error` |
-| `jw.Navigator` | `core` | Returned by `Extent()`; call `.Navigate(ctx)` on it |
-| `jw.Options` | `pref` | Full options struct available inside `With*` constructors |
-| `jw.Using` | `pref` | Alias for `pref.Using` (Prime facade) |
-| `jw.Relic` | `pref` | Alias for `pref.Relic` (Resume facade) |
-| `jw.TraversalFS` | `tfs` | File system interface required for traversal |
+| `agenor.Node` | `core` | A file system node passed to the client callback |
+| `agenor.Servant` | `core` | Provides the client with traversal properties |
+| `agenor.Client` | `core` | The callback signature: `func(node *agenor.Node) error` |
+| `agenor.Navigator` | `core` | Returned by `Extent()`; call `.Navigate(ctx)` on it |
+| `agenor.Options` | `pref` | Full options struct available inside `With*` constructors |
+| `agenor.Using` | `pref` | Alias for `pref.Using` (Prime facade) |
+| `agenor.Relic` | `pref` | Alias for `pref.Relic` (Resume facade) |
+| `agenor.TraversalFS` | `tfs` | File system interface required for traversal |
 
 ## Internal Packages (do not import directly)
 

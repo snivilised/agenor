@@ -172,7 +172,7 @@ func buildOptions(families SharedFamilies) []pref.Option {
 		opts = append(opts, agenor.WithDepth(d))
 	}
 
-	// TODO: implement DryRun on age
+	// TODO: implement DryRun on agenor
 	// if families.Preview.Native.DryRun {
 	// 	opts = append(opts, agenor.WithDryRun())
 	// }

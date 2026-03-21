@@ -35,13 +35,13 @@ type (
 //
 // Example:
 //
-// age.Walk().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Walk().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // # Walk/Resume
 //
 // Example:
 //
-// age.Walk().Configure().Extent(age.Resume(facade, options...)).Navigate(ctx)
+// agenor.Walk().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // The run scenarios would ordinarily look something like this...
 //
@@ -49,13 +49,13 @@ type (
 //
 // Example:
 //
-// age.Run().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // # Run/Resume
 //
 // Example:
 //
-// age.Run().Configure().Extent(age.Resume(facade, options...)).Navigate(ctx)
+// agenor.Run().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Hydra composite
@@ -69,7 +69,7 @@ type (
 //	var wg sync.WaitGroup
 //	isWalk := \<set depending on wether user requested walk or run\>
 //	isPrime := \<set depending on wether user requested prime or resume\>
-//	age.Hydra(isWalk, isPrime, &wg)(facade, options...).Navigate(ctx)
+//	agenor.Hydra(isWalk, isPrime, &wg)(facade, options...).Navigate(ctx)
 func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 	if isWalk && isPrime {
 		return slowPrime
@@ -99,13 +99,13 @@ func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 //
 // Example:
 //
-// age.Run().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // # Run/Resume
 //
 // Example:
 //
-// age.Run().Configure().Extent(age.Resume(facade, options...)).Navigate(ctx)
+// agenor.Run().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Hare composite
@@ -118,7 +118,7 @@ func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 //
 //	var wg sync.WaitGroup
 //	isPrime := \<set depending on wether user requested prime or resume\>
-//	age.Hare(isPrime, &wg)(facade, options...).Navigate(ctx)
+//	agenor.Hare(isPrime, &wg)(facade, options...).Navigate(ctx)
 func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
 	if isPrime {
 		return func(facade pref.Facade, settings ...pref.Option) Navigator {
@@ -140,13 +140,13 @@ func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
 //
 // Example:
 //
-// age.Walk().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Walk().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // # Walk/Resume
 //
 // Example:
 //
-// age.Walk().Configure().Extent(age.Resume(facade, options...)).Navigate(ctx)
+// agenor.Walk().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Tortoise composite
@@ -159,7 +159,7 @@ func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
 //
 //	var wg sync.WaitGroup
 //	isPrime := \<set depending on wether user requested prime or resume\>
-//	age.Tortoise(isPrime)(facade, options...).Navigate(ctx)
+//	agenor.Tortoise(isPrime)(facade, options...).Navigate(ctx)
 func Tortoise(isPrime bool) Scenario {
 	if isPrime {
 		return slowPrime
@@ -177,13 +177,13 @@ func Tortoise(isPrime bool) Scenario {
 //
 // Example:
 //
-// age.Walk().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Walk().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // # Run/Prime
 //
 // Example:
 //
-// age.Run().Configure().Extent(age.Prime(facade, options...)).Navigate(ctx)
+// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Goldfish composite
@@ -196,7 +196,7 @@ func Tortoise(isPrime bool) Scenario {
 //
 //	var wg sync.WaitGroup
 //	isWalk := \<set depending on wether user requested walk or run\>
-//	age.Goldfish(isWalk, &wg)(facade, options...).Navigate(ctx)
+//	agenor.Goldfish(isWalk, &wg)(facade, options...).Navigate(ctx)
 func Goldfish(isWalk bool, wg pants.WaitGroup) Scenario {
 	if isWalk {
 		return slowPrime
