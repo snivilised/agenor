@@ -8,9 +8,9 @@ filtering, hibernation (deferred activation of callbacks until a condition is me
 resume from a previously interrupted session, concurrent navigation via pants worker pool,
 and hook-able traversal behaviour.
 
-- **Module**: `github.com/snivilised/agenor`
-- **Package alias**: `age` (import as `age "github.com/snivilised/agenor"`)
-- **Docs**: <https://pkg.go.dev/github.com/snivilised/agenor>
+- **Module**: `github.com/snivilised/jaywalk`
+- **Package alias**: `age` (import as `jw "github.com/snivilised/jaywalk"`)
+- **Docs**: <https://pkg.go.dev/github.com/snivilised/jaywalk>
 
 ## Build & Test Commands
 
@@ -70,10 +70,10 @@ The low-level API composes these explicitly:
 
 ```go
 // Walk/Prime
-age.Walk().Configure().Extent(age.Prime(facade, opts...)).Navigate(ctx)
+jw.Walk().Configure().Extent(jw.Prime(facade, opts...)).Navigate(ctx)
 
 // Run/Resume
-age.Run(wg).Configure().Extent(age.Resume(facade, opts...)).Navigate(ctx)
+jw.Run(wg).Configure().Extent(jw.Resume(facade, opts...)).Navigate(ctx)
 ```
 
 ### Scenario composites
@@ -92,10 +92,10 @@ lint warnings from bare literals:
 
 ```go
 const isPrime = true
-age.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
+jw.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
 
 var wg sync.WaitGroup
-age.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
+jw.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
 wg.Wait()
 ```
 
@@ -113,12 +113,12 @@ relic := &pref.Relic{...}   // resume sessions only
 
 ### Enums
 
-All enum values are in the `enums` package. Do not use `age.` prefixed aliases
+All enum values are in the `enums` package. Do not use `jw.` prefixed aliases
 for enum values - use `enums.` directly:
 
 ```go
-enums.SubscribeFiles            // not age.SubscribeFiles
-enums.MetricNoFilesInvoked      // not age.MetricNoFilesInvoked
+enums.SubscribeFiles            // not jw.SubscribeFiles
+enums.MetricNoFilesInvoked      // not jw.MetricNoFilesInvoked
 enums.ResumeStrategyFastward
 ```
 
@@ -128,27 +128,27 @@ Options are passed as variadic `...pref.Option` to `Prime`/`Resume` or to a comp
 All `With*` option constructors are re-exported from the root `age` package:
 
 ```go
-age.WithFilter(...)
-age.WithDepth(5)
-age.WithOnBegin(handler)
-age.WithCPU              // use all available CPUs for Run
-age.WithNoW(n)           // use n workers for Run
+jw.WithFilter(...)
+jw.WithDepth(5)
+jw.WithOnBegin(handler)
+jw.WithCPU              // use all available CPUs for Run
+jw.WithNoW(n)           // use n workers for Run
 ```
 
-Use `age.IfOption` / `age.IfOptionF` / `age.IfElseOptionF` for conditional options.
+Use `jw.IfOption` / `jw.IfOptionF` / `jw.IfElseOptionF` for conditional options.
 
 ## Key Types
 
 | Type | Package | Purpose |
 | --- | --- | --- |
-| `age.Node` | `core` | A file system node passed to the client callback |
-| `age.Servant` | `core` | Provides the client with traversal properties |
-| `age.Client` | `core` | The callback signature: `func(node *age.Node) error` |
-| `age.Navigator` | `core` | Returned by `Extent()`; call `.Navigate(ctx)` on it |
-| `age.Options` | `pref` | Full options struct available inside `With*` constructors |
-| `age.Using` | `pref` | Alias for `pref.Using` (Prime facade) |
-| `age.Relic` | `pref` | Alias for `pref.Relic` (Resume facade) |
-| `age.TraversalFS` | `tfs` | File system interface required for traversal |
+| `jw.Node` | `core` | A file system node passed to the client callback |
+| `jw.Servant` | `core` | Provides the client with traversal properties |
+| `jw.Client` | `core` | The callback signature: `func(node *jw.Node) error` |
+| `jw.Navigator` | `core` | Returned by `Extent()`; call `.Navigate(ctx)` on it |
+| `jw.Options` | `pref` | Full options struct available inside `With*` constructors |
+| `jw.Using` | `pref` | Alias for `pref.Using` (Prime facade) |
+| `jw.Relic` | `pref` | Alias for `pref.Relic` (Resume facade) |
+| `jw.TraversalFS` | `tfs` | File system interface required for traversal |
 
 ## Internal Packages (do not import directly)
 
@@ -163,7 +163,7 @@ Use `age.IfOption` / `age.IfOptionF` / `age.IfElseOptionF` for conditional optio
 
 ## Test Helpers
 
-- **`test/hanno`** (`github.com/snivilised/agenor/test/hanno`) - utilities for building
+- **`test/hanno`** (`github.com/snivilised/jaywalk/test/hanno`) - utilities for building
   virtual file system trees; see `GO-USER-CONFIG.md` for `Nuxx` usage
 - **`test/data/musico-index.xml`** - standard XML fixture representing a sample music
   directory tree, used by `Nuxx` to populate an in-memory file system
@@ -171,7 +171,7 @@ Use `age.IfOption` / `age.IfOptionF` / `age.IfElseOptionF` for conditional optio
 
 ## i18n
 
-- Translation structs are defined in `github.com/snivilised/agenor/locale`
+- Translation structs are defined in `github.com/snivilised/jaywalk/locale`
 - Follow the i18n conventions in `GO-USER-CONFIG.md`
 
 ## File References
