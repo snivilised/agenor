@@ -85,7 +85,7 @@ nolint-revive-ginkgo-tests() {
             (( files_affected++ ))
 
             if $dry_run; then
-                printf '📁 %s — %d line(s) would be modified\n\n' "$file" "$file_mod_count"
+                printf '📁 %s - %d line(s) would be modified\n\n' "$file" "$file_mod_count"
             else
                 # Write the modified content back directly.
                 # Check for trailing newline before overwriting.

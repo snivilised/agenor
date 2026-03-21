@@ -1,12 +1,11 @@
-package cfg_test
+package bedrock_test
 
 import (
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/snivilised/jaywalk/src/app/command/internal/cfg"
+	"github.com/snivilised/jaywalk/src/app/bedrock"
 )
 
 var _ = Describe("Load", func() {
@@ -16,12 +15,12 @@ var _ = Describe("Load", func() {
 	// -----------------------------------------------------------------------
 	Context("given a complete, valid YAML config", func() {
 		var (
-			config *cfg.Config
+			config *bedrock.Config
 			err    error
 		)
 
 		BeforeEach(func() {
-			config, err = cfg.Load(cfg.LoadOptions{
+			config, err = bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(fullYAML),
 			})
 		})
@@ -134,7 +133,7 @@ var _ = Describe("Load", func() {
 	// -----------------------------------------------------------------------
 	Context("given a minimal valid YAML config", func() {
 		It("loads successfully with zero-value mapped sections", func() {
-			config, err := cfg.Load(cfg.LoadOptions{
+			config, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(minimalYAML),
 			})
 			Expect(err).To(BeNil())

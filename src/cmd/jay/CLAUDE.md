@@ -26,7 +26,7 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
 
 ## Viper & Configuration
 
-- Use `viper.GetViper()` to obtain the global viper instance for `cfg.Load`
+- Use `viper.GetViper()` to obtain the global viper instance for `bedrock.Load`
 - Use `viper.Get()` to access configuration values
 - In tests, use the `viperFromYAML` helper (defined in `./cmd/internal/config/helpers_test.go`) for in-memory viper fixtures instead of reading from disk
 
@@ -53,7 +53,7 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
 
 ## i18n
 
-- Translation structs are defined in `github.com/snivilised/jaywalk/locale`
+- Translation structs are defined in `github.com/snivilised/jaywalk/src/locale`
 - Follow the i18n conventions in `GO-USER-CONFIG.md`; locale struct placement is per the package above
 
 ## File References

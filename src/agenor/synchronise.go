@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/pants"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/app/report"
 )
 
 // linear is the default UI implementation. It writes plain text to stdout
@@ -15,31 +15,53 @@ type linear struct {
 	mu sync.Mutex
 }
 
-// OnNode prints the visited node's path to stdout.
-func (l *linear) OnNode(node *core.Node) error {
+// OnNodeEvent prints the visited node's path to stdout.
+func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Printf("-> %v\n", node.Path)
-	return nil
+	fmt.Printf("-> %v\n", e.Node.Path)
 }
 
-// Info writes a plain informational line to stdout.
-func (l *linear) Info(msg string) {
+// OnActionEvent prints the action name and node path to stdout.
+func (l *linear) OnActionEvent(e *report.ActionEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Println("i", msg)
+
+	if e.Err != nil {
+		fmt.Printf("x action %q failed on %v: %v\n", e.Name, e.Node.Path, e.Err)
+		return
+	}
+
+	fmt.Printf("a [%v] %v\n", e.Name, e.Node.Path)
 }
 
-// Warn writes a warning line to stdout.
-func (l *linear) Warn(msg string) {
+// OnPipelineEvent prints the pipeline name and node path to stdout.
+func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Println("!", msg)
+
+	if e.Err != nil {
+		fmt.Printf("x pipeline %q failed on %v: %v\n", e.Name, e.Node.Path, e.Err)
+		return
+	}
+
+	fmt.Printf("p [%v] %v\n", e.Name, e.Node.Path)
 }
 
-// Error writes an error line to stdout.
-func (l *linear) Error(msg string) {
+// OnComplete renders the traversal outcome as plain text.
+func (l *linear) OnComplete(t *report.Traversal) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Println("x", msg)
+
+	if t.Err != nil {
+		fmt.Printf("x traversal failed: %v\n", t.Err)
+		return
+	}
+
+	fmt.Printf(
+		"i complete: %d files, %d dirs visited in %s\n",
+		t.FilesVisited,
+		t.DirsVisited,
+		t.Elapsed.Round(1e6),
+	)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/internal/filtering"
 	"github.com/snivilised/jaywalk/src/agenor/life"
-	"github.com/snivilised/jaywalk/locale"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
 )
 

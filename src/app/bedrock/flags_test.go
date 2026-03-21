@@ -1,13 +1,12 @@
-package cfg_test
+package bedrock_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/spf13/cobra"
-
-	"github.com/snivilised/jaywalk/src/app/command/internal/cfg"
 )
 
 var _ = Describe("FlagResolver", func() {
@@ -28,21 +27,21 @@ var _ = Describe("FlagResolver", func() {
 
 	Describe("ResolveInt", func() {
 		var (
-			resolver *cfg.FlagResolver
-			flags    cfg.FlagsConfig
+			resolver *bedrock.FlagResolver
+			flags    bedrock.FlagsConfig
 		)
 
 		BeforeEach(func() {
-			flags = cfg.FlagsConfig{
-				Invoke: cfg.FlagInvokeDefaults{
+			flags = bedrock.FlagsConfig{
+				Invoke: bedrock.FlagInvokeDefaults{
 					"walk": {"files": 10},
 					"any":  {"files": 5, "folders": 3},
 				},
-				Component: cfg.FlagComponentDefaults{
+				Component: bedrock.FlagComponentDefaults{
 					"sampler": {"files": 7, "folders": 2},
 				},
 			}
-			resolver = cfg.NewFlagResolver(flags)
+			resolver = bedrock.NewFlagResolver(flags)
 		})
 
 		Context("when the flag is explicitly set on the CLI", func() {
@@ -80,13 +79,13 @@ var _ = Describe("FlagResolver", func() {
 			Context("and no invoke default exists but a component default does", func() {
 				It("uses the component default", func() {
 					// No invoke entry for "run"
-					flags2 := cfg.FlagsConfig{
-						Invoke: cfg.FlagInvokeDefaults{},
-						Component: cfg.FlagComponentDefaults{
+					flags2 := bedrock.FlagsConfig{
+						Invoke: bedrock.FlagInvokeDefaults{},
+						Component: bedrock.FlagComponentDefaults{
 							"sampler": {"files": 7},
 						},
 					}
-					r2 := cfg.NewFlagResolver(flags2)
+					r2 := bedrock.NewFlagResolver(flags2)
 					cmd := newCmd("run", map[string]int{"files": 1})
 
 					val, ok := r2.ResolveInt(cmd, "files", "sampler")
@@ -97,7 +96,7 @@ var _ = Describe("FlagResolver", func() {
 
 			Context("and no config defaults exist at all", func() {
 				It("falls back to the cobra default", func() {
-					r2 := cfg.NewFlagResolver(cfg.FlagsConfig{})
+					r2 := bedrock.NewFlagResolver(bedrock.FlagsConfig{})
 					cmd := newCmd("run", map[string]int{"files": 42})
 
 					val, ok := r2.ResolveInt(cmd, "files", "")
@@ -110,12 +109,12 @@ var _ = Describe("FlagResolver", func() {
 
 	Describe("ApplyShortOverrides", func() {
 		It("remaps the shorthand for the named command's flags", func() {
-			flags := cfg.FlagsConfig{
-				Short: cfg.FlagShortOverride{
+			flags := bedrock.FlagsConfig{
+				Short: bedrock.FlagShortOverride{
 					"walk": {"foo": "F"},
 				},
 			}
-			resolver := cfg.NewFlagResolver(flags)
+			resolver := bedrock.NewFlagResolver(flags)
 
 			cmd := &cobra.Command{Use: "walk"}
 			cmd.Flags().StringP("foo", "f", "", "a flag")
@@ -128,12 +127,12 @@ var _ = Describe("FlagResolver", func() {
 		})
 
 		It("is a no-op for commands not in the short overrides", func() {
-			flags := cfg.FlagsConfig{
-				Short: cfg.FlagShortOverride{
+			flags := bedrock.FlagsConfig{
+				Short: bedrock.FlagShortOverride{
 					"walk": {"foo": "F"},
 				},
 			}
-			resolver := cfg.NewFlagResolver(flags)
+			resolver := bedrock.NewFlagResolver(flags)
 
 			cmd := &cobra.Command{Use: "run"}
 			cmd.Flags().StringP("foo", "f", "", "a flag")

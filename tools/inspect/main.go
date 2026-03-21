@@ -510,7 +510,7 @@ func typeParamsString(fset *token.FileSet, tparams *ast.FieldList) string {
 }
 
 // inferredType attempts to derive a human-readable type from a value expression.
-// It's intentionally shallow — just enough for common const/var patterns.
+// It's intentionally shallow - just enough for common const/var patterns.
 func inferredType(expr ast.Expr) string {
 	switch e := expr.(type) {
 	case *ast.BasicLit:
@@ -524,7 +524,7 @@ func inferredType(expr ast.Expr) string {
 		case token.CHAR:
 			return "rune"
 		default:
-			// token.IMAG and others — not useful for type inference.
+			// token.IMAG and others - not useful for type inference.
 		}
 	case *ast.Ident:
 		switch e.Name {
@@ -535,7 +535,7 @@ func inferredType(expr ast.Expr) string {
 		}
 	case *ast.CallExpr:
 		if id, ok := e.Fun.(*ast.Ident); ok {
-			// e.g. errors.New(...) — just return the func name as a hint.
+			// e.g. errors.New(...) - just return the func name as a hint.
 			return id.Name + "(...)"
 		}
 		if sel, ok := e.Fun.(*ast.SelectorExpr); ok {
@@ -550,7 +550,7 @@ func inferredType(expr ast.Expr) string {
 // --- helpers ---
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `inspect — extract exported declarations from a cached Go module
+	fmt.Fprintln(os.Stderr, `inspect - extract exported declarations from a cached Go module
 
 Usage:
   inspect [flags] <module-path>[@version]

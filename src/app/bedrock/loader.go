@@ -1,4 +1,4 @@
-package cfg
+package bedrock
 
 import (
 	"fmt"
@@ -117,20 +117,20 @@ func Load(opts LoadOptions) (*Config, error) {
 		applyEnvBindings(v, opts.EnvPrefix)
 	} else {
 		if err := configureViper(v, opts); err != nil {
-			return nil, fmt.Errorf("cfg.Load: viper setup: %w", err)
+			return nil, fmt.Errorf("bedrock.Load: viper setup: %w", err)
 		}
 		if err := v.ReadInConfig(); err != nil {
-			return nil, fmt.Errorf("cfg.Load: reading config: %w", err)
+			return nil, fmt.Errorf("bedrock.Load: reading config: %w", err)
 		}
 	}
 
 	cfg, err := decode(v)
 	if err != nil {
-		return nil, fmt.Errorf("cfg.Load: decoding: %w", err)
+		return nil, fmt.Errorf("bedrock.Load: decoding: %w", err)
 	}
 
 	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("cfg.Load: validation: %w", err)
+		return nil, fmt.Errorf("bedrock.Load: validation: %w", err)
 	}
 
 	return cfg, nil

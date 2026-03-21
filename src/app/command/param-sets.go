@@ -1,6 +1,8 @@
 package command
 
-import "github.com/snivilised/mamba/store"
+import (
+	"github.com/snivilised/mamba/store"
+)
 
 // ---------------------------------------------------------------------------
 // Subscription flag values - what the user types on the command line

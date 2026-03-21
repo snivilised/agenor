@@ -1,4 +1,4 @@
-package cfg_test
+package bedrock_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestCfg(t *testing.T) {
+func TestBedrock(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "cfg Suite")
+	RunSpecs(t, "Bedrock Suite")
 }
