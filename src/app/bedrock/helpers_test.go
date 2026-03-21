@@ -1,4 +1,4 @@
-package cfg_test
+package bedrock_test
 
 import (
 	"strings"

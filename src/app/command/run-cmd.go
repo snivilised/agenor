@@ -1,8 +1,6 @@
 package command
 
 import (
-	"context"
-	"fmt"
 	"sync"
 
 	"github.com/snivilised/mamba/assist"
@@ -10,8 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
-	"github.com/snivilised/jaywalk/src/agenor/enums"
-	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/app/controller"
 )
 
 const (
@@ -35,7 +32,6 @@ Use --action or --pipeline to name a config-defined operation.`,
 	runPs := assist.NewParamSet[RunParameterSet](runCmd)
 
 	// --subscribe(-s): which node types to visit
-	//
 	runPs.BindString(
 		assist.NewFlagInfo(
 			"subscribe node types to visit: \"files\", \"dirs\" or \"all\" (default)",
@@ -46,7 +42,6 @@ Use --action or --pipeline to name a config-defined operation.`,
 	)
 
 	// --action(-a)
-	//
 	runPs.BindString(
 		assist.NewFlagInfo(
 			"action name of the config-defined action to invoke for each matched node",
@@ -57,7 +52,6 @@ Use --action or --pipeline to name a config-defined operation.`,
 	)
 
 	// --pipeline(-p)
-	//
 	runPs.BindString(
 		assist.NewFlagInfo(
 			"pipeline name of the config-defined pipeline to execute",
@@ -68,7 +62,6 @@ Use --action or --pipeline to name a config-defined operation.`,
 	)
 
 	// --resume(-r)
-	//
 	runPs.BindString(
 		assist.NewFlagInfo(
 			`resume strategy for an interrupted traversal: "spawn" or "fastward"`,
@@ -78,15 +71,13 @@ Use --action or --pipeline to name a config-defined operation.`,
 		&runPs.Native.Resume,
 	)
 
-	// family: worker-pool [--cpu(C), --now]
-	// run-only, registered on the run command's local flags.
-	//
+	// family: worker-pool [--cpu, --now]
+	// Local to run, registered on the run command's own flags.
 	workerPoolFam := assist.NewParamSet[store.WorkerPoolParameterSet](runCmd)
 	workerPoolFam.Native.BindAll(workerPoolFam, runCmd.Flags())
 	container.MustRegisterParamSet(WorkerPoolFamName, workerPoolFam)
 
 	// poly-filter family - local to run, not inherited.
-	//
 	polyFam := assist.NewParamSet[store.PolyFilterParameterSet](runCmd)
 	polyFam.Native.BindAll(polyFam)
 
@@ -99,80 +90,58 @@ Use --action or --pipeline to name a config-defined operation.`,
 	b.workerPoolFam = workerPoolFam
 }
 
-// runRun is the RunE handler for the run command.
+// runRun is the RunE handler for the run command. It parses flags,
+// constructs the agenor.Hare scenario, and delegates to the coordinator.
+// The WaitGroup is owned here — the adapter created it and waits on it
+// after the coordinator returns.
 func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
-	inputs := &RunInputs{
-		Tree:           args[0],
-		UI:             b.UI,
-		ParamSet:       b.runPs,
-		PolyFam:        b.runPolyFam,
-		SharedFamilies: b.sharedFamilies(),
-		WorkerPool:     b.workerPoolFam,
-	}
-
-	return executeRun(cmd.Context(), inputs)
-}
-
-// executeRun builds and runs an agenor concurrent traversal using agenor.Hare,
-// which supports both prime and resume modes with a worker pool.
-func executeRun(ctx context.Context, inputs *RunInputs) error {
-	subscription, err := ResolveSubscription(inputs.ParamSet.Native.Subscribe)
+	subscription, err := ResolveSubscription(b.runPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
-	isPrime := inputs.ParamSet.Native.Resume == ""
-	opts := buildOptions(inputs.SharedFamilies)
+	opts := buildOptions(b.sharedFamilies())
 
-	if inputs.WorkerPool.Native.CPU {
+	// Worker pool options are appended here — they come from run-specific
+	// flags and the coordinator has no knowledge of them.
+	if b.workerPoolFam.Native.CPU {
 		opts = append(opts, agenor.WithCPU())
-	} else if n := inputs.WorkerPool.Native.NoWorkers; n > 0 {
+	} else if n := b.workerPoolFam.Native.NoWorkers; n > 0 {
 		opts = append(opts, agenor.WithNoW(uint(n)))
 	}
 
-	var facade pref.Facade
+	isPrime := b.runPs.Native.Resume == ""
+	wg := &sync.WaitGroup{}
+
+	base := controller.Request{
+		Subscription: subscription,
+		Options:      opts,
+		ActionName:   b.runPs.Native.Action,
+		PipelineName: b.runPs.Native.Pipeline,
+		Scenario:     agenor.Hare(isPrime, wg),
+		UI:           b.UI,
+	}
+
+	var execErr error
 
 	if isPrime {
-		facade = &pref.Using{
-			Subscription: subscription,
-			Head: pref.Head{
-				Handler: func(servant agenor.Servant) error {
-					return inputs.UI.OnNode(servant.Node())
-				},
-			},
-			Tree: inputs.Tree,
-		}
+		execErr = b.coord.ExecutePrime(cmd.Context(), &controller.PrimeRequest{
+			Request: base,
+			Tree:    args[0],
+		})
 	} else {
-		strategy, e := resolveResumeStrategy(inputs.ParamSet.Native.Resume)
+		strategy, e := resolveResumeStrategy(b.runPs.Native.Resume)
 		if e != nil {
 			return e
 		}
 
-		facade = &pref.Relic{
-			Head: pref.Head{
-				Handler: func(servant agenor.Servant) error {
-					return inputs.UI.OnNode(servant.Node())
-				},
-			},
+		execErr = b.coord.ExecuteResume(cmd.Context(), &controller.ResumeRequest{
+			Request:  base,
 			Strategy: strategy,
-		}
+		})
 	}
 
-	wg := sync.WaitGroup{}
-
-	result, err := agenor.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
 	wg.Wait()
 
-	if err != nil {
-		inputs.UI.Error(fmt.Sprintf("run failed: %v", err))
-		return err
-	}
-
-	inputs.UI.Info(fmt.Sprintf(
-		"run complete: %d files, %d dirs visited",
-		result.Metrics().Count(enums.MetricNoFilesInvoked),
-		result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
-	))
-
-	return nil
+	return execErr
 }

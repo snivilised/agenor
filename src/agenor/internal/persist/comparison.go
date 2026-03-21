@@ -6,8 +6,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	json "github.com/snivilised/jaywalk/src/agenor/internal/opts/jason"
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 // UnequalValueError represents a comparison error for a marshaled

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cubiest/jibberjabber"
 	"github.com/snivilised/jaywalk/src/internal/third/lo"
-	"github.com/snivilised/jaywalk/locale"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/mamba/assist"
 	macfg "github.com/snivilised/mamba/assist/cfg"
@@ -16,7 +16,8 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/text/language"
 
-	"github.com/snivilised/jaywalk/src/app/command/internal/cfg"
+	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
+	jac "github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/app/ui"
 )
 
@@ -43,8 +44,7 @@ func (j *Jabber) Scan() language.Tag {
 // ConfigureOptions
 // ---------------------------------------------------------------------------
 
-// ConfigInfo describes the configuration file that should be loaded,
-// including its name, type, path and the viper instance to use.
+// ConfigInfo describes the configuration file that should be loaded.
 type ConfigInfo struct {
 	Name       string
 	ConfigType string
@@ -52,8 +52,8 @@ type ConfigInfo struct {
 	Viper      macfg.ViperConfig
 }
 
-// ConfigureOptions groups configuration options that influence how
-// Bootstrap initialises localisation and configuration.
+// ConfigureOptions groups options that influence how Bootstrap
+// initialises localisation and configuration.
 type ConfigureOptions struct {
 	Detector LocaleDetector
 	Config   ConfigInfo
@@ -67,24 +67,34 @@ type ConfigureOptionFn func(*ConfigureOptions)
 // Bootstrap
 // ---------------------------------------------------------------------------
 
-// Bootstrap constructs the full cobra command tree and owns all
-// mamba param-set registrations. It is the single entry point for
-// application startup wiring.
+// Bootstrap is a pure composition root. Its sole responsibility is
+// wiring: it constructs the cobra command tree, registers param-sets,
+// creates the ApplicationController, and connects everything together.
+// It contains no business logic and no traversal decisions.
+//
+// Code smell checklist (should remain clean):
+//   - No direct calls to agenor from Bootstrap
+//   - No UI rendering logic in Bootstrap
+//   - No flag interpretation beyond resolving --tui into a ui.Manager
 type Bootstrap struct {
 	container *assist.CobraContainer
 	options   ConfigureOptions
 
 	// Cfg is populated after configure() reads viper.
-	Cfg *cfg.Config
+	Cfg *bedrock.Config
 
-	// UI is constructed from the --tui flag value in PersistentPreRunE
-	// and injected into every command's Inputs struct.
+	// UI is resolved from --tui in PersistentPreRunE and passed
+	// into requests; Bootstrap does not use it directly.
 	UI ui.Manager
 
-	// root param-set - stashed so PersistentPreRunE and RunE can read it.
+	// coord is the single ApplicationController instance wired at
+	// startup and shared by all command handlers.
+	coord *jac.Coordinator
+
+	// root param-set
 	rootPs *assist.ParamSet[RootParameterSet]
 
-	// shared family param-sets (persistent, inherited by all sub-commands)
+	// shared persistent families
 	previewFam  *assist.ParamSet[store.PreviewParameterSet]
 	cascadeFam  *assist.ParamSet[store.CascadeParameterSet]
 	samplingFam *assist.ParamSet[store.SamplingParameterSet]
@@ -119,7 +129,8 @@ func (b *Bootstrap) prepare() {
 }
 
 // Root builds the command tree and returns the root command, ready
-// to be executed.
+// to be executed. This is the composition root: all wiring happens
+// here and only here.
 func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	b.prepare()
 
@@ -129,6 +140,10 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 
 	b.configure()
 
+	// Construct the ApplicationController once. Command handlers receive
+	// it via b.ctrl - they never construct it themselves.
+	b.coord = jac.New()
+
 	b.container = assist.NewCobraContainer(
 		&cobra.Command{
 			Use:     ApplicationName,
@@ -136,9 +151,10 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 			Long:    li18ngo.Text(locale.RootCmdLongDescTemplData{}),
 			Version: fmt.Sprintf("'%v'", Version),
 
-			// PersistentPreRunE runs after flag parsing but before any
-			// RunE handler. It resolves --tui into a UI manager so all
-			// sub-commands receive a fully constructed b.UI.
+			// PersistentPreRunE resolves --tui into a ui.Manager and
+			// stores it on Bootstrap so command handlers can include it
+			// in their requests. This is the only UI concern Bootstrap
+			// is permitted to touch.
 			PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 				mgr, err := ui.New(b.rootPs.Native.TUI)
 				if err != nil {
@@ -162,7 +178,7 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 }
 
 // ---------------------------------------------------------------------------
-// configure - viper + i18n (your existing logic, unchanged)
+// configure
 // ---------------------------------------------------------------------------
 
 func (b *Bootstrap) configure() {
@@ -185,11 +201,7 @@ func (b *Bootstrap) configure() {
 		fmt.Fprintln(os.Stderr, msg)
 	}
 
-	// Load jay's typed config on top of viper now that the file is read.
-	// GlobalViperConfig delegates to viper's global instance, so we use
-	// viper.GetViper() to obtain the underlying *viper.Viper directly,
-	// which allows cfg.Load to skip ReadInConfig on an already-read instance.
-	b.Cfg, err = cfg.Load(cfg.LoadOptions{
+	b.Cfg, err = bedrock.Load(bedrock.LoadOptions{
 		ViperInstance: viper.GetViper(),
 	})
 	if err != nil {
@@ -231,17 +243,13 @@ func handleLangSetting() {
 }
 
 // ---------------------------------------------------------------------------
-// buildRootCommand - root param-set and shared persistent families
+// buildRootCommand
 // ---------------------------------------------------------------------------
 
 func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 	root := container.Root()
 
-	// root param-set: --tui (and any future root-level flags)
 	b.rootPs = assist.NewParamSet[RootParameterSet](root)
-
-	// --tui(-t) <mode>: selects the display renderer; defaults to "linear".
-	// Validated eagerly so a bad value is rejected before traversal starts.
 	b.rootPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
 			`tui display mode: "linear" (default) or a named Charm-based renderer`,
@@ -251,26 +259,22 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 		),
 		&b.rootPs.Native.TUI,
 	)
-
 	container.MustRegisterParamSet(RootPsName, b.rootPs)
 
-	// family: preview [--dry-run(D)]
 	b.previewFam = assist.NewParamSet[store.PreviewParameterSet](root)
 	b.previewFam.Native.BindAll(b.previewFam, root.PersistentFlags())
 	container.MustRegisterParamSet(PreviewFamName, b.previewFam)
 
-	// family: cascade [--depth, --no-recurse]
 	b.cascadeFam = assist.NewParamSet[store.CascadeParameterSet](root)
 	b.cascadeFam.Native.BindAll(b.cascadeFam, root.PersistentFlags())
 	container.MustRegisterParamSet(CascadeFamName, b.cascadeFam)
 
-	// family: sampling [--sample, --no-files, --no-folders, --last]
 	b.samplingFam = assist.NewParamSet[store.SamplingParameterSet](root)
 	b.samplingFam.Native.BindAll(b.samplingFam, root.PersistentFlags())
 	container.MustRegisterParamSet(SamplingFamName, b.samplingFam)
 }
 
-// sharedFamilies is a convenience accessor for RunE closures.
+// sharedFamilies is a convenience accessor used by runWalk and runRun.
 func (b *Bootstrap) sharedFamilies() SharedFamilies {
 	return SharedFamilies{
 		Preview:  b.previewFam,

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
-	"github.com/snivilised/jaywalk/locale"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 type (

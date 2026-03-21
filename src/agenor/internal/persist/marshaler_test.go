@@ -17,9 +17,9 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/opts"
 	json "github.com/snivilised/jaywalk/src/agenor/internal/opts/jason"
 	"github.com/snivilised/jaywalk/src/agenor/internal/persist"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
 )

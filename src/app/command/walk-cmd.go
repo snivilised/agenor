@@ -1,16 +1,12 @@
 package command
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
-	"github.com/snivilised/jaywalk/src/agenor/enums"
-	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/app/controller"
 )
 
 const (
@@ -35,7 +31,6 @@ Use --resume to re-enter a previously interrupted traversal.`,
 	walkPs := assist.NewParamSet[WalkParameterSet](walkCmd)
 
 	// --subscribe(-s): which node types to visit
-	//
 	walkPs.BindString(
 		assist.NewFlagInfo(
 			"subscribe node types to visit: \"files\", \"dirs\" or \"all\" (default)",
@@ -46,7 +41,6 @@ Use --resume to re-enter a previously interrupted traversal.`,
 	)
 
 	// --action(-a): name of a config-defined action to run per node
-	//
 	walkPs.BindString(
 		assist.NewFlagInfo(
 			"action name of the config-defined action to invoke for each matched node",
@@ -57,7 +51,6 @@ Use --resume to re-enter a previously interrupted traversal.`,
 	)
 
 	// --pipeline(-p): name of a config-defined pipeline to execute
-	//
 	walkPs.BindString(
 		assist.NewFlagInfo(
 			"pipeline name of the config-defined pipeline to execute",
@@ -68,7 +61,6 @@ Use --resume to re-enter a previously interrupted traversal.`,
 	)
 
 	// --resume(-r): resume strategy for interrupted traversals
-	//
 	walkPs.BindString(
 		assist.NewFlagInfo(
 			`resume strategy for an interrupted traversal: "spawn" or "fastward"`,
@@ -78,9 +70,8 @@ Use --resume to re-enter a previously interrupted traversal.`,
 		&walkPs.Native.Resume,
 	)
 
-	// poly-filter family [--files-glob(b), --files-rx, --folders-glob, --folders-rx]
-	// Not passed to PersistentFlags so it is local to walk only.
-	//
+	// poly-filter family [--files-glob, --files-rx, --folders-glob, --folders-rx]
+	// Local to walk only, not inherited by sub-commands.
 	polyFam := assist.NewParamSet[store.PolyFilterParameterSet](walkCmd)
 	polyFam.Native.BindAll(polyFam)
 
@@ -92,114 +83,41 @@ Use --resume to re-enter a previously interrupted traversal.`,
 	b.walkPolyFam = polyFam
 }
 
-// runWalk is the RunE handler for the walk command.
+// runWalk is the RunE handler for the walk command. It parses flags,
+// constructs the agenor.Tortoise scenario, and delegates to the
+// coordinator. No agenor traversal logic lives here.
 func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
-	inputs := &WalkInputs{
-		Tree:           args[0],
-		UI:             b.UI,
-		ParamSet:       b.walkPs,
-		PolyFam:        b.walkPolyFam,
-		SharedFamilies: b.sharedFamilies(),
-	}
-
-	return executeWalk(cmd.Context(), inputs)
-}
-
-// executeWalk builds and runs an agenor walk traversal using agenor.Tortoise,
-// which supports both prime and resume modes for synchronous walking.
-func executeWalk(ctx context.Context, inputs *WalkInputs) error {
-	subscription, err := ResolveSubscription(inputs.ParamSet.Native.Subscribe)
+	subscription, err := ResolveSubscription(b.walkPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
-	isPrime := inputs.ParamSet.Native.Resume == ""
-	opts := buildOptions(inputs.SharedFamilies)
+	opts := buildOptions(b.sharedFamilies())
+	isPrime := b.walkPs.Native.Resume == ""
 
-	var facade pref.Facade
+	base := controller.Request{
+		Subscription: subscription,
+		Options:      opts,
+		ActionName:   b.walkPs.Native.Action,
+		PipelineName: b.walkPs.Native.Pipeline,
+		Scenario:     agenor.Tortoise(isPrime),
+		UI:           b.UI,
+	}
 
 	if isPrime {
-		facade = &pref.Using{
-			Subscription: subscription,
-			Head: pref.Head{
-				Handler: func(servant agenor.Servant) error {
-					return inputs.UI.OnNode(servant.Node())
-				},
-			},
-			Tree: inputs.Tree,
-		}
-	} else {
-		strategy, e := resolveResumeStrategy(inputs.ParamSet.Native.Resume)
-		if e != nil {
-			return e
-		}
-
-		facade = &pref.Relic{
-			Head: pref.Head{
-				Handler: func(servant agenor.Servant) error {
-					return inputs.UI.OnNode(servant.Node())
-				},
-			},
-			Strategy: strategy,
-		}
+		return b.coord.ExecutePrime(cmd.Context(), &controller.PrimeRequest{
+			Request: base,
+			Tree:    args[0],
+		})
 	}
 
-	result, err := agenor.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
+	strategy, err := resolveResumeStrategy(b.walkPs.Native.Resume)
 	if err != nil {
-		inputs.UI.Error(fmt.Sprintf("walk failed: %v", err))
 		return err
 	}
 
-	inputs.UI.Info(fmt.Sprintf(
-		"walk complete: %d files, %d dirs visited",
-		result.Metrics().Count(enums.MetricNoFilesInvoked),
-		result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
-	))
-
-	return nil
-}
-
-// buildOptions translates shared flag values into agenor option functions.
-// Shared between walk and run to avoid duplication.
-func buildOptions(families SharedFamilies) []pref.Option {
-	var opts []pref.Option
-
-	if families.Cascade.Native.NoRecurse {
-		opts = append(opts, agenor.WithNoRecurse())
-	}
-
-	if d := families.Cascade.Native.Depth; d > 0 {
-		opts = append(opts, agenor.WithDepth(d))
-	}
-
-	// TODO: implement DryRun on agenor
-	// if families.Preview.Native.DryRun {
-	// 	opts = append(opts, agenor.WithDryRun())
-	// }
-
-	if families.Sampling.Native.IsSampling {
-		opts = append(opts, agenor.WithSamplingOptions(&pref.SamplingOptions{
-			NoOf: pref.EntryQuantities{
-				Files:       families.Sampling.Native.NoFiles,
-				Directories: families.Sampling.Native.NoFolders,
-			},
-		}))
-	}
-
-	return opts
-}
-
-// resolveResumeStrategy maps the --resume string to the agenor constant.
-func resolveResumeStrategy(resume string) (agenor.ResumeStrategy, error) {
-	switch resume {
-	case ResumeStrategySpawn:
-		return agenor.ResumeStrategySpawn, nil
-	case ResumeStrategyFastward:
-		return agenor.ResumeStrategyFastward, nil
-	default:
-		return 0, fmt.Errorf(
-			"invalid --resume value %q: must be %q or %q",
-			resume, ResumeStrategySpawn, ResumeStrategyFastward,
-		)
-	}
+	return b.coord.ExecuteResume(cmd.Context(), &controller.ResumeRequest{
+		Request:  base,
+		Strategy: strategy,
+	})
 }

@@ -1,4 +1,4 @@
-package cfg
+package bedrock
 
 import (
 	"errors"

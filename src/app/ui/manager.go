@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/app/report"
 )
 
 // ---------------------------------------------------------------------------
@@ -24,23 +24,25 @@ const (
 // ---------------------------------------------------------------------------
 
 // Manager is the single interface all UI implementations satisfy.
-// Command handlers and agenor node callbacks interact only with this
-// interface, never with a concrete type.
+// It is purely reactive - all methods are event notifications. The UI
+// decides how to render each event; no formatting logic lives outside
+// the UI layer.
 type Manager interface {
-	// OnNode is called for every node the traversal visits. The node is
-	// obtained by the command layer via servant.Node() before being passed
-	// here. It is safe to call from multiple goroutines (implementations
-	// must ensure this).
-	OnNode(node *core.Node) error
+	// OnNodeEvent is called per node visit when no action or pipeline
+	// is configured.
+	OnNodeEvent(e *report.NeutralEvent)
 
-	// Info writes a general informational message to the display.
-	Info(msg string)
+	// OnActionEvent is called when a configured action has been executed
+	// against a node.
+	OnActionEvent(e *report.ActionEvent)
 
-	// Warn writes a warning message to the display.
-	Warn(msg string)
+	// OnPipelineEvent is called when a configured pipeline has been
+	// executed against a node.
+	OnPipelineEvent(e *report.PipelineEvent)
 
-	// Error writes an error message to the display.
-	Error(msg string)
+	// OnComplete is called once at the end of a traversal with the full
+	// structured outcome.
+	OnComplete(t *report.Traversal)
 }
 
 // ---------------------------------------------------------------------------

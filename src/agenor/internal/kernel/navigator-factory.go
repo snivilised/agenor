@@ -4,8 +4,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 // PrimeArtefacts primes the artefacts for the navigator.

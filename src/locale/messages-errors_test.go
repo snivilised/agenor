@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
 )
 

@@ -1,10 +1,9 @@
-package cfg_test
+package bedrock_test
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/snivilised/jaywalk/src/app/command/internal/cfg"
+	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
 )
 
 var _ = Describe("Validate", func() {
@@ -15,7 +14,7 @@ var _ = Describe("Validate", func() {
 	Describe("LoggingConfig.Validate", func() {
 		DescribeTable("invalid log levels",
 			func(level string) {
-				c := cfg.LoggingConfig{Level: level}
+				c := bedrock.LoggingConfig{Level: level}
 				Expect(c.Validate()).NotTo(Succeed())
 			},
 			Entry("verbose", "verbose"),
@@ -25,7 +24,7 @@ var _ = Describe("Validate", func() {
 
 		DescribeTable("valid log levels",
 			func(level string) {
-				c := cfg.LoggingConfig{Level: level}
+				c := bedrock.LoggingConfig{Level: level}
 				Expect(c.Validate()).To(Succeed())
 			},
 			Entry("trace", "trace"),
@@ -39,29 +38,29 @@ var _ = Describe("Validate", func() {
 		)
 
 		It("rejects negative max-size-in-mb", func() {
-			c := cfg.LoggingConfig{MaxSizeInMB: -1, Level: "info"}
+			c := bedrock.LoggingConfig{MaxSizeInMB: -1, Level: "info"}
 			Expect(c.Validate()).NotTo(Succeed())
 		})
 
 		It("rejects negative max-backups", func() {
-			c := cfg.LoggingConfig{MaxBackups: -1, Level: "info"}
+			c := bedrock.LoggingConfig{MaxBackups: -1, Level: "info"}
 			Expect(c.Validate()).NotTo(Succeed())
 		})
 
 		It("rejects negative max-age-in-days", func() {
-			c := cfg.LoggingConfig{MaxAgeInDays: -1, Level: "info"}
+			c := bedrock.LoggingConfig{MaxAgeInDays: -1, Level: "info"}
 			Expect(c.Validate()).NotTo(Succeed())
 		})
 
 		It("accepts zero values", func() {
-			c := cfg.LoggingConfig{}
+			c := bedrock.LoggingConfig{}
 			Expect(c.Validate()).To(Succeed())
 		})
 	})
 
 	Describe("InteractionConfig.Validate", func() {
 		It("rejects bad log level", func() {
-			_, err := cfg.Load(cfg.LoadOptions{
+			_, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(badLogLevelYAML),
 			})
 			Expect(err).NotTo(BeNil())
@@ -74,7 +73,7 @@ var _ = Describe("Validate", func() {
 	// -----------------------------------------------------------------------
 	Describe("InteractionConfig.Validate", func() {
 		It("rejects negative per-item-delay", func() {
-			_, err := cfg.Load(cfg.LoadOptions{
+			_, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(negativeDurationYAML),
 			})
 			Expect(err).NotTo(BeNil())
@@ -87,7 +86,7 @@ var _ = Describe("Validate", func() {
 	// -----------------------------------------------------------------------
 	Describe("FlagsConfig.Validate", func() {
 		It("rejects multi-character short overrides", func() {
-			_, err := cfg.Load(cfg.LoadOptions{
+			_, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(badShortYAML),
 			})
 			Expect(err).NotTo(BeNil())
@@ -100,7 +99,7 @@ var _ = Describe("Validate", func() {
 	// -----------------------------------------------------------------------
 	Describe("actions validation", func() {
 		It("rejects an action with an empty cmd", func() {
-			_, err := cfg.Load(cfg.LoadOptions{
+			_, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(emptyCmdYAML),
 			})
 			Expect(err).NotTo(BeNil())
@@ -113,7 +112,7 @@ var _ = Describe("Validate", func() {
 	// -----------------------------------------------------------------------
 	Describe("pipeline validation", func() {
 		It("rejects a pipeline step referencing an unknown action", func() {
-			_, err := cfg.Load(cfg.LoadOptions{
+			_, err := bedrock.Load(bedrock.LoadOptions{
 				ViperInstance: viperFromYAML(missingActionYAML),
 			})
 			Expect(err).NotTo(BeNil())
@@ -126,7 +125,7 @@ var _ = Describe("Validate", func() {
 	// -----------------------------------------------------------------------
 	Describe("aggregate errors", func() {
 		It("reports all failures in one error", func() {
-			c := &cfg.Config{}
+			c := &bedrock.Config{}
 			c.Mapped.Logging.Level = "bad-level"
 			c.Mapped.Logging.MaxSizeInMB = -5
 			err := c.Validate()

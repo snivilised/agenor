@@ -1,11 +1,14 @@
 package ui_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/snivilised/jaywalk/src/app/ui"
 	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/app/report"
+	"github.com/snivilised/jaywalk/src/app/ui"
 )
 
 // ---------------------------------------------------------------------------
@@ -67,32 +70,82 @@ var _ = Describe("RegisterMode", func() {
 })
 
 var _ = Describe("linear Manager", func() {
-	var m ui.Manager
+	var (
+		m    ui.Manager
+		node *core.Node
+	)
 
 	BeforeEach(func() {
 		var err error
 		m, err = ui.New(ui.ModeLinear)
 		Expect(err).To(BeNil())
+		node = &core.Node{Path: "/some/path/file.txt"}
 	})
 
-	Describe("OnNode", func() {
-		It("does not return an error for a valid node", func() {
-			node := &core.Node{Path: "/some/path/file.txt"}
-			Expect(m.OnNode(node)).To(BeNil())
+	Describe("OnNodeEvent", func() {
+		It("does not panic for a valid node", func() {
+			Expect(func() {
+				m.OnNodeEvent(&report.NeutralEvent{
+					DisplayEvent: report.DisplayEvent{Node: node},
+				})
+			}).NotTo(Panic())
 		})
 	})
 
-	Describe("Info / Warn / Error", func() {
-		It("Info does not panic", func() {
-			Expect(func() { m.Info("all good") }).NotTo(Panic())
+	Describe("OnActionEvent", func() {
+		It("does not panic on success", func() {
+			Expect(func() {
+				m.OnActionEvent(&report.ActionEvent{
+					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
+				})
+			}).NotTo(Panic())
 		})
 
-		It("Warn does not panic", func() {
-			Expect(func() { m.Warn("something odd") }).NotTo(Panic())
+		It("does not panic on failure", func() {
+			Expect(func() {
+				m.OnActionEvent(&report.ActionEvent{
+					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
+					Err:          errors.New("action failed"),
+				})
+			}).NotTo(Panic())
+		})
+	})
+
+	Describe("OnPipelineEvent", func() {
+		It("does not panic on success", func() {
+			Expect(func() {
+				m.OnPipelineEvent(&report.PipelineEvent{
+					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
+				})
+			}).NotTo(Panic())
 		})
 
-		It("Error does not panic", func() {
-			Expect(func() { m.Error("something broke") }).NotTo(Panic())
+		It("does not panic on failure", func() {
+			Expect(func() {
+				m.OnPipelineEvent(&report.PipelineEvent{
+					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
+					Err:          errors.New("pipeline failed"),
+				})
+			}).NotTo(Panic())
+		})
+	})
+
+	Describe("OnComplete", func() {
+		It("does not panic on a successful traversal", func() {
+			Expect(func() {
+				m.OnComplete(&report.Traversal{
+					FilesVisited: 10,
+					DirsVisited:  3,
+				})
+			}).NotTo(Panic())
+		})
+
+		It("does not panic when the traversal contains an error", func() {
+			Expect(func() {
+				m.OnComplete(&report.Traversal{
+					Err: errors.New("something broke"),
+				})
+			}).NotTo(Panic())
 		})
 	})
 })
@@ -103,7 +156,7 @@ var _ = Describe("linear Manager", func() {
 
 type stubManager struct{}
 
-func (s *stubManager) OnNode(_ *core.Node) error { return nil }
-func (s *stubManager) Info(_ string)             {}
-func (s *stubManager) Warn(_ string)             {}
-func (s *stubManager) Error(_ string)            {}
+func (s *stubManager) OnNodeEvent(_ *report.NeutralEvent)      {}
+func (s *stubManager) OnActionEvent(_ *report.ActionEvent)     {}
+func (s *stubManager) OnPipelineEvent(_ *report.PipelineEvent) {}
+func (s *stubManager) OnComplete(_ *report.Traversal)          {}

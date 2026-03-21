@@ -1,4 +1,4 @@
-package cfg_test
+package bedrock_test
 
 // fullYAML is a realistic complete config used as the baseline fixture.
 const fullYAML = `

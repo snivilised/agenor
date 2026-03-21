@@ -3,8 +3,8 @@ package pref
 import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
-	"github.com/snivilised/jaywalk/locale"
 	"github.com/snivilised/jaywalk/src/agenor/tfs"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 type (
