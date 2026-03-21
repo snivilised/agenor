@@ -1,4 +1,4 @@
-name: Agenor Continuous Integration
+name: Jaywalk Continuous Integration
 
 on:
   push:

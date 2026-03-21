@@ -19,7 +19,7 @@
 | Package | Responsibility |
 | --- | --- |
 | `cmd/internal/cfg` | Configuration loading; `ViperInstance` is the test-isolation seam for `Load` |
-| `cmd/ui` | UI abstraction; `Manager` interface accepts `*core.Node`; `age.Servant` is unwrapped at the command layer before crossing into `ui` |
+| `cmd/ui` | UI abstraction; `Manager` interface accepts `*core.Node`; `agenor.Servant` is unwrapped at the command layer before crossing into `ui` |
 | `cmd/command` | cobra/mamba wiring; `Bootstrap` owns all param-set stashes |
 
 All flags are defined in `cmd/internal/cfg/flags.go`.
@@ -41,9 +41,9 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
   relic := &pref.Relic{...}
 ```
 
-- **Synchronous walk**: `age.Tortoise(isPrime)(facade, opts...).Navigate(ctx)`
-- **Concurrent run**: `age.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)`, followed by `wg.Wait()`
-- Enum values are defined in the `enums` package - use `enums.MetricNoFilesInvoked`, not `age.MetricNoFilesInvoked`
+- **Synchronous walk**: `agenor.Tortoise(isPrime)(facade, opts...).Navigate(ctx)`
+- **Concurrent run**: `agenor.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)`, followed by `wg.Wait()`
+- Enum values are defined in the `enums` package - use `enums.MetricNoFilesInvoked`, not `agenor.MetricNoFilesInvoked`
 
 ## mamba/assist
 
