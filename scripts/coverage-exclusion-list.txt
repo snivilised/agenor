@@ -1,7 +1,7 @@
-github.com/snivilised/agenor/enums
-github.com/snivilised/agenor/internal/filtering/constant.go
-github.com/snivilised/agenor/internal/third
-github.com/snivilised/agenor/internal/laboratory
-github.com/snivilised/agenor/test/hanno
-github.com/snivilised/agenor/test/hydra
-github.com/snivilised/agenor/test/cmd
+github.com/snivilised/jaywalk/enums
+github.com/snivilised/jaywalk/internal/filtering/constant.go
+github.com/snivilised/jaywalk/internal/third
+github.com/snivilised/jaywalk/internal/laboratory
+github.com/snivilised/jaywalk/test/hanno
+github.com/snivilised/jaywalk/test/hydra
+github.com/snivilised/jaywalk/test/cmd

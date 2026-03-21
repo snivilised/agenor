@@ -4,8 +4,8 @@
 
 `jay` is a Go CLI application that acts as a companion tool to the `agenor` directory-walking library. It uses `cobra`/`mamba` for the CLI layer and `viper` for configuration management.
 
-- **Repo**: `github.com/snivilised/agenor` (`jay` lives at `cmd/jay` within it)
-- **Module**: `github.com/snivilised/agenor` (jay is the CLI frontend, located at `cmd/jay` within the agenor module)
+- **Repo**: `github.com/snivilised/jaywalk` (`jay` lives at `cmd/jay` within it)
+- **Module**: `github.com/snivilised/jaywalk` (jay is the CLI frontend, located at `cmd/jay` within the agenor module)
 - **Entry point for jay**: `./cmd/jay/main.go`
 
 ## Build & Test Commands
@@ -32,7 +32,7 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
 
 ## agenor Integration
 
-`jay` uses `agenor` (`github.com/snivilised/agenor`) as its directory-walking backend. Follow these conventions:
+`jay` uses `agenor` (`github.com/snivilised/jaywalk`) as its directory-walking backend. Follow these conventions:
 
 - Construct facades as named variables before passing to `Tortoise`/`Hare` - never inline:
 
@@ -53,7 +53,7 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
 
 ## i18n
 
-- Translation structs are defined in `github.com/snivilised/agenor/locale`
+- Translation structs are defined in `github.com/snivilised/jaywalk/locale`
 - Follow the i18n conventions in `GO-USER-CONFIG.md`; locale struct placement is per the package above
 
 ## File References

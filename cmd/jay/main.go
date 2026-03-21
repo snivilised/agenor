@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/snivilised/agenor/cmd/command"
+	"github.com/snivilised/jaywalk/src/app/command"
 )
 
 func main() {
