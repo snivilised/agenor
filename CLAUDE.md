@@ -1,27 +1,78 @@
-# CLAUDE.md - jaywalk
+# Jaywalk / Jay - Project Context
 
-## Project Overview
+## Module Identity
 
-`jaywalk` is a file system traversal library that navigates directory trees and notifies
-callers of events at each node. It extends the standard `filepath.Walk` with: regex/glob
-filtering, hibernation (deferred activation of callbacks until a condition is met),
-resume from a previously interrupted session, concurrent navigation via pants worker pool,
-and hook-able traversal behaviour.
+- Module: `github.com/snivilised/jaywalk`
+- CLI binary: `jay`
+- Organisation: `github.com/snivilised`
+- Navigation library: `agenor` (package name), lives at `src/agenor`
 
-- **Module**: `github.com/snivilised/jaywalk`
-- **Docs**: <https://pkg.go.dev/github.com/snivilised/jaywalk>
+## What This Project Is
 
-## Build & Test Commands
+Jaywalk is both a library and a CLI application:
 
-- **Test all**: `go test ./...`
-- **Dependencies**: `go mod tidy`
+- **agenor** - the core navigation/traversal library (public API)
+- **jay** - a CLI tool built on top of agenor, entry point at `cmd/jay/main.go`
 
-## Package Architecture
-
-The dependency rule is: packages may only depend on packages in layers below them.
-This rule does not apply to unit tests.
+## Directory Structure
 
 ```txt
+github.com/snivilised/jaywalk/
+├── cmd/
+│   └── jay/
+│       └── main.go                 # entry point - wires and launches only
+├── src/
+│   ├── agenor/                     # navigation library - core traversal services
+│   │   ├── internal/               # private to agenor
+│   │   │   ├── enclave/
+│   │   │   ├── feat/
+│   │   │   ├── filtering/
+│   │   │   ├── kernel/
+│   │   │   ├── laboratory/         # test helpers - private to agenor
+│   │   │   ├── level/
+│   │   │   ├── opts/
+│   │   │   └── persist/
+│   │   ├── test/                   # test programs
+│   │   ├── collections/
+│   │   ├── core/
+│   │   ├── enums/
+│   │   ├── life/
+│   │   ├── pref/
+│   │   ├── stock/
+│   │   ├── tapable/
+│   │   └── tfs/
+│   ├── app/
+│   │   ├── command/                # CLI adapter layer - cobra/mamba
+│   │   │   └── internal/
+│   │   │       └── cfg/            # config - internal to command
+│   │   ├── controller/             # mediator/coordination layer
+│   │   ├── dispatch/               # domain layer - core jay logic
+│   │   └── ui/                     # UI concerns
+│   └── internal/                   # visible to all of src/
+│       ├── third/                  # third party utilities
+│       └── services/               # shared services
+├── locale/
+├── src/examples/
+├── scripts/
+└── resources/
+```
+
+## Three Layer Architecture
+
+The jay CLI follows a strict three-layer architecture with a one-way dependency rule:
+
+```txt
+cmd/jay/main.go
+  → src/app/command      (CLI adapter - cobra/mamba, thin command handlers)
+    → src/app/controller (mediator/coordinator - owns UI, coordinates layers)
+      → src/app/dispatch (domain - core jay execution logic)
+      → src/agenor       (navigation services)
+```
+
+**The dependency rule is absolute - nothing in dispatch or agenor imports from app or cmd.**
+
+## Package Layer Responsibilities
+
 🔆 user interface layer
   src/agenor (root package)                - public API; may use everything
 
@@ -40,7 +91,6 @@ This rule does not apply to unit tests.
 🔆 support layer
   src/agenor/pref                          - depends on life, services, persist
   src/agenor/internal/persist              - no internal deps
-  src/internal/services                    - no internal deps
 
 🔆 intermediary layer
   src/agenor/life                          - no internal deps; must not use pref
@@ -59,129 +109,24 @@ This rule does not apply to unit tests.
   src/app/command                          - depends on src/app/controller
   src/app/controller                       - depends on src/app/dispatch, src/agenor
   src/app/dispatch                         - depends on src/agenor; no upward deps
-```
 
-## Core API
+## Design Principles
 
-### Traversal modes
+- Single Responsibility Principle
+- Dependency Inversion - domain defines interfaces, outer layers satisfy them
+- Ports and Adapters (Hexagonal Architecture) - strict layering
+- Low coupling, high cohesion
+- Package names describe the service they provide, not what they contain
+- Go internal visibility rules used to enforce layer boundaries
 
-There are two traversal modes and two extents, giving four possible scenarios:
+## Key Naming Conventions
 
-| Mode | Extent | Description |
-| --- | --- | --- |
-| Walk | Prime | Sequential traversal from root |
-| Walk | Resume | Sequential traversal resuming from a saved session |
-| Run | Prime | Concurrent traversal from root |
-| Run | Resume | Concurrent traversal resuming from a saved session |
+- Command package: `package command`
+- Controller package: `package controller`
+- Dispatch package: `package dispatch`
+- UI package: `package ui`
 
-The low-level API composes these explicitly:
+## Template Lineage
 
-```go
-// Walk/Prime
-agenor.Walk().Configure().Extent(agenor.Prime(facade, opts...)).Navigate(ctx)
-
-// Run/Resume
-agenor.Run(wg).Configure().Extent(agenor.Resume(facade, opts...)).Navigate(ctx)
-```
-
-### Scenario composites
-
-To avoid conditional duplication at the call site, use the scenario composites:
-
-| Composite | Fixes | Selects by |
-| --- | --- | --- |
-| `Tortoise(isPrime)` | Walk | `isPrime bool` → Prime or Resume |
-| `Hare(isPrime, wg)` | Run | `isPrime bool` → Prime or Resume |
-| `Goldfish(isWalk, wg)` | Prime | `isWalk bool` → Walk or Run |
-| `Hydra(isWalk, isPrime, wg)` | neither | both `isWalk` and `isPrime` |
-
-Usage pattern - always pass `isPrime`/`isWalk` as named `const bool` values to avoid
-lint warnings from bare literals:
-
-```go
-const isPrime = true
-agenor.Tortoise(isPrime)(facade, opts...).Navigate(ctx)
-
-var wg sync.WaitGroup
-agenor.Hare(isPrime, &wg)(facade, opts...).Navigate(ctx)
-wg.Wait()
-```
-
-### Facades
-
-Construct facades as named variables, never inline:
-
-```go
-using := &pref.Using{...}
-relic := &pref.Relic{...}   // resume sessions only
-```
-
-- `pref.Using` - dependencies for a Prime session
-- `pref.Relic` - saved state for a Resume session
-
-### Enums
-
-All enum values are in the `enums` package. Do not use `agenor.` prefixed aliases
-for enum values - use `enums.` directly:
-
-```go
-enums.SubscribeFiles            // not agenor.SubscribeFiles
-enums.MetricNoFilesInvoked      // not agenor.MetricNoFilesInvoked
-enums.ResumeStrategyFastward
-```
-
-### Options (With* functions)
-
-Options are passed as variadic `...pref.Option` to `Prime`/`Resume` or to a composite.
-All `With*` option constructors are re-exported from the root `agenor` package:
-
-```go
-agenor.WithFilter(...)
-agenor.WithDepth(5)
-agenor.WithOnBegin(handler)
-agenor.WithCPU              // use all available CPUs for Run
-agenor.WithNoW(n)           // use n workers for Run
-```
-
-Use `agenor.IfOption` / `agenor.IfOptionF` / `agenor.IfElseOptionF` for conditional options.
-
-## Key Types
-
-| Type | Package | Purpose |
-| --- | --- | --- |
-| `agenor.Node` | `core` | A file system node passed to the client callback |
-| `agenor.Servant` | `core` | Provides the client with traversal properties |
-| `agenor.Client` | `core` | The callback signature: `func(node *agenor.Node) error` |
-| `agenor.Navigator` | `core` | Returned by `Extent()`; call `.Navigate(ctx)` on it |
-| `agenor.Options` | `pref` | Full options struct available inside `With*` constructors |
-| `agenor.Using` | `pref` | Alias for `pref.Using` (Prime facade) |
-| `agenor.Relic` | `pref` | Alias for `pref.Relic` (Resume facade) |
-| `agenor.TraversalFS` | `tfs` | File system interface required for traversal |
-
-## Internal Packages (do not import directly)
-
-- `internal/kernel` - core traversal engine
-- `internal/feat/*` - feature plugins (filter, hiber, resume, sampling, nanny)
-- `internal/enclave` - supervisor and kernel result types
-- `internal/opts` - options loading and binding
-- `internal/persist` - session state marshalling for resume
-- `internal/services` - cross-cutting concerns (message bus)
-- `internal/filtering` - shared filter implementations used by multiple plugins
-- `internal/laboratory` - internal test helpers (not for external use)
-
-## Test Helpers
-
-- **`test/hanno`** (`github.com/snivilised/jaywalk/test/hanno`) - utilities for building
-  virtual file system trees; see `GO-USER-CONFIG.md` for `Nuxx` usage
-- **`test/data/musico-index.xml`** - standard XML fixture representing a sample music
-  directory tree, used by `Nuxx` to populate an in-memory file system
-- **`internal/laboratory`** - internal-only test utilities; do not use from outside the module
-
-## i18n
-
-- Translation structs are defined in `github.com/snivilised/jaywalk/locale`
-- Follow the i18n conventions in `GO-USER-CONFIG.md`
-
-## File References
-
-@~/.claude/GO-USER-CONFIG.md
+- Jaywalk was created from `astrolib` (library template) with jay CLI inserted
+- Templates: `arcadia` (CLI apps), `astrolib` (libraries) - plan to consolidate into one
