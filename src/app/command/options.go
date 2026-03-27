@@ -39,6 +39,7 @@ func buildOptions(families SharedFamilies) []pref.Option {
 
 // resolveResumeStrategy maps the --resume flag string to the agenor constant.
 func resolveResumeStrategy(resume string) (agenor.ResumeStrategy, error) {
+	// TODO: Shouldn't this be a map?
 	switch resume {
 	case ResumeStrategySpawn:
 		return agenor.ResumeStrategySpawn, nil

@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/snivilised/jaywalk/src/locale"
+	"github.com/snivilised/li18ngo"
 	"github.com/spf13/viper"
 )
 
@@ -117,20 +119,20 @@ func Load(opts LoadOptions) (*Config, error) {
 		applyEnvBindings(v, opts.EnvPrefix)
 	} else {
 		if err := configureViper(v, opts); err != nil {
-			return nil, fmt.Errorf("bedrock.Load: viper setup: %w", err)
+			return nil, locale.NewBedrockLoadViperSetupError(err)
 		}
 		if err := v.ReadInConfig(); err != nil {
-			return nil, fmt.Errorf("bedrock.Load: reading config: %w", err)
+			return nil, locale.NewBedrockLoadReadingConfigError(err)
 		}
 	}
 
 	cfg, err := decode(v)
 	if err != nil {
-		return nil, fmt.Errorf("bedrock.Load: decoding: %w", err)
+		return nil, locale.NewBedrockLoadDecodingError(err)
 	}
 
 	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("bedrock.Load: validation: %w", err)
+		return nil, locale.NewBedrockLoadValidationError(err)
 	}
 
 	return cfg, nil
@@ -158,7 +160,12 @@ func configureViper(v *viper.Viper, opts LoadOptions) error {
 		// Honour explicit format override even when a file path is given.
 		if opts.Format != "" {
 			if _, ok := registeredFormats[opts.Format]; !ok {
-				return fmt.Errorf("unsupported format %q", opts.Format)
+				return &locale.UnsupportedFormatError{
+					LocalisableError: li18ngo.LocalisableError{
+						Data: locale.UnsupportedFormatTemplData{Format: string(opts.Format)},
+					},
+					Format: string(opts.Format),
+				}
 			}
 			v.SetConfigType(string(opts.Format))
 		}
@@ -170,7 +177,12 @@ func configureViper(v *viper.Viper, opts LoadOptions) error {
 
 	if opts.Format != "" {
 		if _, ok := registeredFormats[opts.Format]; !ok {
-			return fmt.Errorf("unsupported format %q", opts.Format)
+			return &locale.UnsupportedFormatError{
+				LocalisableError: li18ngo.LocalisableError{
+					Data: locale.UnsupportedFormatTemplData{Format: string(opts.Format)},
+				},
+				Format: string(opts.Format),
+			}
 		}
 		v.SetConfigType(string(opts.Format))
 	}
@@ -231,7 +243,9 @@ func decode(v *viper.Viper) (*Config, error) {
 }
 
 // decodeSection extracts key from Viper and mapstructure-decodes it into dest.
-func decodeSection(v *viper.Viper, key string, decoderCfg *mapstructure.DecoderConfig, dest any) error {
+func decodeSection(v *viper.Viper, key string,
+	decoderCfg *mapstructure.DecoderConfig, dest any,
+) error {
 	raw := v.Get(key)
 	if raw == nil {
 		// Section absent - leave dest at zero value.
@@ -241,16 +255,18 @@ func decodeSection(v *viper.Viper, key string, decoderCfg *mapstructure.DecoderC
 	decoderCfg.Result = dest
 	decoder, err := mapstructure.NewDecoder(decoderCfg)
 	if err != nil {
-		return fmt.Errorf("creating decoder for %q: %w", key, err)
+		return locale.NewCreatingDecoderForError(err, key)
 	}
 	if err := decoder.Decode(raw); err != nil {
-		return fmt.Errorf("decoding section %q: %w", key, err)
+		return locale.NewDecodingSectionError(err, key)
 	}
 	return nil
 }
 
 // decodeFlagsSection has custom logic because flags.short is nested deeply.
-func decodeFlagsSection(v *viper.Viper, decoderCfg *mapstructure.DecoderConfig, destinationCfg *FlagsConfig) error {
+func decodeFlagsSection(v *viper.Viper,
+	decoderCfg *mapstructure.DecoderConfig, destinationCfg *FlagsConfig,
+) error {
 	raw := v.Get("flags")
 	if raw == nil {
 		return nil
@@ -258,7 +274,12 @@ func decodeFlagsSection(v *viper.Viper, decoderCfg *mapstructure.DecoderConfig, 
 
 	rawMap, ok := raw.(map[string]any)
 	if !ok {
-		return fmt.Errorf("flags section has unexpected type %T", raw)
+		return &locale.FlagsSectionUnexpectedTypeError{
+			LocalisableError: li18ngo.LocalisableError{
+				Data: locale.FlagsSectionUnexpectedTypeTemplData{TypeName: fmt.Sprintf("%T", raw)},
+			},
+			TypeName: fmt.Sprintf("%T", raw),
+		}
 	}
 
 	// short.overrides.cmds  ─►  FlagShortOverride = map[cmd]map[flag]letter

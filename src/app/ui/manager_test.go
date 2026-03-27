@@ -9,13 +9,24 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/ui"
+	"github.com/snivilised/jaywalk/src/locale"
+	"github.com/snivilised/li18ngo"
 )
 
 // ---------------------------------------------------------------------------
 // Specs
 // ---------------------------------------------------------------------------
 
-var _ = Describe("ui.New", func() {
+var _ = Describe("ui.New", Ordered, func() {
+	BeforeAll(func() {
+		Expect(li18ngo.Use(
+			func(o *li18ngo.UseOptions) {
+				o.From.Sources = li18ngo.TranslationFiles{
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
+				}
+			},
+		)).To(Succeed())
+	})
 
 	Context("given an empty mode string", func() {
 		It("returns the default linear manager", func() {
@@ -69,11 +80,21 @@ var _ = Describe("RegisterMode", func() {
 	})
 })
 
-var _ = Describe("linear Manager", func() {
+var _ = Describe("linear Manager", Ordered, func() {
 	var (
 		m    ui.Manager
 		node *core.Node
 	)
+
+	BeforeAll(func() {
+		Expect(li18ngo.Use(
+			func(o *li18ngo.UseOptions) {
+				o.From.Sources = li18ngo.TranslationFiles{
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
+				}
+			},
+		)).To(Succeed())
+	})
 
 	BeforeEach(func() {
 		var err error

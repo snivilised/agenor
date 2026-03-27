@@ -123,21 +123,23 @@ func (n *navigatorAgent) travel(ctx context.Context,
 				mag:      n.magnitude,
 			}) // wrap???
 
+			// TODO: this needs some serious attention, the underlying panic is not being
+			// made apparent in the error that is being returned.
 			panicErr, ok := data.(error)
 			if !ok {
 				panicErr = errors.New("")
 			}
 
 			if rescueErr != nil {
-				err = locale.NewTraversalNotSavedError(panicErr, rescueErr)
+				err = locale.NewTraversalNotSavedError(errors.Join(panicErr, rescueErr), to)
 			}
 
 			err = lo.TernaryF(rescueErr != nil,
 				func() error {
-					return locale.NewTraversalNotSavedError(panicErr, rescueErr)
+					return locale.NewTraversalNotSavedError(errors.Join(panicErr, rescueErr), to)
 				},
 				func() error {
-					return locale.NewTraversalSavedError(to, panicErr)
+					return locale.NewTraversalSavedError(panicErr, to)
 				},
 			)
 
@@ -206,5 +208,8 @@ func (n *navigatorAgent) Save(data pref.RescueData) (string, error) {
 		return n.persister.write(v)
 	}
 
+	// TODO: this should be a proper i18n error; actually, this is not
+	// a save failure, its a problem with the vexation data, so perhaps this
+	// should be a different error type.
 	return "", errors.New("save failed")
 }

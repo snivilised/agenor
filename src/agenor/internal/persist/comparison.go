@@ -32,11 +32,11 @@ func (e UnequalValueError[T]) Error() string {
 	return s
 }
 
-// Unwrap returns the underlying error, which is locale.ErrUnEqualConversion. This
+// Unwrap returns the underlying error, which is locale.ErrUnEqualJSONConversion. This
 // allows us to use errors.Is to check if the error is an UnequalValueError, and also
-// to check if it is a locale.ErrUnEqualConversion.
+// to check if it is a locale.ErrUnEqualJSONConversion.
 func (UnequalValueError[T]) Unwrap() error {
-	return locale.ErrUnEqualConversion
+	return locale.ErrUnEqualJSONConversion
 }
 
 // UnequalPtrError is used to compare pointer fields in the pref.Options instance to the
@@ -66,7 +66,7 @@ func (e UnequalPtrError[T, O]) Error() string {
 // allows us to use errors.Is to check if the error is an UnequalPtrError, and also
 // to check if it is a locale.ErrUnEqualConversion.
 func (UnequalPtrError[T, O]) Unwrap() error {
-	return locale.ErrUnEqualConversion
+	return locale.ErrUnEqualJSONConversion
 }
 
 // Equals compares the pref.Options instance to the derived json.Options instance, and returns

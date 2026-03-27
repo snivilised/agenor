@@ -1,9 +1,8 @@
 package command
 
 import (
-	"fmt"
-
 	"github.com/snivilised/jaywalk/src/agenor/enums"
+	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 
@@ -26,10 +25,7 @@ func ResolveSubscription(flag string) (enums.Subscription, error) {
 	case SubscribeFlagAll:
 		return enums.SubscribeUniversal, nil
 	default:
-		return 0, fmt.Errorf(
-			"invalid --subscribe value %q: must be %q, %q or %q",
-			flag, SubscribeFlagFiles, SubscribeFlagDirs, SubscribeFlagAll,
-		)
+		return 0, locale.ErrInvalidSubscription
 	}
 }
 

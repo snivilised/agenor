@@ -6,10 +6,21 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
+	"github.com/snivilised/jaywalk/src/locale"
+	"github.com/snivilised/li18ngo"
 	"github.com/spf13/cobra"
 )
 
-var _ = Describe("FlagResolver", func() {
+var _ = Describe("FlagResolver", Ordered, func() {
+	BeforeAll(func() {
+		Expect(li18ngo.Use(
+			func(o *li18ngo.UseOptions) {
+				o.From.Sources = li18ngo.TranslationFiles{
+					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
+				}
+			},
+		)).To(Succeed())
+	})
 
 	// Helper: build a minimal cobra.Command with int flags.
 	newCmd := func(name string, defaults map[string]int) *cobra.Command {

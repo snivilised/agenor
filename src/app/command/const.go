@@ -41,5 +41,5 @@ const (
 
 const (
 	ResumeStrategySpawn    = "spawn"
-	ResumeStrategyFastward = "fastward"
+	ResumeStrategyFastward = "fast"
 )

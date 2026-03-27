@@ -439,8 +439,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 					}).Equals()
 
 					Expect(err).NotTo(Succeed())
-					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
-						"error should be a locale.ErrUnEqualConversion",
+					Expect(errors.Is(err, locale.ErrUnEqualJSONConversion)).To(BeTrue(),
+						"error should be a locale.ErrUnEqualJSONConversion",
 					)
 				})
 			})
@@ -454,8 +454,8 @@ var _ = Describe("Marshaler", Ordered, func() {
 					}).Equals()
 
 					Expect(err).NotTo(Succeed())
-					Expect(errors.Is(err, locale.ErrUnEqualConversion)).To(BeTrue(),
-						"error should be a locale.ErrUnEqualConversion",
+					Expect(errors.Is(err, locale.ErrUnEqualJSONConversion)).To(BeTrue(),
+						"error should be a locale.ErrUnEqualJSONConversion",
 					)
 				})
 			})
