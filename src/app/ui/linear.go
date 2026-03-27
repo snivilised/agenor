@@ -5,6 +5,8 @@ import (
 	"sync"
 
 	"github.com/snivilised/jaywalk/src/app/report"
+	"github.com/snivilised/jaywalk/src/locale"
+	"github.com/snivilised/li18ngo"
 )
 
 // linear is the default UI implementation. It writes plain text to stdout
@@ -19,7 +21,10 @@ type linear struct {
 func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Printf("-> %v\n", e.Node.Path)
+
+	fmt.Println(li18ngo.Text(locale.NodeVisitedTemplData{
+		Path: e.Node.Path,
+	}))
 }
 
 // OnActionEvent prints the action name and node path to stdout.
@@ -28,11 +33,18 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 	defer l.mu.Unlock()
 
 	if e.Err != nil {
-		fmt.Printf("x action %q failed on %v: %v\n", e.Name, e.Node.Path, e.Err)
+		fmt.Println(li18ngo.Text(locale.ActionFailedTemplData{
+			Name: e.Name,
+			Path: e.Node.Path,
+			Err:  e.Err.Error(),
+		}))
 		return
 	}
 
-	fmt.Printf("a [%v] %v\n", e.Name, e.Node.Path)
+	fmt.Println(li18ngo.Text(locale.ActionVisitedTemplData{
+		Name: e.Name,
+		Path: e.Node.Path,
+	}))
 }
 
 // OnPipelineEvent prints the pipeline name and node path to stdout.
@@ -41,11 +53,18 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 	defer l.mu.Unlock()
 
 	if e.Err != nil {
-		fmt.Printf("x pipeline %q failed on %v: %v\n", e.Name, e.Node.Path, e.Err)
+		fmt.Println(li18ngo.Text(locale.PipelineFailedTemplData{
+			Name: e.Name,
+			Path: e.Node.Path,
+			Err:  e.Err.Error(),
+		}))
 		return
 	}
 
-	fmt.Printf("p [%v] %v\n", e.Name, e.Node.Path)
+	fmt.Println(li18ngo.Text(locale.PipelineVisitedTemplData{
+		Name: e.Name,
+		Path: e.Node.Path,
+	}))
 }
 
 // OnComplete renders the traversal outcome as plain text.
@@ -54,14 +73,15 @@ func (l *linear) OnComplete(t *report.Traversal) {
 	defer l.mu.Unlock()
 
 	if t.Err != nil {
-		fmt.Printf("x traversal failed: %v\n", t.Err)
+		fmt.Println(li18ngo.Text(locale.TraversalFailedTemplData{
+			Err: t.Err.Error(),
+		}))
 		return
 	}
 
-	fmt.Printf(
-		"i complete: %d files, %d dirs visited in %s\n",
-		t.FilesVisited,
-		t.DirsVisited,
-		t.Elapsed.Round(1e6),
-	)
+	fmt.Println(li18ngo.Text(locale.TraversalCompleteTemplData{
+		Files:   t.FilesVisited,
+		Dirs:    t.DirsVisited,
+		Elapsed: t.Elapsed.Round(1e6).String(),
+	}))
 }

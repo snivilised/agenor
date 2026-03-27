@@ -260,6 +260,14 @@ tasks:
     cmds:
       - go install ./tools/inspect
 
+  # === install i18n-gen =====================================
+  # run this to install i18n-gen then invoke the go generate
+  # inside underlying-templ-data to regenerate i18n source
+  # code for go-i18n. (You can also just invoke i18n-gen directly)
+  install-i18n-gen:
+    cmds:
+      - go install ./tools/i18n-gen
+
   # === i18n =================================================
 
   clear:

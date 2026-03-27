@@ -1,6 +1,7 @@
 package lab
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -9,8 +10,8 @@ import (
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/life"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 )
 
 // Begin is a life.BeginHandler that prints the tree name.
@@ -121,7 +122,7 @@ func PanicAt(at string) core.Client {
 		)
 
 		if name == at {
-			panic("foo bar")
+			panic(errors.New("foo bar"))
 		}
 
 		return nil

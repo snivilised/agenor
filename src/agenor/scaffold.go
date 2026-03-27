@@ -85,9 +85,9 @@ func newResumePlatform(facade pref.Facade,
 	}
 
 	if ext.trees.T == nil {
-		err = locale.NewTraverseFsMismatchError()
+		err = locale.ErrTraverseFsMismatch
 	} else if ext.trees.R == nil {
-		err = locale.NewResumeFsMismatchError()
+		err = locale.ErrResumeFsMismatch
 	}
 
 	return &platform{

@@ -4,13 +4,13 @@
 
 `jay` is a Go CLI application that acts as a companion tool to the `agenor` directory-walking library. It uses `cobra`/`mamba` for the CLI layer and `viper` for configuration management.
 
-- **Repo**: `github.com/snivilised/jaywalk` (`jay` lives at `cmd/jay` within it)
-- **Module**: `github.com/snivilised/jaywalk` (jay is the CLI frontend, located at `cmd/jay` within the agenor module)
-- **Entry point for jay**: `./cmd/jay/main.go`
+- **Repo**: `github.com/snivilised/jaywalk` (`jay` lives at `src/cmd/jay` within it)
+- **Module**: `github.com/snivilised/jaywalk` (jay is the CLI frontend, located at `src/cmd/jay` within the agenor module)
+- **Entry point for jay**: `./src/cmd/jay/main.go`
 
 ## Build & Test Commands
 
-- **Build**: `go build -o jay ./cmd/jay/main.go`
+- **Build**: `go build -o jay ./src/cmd/jay/main.go`
 - **Test**: `go test ./...`
 - **Dependencies**: `go mod tidy`
 
@@ -18,11 +18,11 @@
 
 | Package | Responsibility |
 | --- | --- |
-| `cmd/internal/cfg` | Configuration loading; `ViperInstance` is the test-isolation seam for `Load` |
+| `src/app/bedrock` | Configuration loading; `ViperInstance` is the test-isolation seam for `Load` |
 | `cmd/ui` | UI abstraction; `Manager` interface accepts `*core.Node`; `agenor.Servant` is unwrapped at the command layer before crossing into `ui` |
 | `cmd/command` | cobra/mamba wiring; `Bootstrap` owns all param-set stashes |
 
-All flags are defined in `cmd/internal/cfg/flags.go`.
+All flags are defined in `src/app/bedrock/flags.go`.
 
 ## Viper & Configuration
 
@@ -59,4 +59,3 @@ All flags are defined in `cmd/internal/cfg/flags.go`.
 ## File References
 
 @./.claude/COMMON-COMMANDS.md
-@~/.claude/GO-USER-CONFIG.md

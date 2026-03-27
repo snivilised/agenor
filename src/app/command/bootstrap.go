@@ -205,7 +205,7 @@ func (b *Bootstrap) configure() {
 		ViperInstance: viper.GetViper(),
 	})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "jay: config error: %v\n", err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }

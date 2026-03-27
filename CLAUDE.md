@@ -130,3 +130,8 @@ cmd/jay/main.go
 
 - Jaywalk was created from `astrolib` (library template) with jay CLI inserted
 - Templates: `arcadia` (CLI apps), `astrolib` (libraries) - plan to consolidate into one
+
+## Skills
+
+Before converting string literals to i18n template data structs, read the
+skill file at `.claude/skills/go-i18n/SKILL.md` and follow its conventions.
