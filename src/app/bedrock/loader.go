@@ -164,7 +164,6 @@ func configureViper(v *viper.Viper, opts LoadOptions) error {
 					LocalisableError: li18ngo.LocalisableError{
 						Data: locale.UnsupportedFormatTemplData{Format: string(opts.Format)},
 					},
-					Format: string(opts.Format),
 				}
 			}
 			v.SetConfigType(string(opts.Format))
@@ -181,7 +180,6 @@ func configureViper(v *viper.Viper, opts LoadOptions) error {
 				LocalisableError: li18ngo.LocalisableError{
 					Data: locale.UnsupportedFormatTemplData{Format: string(opts.Format)},
 				},
-				Format: string(opts.Format),
 			}
 		}
 		v.SetConfigType(string(opts.Format))
@@ -278,7 +276,6 @@ func decodeFlagsSection(v *viper.Viper,
 			LocalisableError: li18ngo.LocalisableError{
 				Data: locale.FlagsSectionUnexpectedTypeTemplData{TypeName: fmt.Sprintf("%T", raw)},
 			},
-			TypeName: fmt.Sprintf("%T", raw),
 		}
 	}
 
