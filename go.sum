@@ -86,8 +86,8 @@ github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sagikazarmark/locafero v0.12.0 h1:/NQhBAkUb4+fH1jivKHWusDYFjMOOKU88eegjfxfHb4=
 github.com/sagikazarmark/locafero v0.12.0/go.mod h1:sZh36u/YSZ918v0Io+U9ogLYQJ9tLLBmM4eneO6WwsI=
-github.com/snivilised/li18ngo v0.1.10 h1:l0xiT278GdUjEmGIzUmM/UQ2/zlrVuc0kevmCU3Q4Qc=
-github.com/snivilised/li18ngo v0.1.10/go.mod h1:+Oc4DADP9XISZEDZLiiG1WLonZo309Dj4e/zBcsNHNw=
+github.com/snivilised/li18ngo v0.1.11 h1:VA/lWdl1mgcX9GvvEWnHLS5FgPC7POcbiAvylF/NCsI=
+github.com/snivilised/li18ngo v0.1.11/go.mod h1:X3H8jGoVwlasAClPw5P+Qemy1AAl2jq5A+GebkMypPw=
 github.com/snivilised/mamba v0.1.1 h1:njG8ievm3W7wKoWkj2HbHH6JA4PnklS5DX1l9kWta0A=
 github.com/snivilised/mamba v0.1.1/go.mod h1:Wc2BOpzlkCYkdrRHndZFBgqMr8Cziy3/gTSbZlbk6L0=
 github.com/snivilised/nefilim v0.1.11 h1:i8o4vb/4oNi6GVfTGUdUDqvINn8RyTmLdvVRW/aDu4A=
