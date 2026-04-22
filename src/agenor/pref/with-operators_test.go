@@ -28,7 +28,7 @@ var (
 
 var _ = Describe("With Operators", Ordered, func() {
 	BeforeAll(func() {
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 	})
 
 	Context("WithCPU", func() {

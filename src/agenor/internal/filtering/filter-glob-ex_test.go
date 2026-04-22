@@ -8,11 +8,11 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
-	"github.com/snivilised/jaywalk/src/internal/services"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
 	"github.com/snivilised/jaywalk/src/agenor/tfs"
+	"github.com/snivilised/jaywalk/src/internal/services"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
 )
@@ -29,7 +29,7 @@ var _ = Describe("filtering", Ordered, func() {
 
 		fS = hanno.Nuxx(verbose, "rock")
 
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 	})
 
 	BeforeEach(func() {

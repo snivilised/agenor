@@ -226,7 +226,7 @@ func handleLangSetting() {
 		},
 	)
 
-	err := li18ngo.Use(func(uo *li18ngo.UseOptions) {
+	err := li18ngo.Register(func(uo *li18ngo.UseOptions) {
 		uo.Tag = tag
 		uo.From = li18ngo.LoadFrom{
 			Sources: li18ngo.TranslationFiles{

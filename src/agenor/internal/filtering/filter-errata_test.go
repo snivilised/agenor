@@ -29,7 +29,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 
 		fS = hanno.Nuxx(verbose, lab.Static.RetroWave)
 
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 	})
 
 	BeforeEach(func() {

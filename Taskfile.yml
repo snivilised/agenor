@@ -132,12 +132,12 @@ tasks:
   # task venus -- -filter RETRO-WAVE,DUB
   venus:
     cmds:
-      - go run ./test/cmd/venus/main.go {{.CLI_ARGS}}
+      - go run ./src/agenor/test/cmd/venus/main.go {{.CLI_ARGS}}
 
   # quick venus test
   venus-t:
     cmds:
-      - go run ./test/cmd/venus/main.go -path . -filter RETRO-WAVE,DUB -pattern "*|flac"
+      - go run ./src/agenor/test/cmd/venus/main.go -path . -filter RETRO-WAVE,DUB -pattern "*|flac"
 
   nex:
     cmds:

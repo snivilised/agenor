@@ -40,7 +40,7 @@ require (
 	github.com/google/pprof v0.0.0-20260302011040-a15ffb7f9dcc // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/pkg/errors v0.9.1
-	github.com/snivilised/li18ngo v0.1.11
+	github.com/snivilised/li18ngo v0.1.12
 	github.com/snivilised/nefilim v0.1.11
 	github.com/snivilised/pants v0.1.5
 	golang.org/x/net v0.52.0 // indirect

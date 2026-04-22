@@ -90,6 +90,8 @@ github.com/snivilised/li18ngo v0.1.10 h1:l0xiT278GdUjEmGIzUmM/UQ2/zlrVuc0kevmCU3
 github.com/snivilised/li18ngo v0.1.10/go.mod h1:+Oc4DADP9XISZEDZLiiG1WLonZo309Dj4e/zBcsNHNw=
 github.com/snivilised/li18ngo v0.1.11 h1:VA/lWdl1mgcX9GvvEWnHLS5FgPC7POcbiAvylF/NCsI=
 github.com/snivilised/li18ngo v0.1.11/go.mod h1:X3H8jGoVwlasAClPw5P+Qemy1AAl2jq5A+GebkMypPw=
+github.com/snivilised/li18ngo v0.1.12 h1:rwrg0zjylxRJe+plzNu++qwCy5TnoE3CCBouFKqU1fs=
+github.com/snivilised/li18ngo v0.1.12/go.mod h1:X3H8jGoVwlasAClPw5P+Qemy1AAl2jq5A+GebkMypPw=
 github.com/snivilised/mamba v0.1.1 h1:njG8ievm3W7wKoWkj2HbHH6JA4PnklS5DX1l9kWta0A=
 github.com/snivilised/mamba v0.1.1/go.mod h1:Wc2BOpzlkCYkdrRHndZFBgqMr8Cziy3/gTSbZlbk6L0=
 github.com/snivilised/nefilim v0.1.11 h1:i8o4vb/4oNi6GVfTGUdUDqvINn8RyTmLdvVRW/aDu4A=

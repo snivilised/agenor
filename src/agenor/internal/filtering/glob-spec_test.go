@@ -39,7 +39,7 @@ var _ = Describe("GlobSpec", Ordered, func() {
 	var re *regexp.Regexp
 
 	BeforeAll(func() {
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 
 		re = regexp.MustCompile(GlobExPattern)
 	})

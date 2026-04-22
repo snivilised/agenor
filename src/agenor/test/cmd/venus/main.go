@@ -20,10 +20,10 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
 	"github.com/snivilised/jaywalk/src/agenor/tfs"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/li18ngo"
 )
 
@@ -52,6 +52,8 @@ type navigation struct {
 
 func main() {
 	var filters multiFlag
+
+	_ = li18ngo.Register()
 
 	path := flag.String("path", "",
 		"path to navigate from",

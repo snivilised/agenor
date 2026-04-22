@@ -22,7 +22,7 @@ var _ = Describe("Convert Options via JSON", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 	})
 
 	BeforeEach(func() {

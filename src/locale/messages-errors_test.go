@@ -34,7 +34,7 @@ var _ = Describe("error messages", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		if err := li18ngo.Use(func(o *li18ngo.UseOptions) {
+		if err := li18ngo.Register(func(o *li18ngo.UseOptions) {
 			o.Tag = li18ngo.DefaultLanguage
 			o.From.Sources = testTranslationFile
 		}); err != nil {

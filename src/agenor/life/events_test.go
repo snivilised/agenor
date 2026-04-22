@@ -11,7 +11,7 @@ import (
 
 var _ = Describe("controls", Ordered, func() {
 	BeforeAll(func() {
-		Expect(li18ngo.Use()).To(Succeed())
+		Expect(li18ngo.Register()).To(Succeed())
 	})
 
 	When("bind", func() {
