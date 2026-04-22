@@ -33,7 +33,7 @@ func (p *simple) init(controls *life.Controls) error {
 		if p.triggers.sleep == nil {
 			p.triggers.sleep = filtering.NewProhibitiveTraverseFilter(
 				&core.FilterDef{
-					Description: li18ngo.Text(locale.ProhibitiveWordTemplData{}),
+					Description: li18ngo.Render(locale.ProhibitiveWordTemplData{}),
 				},
 			)
 		}
@@ -50,7 +50,7 @@ func (p *simple) init(controls *life.Controls) error {
 		if p.triggers.wake == nil {
 			p.triggers.wake = filtering.NewPermissiveTraverseFilter(
 				&core.FilterDef{
-					Description: li18ngo.Text(locale.PermissiveWordTemplData{}),
+					Description: li18ngo.Render(locale.PermissiveWordTemplData{}),
 				},
 			)
 		}

@@ -77,7 +77,7 @@ var _ = Describe("Save", Ordered, func() {
 	)
 
 	BeforeAll(func() {
-		Expect(li18ngo.Use(
+		Expect(li18ngo.Register(
 			func(o *li18ngo.UseOptions) {
 				o.From.Sources = li18ngo.TranslationFiles{
 					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
