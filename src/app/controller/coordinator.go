@@ -2,10 +2,12 @@ package controller
 
 import (
 	"context"
+	"os/exec"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/snivilised/jaywalk/src/app/report"
 )
 
@@ -14,12 +16,36 @@ import (
 // pref.Facade values and calls into agenor via the agenor.Scenario on
 // the request. It never imports cobra, mamba, or the command package.
 //
-// Dependency direction: command → controller → agenor
-type Coordinator struct{}
+// Dependency direction: command -> controller -> agenor
+type Coordinator struct {
+	cfg      *bedrock.Config
+	lookPath func(string) (string, error)
+}
 
-// New returns a ready-to-use Coordinator.
-func New() *Coordinator {
-	return &Coordinator{}
+// CoordinatorOption is a functional option for Coordinator.
+type CoordinatorOption func(*Coordinator)
+
+// WithLookPath overrides the function used to locate executables on PATH.
+// The default is exec.LookPath. Use this in tests to inject a stub.
+func WithLookPath(fn func(string) (string, error)) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.lookPath = fn
+	}
+}
+
+// New returns a ready-to-use Coordinator. cfg must not be nil.
+// Optional CoordinatorOptions may be supplied to override defaults.
+func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
+	c := &Coordinator{
+		cfg:      cfg,
+		lookPath: exec.LookPath,
+	}
+
+	for _, o := range opts {
+		o(c)
+	}
+
+	return c
 }
 
 // ExecutePrime runs a fresh directory traversal using the scenario
@@ -56,9 +82,14 @@ func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) err
 }
 
 // execute is the shared orchestration path for both prime and resume
-// traversals. It calls the scenario, collects metrics, and notifies
-// the UI via OnComplete.
+// traversals. PreFlight is always the first step - a failure here
+// returns immediately before any traversal begins. On success it calls
+// the scenario, collects metrics, and notifies the UI via OnComplete.
 func (c *Coordinator) execute(ctx context.Context, req *Request, facade pref.Facade) error {
+	if err := c.PreFlight(req); err != nil {
+		return err
+	}
+
 	result, err := req.Scenario(facade, req.Options...).Navigate(ctx)
 
 	t := &report.Traversal{Err: err}
