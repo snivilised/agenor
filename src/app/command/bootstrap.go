@@ -142,7 +142,7 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 
 	// Construct the ApplicationController once. Command handlers receive
 	// it via b.ctrl - they never construct it themselves.
-	b.coord = jac.New()
+	b.coord = jac.New(b.Cfg)
 
 	b.container = assist.NewCobraContainer(
 		&cobra.Command{
