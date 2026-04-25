@@ -224,6 +224,48 @@ var _ = lingo.Underliers{
 		},
 	},
 
+	"action-skipped": {
+		MessageID:   "action-skipped",
+		Seed:        "ActionSkipped",
+		TypeName:    enums.UnderlyingTypeDynamicGeneral,
+		Description: "Printed when an action is skipped",
+		Story:       "ActionSkipped is printed when an action is skipped",
+		Other:       "[!] action '{{.Name}}' skipped at '{{.Path}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Name",
+				GoType: "string",
+				Tale:   "Name of the action that was skipped",
+			},
+			{
+				Note:   "Path",
+				GoType: "string",
+				Tale:   "Full path of the node that action that was skipped for",
+			},
+		},
+	},
+
+	"placeholder-breach": {
+		MessageID:   "placeholder-breach",
+		Seed:        "PlaceholderBreach",
+		TypeName:    enums.UnderlyingTypeDynamicGeneral,
+		Description: "Printed when placeholder breach occurs during expansion",
+		Story:       "Printed when a placeholder breach occurs during expansion.",
+		Other:       "Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Placeholder",
+				GoType: "string",
+				Tale:   "The placeholder that breached above the traversal root",
+			},
+			{
+				Note:   "ResolvedPath",
+				GoType: "string",
+				Tale:   "The resolved path of the placeholder that breached above the traversal root",
+			},
+		},
+	},
+
 	"traversal-complete": {
 		MessageID:   "traversal-complete",
 		Seed:        "TraversalComplete",
@@ -770,6 +812,40 @@ var _ = lingo.Underliers{
 				GoType: "error",
 				Tale: "The underlying error representing the panic that occurred and the" +
 					" failure to save",
+			},
+		},
+	},
+
+	"action-not-found.dynamic-error": {
+		MessageID:   "action-not-found.dynamic-error",
+		Seed:        "ActionNotFound",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Action not found in config error",
+		Story: "ActionNotFound indicates that an action with the specified" +
+			" name was not found in the traversal configuration.",
+		Other: "Action not found: '{{.Action}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Action",
+				GoType: "string",
+				Tale:   "is the action name that was not found",
+			},
+		},
+	},
+
+	"pipeline-not-found.dynamic-error": {
+		MessageID:   "pipeline-not-found.dynamic-error",
+		Seed:        "PipelineNotFound",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Pipeline not found in config error",
+		Story: "PipelineNotFound indicates that a pipeline with the specified" +
+			" name was not found in the traversal configuration.",
+		Other: "Pipeline not found: '{{.Pipeline}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Pipeline",
+				GoType: "string",
+				Tale:   "is the pipeline name that was not found",
 			},
 		},
 	},

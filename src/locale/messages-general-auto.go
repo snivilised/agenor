@@ -46,6 +46,39 @@ func NewActionFailedTemplData(name string, path string, err string) ActionFailed
 }
 
 // =============================================================================
+// 📨 ActionSkipped
+//
+// ActionSkipped is printed when an action is skipped
+// =============================================================================
+
+// ActionSkippedTemplData Printed when an action is skipped.
+type ActionSkippedTemplData struct {
+	agenorTemplData
+	// Name Name of the action that was skipped
+	Name string
+	// Path Full path of the node that action that was skipped for
+	Path string
+}
+
+// Message returns the i18n message for ActionSkippedTemplData.
+func (td ActionSkippedTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "action-skipped",
+		Description: "Printed when an action is skipped",
+		Other:       "[!] action '{{.Name}}' skipped at '{{.Path}}'",
+	}
+}
+
+// NewActionSkippedTemplData creates a new ActionSkippedTemplData.
+func NewActionSkippedTemplData(name string, path string) ActionSkippedTemplData {
+	return ActionSkippedTemplData{
+		agenorTemplData: agenorTemplData{},
+		Name:            name,
+		Path:            path,
+	}
+}
+
+// =============================================================================
 // 📨 ActionVisited
 //
 // ActionVisited is printed for each node successfully processed by a named
@@ -180,6 +213,40 @@ func NewPipelineVisitedTemplData(name string, path string) PipelineVisitedTemplD
 		agenorTemplData: agenorTemplData{},
 		Name:            name,
 		Path:            path,
+	}
+}
+
+// =============================================================================
+// 📨 PlaceholderBreach
+//
+// Printed when a placeholder breach occurs during expansion.
+// =============================================================================
+
+// PlaceholderBreachTemplData Printed when placeholder breach occurs during
+// expansion.
+type PlaceholderBreachTemplData struct {
+	agenorTemplData
+	// Placeholder The placeholder that breached above the traversal root
+	Placeholder string
+	// ResolvedPath The resolved path of the placeholder that breached above the traversal root
+	ResolvedPath string
+}
+
+// Message returns the i18n message for PlaceholderBreachTemplData.
+func (td PlaceholderBreachTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "placeholder-breach",
+		Description: "Printed when placeholder breach occurs during expansion",
+		Other:       "Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
+	}
+}
+
+// NewPlaceholderBreachTemplData creates a new PlaceholderBreachTemplData.
+func NewPlaceholderBreachTemplData(placeholder string, resolvedPath string) PlaceholderBreachTemplData {
+	return PlaceholderBreachTemplData{
+		agenorTemplData: agenorTemplData{},
+		Placeholder:     placeholder,
+		ResolvedPath:    resolvedPath,
 	}
 }
 

@@ -180,4 +180,5 @@ type stubManager struct{}
 func (s *stubManager) OnNodeEvent(_ *report.NeutralEvent)      {}
 func (s *stubManager) OnActionEvent(_ *report.ActionEvent)     {}
 func (s *stubManager) OnPipelineEvent(_ *report.PipelineEvent) {}
+func (s *stubManager) OnSkipEvent(_ *report.SkipEvent)         {}
 func (s *stubManager) OnComplete(_ *report.Traversal)          {}

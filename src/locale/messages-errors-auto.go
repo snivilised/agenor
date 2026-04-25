@@ -10,6 +10,47 @@ import (
 )
 
 // =============================================================================
+// ❌ ActionNotFound
+//
+// ActionNotFound indicates that an action with the specified name was not found
+// in the traversal configuration.
+// =============================================================================
+
+// ActionNotFoundTemplData Action not found in config error.
+type ActionNotFoundTemplData struct {
+	agenorTemplData
+	// Action is the action name that was not found
+	Action string
+}
+
+// Message creates a new i18n message using the template data.
+func (td ActionNotFoundTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "action-not-found.dynamic-error",
+		Description: "Action not found in config error",
+		Other:       "Action not found: '{{.Action}}'",
+	}
+}
+
+// ActionNotFoundError Action not found in config error.
+type ActionNotFoundError struct {
+	li18ngo.LocalisableError
+	ActionNotFoundTemplData
+}
+
+// NewActionNotFoundError creates a new ActionNotFoundError.
+func NewActionNotFoundError(action string) error {
+	td := ActionNotFoundTemplData{
+		agenorTemplData: agenorTemplData{},
+		Action:          action,
+	}
+	return &ActionNotFoundError{
+		LocalisableError:        li18ngo.LocalisableError{Data: td},
+		ActionNotFoundTemplData: td,
+	}
+}
+
+// =============================================================================
 // ❌ BedrockLoadDecoding
 //
 // BedrockLoadDecoding indicates that the configuration could not be decoded
@@ -1073,6 +1114,47 @@ var ErrMissingCustomFilterDefinition = MissingCustomFilterDefinitionError{
 	LocalisableError: li18ngo.LocalisableError{
 		Data: MissingCustomFilterDefinitionErrorTemplData{},
 	},
+}
+
+// =============================================================================
+// ❌ PipelineNotFound
+//
+// PipelineNotFound indicates that a pipeline with the specified name was not
+// found in the traversal configuration.
+// =============================================================================
+
+// PipelineNotFoundTemplData Pipeline not found in config error.
+type PipelineNotFoundTemplData struct {
+	agenorTemplData
+	// Pipeline is the pipeline name that was not found
+	Pipeline string
+}
+
+// Message creates a new i18n message using the template data.
+func (td PipelineNotFoundTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "pipeline-not-found.dynamic-error",
+		Description: "Pipeline not found in config error",
+		Other:       "Pipeline not found: '{{.Pipeline}}'",
+	}
+}
+
+// PipelineNotFoundError Pipeline not found in config error.
+type PipelineNotFoundError struct {
+	li18ngo.LocalisableError
+	PipelineNotFoundTemplData
+}
+
+// NewPipelineNotFoundError creates a new PipelineNotFoundError.
+func NewPipelineNotFoundError(pipeline string) error {
+	td := PipelineNotFoundTemplData{
+		agenorTemplData: agenorTemplData{},
+		Pipeline:        pipeline,
+	}
+	return &PipelineNotFoundError{
+		LocalisableError:          li18ngo.LocalisableError{Data: td},
+		PipelineNotFoundTemplData: td,
+	}
 }
 
 // =============================================================================

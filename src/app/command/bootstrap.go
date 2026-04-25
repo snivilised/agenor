@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/text/language"
 
-	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
+	"github.com/snivilised/jaywalk/src/app/bedrock"
 	jac "github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/app/ui"
 )
@@ -195,9 +195,10 @@ func (b *Bootstrap) configure() {
 	handleLangSetting()
 
 	if err != nil {
-		msg := li18ngo.Text(locale.UsingConfigFileTemplData{
-			ConfigFileName: viper.ConfigFileUsed(),
-		})
+		msg := li18ngo.Text(locale.NewRootCmdConfigFileUsageTemplData(
+			viper.ConfigFileUsed()),
+		)
+
 		fmt.Fprintln(os.Stderr, msg)
 	}
 

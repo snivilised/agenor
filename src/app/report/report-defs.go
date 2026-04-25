@@ -39,6 +39,20 @@ type PipelineEvent struct {
 	Err             error
 }
 
+// SkipEvent is emitted when an action is skipped for a node because a
+// placeholder in the action's cmd string resolved to a path at or above
+// the traversal root. The navigation continues; this node is not counted
+// as a successful action invocation.
+type SkipEvent struct {
+	DisplayEvent
+
+	// Placeholder is the token that caused the breach, e.g. "{{.grand}}".
+	Placeholder string
+
+	// ResolvedPath is the path the offending placeholder resolved to.
+	ResolvedPath string
+}
+
 // Traversal captures the outcome of a completed directory traversal.
 // It is populated by the controller and handed to the UI via OnComplete.
 // The UI decides how to present each field - colour, layout, and
@@ -49,6 +63,11 @@ type Traversal struct {
 
 	// DirsVisited is the number of directory nodes invoked during traversal.
 	DirsVisited core.MetricValue
+
+	// ActionsSkipped is the number of nodes for which an action was skipped
+	// because a placeholder breached the traversal root. This field is
+	// populated by jay; it is not sourced from agenor metrics.
+	ActionsSkipped int
 
 	// Elapsed is the total wall-clock time taken for the traversal.
 	Elapsed time.Duration
