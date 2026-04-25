@@ -40,6 +40,11 @@ type Manager interface {
 	// executed against a node.
 	OnPipelineEvent(e *report.PipelineEvent)
 
+	// OnSkipEvent is called when an action is skipped for a node because
+	// a placeholder in the action's cmd string resolved to a path at or
+	// above the traversal root.
+	OnSkipEvent(e *report.SkipEvent)
+
 	// OnComplete is called once at the end of a traversal with the full
 	// structured outcome.
 	OnComplete(t *report.Traversal)

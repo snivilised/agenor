@@ -52,47 +52,62 @@ func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 // provided on the request. The command adapter is responsible for
 // constructing the correct agenor.Scenario (Tortoise or Hare).
 func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error {
+	// Root is sourced from Tree for prime traversals. Resume will source
+	// it from restored checkpoint.
+	req.Root = req.Tree
+
+	t := &report.Traversal{}
+
 	facade := &pref.Using{
 		Subscription: req.Subscription,
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleNode(servant.Node(), &req.Request)
+				return c.handleNode(servant.Node(), &req.Request, t)
 			},
 		},
 		Tree: req.Tree,
 	}
 
-	return c.execute(ctx, &req.Request, facade)
+	return c.execute(ctx, &req.Request, facade, t)
 }
 
 // ExecuteResume resumes an interrupted traversal using the scenario
 // provided on the request. The command adapter is responsible for
 // constructing the correct agenor.Scenario (Tortoise or Hare).
+// Note: req.Request.Root must be populated from restored checkpoint
+// state before this method is called - that is a resume concern.
 func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) error {
+	t := &report.Traversal{}
+
 	facade := &pref.Relic{
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleNode(servant.Node(), &req.Request)
+				return c.handleNode(servant.Node(), &req.Request, t)
 			},
 		},
 		Strategy: req.Strategy,
 	}
 
-	return c.execute(ctx, &req.Request, facade)
+	return c.execute(ctx, &req.Request, facade, t)
 }
 
 // execute is the shared orchestration path for both prime and resume
 // traversals. PreFlight is always the first step - a failure here
 // returns immediately before any traversal begins. On success it calls
 // the scenario, collects metrics, and notifies the UI via OnComplete.
-func (c *Coordinator) execute(ctx context.Context, req *Request, facade pref.Facade) error {
+func (c *Coordinator) execute(
+	ctx context.Context,
+	req *Request,
+	facade pref.Facade,
+	t *report.Traversal,
+) error {
 	if err := c.PreFlight(req); err != nil {
 		return err
 	}
 
 	result, err := req.Scenario(facade, req.Options...).Navigate(ctx)
 
-	t := &report.Traversal{Err: err}
+	t.Err = err
 	if result != nil {
 		t.FilesVisited = result.Metrics().Count(enums.MetricNoFilesInvoked)
 		t.DirsVisited = result.Metrics().Count(enums.MetricNoDirectoriesInvoked)

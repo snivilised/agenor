@@ -30,6 +30,12 @@ type Request struct {
 	// agenor.Hare(isPrime, wg) for run.
 	Scenario agenor.Scenario
 
+	// Root is the traversal root directory. For prime traversals this is
+	// sourced from the --tree argument. For resume traversals it will be
+	// sourced from the restored checkpoint state. The expand function uses
+	// this to detect placeholder breaches.
+	Root string
+
 	// UI is the display manager injected by Bootstrap via PersistentPreRunE.
 	UI ui.Manager
 }

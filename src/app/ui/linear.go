@@ -67,6 +67,23 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 	}))
 }
 
+// OnSkipEvent prints a warning that an action was skipped for a node
+// because a placeholder resolved to a path above the traversal root.
+func (l *linear) OnSkipEvent(e *report.SkipEvent) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	fmt.Println(li18ngo.Text(locale.ActionSkippedTemplData{
+		Name: e.Name,
+		Path: e.Node.Path,
+	}))
+
+	fmt.Println(li18ngo.Text(locale.PlaceholderBreachTemplData{
+		Placeholder:  e.Placeholder,
+		ResolvedPath: e.ResolvedPath,
+	}))
+}
+
 // OnComplete renders the traversal outcome as plain text.
 func (l *linear) OnComplete(t *report.Traversal) {
 	l.mu.Lock()
