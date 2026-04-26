@@ -18,8 +18,9 @@ const _ResumeStrategy_name = "undefined-resume-strategyspawn-resume-strategyfast
 var _ResumeStrategy_index = [...]uint8{0, 25, 46, 70}
 
 func (i ResumeStrategy) String() string {
-	if i >= ResumeStrategy(len(_ResumeStrategy_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_ResumeStrategy_index)-1 {
 		return "ResumeStrategy(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _ResumeStrategy_name[_ResumeStrategy_index[i]:_ResumeStrategy_index[i+1]]
+	return _ResumeStrategy_name[_ResumeStrategy_index[idx]:_ResumeStrategy_index[idx+1]]
 }

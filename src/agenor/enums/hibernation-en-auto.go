@@ -19,8 +19,9 @@ const _Hibernation_name = "undefinedpending-hibernationactive-hibernationretired
 var _Hibernation_index = [...]uint8{0, 9, 28, 46, 65}
 
 func (i Hibernation) String() string {
-	if i >= Hibernation(len(_Hibernation_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_Hibernation_index)-1 {
 		return "Hibernation(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Hibernation_name[_Hibernation_index[i]:_Hibernation_index[i+1]]
+	return _Hibernation_name[_Hibernation_index[idx]:_Hibernation_index[idx+1]]
 }

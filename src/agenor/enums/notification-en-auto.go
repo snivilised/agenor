@@ -16,8 +16,9 @@ const _Notification_name = "undefined-notification"
 var _Notification_index = [...]uint8{0, 22}
 
 func (i Notification) String() string {
-	if i >= Notification(len(_Notification_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_Notification_index)-1 {
 		return "Notification(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Notification_name[_Notification_index[i]:_Notification_index[i+1]]
+	return _Notification_name[_Notification_index[idx]:_Notification_index[idx+1]]
 }

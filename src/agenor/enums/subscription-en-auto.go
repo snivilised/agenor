@@ -15,13 +15,14 @@ func _() {
 	_ = x[SubscribeUniversal-4]
 }
 
-const _Subscription_name = "Undefinedsubscribe-filessubscribe-directoriessubscribe-directories-with-filessubscribe-to-everything"
+const _Subscription_name = "undefined-subscriptionsubscribe-filessubscribe-directoriessubscribe-directories-with-filessubscribe-to-everything"
 
-var _Subscription_index = [...]uint8{0, 9, 24, 45, 77, 100}
+var _Subscription_index = [...]uint8{0, 22, 37, 58, 90, 113}
 
 func (i Subscription) String() string {
-	if i >= Subscription(len(_Subscription_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_Subscription_index)-1 {
 		return "Subscription(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Subscription_name[_Subscription_index[i]:_Subscription_index[i+1]]
+	return _Subscription_name[_Subscription_index[idx]:_Subscription_index[idx+1]]
 }

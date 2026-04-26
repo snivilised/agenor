@@ -18,8 +18,9 @@ const _TriStateBool_name = "undefined-booltruefalse"
 var _TriStateBool_index = [...]uint8{0, 14, 18, 23}
 
 func (i TriStateBool) String() string {
-	if i >= TriStateBool(len(_TriStateBool_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_TriStateBool_index)-1 {
 		return "TriStateBool(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _TriStateBool_name[_TriStateBool_index[i]:_TriStateBool_index[i+1]]
+	return _TriStateBool_name[_TriStateBool_index[idx]:_TriStateBool_index[idx+1]]
 }

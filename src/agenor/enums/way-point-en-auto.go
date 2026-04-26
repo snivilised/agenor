@@ -19,8 +19,9 @@ const _WayPoint_name = "undefined-way-pointwake-from-hibernationsleeptoggle-way-
 var _WayPoint_index = [...]uint8{0, 19, 40, 45, 61}
 
 func (i WayPoint) String() string {
-	if i >= WayPoint(len(_WayPoint_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_WayPoint_index)-1 {
 		return "WayPoint(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _WayPoint_name[_WayPoint_index[i]:_WayPoint_index[i+1]]
+	return _WayPoint_name[_WayPoint_index[idx]:_WayPoint_index[idx+1]]
 }

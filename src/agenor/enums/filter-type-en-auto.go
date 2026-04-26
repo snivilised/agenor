@@ -21,8 +21,9 @@ const _FilterType_name = "undefined-filterglob-ex-filterregex-filterglob-filterc
 var _FilterType_index = [...]uint8{0, 16, 30, 42, 53, 66, 77}
 
 func (i FilterType) String() string {
-	if i >= FilterType(len(_FilterType_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_FilterType_index)-1 {
 		return "FilterType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _FilterType_name[_FilterType_index[i]:_FilterType_index[i+1]]
+	return _FilterType_name[_FilterType_index[idx]:_FilterType_index[idx+1]]
 }

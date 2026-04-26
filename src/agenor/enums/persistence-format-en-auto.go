@@ -17,8 +17,9 @@ const _PersistenceFormat_name = "persistence-undefinedpersist-json"
 var _PersistenceFormat_index = [...]uint8{0, 21, 33}
 
 func (i PersistenceFormat) String() string {
-	if i >= PersistenceFormat(len(_PersistenceFormat_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_PersistenceFormat_index)-1 {
 		return "PersistenceFormat(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _PersistenceFormat_name[_PersistenceFormat_index[i]:_PersistenceFormat_index[i+1]]
+	return _PersistenceFormat_name[_PersistenceFormat_index[idx]:_PersistenceFormat_index[idx+1]]
 }

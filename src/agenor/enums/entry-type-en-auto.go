@@ -18,8 +18,9 @@ const _EntryType_name = "directory-entryfile-entryall-entries"
 var _EntryType_index = [...]uint8{0, 15, 25, 36}
 
 func (i EntryType) String() string {
-	if i >= EntryType(len(_EntryType_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_EntryType_index)-1 {
 		return "EntryType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _EntryType_name[_EntryType_index[i]:_EntryType_index[i+1]]
+	return _EntryType_name[_EntryType_index[idx]:_EntryType_index[idx+1]]
 }
