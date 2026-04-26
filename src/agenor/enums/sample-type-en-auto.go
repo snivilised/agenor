@@ -19,8 +19,9 @@ const _SampleType_name = "undefined-sampleslice-samplefilter-samplecustom-sample
 var _SampleType_index = [...]uint8{0, 16, 28, 41, 54}
 
 func (i SampleType) String() string {
-	if i >= SampleType(len(_SampleType_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_SampleType_index)-1 {
 		return "SampleType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _SampleType_name[_SampleType_index[i]:_SampleType_index[i+1]]
+	return _SampleType_name[_SampleType_index[idx]:_SampleType_index[idx+1]]
 }

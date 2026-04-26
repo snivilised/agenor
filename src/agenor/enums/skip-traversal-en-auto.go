@@ -18,8 +18,9 @@ const _SkipTraversal_name = "skip-noneskip-dirskip-all"
 var _SkipTraversal_index = [...]uint8{0, 9, 17, 25}
 
 func (i SkipTraversal) String() string {
-	if i >= SkipTraversal(len(_SkipTraversal_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_SkipTraversal_index)-1 {
 		return "SkipTraversal(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _SkipTraversal_name[_SkipTraversal_index[i]:_SkipTraversal_index[i+1]]
+	return _SkipTraversal_name[_SkipTraversal_index[idx]:_SkipTraversal_index[idx+1]]
 }

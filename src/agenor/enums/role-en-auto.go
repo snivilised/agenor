@@ -22,8 +22,9 @@ const _Role_name = "undefined-roleanchor-roleclient-filter-rolehibernate-rolesam
 var _Role_index = [...]uint8{0, 14, 25, 43, 57, 69, 79, 92}
 
 func (i Role) String() string {
-	if i >= Role(len(_Role_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_Role_index)-1 {
 		return "Role(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Role_name[_Role_index[i]:_Role_index[i+1]]
+	return _Role_name[_Role_index[idx]:_Role_index[idx+1]]
 }

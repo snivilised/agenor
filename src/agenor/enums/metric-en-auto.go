@@ -21,9 +21,9 @@ const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no
 var _Metric_index = [...]uint8{0, 18, 49, 73, 110, 140, 170}
 
 func (i Metric) String() string {
-	i -= 1
-	if i >= Metric(len(_Metric_index)-1) {
-		return "Metric(" + strconv.FormatInt(int64(i+1), 10) + ")"
+	idx := int(i) - 1
+	if i < 1 || idx >= len(_Metric_index)-1 {
+		return "Metric(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _Metric_name[_Metric_index[i]:_Metric_index[i+1]]
+	return _Metric_name[_Metric_index[idx]:_Metric_index[idx+1]]
 }

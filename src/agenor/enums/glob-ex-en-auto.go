@@ -20,8 +20,9 @@ const _GlobExtraction_name = "undefinedstar-dotstar-onlyleading-dot-onlybare"
 var _GlobExtraction_index = [...]uint8{0, 9, 17, 26, 42, 46}
 
 func (i GlobExtraction) String() string {
-	if i >= GlobExtraction(len(_GlobExtraction_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_GlobExtraction_index)-1 {
 		return "GlobExtraction(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _GlobExtraction_name[_GlobExtraction_index[i]:_GlobExtraction_index[i+1]]
+	return _GlobExtraction_name[_GlobExtraction_index[idx]:_GlobExtraction_index[idx+1]]
 }

@@ -19,8 +19,9 @@ const _InternalRole_name = "undefined-rolelogger-rolesampler-roleresume-role"
 var _InternalRole_index = [...]uint8{0, 14, 25, 37, 48}
 
 func (i InternalRole) String() string {
-	if i >= InternalRole(len(_InternalRole_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_InternalRole_index)-1 {
 		return "InternalRole(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _InternalRole_name[_InternalRole_index[i]:_InternalRole_index[i+1]]
+	return _InternalRole_name[_InternalRole_index[idx]:_InternalRole_index[idx+1]]
 }
