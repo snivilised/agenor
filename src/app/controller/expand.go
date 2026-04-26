@@ -19,9 +19,9 @@ type ExpandResult struct {
 	// Valid only when skipped is true.
 	Placeholder string
 
-	// resolvedPath is the path the offending placeholder resolved to.
+	// ResolvedPath is the path the offending placeholder resolved to.
 	// Valid only when skipped is true.
-	resolvedPath string
+	ResolvedPath string
 }
 
 // expandData holds the resolved values for every placeholder.
@@ -63,8 +63,9 @@ func buildExpandData(root string, node *core.Node) expandData {
 	}
 }
 
-// breaches reports whether the given path is at or above root.
-// Both paths must already be cleaned.
+// breaches reports whether the given path is strictly above root
+// (i.e. outside the traversal subtree). Both paths must already be cleaned.
+// A candidate equal to root is not considered a breach.
 func breaches(root, candidate string) bool {
 	// candidate breaches root if it is not rooted within root,
 	// i.e. it does not have root as a prefix followed by a separator
@@ -105,7 +106,7 @@ func Expand(cmd, root string, node *core.Node) ExpandResult {
 				return ExpandResult{
 					Skipped:      true,
 					Placeholder:  check.placeholder,
-					resolvedPath: check.resolved,
+					ResolvedPath: check.resolved,
 				}
 			}
 		}

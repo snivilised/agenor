@@ -169,6 +169,18 @@ var _ = Describe("linear Manager", Ordered, func() {
 			}).NotTo(Panic())
 		})
 	})
+
+	Describe("OnSkipEvent", func() {
+		It("does not panic for a populated skip event", func() {
+			Expect(func() {
+				m.OnSkipEvent(&report.SkipEvent{
+					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
+					Placeholder:  "{{.grand}}",
+					ResolvedPath: "/some",
+				})
+			}).NotTo(Panic())
+		})
+	})
 })
 
 // ---------------------------------------------------------------------------

@@ -18,6 +18,7 @@ import (
 
 	"github.com/snivilised/jaywalk/src/app/bedrock"
 	jac "github.com/snivilised/jaywalk/src/app/controller"
+	"github.com/snivilised/jaywalk/src/app/shell"
 	"github.com/snivilised/jaywalk/src/app/ui"
 )
 
@@ -69,7 +70,7 @@ type ConfigureOptionFn func(*ConfigureOptions)
 
 // Bootstrap is a pure composition root. Its sole responsibility is
 // wiring: it constructs the cobra command tree, registers param-sets,
-// creates the ApplicationController, and connects everything together.
+// creates the Coordinator, and connects everything together.
 // It contains no business logic and no traversal decisions.
 //
 // Code smell checklist (should remain clean):
@@ -87,8 +88,8 @@ type Bootstrap struct {
 	// into requests; Bootstrap does not use it directly.
 	UI ui.Manager
 
-	// coord is the single ApplicationController instance wired at
-	// startup and shared by all command handlers.
+	// coord is the single Coordinator instance wired at startup and
+	// shared by all command handlers.
 	coord *jac.Coordinator
 
 	// root param-set
@@ -140,9 +141,18 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 
 	b.configure()
 
-	// Construct the ApplicationController once. Command handlers receive
-	// it via b.ctrl - they never construct it themselves.
-	b.coord = jac.New(b.Cfg)
+	// Detect the shell environment once at startup. This is an
+	// unrecoverable failure - if we cannot determine the environment
+	// we cannot safely validate action executables before a traversal.
+	env, err := shell.Detect()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	// Construct the Coordinator once with the detected locate function.
+	// Command handlers receive it via b.coord - they never construct it.
+	b.coord = jac.New(b.Cfg, jac.WithLocate(env.Locate))
 
 	b.container = assist.NewCobraContainer(
 		&cobra.Command{
@@ -195,10 +205,9 @@ func (b *Bootstrap) configure() {
 	handleLangSetting()
 
 	if err != nil {
-		msg := li18ngo.Text(locale.NewRootCmdConfigFileUsageTemplData(
-			viper.ConfigFileUsed()),
-		)
-
+		msg := li18ngo.Text(locale.UsingConfigFileTemplData{
+			ConfigFileName: b.options.Config.Name,
+		})
 		fmt.Fprintln(os.Stderr, msg)
 	}
 

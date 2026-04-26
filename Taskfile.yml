@@ -207,7 +207,7 @@ tasks:
 
   enums:
     cmds:
-      - go generate ./enums
+      - go generate ./src/agenor/enums
 
   # === coverage =============================================
 
