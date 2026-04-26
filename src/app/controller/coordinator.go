@@ -9,6 +9,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/snivilised/jaywalk/src/app/report"
+	"github.com/snivilised/jaywalk/src/app/shell"
 )
 
 // Coordinator coordinates the layers between the command adapters and
@@ -18,27 +19,31 @@ import (
 //
 // Dependency direction: command -> controller -> agenor
 type Coordinator struct {
-	cfg      *bedrock.Config
-	lookPath func(string) (string, error)
+	cfg    *bedrock.Config
+	locate shell.LocateFunc
 }
 
 // CoordinatorOption is a functional option for Coordinator.
 type CoordinatorOption func(*Coordinator)
 
-// WithLookPath overrides the function used to locate executables on PATH.
-// The default is exec.LookPath. Use this in tests to inject a stub.
-func WithLookPath(fn func(string) (string, error)) CoordinatorOption {
+// WithLocate overrides the LocateFunc used during PreFlight to validate
+// whether action executables are invokable. The default is the
+// platform-appropriate function returned by shell.Detect(). Use this
+// in tests to inject a stub without spawning real subprocesses.
+func WithLocate(fn shell.LocateFunc) CoordinatorOption {
 	return func(c *Coordinator) {
-		c.lookPath = fn
+		c.locate = fn
 	}
 }
 
-// New returns a ready-to-use Coordinator. cfg must not be nil.
-// Optional CoordinatorOptions may be supplied to override defaults.
+// New returns a ready-to-use Coordinator. cfg must not be nil. The locate
+// field is initialised to exec.LookPath as a safe default; callers should
+// supply the result of shell.Detect().Locate via WithLocate for full
+// platform-appropriate resolution. Bootstrap always does this.
 func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 	c := &Coordinator{
-		cfg:      cfg,
-		lookPath: exec.LookPath,
+		cfg:    cfg,
+		locate: func(name string) (string, error) { return exec.LookPath(name) },
 	}
 
 	for _, o := range opts {
@@ -53,7 +58,7 @@ func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 // constructing the correct agenor.Scenario (Tortoise or Hare).
 func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error {
 	// Root is sourced from Tree for prime traversals. Resume will source
-	// it from restored checkpoint.
+	// it from restored checkpoint state when implemented.
 	req.Root = req.Tree
 
 	t := &report.Traversal{}
@@ -74,8 +79,6 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 // ExecuteResume resumes an interrupted traversal using the scenario
 // provided on the request. The command adapter is responsible for
 // constructing the correct agenor.Scenario (Tortoise or Hare).
-// Note: req.Request.Root must be populated from restored checkpoint
-// state before this method is called - that is a resume concern.
 func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) error {
 	t := &report.Traversal{}
 

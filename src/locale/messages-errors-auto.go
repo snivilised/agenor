@@ -261,7 +261,7 @@ func (td CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n
 	return &i18n.Message{
 		ID:          "invalid-extended-glob-filter-missing-separator.sentinel-error",
 		Description: "invalid glob ex filter definition; pattern is missing separator",
-		Other:       "invalid glob ex filter definition; pattern is missing separator",
+		Other:       "Invalid glob ex filter definition; pattern is missing separator",
 	}
 }
 
@@ -300,7 +300,7 @@ func (td CoreInvalidInCaseFilterDefErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-incase-filter-definition.sentinel-error",
 		Description: "invalid incase filter definition; pattern is missing separator core error",
-		Other:       "invalid incase filter definition; pattern is missing separator",
+		Other:       "Invalid incase filter definition; pattern is missing separator",
 	}
 }
 
@@ -337,7 +337,7 @@ func (td CorePanicOccurredErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "panic-occurred.sentinel-error",
 		Description: "core error",
-		Other:       "panic occurred",
+		Other:       "Panic occurred",
 	}
 }
 
@@ -372,7 +372,7 @@ func (td CoreResumeFsMismatchErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "resume-fs-mismatch.sentinel-error",
 		Description: "core resume file system mismatch error",
-		Other:       "resume file system mismatch",
+		Other:       "Resume file system mismatch",
 	}
 }
 
@@ -413,7 +413,7 @@ func (td CreatingDecoderForTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "creating-decoder-for.jaywalk.dynamic-error",
 		Description: "Error returned when a mapstructure decoder cannot be created for a config section",
-		Other:       "creating decoder for '{{.Key}}': '{{.Wrapped}}'",
+		Other:       "Creating decoder for '{{.Key}}': '{{.Wrapped}}'",
 	}
 }
 
@@ -473,7 +473,7 @@ func (td DecodingSectionTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "decoding-section.jaywalk.dynamic-error",
 		Description: "Error returned when mapstructure decoding of a config section fails",
-		Other:       "decoding section '{{.Key}}': '{{.Wrapped}}'",
+		Other:       "Decoding section '{{.Key}}': '{{.Wrapped}}'",
 	}
 }
 
@@ -527,7 +527,7 @@ func (td FilterChildGlobExNotSupportedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "glob-ex-filter-not-supported-for-children.static-error.static-error",
 		Description: "glob-ex filter not supported for children",
-		Other:       "glob-ex filter not supported for children",
+		Other:       "Glob-ex filter not supported for children",
 	}
 }
 
@@ -562,7 +562,7 @@ func (td FilterCustomNotSupportedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "custom-filter-not-supported-for-children.static-error.static-error",
 		Description: "custom filter not supported for children",
-		Other:       "custom filter not supported for children",
+		Other:       "Custom filter not supported for children",
 	}
 }
 
@@ -596,7 +596,7 @@ func (td FilterIsNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "filter-is-nil.static-error",
 		Description: "filter is nil error",
-		Other:       "filter is nil",
+		Other:       "Filter is nil",
 	}
 }
 
@@ -629,7 +629,7 @@ func (td FilterMissingTypeErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "filter-missing-type.static-error",
 		Description: "filter missing type",
-		Other:       "filter missing type",
+		Other:       "Filter missing type",
 	}
 }
 
@@ -663,7 +663,7 @@ func (td FilterUndefinedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "filter-is-undefined.static-error",
 		Description: "filter is undefined error",
-		Other:       "filter is undefined",
+		Other:       "Filter is undefined",
 	}
 }
 
@@ -699,7 +699,7 @@ func (td FlagsSectionUnexpectedTypeTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "flags-section-unexpected-type.jaywalk.dynamic-error",
 		Description: "Error returned when the flags config section has an unexpected type",
-		Other:       "flags section has unexpected type '{{.TypeName}}'",
+		Other:       "Flags section has unexpected type '{{.TypeName}}'",
 	}
 }
 
@@ -741,7 +741,7 @@ func (td IDGeneratorFuncCantBeNilErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "id-generator-func-cant-be-nil.static-error",
 		Description: "id generator func is nil, should be defined",
-		Other:       "id generator func can't be nil",
+		Other:       "ID generator func can't be nil",
 	}
 }
 
@@ -776,7 +776,7 @@ func (td InternalFailedToGetNavigatorDriverErrorTemplData) Message() *i18n.Messa
 	return &i18n.Message{
 		ID:          "failed-to-get-navigator-driver.static-error",
 		Description: "failed to get navigator driver",
-		Other:       "failed to get navigator driver",
+		Other:       "Failed to get navigator driver",
 	}
 }
 
@@ -814,7 +814,7 @@ func (td InvalidExtGlobFilterMissingSeparatorTemplData) Message() *i18n.Message 
 	return &i18n.Message{
 		ID:          "invalid-glob-ex-filter-missing-separator.dynamic-error",
 		Description: "invalid glob ex filter definition; pattern is missing separator",
-		Other:       "extended glob pattern missing separator, pattern: '{{.Pattern}}'",
+		Other:       "Extended glob pattern missing separator, pattern: '{{.Pattern}}'",
 	}
 }
 
@@ -857,7 +857,7 @@ func (td InvalidFileSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Mess
 	return &i18n.Message{
 		ID:          "invalid-file-sampling-spec-missing-files.static-error",
 		Description: "invalid file sampling specification, missing no of files",
-		Other:       "invalid file sampling specification, missing no of files",
+		Other:       "Invalid file sampling specification, missing no of files",
 	}
 }
 
@@ -953,7 +953,7 @@ func (td InvalidPathTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-path.dynamic-error",
 		Description: "invalid path (dynamic error)",
-		Other:       "path: '{{.Path}}'",
+		Other:       "Invalid Path: '{{.Path}}'",
 	}
 }
 
@@ -992,7 +992,7 @@ func (td InvalidResumeStrategyErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-resume-strategy.static-error",
 		Description: "invalid resume strategy type",
-		Other:       "invalid resume strategy, must be one of: [spawn, fast]",
+		Other:       "Invalid resume strategy, must be one of: [spawn, fast]",
 	}
 }
 
@@ -1028,7 +1028,7 @@ func (td InvalidSamplingSpecMissingDirectoriesErrorTemplData) Message() *i18n.Me
 	return &i18n.Message{
 		ID:          "invalid-file-sampling-spec-missing-directories.static-error",
 		Description: "invalid file sampling specification, missing no of directories",
-		Other:       "invalid file sampling specification, missing no of directories",
+		Other:       "Invalid file sampling specification, missing no of directories",
 	}
 }
 
@@ -1063,7 +1063,7 @@ func (td InvalidSubscriptionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "invalid-subscription.static-error",
 		Description: "invalid subscription type",
-		Other:       "invalid subscription type, must be one of: [files, dirs, all]",
+		Other:       "Invalid subscription type, must be one of: [files, dirs, all]",
 	}
 }
 
@@ -1098,7 +1098,7 @@ func (td MissingCustomFilterDefinitionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "missing-custom-filter-definition.static-error",
 		Description: "config error missing-custom-filter-definition",
-		Other:       "missing custom filter definition (config error)",
+		Other:       "Missing custom filter definition (config error)",
 	}
 }
 
@@ -1207,7 +1207,7 @@ func (td ResumeFsMismatchErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "resume-fs-mismatch.static-error",
 		Description: "resume fs mismatch error",
-		Other:       "resume-fs mismatch",
+		Other:       "resume-fs file system mismatch",
 	}
 }
 
@@ -1357,7 +1357,7 @@ func (td TraverseFsMismatchErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "traverse-fs-mismatch.static-error",
 		Description: "traverse fs mismatch error",
-		Other:       "traverse-fs mismatch",
+		Other:       "traverse-fs file system mismatch",
 	}
 }
 
@@ -1391,7 +1391,7 @@ func (td UnEqualJSONConversionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "un-equal-conversion.sentinel-error",
 		Description: "JSON options conversion error",
-		Other:       "unequal JSON conversion",
+		Other:       "Unequal JSON conversion",
 	}
 }
 
@@ -1429,7 +1429,7 @@ func (td UnsupportedFormatTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "unsupported-format.jaywalk.dynamic-error",
 		Description: "Error returned when an unregistered config format is requested",
-		Other:       "unsupported format '{{.Format}}'",
+		Other:       "Unsupported format '{{.Format}}'",
 	}
 }
 
@@ -1469,7 +1469,7 @@ func (td UsageMissingHandlerErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "usage-missing-handler.static-error",
 		Description: "usage missing handler",
-		Other:       "usage missing handler",
+		Other:       "Usage missing handler",
 	}
 }
 
@@ -1503,7 +1503,7 @@ func (td UsageMissingRestorePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "usage-missing-restore-path.static-error",
 		Description: "usage missing restore path",
-		Other:       "usage missing restore path",
+		Other:       "Usage missing restore path",
 	}
 }
 
@@ -1537,7 +1537,7 @@ func (td UsageMissingSubscriptionErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "usage-missing-subscription.static-error",
 		Description: "usage missing subscription",
-		Other:       "usage missing subscription",
+		Other:       "Usage missing subscription",
 	}
 }
 
@@ -1571,7 +1571,7 @@ func (td UsageMissingTreePathErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "usage-missing-tree-path.static-error",
 		Description: "usage missing tree path",
-		Other:       "usage missing tree path",
+		Other:       "Usage missing tree path",
 	}
 }
 
@@ -1605,7 +1605,7 @@ func (td WorkerPoolCreationFailedErrorTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "failed-to-create-worker-pool.static-error",
 		Description: "failed to create worker pool",
-		Other:       "failed to create worker pool",
+		Other:       "Failed to create worker pool",
 	}
 }
 

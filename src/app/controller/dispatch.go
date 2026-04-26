@@ -84,11 +84,10 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string) actionRe
 		return actionResult{
 			Skipped:      true,
 			Placeholder:  result.Placeholder,
-			ResolvedPath: result.resolvedPath,
+			ResolvedPath: result.ResolvedPath,
 		}
 	}
 
-	// TODO: execute result.cmd in the shell and capture output/error.
 	return actionResult{
 		Event: &report.ActionEvent{
 			DisplayEvent:    report.DisplayEvent{Node: node, Name: name},

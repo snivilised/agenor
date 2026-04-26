@@ -31,7 +31,7 @@ func (td ActionFailedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "action-failed",
 		Description: "Printed when an action fails on a node during traversal",
-		Other:       "[!] action '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
+		Other:       "[!] Action '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
 	}
 }
 
@@ -65,7 +65,7 @@ func (td ActionSkippedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "action-skipped",
 		Description: "Printed when an action is skipped",
-		Other:       "[!] action '{{.Name}}' skipped at '{{.Path}}'",
+		Other:       "[!] Action '{{.Name}}' skipped at '{{.Path}}'",
 	}
 }
 
@@ -100,7 +100,7 @@ func (td ActionVisitedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "action-visited",
 		Description: "Printed for each node successfully processed by an action",
-		Other:       "[+] actioned for '{{.Name}}' at '{{.Path}}'",
+		Other:       "[+] Actioned for '{{.Name}}' at '{{.Path}}'",
 	}
 }
 
@@ -167,7 +167,7 @@ func (td PipelineFailedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "pipeline-failed",
 		Description: "Printed when a pipeline fails on a node during traversal",
-		Other:       "[!] pipeline '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
+		Other:       "[!] Pipeline '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
 	}
 }
 
@@ -203,7 +203,7 @@ func (td PipelineVisitedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "pipeline-visited",
 		Description: "Printed for each node successfully processed by a pipeline",
-		Other:       "[+] pipeline succeeded for '{{.Name}}' at '{{.Path}}'",
+		Other:       "[+] Pipeline succeeded for '{{.Name}}' at '{{.Path}}'",
 	}
 }
 
@@ -237,7 +237,7 @@ func (td PlaceholderBreachTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "placeholder-breach",
 		Description: "Printed when placeholder breach occurs during expansion",
-		Other:       "Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
+		Other:       "[!] Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
 	}
 }
 
@@ -273,7 +273,7 @@ func (td TraversalCompleteTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "traversal-complete",
 		Description: "Printed on successful completion of a traversal",
-		Other:       "[+] traversal complete successfully: {{.Files}} files, {{.Dirs}} dirs visited in {{.Elapsed}}",
+		Other:       "[+] Traversal complete successfully: {{.Files}} files, {{.Dirs}} dirs visited in {{.Elapsed}}",
 	}
 }
 
@@ -306,7 +306,7 @@ func (td TraversalFailedTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "traversal-failed",
 		Description: "Printed when the traversal itself fails",
-		Other:       "[!] traversal failed: '{{.Err}}'",
+		Other:       "[!] Traversal failed: '{{.Err}}'",
 	}
 }
 

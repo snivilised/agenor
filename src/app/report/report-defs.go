@@ -67,7 +67,7 @@ type Traversal struct {
 	// ActionsSkipped is the number of nodes for which an action was skipped
 	// because a placeholder breached the traversal root. This field is
 	// populated by jay; it is not sourced from agenor metrics.
-	ActionsSkipped int
+	ActionsSkipped core.MetricValue
 
 	// Elapsed is the total wall-clock time taken for the traversal.
 	Elapsed time.Duration

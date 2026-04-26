@@ -26,7 +26,7 @@ func (td RootCmdConfigFileUsageTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "root-command-config-file-usage",
 		Description: "root command config flag usage",
-		Other:       "config file (default is $HOME/{{.ConfigFileName}}.yml)",
+		Other:       "Config file (default is $HOME/{{.ConfigFileName}}.yml)",
 	}
 }
 

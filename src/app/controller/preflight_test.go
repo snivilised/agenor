@@ -7,18 +7,19 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/snivilised/jaywalk/src/app/bedrock"
+	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/snivilised/jaywalk/src/app/controller"
+	"github.com/snivilised/jaywalk/src/app/shell"
 )
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-// stubLookPath returns a lookPath stub that succeeds for every name in
+// stubLocate returns a shell.LocateFunc that succeeds for every name in
 // found and fails for every name in notFound. Names not mentioned in
 // either set cause a test panic so omissions are caught early.
-func stubLookPath(found, notFound []string) func(string) (string, error) {
+func stubLocate(found, notFound []string) shell.LocateFunc {
 	ok := make(map[string]bool, len(found))
 	for _, n := range found {
 		ok[n] = true
@@ -34,9 +35,11 @@ func stubLookPath(found, notFound []string) func(string) (string, error) {
 			return "/usr/bin/" + name, nil
 		}
 		if fail[name] {
-			return "", fmt.Errorf("exec: %q: executable file not found in $PATH", name)
+			return "", fmt.Errorf("shell: %q not found in current environment", name)
 		}
-		panic(fmt.Sprintf("stubLookPath: unexpected executable %q - add it to found or notFound", name))
+		panic(fmt.Sprintf(
+			"stubLocate: unexpected executable %q - add it to found or notFound", name,
+		))
 	}
 }
 
@@ -65,14 +68,14 @@ var _ = Describe("Coordinator.PreFlight", func() {
 	// ------------------------------------------------------------------
 
 	Context("when neither ActionName nor PipelineName is set", func() {
-		It("returns nil without calling lookPath", func() {
+		It("returns nil without calling locate", func() {
 			called := false
-			spy := func(name string) (string, error) {
+			spy := shell.LocateFunc(func(name string) (string, error) {
 				called = true
 				return "", errors.New("should not be called")
-			}
+			})
 
-			coord := controller.New(minimalCfg(nil, nil), controller.WithLookPath(spy))
+			coord := controller.New(minimalCfg(nil, nil), controller.WithLocate(spy))
 			err := coord.PreFlight(&controller.Request{})
 
 			Expect(err).To(BeNil())
@@ -98,9 +101,9 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			)
 		})
 
-		It("returns nil when the action executable is found on PATH", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath([]string{"ffmpeg"}, nil),
+		It("returns nil when the action executable is locatable", func() {
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate([]string{"ffmpeg"}, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{ActionName: "good-action"})
@@ -109,8 +112,8 @@ var _ = Describe("Coordinator.PreFlight", func() {
 		})
 
 		It("returns an error when the action is not defined in config", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath(nil, nil),
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate(nil, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{ActionName: "undefined-action"})
@@ -121,8 +124,8 @@ var _ = Describe("Coordinator.PreFlight", func() {
 		})
 
 		It("returns an error when the action cmd is empty", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath(nil, nil),
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate(nil, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{ActionName: "empty-action"})
@@ -132,9 +135,9 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			Expect(err.Error()).To(ContainSubstring("empty cmd"))
 		})
 
-		It("returns an error when the executable is not found on PATH", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath(nil, []string{"nonexistent-binary"}),
+		It("returns an error when the executable is not locatable", func() {
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate(nil, []string{"nonexistent-binary"}),
 			))
 
 			err := coord.PreFlight(&controller.Request{ActionName: "bad-action"})
@@ -142,7 +145,7 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("bad-action"))
 			Expect(err.Error()).To(ContainSubstring("nonexistent-binary"))
-			Expect(err.Error()).To(ContainSubstring("not found on PATH"))
+			Expect(err.Error()).To(ContainSubstring("not found in current environment"))
 		})
 	})
 
@@ -168,9 +171,9 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			)
 		})
 
-		It("returns nil when all pipeline steps resolve and all executables are found", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath([]string{"ffmpeg", "aws"}, nil),
+		It("returns nil when all steps resolve and all executables are locatable", func() {
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate([]string{"ffmpeg", "aws"}, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{PipelineName: "good-pipeline"})
@@ -179,8 +182,8 @@ var _ = Describe("Coordinator.PreFlight", func() {
 		})
 
 		It("returns an error when the pipeline is not defined in config", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath(nil, nil),
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate(nil, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{PipelineName: "undefined-pipeline"})
@@ -191,8 +194,8 @@ var _ = Describe("Coordinator.PreFlight", func() {
 		})
 
 		It("returns an error when a pipeline step is not defined in actions", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath([]string{"ffmpeg"}, nil),
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate([]string{"ffmpeg"}, nil),
 			))
 
 			err := coord.PreFlight(&controller.Request{PipelineName: "orphan-pipeline"})
@@ -203,9 +206,9 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			Expect(err.Error()).To(ContainSubstring("not defined in config"))
 		})
 
-		It("returns an error when a pipeline step executable is not found on PATH", func() {
-			coord := controller.New(cfg, controller.WithLookPath(
-				stubLookPath([]string{"ffmpeg"}, []string{"nonexistent-binary"}),
+		It("returns an error when a step executable is not locatable", func() {
+			coord := controller.New(cfg, controller.WithLocate(
+				stubLocate([]string{"ffmpeg"}, []string{"nonexistent-binary"}),
 			))
 
 			err := coord.PreFlight(&controller.Request{PipelineName: "bad-pipeline"})
@@ -213,22 +216,20 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("bad-pipeline"))
 			Expect(err.Error()).To(ContainSubstring("nonexistent-binary"))
-			Expect(err.Error()).To(ContainSubstring("not found on PATH"))
+			Expect(err.Error()).To(ContainSubstring("not found in current environment"))
 		})
 
 		It("stops at the first failing step and does not check subsequent steps", func() {
-			// bad-step fails; if we were to continue, "upload" would be checked
-			// next. We verify upload's executable is never queried.
 			queriedNames := []string{}
-			spy := func(name string) (string, error) {
+			spy := shell.LocateFunc(func(name string) (string, error) {
 				queriedNames = append(queriedNames, name)
 				if name == "ffmpeg" {
 					return "/usr/bin/ffmpeg", nil
 				}
 				return "", fmt.Errorf("not found")
-			}
+			})
 
-			coord := controller.New(cfg, controller.WithLookPath(spy))
+			coord := controller.New(cfg, controller.WithLocate(spy))
 			err := coord.PreFlight(&controller.Request{PipelineName: "bad-pipeline"})
 
 			Expect(err).To(HaveOccurred())

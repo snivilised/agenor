@@ -46,7 +46,7 @@ var _ = Describe("error messages", Ordered, func() {
 		When("variant error created", func() {
 			It("should: render translated content", func() {
 				const (
-					expected = "extended glob pattern missing separator, pattern: 'foo'"
+					expected = "Extended glob pattern missing separator, pattern: 'foo'"
 				)
 
 				text := locale.NewInvalidExtGlobFilterMissingSeparatorError(

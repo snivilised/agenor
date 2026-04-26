@@ -3,8 +3,9 @@ package command_test
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/snivilised/jaywalk/src/app/command"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
+	"github.com/snivilised/jaywalk/src/app/command"
+	"github.com/snivilised/li18ngo"
 
 	nef "github.com/snivilised/nefilim"
 
@@ -26,11 +27,14 @@ func (j *DetectorStub) Scan() language.Tag {
 }
 
 var _ = Describe("Bootstrap", Ordered, func() {
-
 	var (
 		repo     string
 		l10nPath string
 	)
+
+	BeforeAll(func() {
+		Expect(li18ngo.Register()).To(Succeed())
+	})
 
 	BeforeAll(func() {
 		repo = hanno.Repo("")

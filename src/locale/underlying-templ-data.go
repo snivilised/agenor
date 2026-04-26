@@ -47,7 +47,7 @@ var _ = lingo.Underliers{
 		Description: "root command config flag usage",
 		Story: "RootCmdConfigFileUsage is the usage string for the" +
 			" config file flag on the root command.",
-		Other: "config file (default is $HOME/{{.ConfigFileName}}.yml)",
+		Other: "Config file (default is $HOME/{{.ConfigFileName}}.yml)",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "ConfigFileName",
@@ -113,7 +113,7 @@ var _ = lingo.Underliers{
 			" during traversal",
 		Story: "ActionFailed is printed when a named action returns" +
 			" an error while processing a node.",
-		Other: "[!] action '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
+		Other: "[!] Action '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Name",
@@ -141,7 +141,7 @@ var _ = lingo.Underliers{
 			" by an action",
 		Story: "ActionVisited is printed for each node successfully" +
 			" processed by a named action.",
-		Other: "[+] actioned for '{{.Name}}' at '{{.Path}}'",
+		Other: "[+] Actioned for '{{.Name}}' at '{{.Path}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Name",
@@ -164,7 +164,7 @@ var _ = lingo.Underliers{
 			" during traversal",
 		Story: "PipelineFailed is printed when a named pipeline" +
 			" returns an error while processing a node.",
-		Other: "[!] pipeline '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
+		Other: "[!] Pipeline '{{.Name}}' failed on '{{.Path}}': '{{.Err}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Name",
@@ -192,7 +192,7 @@ var _ = lingo.Underliers{
 			" by a pipeline",
 		Story: "PipelineVisited is printed for each node successfully" +
 			" processed by a named pipeline.",
-		Other: "[+] pipeline succeeded for '{{.Name}}' at '{{.Path}}'",
+		Other: "[+] Pipeline succeeded for '{{.Name}}' at '{{.Path}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Name",
@@ -214,7 +214,7 @@ var _ = lingo.Underliers{
 		Description: "Printed when the traversal itself fails",
 		Story: "TraversalFailed is printed when the traversal" +
 			" operation itself encounters a fatal error.",
-		Other: "[!] traversal failed: '{{.Err}}'",
+		Other: "[!] Traversal failed: '{{.Err}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Err",
@@ -230,7 +230,7 @@ var _ = lingo.Underliers{
 		TypeName:    enums.UnderlyingTypeDynamicGeneral,
 		Description: "Printed when an action is skipped",
 		Story:       "ActionSkipped is printed when an action is skipped",
-		Other:       "[!] action '{{.Name}}' skipped at '{{.Path}}'",
+		Other:       "[!] Action '{{.Name}}' skipped at '{{.Path}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Name",
@@ -251,7 +251,7 @@ var _ = lingo.Underliers{
 		TypeName:    enums.UnderlyingTypeDynamicGeneral,
 		Description: "Printed when placeholder breach occurs during expansion",
 		Story:       "Printed when a placeholder breach occurs during expansion.",
-		Other:       "Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
+		Other:       "[!] Placeholder: '{{.Placeholder}}' resolved to '{{.ResolvedPath}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Placeholder",
@@ -273,7 +273,7 @@ var _ = lingo.Underliers{
 		Description: "Printed on successful completion of a traversal",
 		Story: "TraversalComplete is printed when a traversal finishes" +
 			" successfully, summarising the nodes visited and time elapsed.",
-		Other: "[+] traversal complete successfully: {{.Files}} files, {{.Dirs}} dirs" +
+		Other: "[+] Traversal complete successfully: {{.Files}} files, {{.Dirs}} dirs" +
 			" visited in {{.Elapsed}}",
 		Fields: []lingo.UnderlyingField{
 			{
@@ -306,7 +306,7 @@ var _ = lingo.Underliers{
 		Story: "FilterIsNil indicates that the caller passed a nil" +
 			" filter reference where a concrete filter implementation" +
 			" was required.",
-		Other: "filter is nil",
+		Other: "Filter is nil",
 	},
 
 	"filter-missing-type.static-error": {
@@ -316,7 +316,7 @@ var _ = lingo.Underliers{
 		Description: "filter missing type",
 		Story: "FilterMissingType indicates that the filter definition" +
 			" is missing a required type field.",
-		Other: "filter missing type",
+		Other: "Filter missing type",
 	},
 
 	"custom-filter-not-supported-for-children.static-error": {
@@ -327,7 +327,7 @@ var _ = lingo.Underliers{
 		Description: "custom filter not supported for children",
 		Story: "FilterCustomNotSupported indicates that custom filters" +
 			" cannot be applied to child nodes in this context.",
-		Other: "custom filter not supported for children",
+		Other: "Custom filter not supported for children",
 	},
 
 	"glob-ex-filter-not-supported-for-children.static-error": {
@@ -338,7 +338,7 @@ var _ = lingo.Underliers{
 		Description: "glob-ex filter not supported for children",
 		Story: "FilterChildGlobExNotSupported indicates that glob-ex" +
 			" filters cannot be applied to child nodes in this context.",
-		Other: "glob-ex filter not supported for children",
+		Other: "Glob-ex filter not supported for children",
 	},
 
 	"filter-is-undefined.static-error": {
@@ -348,7 +348,7 @@ var _ = lingo.Underliers{
 		Description: "filter is undefined error",
 		Story: "FilterUndefined indicates that the filter referenced" +
 			" in the traversal options has not been defined.",
-		Other: "filter is undefined",
+		Other: "Filter is undefined",
 	},
 
 	"failed-to-get-navigator-driver.static-error": {
@@ -359,7 +359,7 @@ var _ = lingo.Underliers{
 		Story: "InternalFailedToGetNavigatorDriver indicates an" +
 			" internal failure when resolving the navigator driver." +
 			" This is not expected during normal operation.",
-		Other: "failed to get navigator driver",
+		Other: "Failed to get navigator driver",
 	},
 
 	// TODO: Need to to check where this is invoked from, may not be required.
@@ -397,7 +397,7 @@ var _ = lingo.Underliers{
 		Story: "CoreInvalidInCaseFilterDef is the sentinel core error" +
 			" for an invalid case-insensitive filter definition. Wrap" +
 			" this error using NewInvalidInCaseFilterDefError.",
-		Other: "invalid incase filter definition;" +
+		Other: "Invalid incase filter definition;" +
 			" pattern is missing separator",
 	},
 
@@ -408,7 +408,7 @@ var _ = lingo.Underliers{
 		Description: "failed to create worker pool",
 		Story: "WorkerPoolCreationFailed indicates that the worker" +
 			" pool could not be initialised.",
-		Other: "failed to create worker pool",
+		Other: "Failed to create worker pool",
 	},
 
 	"invalid-file-sampling-spec-missing-files.static-error": {
@@ -421,7 +421,7 @@ var _ = lingo.Underliers{
 		Story: "InvalidFileSamplingSpecMissingFiles indicates that" +
 			" the file sampling specification is invalid because the" +
 			" required number-of-files field is absent.",
-		Other: "invalid file sampling specification," +
+		Other: "Invalid file sampling specification," +
 			" missing no of files",
 	},
 
@@ -435,7 +435,7 @@ var _ = lingo.Underliers{
 		Story: "InvalidSamplingSpecMissingDirectories indicates that" +
 			" the file sampling specification is invalid because the" +
 			" required number-of-directories field is absent.",
-		Other: "invalid file sampling specification," +
+		Other: "Invalid file sampling specification," +
 			" missing no of directories",
 	},
 
@@ -447,7 +447,7 @@ var _ = lingo.Underliers{
 		Story: "MissingCustomFilterDefinition indicates that the" +
 			" traversal configuration references a custom filter but" +
 			" no definition for it was found.",
-		Other: "missing custom filter definition (config error)",
+		Other: "Missing custom filter definition (config error)",
 	},
 
 	"invalid-glob-ex-filter-missing-separator.dynamic-error": {
@@ -460,7 +460,7 @@ var _ = lingo.Underliers{
 		Story: "InvalidExtGlobFilterMissingSeparator indicates that" +
 			" an extended glob filter definition is invalid because" +
 			" the pattern is missing the required separator character.",
-		Other: "extended glob pattern missing separator, pattern: '{{.Pattern}}'",
+		Other: "Extended glob pattern missing separator, pattern: '{{.Pattern}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Pattern",
@@ -481,7 +481,7 @@ var _ = lingo.Underliers{
 			" sentinel core error for an invalid extended glob filter" +
 			" definition. Wrap this error using" +
 			" NewInvalidExtGlobFilterMissingSeparatorError.",
-		Other: "invalid glob ex filter definition;" +
+		Other: "Invalid glob ex filter definition;" +
 			" pattern is missing separator",
 	},
 
@@ -502,7 +502,7 @@ var _ = lingo.Underliers{
 		Description: "usage missing tree path",
 		Story: "UsageMissingTreePath indicates that the command was" +
 			" invoked without the required tree path argument.",
-		Other: "usage missing tree path",
+		Other: "Usage missing tree path",
 	},
 
 	"usage-missing-restore-path.static-error": {
@@ -512,7 +512,7 @@ var _ = lingo.Underliers{
 		Description: "usage missing restore path",
 		Story: "UsageMissingRestorePath indicates that the command was" +
 			" invoked without the required restore path argument.",
-		Other: "usage missing restore path",
+		Other: "Usage missing restore path",
 	},
 
 	"usage-missing-subscription.static-error": {
@@ -522,7 +522,7 @@ var _ = lingo.Underliers{
 		Description: "usage missing subscription",
 		Story: "UsageMissingSubscription indicates that the command" +
 			" was invoked without specifying a subscription type.",
-		Other: "usage missing subscription",
+		Other: "Usage missing subscription",
 	},
 
 	"usage-missing-handler.static-error": {
@@ -532,7 +532,7 @@ var _ = lingo.Underliers{
 		Description: "usage missing handler",
 		Story: "UsageMissingHandler indicates that the command was" +
 			" invoked without registering a required handler.",
-		Other: "usage missing handler",
+		Other: "Usage missing handler",
 	},
 
 	"id-generator-func-cant-be-nil.static-error": {
@@ -542,7 +542,7 @@ var _ = lingo.Underliers{
 		Description: "id generator func is nil, should be defined",
 		Story: "IDGeneratorFuncCantBeNil indicates that a nil function" +
 			" was supplied where an ID generator func is required.",
-		Other: "id generator func can't be nil",
+		Other: "ID generator func can't be nil",
 	},
 
 	"un-equal-conversion.sentinel-error": {
@@ -553,7 +553,7 @@ var _ = lingo.Underliers{
 		Story: "UnEqualJSONConversion indicates that a round-trip" +
 			" JSON conversion produced a result that does not equal" +
 			" the original value.",
-		Other: "unequal JSON conversion",
+		Other: "Unequal JSON conversion",
 	},
 
 	"invalid-path.dynamic-error": {
@@ -563,7 +563,7 @@ var _ = lingo.Underliers{
 		Description: "invalid path (dynamic error)",
 		Story: "InvalidPath indicates that a path supplied by the" +
 			" caller fails validation.",
-		Other: "path: '{{.Path}}'",
+		Other: "Invalid Path: '{{.Path}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Path",
@@ -581,7 +581,7 @@ var _ = lingo.Underliers{
 		Story: "TraverseFsMismatch indicates that the filesystem" +
 			" passed to the traversal does not match the filesystem" +
 			" recorded at the point the session was saved.",
-		Other: "traverse-fs mismatch",
+		Other: "traverse-fs file system mismatch",
 	},
 
 	"resume-fs-mismatch.static-error": {
@@ -592,7 +592,7 @@ var _ = lingo.Underliers{
 		Story: "ResumeFsMismatch indicates that the filesystem passed" +
 			" to a resume operation does not match the filesystem" +
 			" recorded at the point the session was saved.",
-		Other: "resume-fs mismatch",
+		Other: "resume-fs file system mismatch",
 	},
 
 	"resume-fs-mismatch.sentinel-error": {
@@ -604,7 +604,7 @@ var _ = lingo.Underliers{
 			" a filesystem mismatch detected during traversal or resume." +
 			" Wrap using NewTraverseFsMismatchError or" +
 			" NewResumeFsMismatchError.",
-		Other: "resume file system mismatch",
+		Other: "Resume file system mismatch",
 	},
 
 	"panic-occurred.sentinel-error": {
@@ -614,7 +614,7 @@ var _ = lingo.Underliers{
 		Description: "core error",
 		Story: "CorePanicOccurred is the sentinel core error indicating" +
 			" that a panic was intercepted during traversal.",
-		Other: "panic occurred",
+		Other: "Panic occurred",
 	},
 
 	"invalid-subscription.static-error": {
@@ -624,7 +624,7 @@ var _ = lingo.Underliers{
 		Description: "invalid subscription type",
 		Story: "InvalidSubscription indicates that the subscription" +
 			" type supplied by the caller is not one of the accepted values.",
-		Other: "invalid subscription type," +
+		Other: "Invalid subscription type," +
 			" must be one of: [files, dirs, all]",
 	},
 
@@ -635,7 +635,7 @@ var _ = lingo.Underliers{
 		Description: "invalid resume strategy type",
 		Story: "InvalidResumeStrategy indicates that the resume strategy" +
 			" supplied by the caller is not one of the accepted values.",
-		Other: "invalid resume strategy, must be one of: [spawn, fast]",
+		Other: "Invalid resume strategy, must be one of: [spawn, fast]",
 	},
 
 	// TODO: rename bedrock errors; shouldn't use bedrock in the name
@@ -694,7 +694,7 @@ var _ = lingo.Underliers{
 		Story: "UnsupportedFormat indicates that the configuration" +
 			" format requested by the caller has not been registered" +
 			" with the format registry.",
-		Other: "unsupported format '{{.Format}}'",
+		Other: "Unsupported format '{{.Format}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Format",
@@ -713,7 +713,7 @@ var _ = lingo.Underliers{
 		Story: "CreatingDecoderFor indicates that a mapstructure" +
 			" decoder could not be constructed for the named" +
 			" configuration section.",
-		Other: "creating decoder for '{{.Key}}': '{{.Wrapped}}'",
+		Other: "Creating decoder for '{{.Key}}': '{{.Wrapped}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Wrapped",
@@ -737,7 +737,7 @@ var _ = lingo.Underliers{
 		Story: "DecodingSection indicates that mapstructure failed" +
 			" to decode the named configuration section into its" +
 			" target struct.",
-		Other: "decoding section '{{.Key}}': '{{.Wrapped}}'",
+		Other: "Decoding section '{{.Key}}': '{{.Wrapped}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "Wrapped",
@@ -761,7 +761,7 @@ var _ = lingo.Underliers{
 		Story: "FlagsSectionUnexpectedType indicates that the flags" +
 			" section of the configuration file was decoded into an" +
 			" unexpected Go type.",
-		Other: "flags section has unexpected type '{{.TypeName}}'",
+		Other: "Flags section has unexpected type '{{.TypeName}}'",
 		Fields: []lingo.UnderlyingField{
 			{
 				Note:   "TypeName",
@@ -848,5 +848,73 @@ var _ = lingo.Underliers{
 				Tale:   "is the pipeline name that was not found",
 			},
 		},
+	},
+
+	// -------------------------------------------------------------------------
+	// shell:Error messages
+	// -------------------------------------------------------------------------
+
+	"psm-set-no-powershell-exe-found.static-error": {
+		MessageID:   "psm-set-no-powershell-exe-found.static-error",
+		Seed:        "PSMSetNoPowerShellExeFound",
+		TypeName:    enums.UnderlyingTypeStaticErrorWrapperMsg,
+		Description: "PSModulePath is set but no PowerShell executable found",
+		Story:       "PSModulePath is set but no PowerShell executable found",
+		Other:       "PSModulePath is set but no PowerShell executable found: '{{.Wrapped}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Wrapped",
+				GoType: "error",
+				Tale:   "The underlying error representing the failure to find a PowerShell executable",
+			},
+		},
+		File: "shell",
+	},
+
+	"cmd-not-found-in-env.dynamic-error": {
+		MessageID:   "cmd-not-found-in-env.dynamic-error",
+		Seed:        "CmdNotFoundInEnv",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Command not found in environment error",
+		Story: "Error returned when a command specified in the config is not " +
+			"found in the current environment",
+		Other: "'{{.Command}}' Not found in current environment",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command that was not found",
+			},
+		},
+		File: "shell",
+	},
+
+	"neither-pwsh-or-powershell-exe-found.static-error": {
+		MessageID:   "neither-pwsh-or-powershell-exe-found.static-error",
+		Seed:        "NeitherPwshOrPowerShellExeFound",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "neither pwsh.exe nor powershell.exe found on PATH",
+		Story:       "neither pwsh.exe nor powershell.exe found on PATH",
+		Other:       "Neither pwsh.exe nor powershell.exe found on PATH",
+		File:        "shell",
+	},
+
+	"cmd-not-found-as-path-binary-or-builtin.dynamic-error": {
+		MessageID: "cmd-not-found-as-path-binary-or-builtin.dynamic-error",
+		Seed:      "CmdNotFoundAsPathBinaryOrBuiltin",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Command not found in environment as a PATH binary" +
+			" or cmd.exe builtin error",
+		Story: "Error returned when a command specified in the config is not " +
+			"found in the current environment as PATH binary or cmd.exe builtin",
+		Other: "'{{.Command}}' Not found in current environment",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command that was not found",
+			},
+		},
+		File: "shell",
 	},
 }
