@@ -1,7 +1,6 @@
 package filtering
 
 import (
-	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -9,6 +8,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 const (
@@ -132,7 +132,7 @@ func parse(pattern string, re *regexp.Regexp) (spec *patternSpec, err error) {
 	subMatches := re.FindStringSubmatch(pattern)
 
 	if subMatches == nil {
-		return nil, fmt.Errorf("invalid glob-ex sub-pattern '%v' (match failed)", pattern)
+		return nil, locale.NewInvalidExtendedGlobPatternError(pattern)
 	}
 
 	result := make(map[string]string)

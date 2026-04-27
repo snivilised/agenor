@@ -10,34 +10,91 @@ import (
 // underliers is the single source of truth for all i18n messages in this
 // package. Edit this map and run go generate to regenerate the auto files.
 var _ = lingo.Underliers{
+	// -------------------------------------------------------------------------
+	// flags: Cobra messages
+	// -------------------------------------------------------------------------
+
+	"tui-flag-description": {
+		MessageID:   "tui-flag-description",
+		Seed:        "TuiFlagDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for TUI flag",
+		Story:       "Cobra flag description for TUI flag",
+		Other:       "tui denotes what view to use",
+		File:        "flags",
+	},
+
+	"subscribe-flag-description": {
+		MessageID: "subscribe-flag-description",
+		Seed:      "SubscribeFlagDesc",
+		TypeName:  enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for subscribe flag; values are static " +
+			"so do not translate them",
+		Story: "Cobra flag description for subscribe flag",
+		Other: "subscribe denotes the node types to visit: 'files', 'dirs' or 'all' (default)",
+		File:  "flags",
+	},
+
+	"action-flag-description": {
+		MessageID:   "action-flag-description",
+		Seed:        "ActionFlagDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for action flag",
+		Story:       "Cobra flag description for action flag",
+		Other: "action denotes the executable or script function to invoke for " +
+			"each matching node, as defined in config",
+		File: "flags",
+	},
+
+	"pipeline-flag-description": {
+		MessageID:   "pipeline-flag-description",
+		Seed:        "PipelineFlagDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for pipeline flag",
+		Story:       "Cobra flag description for pipeline flag",
+		Other: "pipeline denotes defines a sequence of actions to invoke for " +
+			"each matching node, as defined in config",
+		File: "flags",
+	},
+
+	"resume-flag-description": {
+		MessageID: "resume-flag-description",
+		Seed:      "ResumeFlagDesc",
+		TypeName:  enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for resume flag; values are static" +
+			"so do not translate them",
+		Story: "Cobra flag description for resume flag",
+		Other: "resume denotes the strategy to use to continue a previously interrupted " +
+			"navigation: 'spawn' or 'ff'",
+		File: "flags",
+	},
 
 	// -------------------------------------------------------------------------
-	// Cobra messages
+	// root-cmd: Cobra messages
 	// -------------------------------------------------------------------------
 
 	"root-command-short-description": {
 		MessageID:   "root-command-short-description",
 		Seed:        "RootCmdShortDesc",
 		TypeName:    enums.UnderlyingTypeStaticCobra,
-		Description: "short description for the root command",
+		Description: "Navigates a directory tree",
 		Story: "RootCmdShortDesc is the short description shown in" +
 			" cobra help output for the root command.",
-		Other: "A brief description of your application",
+		Other: "Navigates a directory tree",
+		File:  "root-cmd",
 	},
 
 	"root-command-long-description": {
 		MessageID:   "root-command-long-description",
 		Seed:        "RootCmdLongDesc",
 		TypeName:    enums.UnderlyingTypeStaticCobra,
-		Description: "long description for the root command",
+		Description: "Navigates a directory tree and shows matching nodes",
 		Story: "RootCmdLongDesc is the long description shown in" +
 			" cobra help output for the root command.",
-		Other: `A longer description that spans multiple lines and likely contains
-		examples and usage of using your application. For example:
-
-		Cobra is a CLI library for Go that empowers applications.
-		This application is a tool to generate the needed files
-		to quickly create a Cobra application.`,
+		Other: `Navigates a directory tree and shows matching nodes. The root command
+does not take any action for each visited node. It is simply a visualiser for
+traversal.`,
+		File: "root-cmd",
 	},
 
 	"root-command-config-file-usage": {
@@ -55,6 +112,7 @@ var _ = lingo.Underliers{
 				Tale:   "is the base name of the config file without extension",
 			},
 		},
+		File: "root-cmd",
 	},
 
 	"root-command-language-usage": {
@@ -65,10 +123,150 @@ var _ = lingo.Underliers{
 		Story: "RootCmdLangUsage is the usage string for the" +
 			" language flag on the root command.",
 		Other: "'lang' defines the language according to IETF BCP 47",
+		File:  "root-cmd",
 	},
 
 	// -------------------------------------------------------------------------
-	// General messages
+	// walk-cmd: Cobra messages
+	// -------------------------------------------------------------------------
+
+	"walk-command-short-description": {
+		MessageID:   "walk-command-short-description",
+		Seed:        "WalkCmdShortDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Navigates a directory tree on a single cpu core",
+		Story: "RootCmdShortDesc is the short description shown in" +
+			" cobra help output for the root command.",
+		Other: "Executes actions and pipelines for matching nodes on a single cpu core",
+		File:  "walk-cmd",
+	},
+
+	"walk-command-long-description": {
+		MessageID: "walk-command-long-description",
+		Seed:      "WalkCmdLongDesc",
+		TypeName:  enums.UnderlyingTypeStaticCobra,
+		Description: "Navigates a directory tree on a single cpu core and executes " +
+			"actions and pipelines for matching nodes",
+		Story: "WalkCmdLongDesc is the long description shown in" +
+			" cobra help output for the walk command.",
+		Other: `Navigates a directory tree and executes actions and pipelines for 
+matching nodes. All actions are executed sequentially on a
+single cpu core. This is the simplest and most compatible
+execution mode, but may be slower for large traversals, depending
+on the configured actions and pipelines. Actions support invocation
+of any external command found on PATH, shell built-in function or
+script.
+Use --action or --pipeline to name a config-defined operation.
+`,
+		File: "walk-cmd",
+	},
+
+	// -------------------------------------------------------------------------
+	// run-cmd: Cobra messages
+	// -------------------------------------------------------------------------
+
+	"run-command-short-description": {
+		MessageID:   "run-command-short-description",
+		Seed:        "RunCmdShortDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Navigates a directory tree on a single cpu core",
+		Story: "RootCmdShortDesc is the short description shown in" +
+			" cobra help output for the root command.",
+		Other: "Executes actions and pipelines for matching nodes on a single cpu core",
+		File:  "run-cmd",
+	},
+
+	"run-command-long-description": {
+		MessageID: "run-command-long-description",
+		Seed:      "RunCmdLongDesc",
+		TypeName:  enums.UnderlyingTypeStaticCobra,
+		Description: "Navigates a directory tree on multiple single cpu cores and executes " +
+			"actions and pipelines for matching nodes",
+		Story: "RunCmdLongDesc is the long description shown in" +
+			" cobra help output for the run command.",
+		Other: `Navigates a directory tree and executes actions and pipelines for 
+matching nodes. All actions are executed concurrently on multiple
+cpu cores. All available cpu cores can be utilised by specifying
+the --cpu flag, or a specific set of cores can be targeted using
+the --now flag. The run command is designed to be run when bulk
+processing of a directory tree is required where the configured
+action is heavily IO bound. Actions and pipelines defined for walk
+run in the same way as they do for run.
+Use --action or --pipeline to name a config-defined operation.
+`,
+		File: "run-cmd",
+	},
+
+	// -------------------------------------------------------------------------
+	// shell:Error messages
+	// -------------------------------------------------------------------------
+
+	"psm-set-no-powershell-exe-found.static-error": {
+		MessageID:   "psm-set-no-powershell-exe-found.static-error",
+		Seed:        "PSMSetNoPowerShellExeFound",
+		TypeName:    enums.UnderlyingTypeStaticErrorWrapperMsg,
+		Description: "PSModulePath is set but no PowerShell executable found",
+		Story:       "PSModulePath is set but no PowerShell executable found",
+		Other:       "PSModulePath is set but no PowerShell executable found: '{{.Wrapped}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Wrapped",
+				GoType: "error",
+				Tale:   "The underlying error representing the failure to find a PowerShell executable",
+			},
+		},
+		File: "shell",
+	},
+
+	"cmd-not-found-in-env.dynamic-error": {
+		MessageID:   "cmd-not-found-in-env.dynamic-error",
+		Seed:        "CmdNotFoundInEnv",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Command not found in environment error",
+		Story: "Error returned when a command specified in the config is not " +
+			"found in the current environment",
+		Other: "'{{.Command}}' Not found in current environment",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command that was not found",
+			},
+		},
+		File: "shell",
+	},
+
+	"neither-pwsh-or-powershell-exe-found.static-error": {
+		MessageID:   "neither-pwsh-or-powershell-exe-found.static-error",
+		Seed:        "NeitherPwshOrPowerShellExeFound",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "neither pwsh.exe nor powershell.exe found on PATH",
+		Story:       "neither pwsh.exe nor powershell.exe found on PATH",
+		Other:       "Neither pwsh.exe nor powershell.exe found on PATH",
+		File:        "shell",
+	},
+
+	"cmd-not-found-as-path-binary-or-builtin.dynamic-error": {
+		MessageID: "cmd-not-found-as-path-binary-or-builtin.dynamic-error",
+		Seed:      "CmdNotFoundAsPathBinaryOrBuiltin",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Command not found in environment as a PATH binary" +
+			" or cmd.exe builtin error",
+		Story: "Error returned when a command specified in the config is not " +
+			"found in the current environment as PATH binary or cmd.exe builtin",
+		Other: "'{{.Command}}' Not found in current environment",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command that was not found",
+			},
+		},
+		File: "shell",
+	},
+
+	// -------------------------------------------------------------------------
+	// config: General messages
 	// -------------------------------------------------------------------------
 
 	"using-config-file": {
@@ -86,7 +284,436 @@ var _ = lingo.Underliers{
 				Tale:   "is the name of the config file being used",
 			},
 		},
+		File: "config",
 	},
+
+	// -------------------------------------------------------------------------
+	// config: Error messages
+	// -------------------------------------------------------------------------
+
+	// TODO: rename bedrock errors; shouldn't use bedrock in the name
+	"bedrock-load-viper-setup.static-error": {
+		MessageID: "bedrock-load-viper-setup.static-error",
+		Seed:      "BedrockLoadViperSetup",
+		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
+		Description: "Error returned when viper setup fails" +
+			" during bedrock.Load",
+		Story: "BedrockLoadViperSetup indicates that viper could not" +
+			" be configured during the bedrock.Load call.",
+		Other: "bedrock.Load: viper setup",
+		File:  "config",
+	},
+
+	"bedrock-load-reading-config.static-error": {
+		MessageID: "bedrock-load-reading-config.static-error",
+		Seed:      "BedrockLoadReadingConfig",
+		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
+		Description: "Error returned when reading the config file" +
+			" fails during bedrock.Load",
+		Story: "BedrockLoadReadingConfig indicates that the" +
+			" configuration file could not be read during the" +
+			" bedrock.Load call.",
+		Other: "bedrock.Load: reading config",
+		File:  "config",
+	},
+
+	"bedrock-load-decoding.static-error": {
+		MessageID: "bedrock-load-decoding.static-error",
+		Seed:      "BedrockLoadDecoding",
+		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
+		Description: "Error returned when config decoding fails" +
+			" during bedrock.Load",
+		Story: "BedrockLoadDecoding indicates that the configuration" +
+			" could not be decoded into the target struct during the" +
+			" bedrock.Load call.",
+		Other: "bedrock.Load: decoding",
+		File:  "config",
+	},
+
+	"bedrock-load-validation.static-error": {
+		MessageID: "bedrock-load-validation.static-error",
+		Seed:      "BedrockLoadValidation",
+		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
+		Description: "Error returned when config validation fails" +
+			" during bedrock.Load",
+		Story: "BedrockLoadValidation indicates that the decoded" +
+			" configuration failed validation during the bedrock.Load call.",
+		Other: "bedrock.Load: validation",
+		File:  "config",
+	},
+
+	"unsupported-format.dynamic-error": {
+		MessageID: "unsupported-format.dynamic-error",
+		Seed:      "UnsupportedFormat",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Error returned when an unregistered config" +
+			" format is requested",
+		Story: "UnsupportedFormat indicates that the configuration" +
+			" format requested by the caller has not been registered" +
+			" with the format registry.",
+		Other: "Unsupported format '{{.Format}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Format",
+				GoType: "string",
+				Tale:   "is the unsupported format",
+			},
+		},
+		File: "config",
+	},
+
+	"creating-decoder-for.dynamic-error": {
+		MessageID: "creating-decoder-for.dynamic-error",
+		Seed:      "CreatingDecoderFor",
+		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
+		Description: "Error returned when a mapstructure decoder" +
+			" cannot be created for a config section",
+		Story: "CreatingDecoderFor indicates that a mapstructure" +
+			" decoder could not be constructed for the named" +
+			" configuration section.",
+		Other: "Creating decoder for '{{.Key}}': '{{.Wrapped}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Wrapped",
+				GoType: "error",
+				Tale:   "is the underlying error",
+			},
+			{
+				Note:   "Key",
+				GoType: "string",
+				Tale:   "is the configuration section name",
+			},
+		},
+		File: "config",
+	},
+
+	"decoding-section.dynamic-error": {
+		MessageID: "decoding-section.dynamic-error",
+		Seed:      "DecodingSection",
+		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
+		Description: "Error returned when mapstructure decoding of" +
+			" a config section fails",
+		Story: "DecodingSection indicates that mapstructure failed" +
+			" to decode the named configuration section into its" +
+			" target struct.",
+		Other: "Decoding section '{{.Key}}': '{{.Wrapped}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Wrapped",
+				GoType: "error",
+				Tale:   "is the underlying error",
+			},
+			{
+				Note:   "Key",
+				GoType: "string",
+				Tale:   "is the configuration section name",
+			},
+		},
+		File: "config",
+	},
+
+	"flags-section-unexpected-type.dynamic-error": {
+		MessageID: "flags-section-unexpected-type.dynamic-error",
+		Seed:      "FlagsSectionUnexpectedType",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Error returned when the flags config section" +
+			" has an unexpected type",
+		Story: "FlagsSectionUnexpectedType indicates that the flags" +
+			" section of the configuration file was decoded into an" +
+			" unexpected Go type.",
+		Other: "Flags section has unexpected type '{{.TypeName}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "TypeName",
+				GoType: "string",
+				Tale:   "is the unexpected type",
+			},
+		},
+		File: "config",
+	},
+
+	"action-not-found.dynamic-error": {
+		MessageID:   "action-not-found.dynamic-error",
+		Seed:        "ActionNotFound",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Action not found in config error",
+		Story: "ActionNotFound indicates that an action with the specified" +
+			" name was not found in the traversal configuration.",
+		Other: "Action not found: '{{.Action}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Action",
+				GoType: "string",
+				Tale:   "is the action name that was not found",
+			},
+		},
+		File: "config",
+	},
+
+	"action-has-empty-cmd.dynamic-error": {
+		MessageID:   "action-has-empty-cmd.dynamic-error",
+		Seed:        "ActionHasEmptyCmd",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Action has empty cmd string error",
+		Story: "ActionHasEmptyCmd indicates that an action with the specified" +
+			" name has an empty command string.",
+		Other: "Action has empty cmd string: '{{.Action}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Action",
+				GoType: "string",
+				Tale:   "is the action name that has an empty cmd string",
+			},
+		},
+		File: "config",
+	},
+
+	"pipeline-not-found.dynamic-error": {
+		MessageID:   "pipeline-not-found.dynamic-error",
+		Seed:        "PipelineNotFound",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "Pipeline not found in config error",
+		Story: "PipelineNotFound indicates that a pipeline with the specified" +
+			" name was not found in the traversal configuration.",
+		Other: "Pipeline not found: '{{.Pipeline}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Pipeline",
+				GoType: "string",
+				Tale:   "is the pipeline name that was not found",
+			},
+		},
+		File: "config",
+	},
+
+	// -------------------------------------------------------------------------
+	// filter: Error messages
+	// -------------------------------------------------------------------------
+
+	"filter-is-nil.static-error": {
+		MessageID:   "filter-is-nil.static-error",
+		Seed:        "FilterIsNil",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "filter is nil error",
+		Story: "FilterIsNil indicates that the caller passed a nil" +
+			" filter reference where a concrete filter implementation" +
+			" was required.",
+		Other: "Filter is nil",
+		File:  "filter",
+	},
+
+	"filter-missing-type.static-error": {
+		MessageID:   "filter-missing-type.static-error",
+		Seed:        "FilterMissingType",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "filter missing type",
+		Story: "FilterMissingType indicates that the filter definition" +
+			" is missing a required type field.",
+		Other: "Filter missing type",
+		File:  "filter",
+	},
+
+	"custom-filter-not-supported-for-children.static-error": {
+		MessageID:   "custom-filter-not-supported-for-children.static-error",
+		Seed:        "FilterCustomNotSupported",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "custom filter not supported for children",
+		Story: "FilterCustomNotSupported indicates that custom filters" +
+			" cannot be applied to child nodes in this context.",
+		Other: "Custom filter not supported for children",
+		File:  "filter",
+	},
+
+	"glob-ex-filter-not-supported-for-children.static-error": {
+		MessageID:   "glob-ex-filter-not-supported-for-children.static-error",
+		Seed:        "FilterChildGlobExNotSupported",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "glob-ex filter not supported for children",
+		Story: "FilterChildGlobExNotSupported indicates that glob-ex" +
+			" filters cannot be applied to child nodes in this context.",
+		Other: "Glob-ex filter not supported for children",
+		File:  "filter",
+	},
+
+	"filter-is-undefined.static-error": {
+		MessageID:   "filter-is-undefined.static-error",
+		Seed:        "FilterUndefined",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "filter is undefined error",
+		Story: "FilterUndefined indicates that the filter referenced" +
+			" in the traversal options has not been defined.",
+		Other: "Filter is undefined",
+		File:  "filter",
+	},
+
+	"invalid-extended-glob-pattern.dynamic-error": {
+		MessageID:   "invalid-extended-glob-pattern.dynamic-error",
+		Seed:        "InvalidExtendedGlobPattern",
+		TypeName:    enums.UnderlyingTypeDynamicError,
+		Description: "invalid extended glob pattern",
+		Story:       "InvalidExtendedGlobPattern indicates that the extended glob pattern is invalid.",
+		Other:       "Invalid extended glob pattern: '{{.Pattern}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Pattern",
+				GoType: "string",
+				Tale:   "Is the invalid filter pattern",
+			},
+		},
+		File: "filter",
+	},
+
+	// -------------------------------------------------------------------------
+	// filter: Error messages
+	// -------------------------------------------------------------------------
+
+	"missing-custom-filter-definition.static-error": {
+		MessageID:   "missing-custom-filter-definition.static-error",
+		Seed:        "MissingCustomFilterDefinition",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "config error missing-custom-filter-definition",
+		Story: "MissingCustomFilterDefinition indicates that the" +
+			" traversal configuration references a custom filter but" +
+			" no definition for it was found.",
+		Other: "Missing custom filter definition (config error)",
+		File:  "filter",
+	},
+
+	"invalid-glob-ex-filter-missing-separator.dynamic-error": {
+		MessageID: "invalid-glob-ex-filter-missing-separator" +
+			".dynamic-error",
+		Seed:     "InvalidExtGlobFilterMissingSeparator",
+		TypeName: enums.UnderlyingTypeDynamicError,
+		Description: "invalid glob ex filter definition;" +
+			" pattern is missing separator",
+		Story: "InvalidExtGlobFilterMissingSeparator indicates that" +
+			" an extended glob filter definition is invalid because" +
+			" the pattern is missing the required separator character.",
+		Other: "Extended glob pattern missing separator, pattern: '{{.Pattern}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Pattern",
+				GoType: "string",
+				Tale:   "is the invalid filter pattern",
+			},
+		},
+		File: "filter",
+	},
+
+	"invalid-extended-glob-filter-missing-separator.sentinel-error": {
+		MessageID: "invalid-extended-glob-filter-missing-separator" +
+			".sentinel-error",
+		Seed:     "CoreInvalidExtGlobFilterMissingSeparator",
+		TypeName: enums.UnderlyingTypeSentinelError,
+		Description: "invalid glob ex filter definition;" +
+			" pattern is missing separator",
+		Story: "CoreInvalidExtGlobFilterMissingSeparator is the" +
+			" sentinel core error for an invalid extended glob filter" +
+			" definition. Wrap this error using" +
+			" NewInvalidExtGlobFilterMissingSeparatorError.",
+		Other: "Invalid glob ex filter definition;" +
+			" pattern is missing separator",
+		File: "filter",
+	},
+
+	"poly-filter-is-invalid.static-error": {
+		MessageID:   "poly-filter-is-invalid.static-error",
+		Seed:        "PolyFilterIsInvalid",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "poly filter definition is invalid error",
+		Story: "PolyFilterIsInvalid indicates that a poly filter" +
+			" definition fails validation.",
+		Other: "poly filter definition is invalid",
+		File:  "filter",
+	},
+
+	"failed-to-get-navigator-driver.static-error": {
+		MessageID:   "failed-to-get-navigator-driver.static-error",
+		Seed:        "InternalFailedToGetNavigatorDriver",
+		TypeName:    enums.UnderlyingTypeStaticError,
+		Description: "failed to get navigator driver",
+		Story: "InternalFailedToGetNavigatorDriver indicates an" +
+			" internal failure when resolving the navigator driver." +
+			" This is not expected during normal operation.",
+		Other: "Failed to get navigator driver",
+	},
+
+	// TODO: Need to to check where this is invoked from, may not be required.
+	"invalid-incase-filter-definition.dynamic-error": {
+		MessageID: "invalid-incase-filter-definition.dynamic-error",
+		Seed:      "InvalidInCaseFilterDef",
+		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
+		Description: "invalid incase filter definition; pattern is" +
+			" missing separator wrapper error",
+		Story: "InvalidInCaseFilterDef indicates that a case-insensitive" +
+			" filter definition is invalid because the pattern is missing" +
+			" the required separator.",
+		Other: "'{{.Wrapped}}', pattern: '{{.Pattern}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Wrapped",
+				GoType: "error",
+				Tale:   "is the underlying error",
+			},
+			{
+				Note:   "Pattern",
+				GoType: "string",
+				Tale:   "is the invalid filter pattern",
+			},
+		},
+		File: "filter",
+	},
+
+	// TODO: Need to to check where this is invoked from, may not be required.
+	"invalid-incase-filter-definition.sentinel-error": {
+		MessageID: "invalid-incase-filter-definition.sentinel-error",
+		Seed:      "CoreInvalidInCaseFilterDef",
+		TypeName:  enums.UnderlyingTypeSentinelError,
+		Description: "invalid incase filter definition; pattern is" +
+			" missing separator core error",
+		Story: "CoreInvalidInCaseFilterDef is the sentinel core error" +
+			" for an invalid case-insensitive filter definition. Wrap" +
+			" this error using NewInvalidInCaseFilterDefError.",
+		Other: "Invalid incase filter definition;" +
+			" pattern is missing separator",
+		File: "filter",
+	},
+
+	// -------------------------------------------------------------------------
+	// sample: Error messages
+	// -------------------------------------------------------------------------
+
+	"invalid-file-sampling-spec-missing-files.static-error": {
+		MessageID: "invalid-file-sampling-spec-missing-files.static-error",
+		Seed:      "InvalidFileSamplingSpecMissingFiles",
+		TypeName:  enums.UnderlyingTypeStaticError,
+		Description: "invalid file sampling specification," +
+			" missing no of files",
+		Story: "InvalidFileSamplingSpecMissingFiles indicates that" +
+			" the file sampling specification is invalid because the" +
+			" required number-of-files field is absent.",
+		Other: "Invalid file sampling specification," +
+			" missing no of files",
+		File: "sample",
+	},
+
+	"invalid-file-sampling-spec-missing-directories.static-error": {
+		MessageID: "invalid-file-sampling-spec-missing-directories.static-error",
+		Seed:      "InvalidSamplingSpecMissingDirectories",
+		TypeName:  enums.UnderlyingTypeStaticError,
+		Description: "invalid file sampling specification," +
+			" missing no of directories",
+		Story: "InvalidSamplingSpecMissingDirectories indicates that" +
+			" the file sampling specification is invalid because the" +
+			" required number-of-directories field is absent.",
+		Other: "Invalid file sampling specification," +
+			" missing no of directories",
+		File: "sample",
+	},
+
+	// -------------------------------------------------------------------------
+	// General messages
+	// -------------------------------------------------------------------------
 
 	"node-visited": {
 		MessageID:   "node-visited",
@@ -219,7 +846,7 @@ var _ = lingo.Underliers{
 			{
 				Note:   "Err",
 				GoType: "string",
-				Tale:   "is the error message",
+				Tale:   "Is the error message",
 			},
 		},
 	},
@@ -298,107 +925,25 @@ var _ = lingo.Underliers{
 	// Error messages
 	// -------------------------------------------------------------------------
 
-	"filter-is-nil.static-error": {
-		MessageID:   "filter-is-nil.static-error",
-		Seed:        "FilterIsNil",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "filter is nil error",
-		Story: "FilterIsNil indicates that the caller passed a nil" +
-			" filter reference where a concrete filter implementation" +
-			" was required.",
-		Other: "Filter is nil",
-	},
-
-	"filter-missing-type.static-error": {
-		MessageID:   "filter-missing-type.static-error",
-		Seed:        "FilterMissingType",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "filter missing type",
-		Story: "FilterMissingType indicates that the filter definition" +
-			" is missing a required type field.",
-		Other: "Filter missing type",
-	},
-
-	"custom-filter-not-supported-for-children.static-error": {
-		MessageID: "custom-filter-not-supported-for-children.static-error" +
-			".static-error",
-		Seed:        "FilterCustomNotSupported",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "custom filter not supported for children",
-		Story: "FilterCustomNotSupported indicates that custom filters" +
-			" cannot be applied to child nodes in this context.",
-		Other: "Custom filter not supported for children",
-	},
-
-	"glob-ex-filter-not-supported-for-children.static-error": {
-		MessageID: "glob-ex-filter-not-supported-for-children.static-error" +
-			".static-error",
-		Seed:        "FilterChildGlobExNotSupported",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "glob-ex filter not supported for children",
-		Story: "FilterChildGlobExNotSupported indicates that glob-ex" +
-			" filters cannot be applied to child nodes in this context.",
-		Other: "Glob-ex filter not supported for children",
-	},
-
-	"filter-is-undefined.static-error": {
-		MessageID:   "filter-is-undefined.static-error",
-		Seed:        "FilterUndefined",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "filter is undefined error",
-		Story: "FilterUndefined indicates that the filter referenced" +
-			" in the traversal options has not been defined.",
-		Other: "Filter is undefined",
-	},
-
-	"failed-to-get-navigator-driver.static-error": {
-		MessageID:   "failed-to-get-navigator-driver.static-error",
-		Seed:        "InternalFailedToGetNavigatorDriver",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "failed to get navigator driver",
-		Story: "InternalFailedToGetNavigatorDriver indicates an" +
-			" internal failure when resolving the navigator driver." +
-			" This is not expected during normal operation.",
-		Other: "Failed to get navigator driver",
-	},
-
-	// TODO: Need to to check where this is invoked from, may not be required.
-	"invalid-incase-filter-definition.dynamic-error": {
-		MessageID: "invalid-incase-filter-definition.dynamic-error",
-		Seed:      "InvalidInCaseFilterDef",
-		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
-		Description: "invalid incase filter definition; pattern is" +
-			" missing separator wrapper error",
-		Story: "InvalidInCaseFilterDef indicates that a case-insensitive" +
-			" filter definition is invalid because the pattern is missing" +
-			" the required separator.",
-		Other: "'{{.Wrapped}}', pattern: '{{.Pattern}}'",
+	"pipeline-preflight-failure.dynamic-error": {
+		MessageID:   "pipeline-preflight-failure.dynamic-error",
+		Seed:        "PipelinePreflightFailure",
+		TypeName:    enums.UnderlyingTypeDynamicErrorWrapper,
+		Description: "Error occurred during pipeline preflight checks",
+		Story:       "Error occurred during pipeline preflight checks",
+		Other:       "'{{.Wrapped}}' Preflight check failed for pipeline: '{{.Pipeline}}' ",
 		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Pipeline",
+				GoType: "string",
+				Tale:   "The name of the pipeline for which the preflight check failed",
+			},
 			{
 				Note:   "Wrapped",
 				GoType: "error",
-				Tale:   "is the underlying error",
-			},
-			{
-				Note:   "Pattern",
-				GoType: "string",
-				Tale:   "is the invalid filter pattern",
+				Tale:   "The underlying error that caused the preflight check to fail",
 			},
 		},
-	},
-
-	// TODO: Need to to check where this is invoked from, may not be required.
-	"invalid-incase-filter-definition.sentinel-error": {
-		MessageID: "invalid-incase-filter-definition.sentinel-error",
-		Seed:      "CoreInvalidInCaseFilterDef",
-		TypeName:  enums.UnderlyingTypeSentinelError,
-		Description: "invalid incase filter definition; pattern is" +
-			" missing separator core error",
-		Story: "CoreInvalidInCaseFilterDef is the sentinel core error" +
-			" for an invalid case-insensitive filter definition. Wrap" +
-			" this error using NewInvalidInCaseFilterDefError.",
-		Other: "Invalid incase filter definition;" +
-			" pattern is missing separator",
 	},
 
 	"failed-to-create-worker-pool.static-error": {
@@ -409,90 +954,6 @@ var _ = lingo.Underliers{
 		Story: "WorkerPoolCreationFailed indicates that the worker" +
 			" pool could not be initialised.",
 		Other: "Failed to create worker pool",
-	},
-
-	"invalid-file-sampling-spec-missing-files.static-error": {
-		MessageID: "invalid-file-sampling-spec-missing-files" +
-			".static-error",
-		Seed:     "InvalidFileSamplingSpecMissingFiles",
-		TypeName: enums.UnderlyingTypeStaticError,
-		Description: "invalid file sampling specification," +
-			" missing no of files",
-		Story: "InvalidFileSamplingSpecMissingFiles indicates that" +
-			" the file sampling specification is invalid because the" +
-			" required number-of-files field is absent.",
-		Other: "Invalid file sampling specification," +
-			" missing no of files",
-	},
-
-	"invalid-file-sampling-spec-missing-directories.static-error": {
-		MessageID: "invalid-file-sampling-spec-missing-directories" +
-			".static-error",
-		Seed:     "InvalidSamplingSpecMissingDirectories",
-		TypeName: enums.UnderlyingTypeStaticError,
-		Description: "invalid file sampling specification," +
-			" missing no of directories",
-		Story: "InvalidSamplingSpecMissingDirectories indicates that" +
-			" the file sampling specification is invalid because the" +
-			" required number-of-directories field is absent.",
-		Other: "Invalid file sampling specification," +
-			" missing no of directories",
-	},
-
-	"missing-custom-filter-definition.static-error": {
-		MessageID:   "missing-custom-filter-definition.static-error",
-		Seed:        "MissingCustomFilterDefinition",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "config error missing-custom-filter-definition",
-		Story: "MissingCustomFilterDefinition indicates that the" +
-			" traversal configuration references a custom filter but" +
-			" no definition for it was found.",
-		Other: "Missing custom filter definition (config error)",
-	},
-
-	"invalid-glob-ex-filter-missing-separator.dynamic-error": {
-		MessageID: "invalid-glob-ex-filter-missing-separator" +
-			".dynamic-error",
-		Seed:     "InvalidExtGlobFilterMissingSeparator",
-		TypeName: enums.UnderlyingTypeDynamicError,
-		Description: "invalid glob ex filter definition;" +
-			" pattern is missing separator",
-		Story: "InvalidExtGlobFilterMissingSeparator indicates that" +
-			" an extended glob filter definition is invalid because" +
-			" the pattern is missing the required separator character.",
-		Other: "Extended glob pattern missing separator, pattern: '{{.Pattern}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Pattern",
-				GoType: "string",
-				Tale:   "is the invalid filter pattern",
-			},
-		},
-	},
-
-	"invalid-extended-glob-filter-missing-separator.sentinel-error": {
-		MessageID: "invalid-extended-glob-filter-missing-separator" +
-			".sentinel-error",
-		Seed:     "CoreInvalidExtGlobFilterMissingSeparator",
-		TypeName: enums.UnderlyingTypeSentinelError,
-		Description: "invalid glob ex filter definition;" +
-			" pattern is missing separator",
-		Story: "CoreInvalidExtGlobFilterMissingSeparator is the" +
-			" sentinel core error for an invalid extended glob filter" +
-			" definition. Wrap this error using" +
-			" NewInvalidExtGlobFilterMissingSeparatorError.",
-		Other: "Invalid glob ex filter definition;" +
-			" pattern is missing separator",
-	},
-
-	"poly-filter-is-invalid.static-error": {
-		MessageID:   "poly-filter-is-invalid.static-error",
-		Seed:        "PolyFilterIsInvalid",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "poly filter definition is invalid error",
-		Story: "PolyFilterIsInvalid indicates that a poly filter" +
-			" definition fails validation.",
-		Other: "poly filter definition is invalid",
 	},
 
 	"usage-missing-tree-path.static-error": {
@@ -638,139 +1099,6 @@ var _ = lingo.Underliers{
 		Other: "Invalid resume strategy, must be one of: [spawn, fast]",
 	},
 
-	// TODO: rename bedrock errors; shouldn't use bedrock in the name
-	"bedrock-load-viper-setup.jaywalk.static-error": {
-		MessageID: "bedrock-load-viper-setup.jaywalk.static-error",
-		Seed:      "BedrockLoadViperSetup",
-		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
-		Description: "Error returned when viper setup fails" +
-			" during bedrock.Load",
-		Story: "BedrockLoadViperSetup indicates that viper could not" +
-			" be configured during the bedrock.Load call.",
-		Other: "bedrock.Load: viper setup",
-	},
-
-	"bedrock-load-reading-config.jaywalk.static-error": {
-		MessageID: "bedrock-load-reading-config.jaywalk.static-error",
-		Seed:      "BedrockLoadReadingConfig",
-		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
-		Description: "Error returned when reading the config file" +
-			" fails during bedrock.Load",
-		Story: "BedrockLoadReadingConfig indicates that the" +
-			" configuration file could not be read during the" +
-			" bedrock.Load call.",
-		Other: "bedrock.Load: reading config",
-	},
-
-	"bedrock-load-decoding.jaywalk.static-error": {
-		MessageID: "bedrock-load-decoding.jaywalk.static-error",
-		Seed:      "BedrockLoadDecoding",
-		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
-		Description: "Error returned when config decoding fails" +
-			" during bedrock.Load",
-		Story: "BedrockLoadDecoding indicates that the configuration" +
-			" could not be decoded into the target struct during the" +
-			" bedrock.Load call.",
-		Other: "bedrock.Load: decoding",
-	},
-
-	"bedrock-load-validation.jaywalk.static-error": {
-		MessageID: "bedrock-load-validation.jaywalk.static-error",
-		Seed:      "BedrockLoadValidation",
-		TypeName:  enums.UnderlyingTypeStaticErrorWrapper,
-		Description: "Error returned when config validation fails" +
-			" during bedrock.Load",
-		Story: "BedrockLoadValidation indicates that the decoded" +
-			" configuration failed validation during the bedrock.Load call.",
-		Other: "bedrock.Load: validation",
-	},
-
-	"unsupported-format.jaywalk.dynamic-error": {
-		MessageID: "unsupported-format.jaywalk.dynamic-error",
-		Seed:      "UnsupportedFormat",
-		TypeName:  enums.UnderlyingTypeDynamicError,
-		Description: "Error returned when an unregistered config" +
-			" format is requested",
-		Story: "UnsupportedFormat indicates that the configuration" +
-			" format requested by the caller has not been registered" +
-			" with the format registry.",
-		Other: "Unsupported format '{{.Format}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Format",
-				GoType: "string",
-				Tale:   "is the unsupported format",
-			},
-		},
-	},
-
-	"creating-decoder-for.jaywalk.dynamic-error": {
-		MessageID: "creating-decoder-for.jaywalk.dynamic-error",
-		Seed:      "CreatingDecoderFor",
-		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
-		Description: "Error returned when a mapstructure decoder" +
-			" cannot be created for a config section",
-		Story: "CreatingDecoderFor indicates that a mapstructure" +
-			" decoder could not be constructed for the named" +
-			" configuration section.",
-		Other: "Creating decoder for '{{.Key}}': '{{.Wrapped}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Wrapped",
-				GoType: "error",
-				Tale:   "is the underlying error",
-			},
-			{
-				Note:   "Key",
-				GoType: "string",
-				Tale:   "is the configuration section name",
-			},
-		},
-	},
-
-	"decoding-section.jaywalk.dynamic-error": {
-		MessageID: "decoding-section.jaywalk.dynamic-error",
-		Seed:      "DecodingSection",
-		TypeName:  enums.UnderlyingTypeDynamicErrorWrapper,
-		Description: "Error returned when mapstructure decoding of" +
-			" a config section fails",
-		Story: "DecodingSection indicates that mapstructure failed" +
-			" to decode the named configuration section into its" +
-			" target struct.",
-		Other: "Decoding section '{{.Key}}': '{{.Wrapped}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Wrapped",
-				GoType: "error",
-				Tale:   "is the underlying error",
-			},
-			{
-				Note:   "Key",
-				GoType: "string",
-				Tale:   "is the configuration section name",
-			},
-		},
-	},
-
-	"flags-section-unexpected-type.jaywalk.dynamic-error": {
-		MessageID: "flags-section-unexpected-type.jaywalk.dynamic-error",
-		Seed:      "FlagsSectionUnexpectedType",
-		TypeName:  enums.UnderlyingTypeDynamicError,
-		Description: "Error returned when the flags config section" +
-			" has an unexpected type",
-		Story: "FlagsSectionUnexpectedType indicates that the flags" +
-			" section of the configuration file was decoded into an" +
-			" unexpected Go type.",
-		Other: "Flags section has unexpected type '{{.TypeName}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "TypeName",
-				GoType: "string",
-				Tale:   "is the unexpected type",
-			},
-		},
-	},
-
 	"traversal-saved.dynamic-error": {
 		MessageID: "traversal-saved.dynamic-error",
 		Seed:      "TraversalSaved",
@@ -816,105 +1144,43 @@ var _ = lingo.Underliers{
 		},
 	},
 
-	"action-not-found.dynamic-error": {
-		MessageID:   "action-not-found.dynamic-error",
-		Seed:        "ActionNotFound",
+	"invalid-resume-value.dynamic-error": {
+		MessageID:   "invalid-resume-value.dynamic-error",
+		Seed:        "InvalidResumeValue",
 		TypeName:    enums.UnderlyingTypeDynamicError,
-		Description: "Action not found in config error",
-		Story: "ActionNotFound indicates that an action with the specified" +
-			" name was not found in the traversal configuration.",
-		Other: "Action not found: '{{.Action}}'",
+		Description: "Invalid resume value format error",
+		Story: "InvalidResumeValue indicates that the resume value supplied by the caller" +
+			" is not in a valid value.",
+		Other: "Invalid resume value, actual: '{{.Actual}}', must be: {{.Values}}",
 		Fields: []lingo.UnderlyingField{
 			{
-				Note:   "Action",
+				Note:   "Actual",
 				GoType: "string",
-				Tale:   "is the action name that was not found",
+				Tale:   "The resume value provided",
 			},
-		},
-	},
-
-	"pipeline-not-found.dynamic-error": {
-		MessageID:   "pipeline-not-found.dynamic-error",
-		Seed:        "PipelineNotFound",
-		TypeName:    enums.UnderlyingTypeDynamicError,
-		Description: "Pipeline not found in config error",
-		Story: "PipelineNotFound indicates that a pipeline with the specified" +
-			" name was not found in the traversal configuration.",
-		Other: "Pipeline not found: '{{.Pipeline}}'",
-		Fields: []lingo.UnderlyingField{
 			{
-				Note:   "Pipeline",
+				Note:   "Values",
 				GoType: "string",
-				Tale:   "is the pipeline name that was not found",
+				Tale:   "The valid values for resume, composed together, probably as CSV",
 			},
 		},
 	},
 
-	// -------------------------------------------------------------------------
-	// shell:Error messages
-	// -------------------------------------------------------------------------
-
-	"psm-set-no-powershell-exe-found.static-error": {
-		MessageID:   "psm-set-no-powershell-exe-found.static-error",
-		Seed:        "PSMSetNoPowerShellExeFound",
-		TypeName:    enums.UnderlyingTypeStaticErrorWrapperMsg,
-		Description: "PSModulePath is set but no PowerShell executable found",
-		Story:       "PSModulePath is set but no PowerShell executable found",
-		Other:       "PSModulePath is set but no PowerShell executable found: '{{.Wrapped}}'",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Wrapped",
-				GoType: "error",
-				Tale:   "The underlying error representing the failure to find a PowerShell executable",
-			},
-		},
-		File: "shell",
+	"prohibitive.word": {
+		MessageID:   "prohibitive.word",
+		Seed:        "Prohibitive",
+		TypeName:    enums.UnderlyingTypeStaticGeneral,
+		Description: "Word: prohibitive",
+		Story:       "Word: prohibitive",
+		Other:       "prohibitive",
 	},
 
-	"cmd-not-found-in-env.dynamic-error": {
-		MessageID:   "cmd-not-found-in-env.dynamic-error",
-		Seed:        "CmdNotFoundInEnv",
-		TypeName:    enums.UnderlyingTypeDynamicError,
-		Description: "Command not found in environment error",
-		Story: "Error returned when a command specified in the config is not " +
-			"found in the current environment",
-		Other: "'{{.Command}}' Not found in current environment",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Command",
-				GoType: "string",
-				Tale:   "The command that was not found",
-			},
-		},
-		File: "shell",
-	},
-
-	"neither-pwsh-or-powershell-exe-found.static-error": {
-		MessageID:   "neither-pwsh-or-powershell-exe-found.static-error",
-		Seed:        "NeitherPwshOrPowerShellExeFound",
-		TypeName:    enums.UnderlyingTypeStaticError,
-		Description: "neither pwsh.exe nor powershell.exe found on PATH",
-		Story:       "neither pwsh.exe nor powershell.exe found on PATH",
-		Other:       "Neither pwsh.exe nor powershell.exe found on PATH",
-		File:        "shell",
-	},
-
-	"cmd-not-found-as-path-binary-or-builtin.dynamic-error": {
-		MessageID: "cmd-not-found-as-path-binary-or-builtin.dynamic-error",
-		Seed:      "CmdNotFoundAsPathBinaryOrBuiltin",
-		TypeName:  enums.UnderlyingTypeDynamicError,
-		Description: "Command not found in environment as a PATH binary" +
-			" or cmd.exe builtin error",
-		Story: "Error returned when a command specified in the config is not " +
-			"found in the current environment as PATH binary or cmd.exe builtin",
-		Other: "'{{.Command}}' Not found in current environment",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Command",
-				GoType: "string",
-				Tale:   "The command that was not found",
-			},
-		},
-		File: "shell",
+	"permissive.word": {
+		MessageID:   "permissive.word",
+		Seed:        "Permissive",
+		TypeName:    enums.UnderlyingTypeStaticGeneral,
+		Description: "Word: permissive",
+		Story:       "Word: permissive",
+		Other:       "permissive",
 	},
 }

@@ -67,7 +67,7 @@ func (td RootCmdLangUsageTemplData) Message() *i18n.Message {
 // root command.
 // =============================================================================
 
-// RootCmdLongDescTemplData long description for the root command.
+// RootCmdLongDescTemplData Navigates a directory tree and shows matching nodes.
 type RootCmdLongDescTemplData struct {
 	agenorTemplData
 }
@@ -76,13 +76,10 @@ type RootCmdLongDescTemplData struct {
 func (td RootCmdLongDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "root-command-long-description",
-		Description: "long description for the root command",
-		Other: `A longer description that spans multiple lines and likely contains
-		examples and usage of using your application. For example:
-
-		Cobra is a CLI library for Go that empowers applications.
-		This application is a tool to generate the needed files
-		to quickly create a Cobra application.`,
+		Description: "Navigates a directory tree and shows matching nodes",
+		Other: `Navigates a directory tree and shows matching nodes. The root command
+does not take any action for each visited node. It is simply a visualiser for
+traversal.`,
 	}
 }
 
@@ -93,7 +90,7 @@ func (td RootCmdLongDescTemplData) Message() *i18n.Message {
 // root command.
 // =============================================================================
 
-// RootCmdShortDescTemplData short description for the root command.
+// RootCmdShortDescTemplData Navigates a directory tree.
 type RootCmdShortDescTemplData struct {
 	agenorTemplData
 }
@@ -102,7 +99,7 @@ type RootCmdShortDescTemplData struct {
 func (td RootCmdShortDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "root-command-short-description",
-		Description: "short description for the root command",
-		Other:       "A brief description of your application",
+		Description: "Navigates a directory tree",
+		Other:       "Navigates a directory tree",
 	}
 }

@@ -10,317 +10,6 @@ import (
 )
 
 // =============================================================================
-// ❌ ActionNotFound
-//
-// ActionNotFound indicates that an action with the specified name was not found
-// in the traversal configuration.
-// =============================================================================
-
-// ActionNotFoundTemplData Action not found in config error.
-type ActionNotFoundTemplData struct {
-	agenorTemplData
-	// Action is the action name that was not found
-	Action string
-}
-
-// Message creates a new i18n message using the template data.
-func (td ActionNotFoundTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "action-not-found.dynamic-error",
-		Description: "Action not found in config error",
-		Other:       "Action not found: '{{.Action}}'",
-	}
-}
-
-// ActionNotFoundError Action not found in config error.
-type ActionNotFoundError struct {
-	li18ngo.LocalisableError
-	ActionNotFoundTemplData
-}
-
-// NewActionNotFoundError creates a new ActionNotFoundError.
-func NewActionNotFoundError(action string) error {
-	td := ActionNotFoundTemplData{
-		agenorTemplData: agenorTemplData{},
-		Action:          action,
-	}
-	return &ActionNotFoundError{
-		LocalisableError:        li18ngo.LocalisableError{Data: td},
-		ActionNotFoundTemplData: td,
-	}
-}
-
-// =============================================================================
-// ❌ BedrockLoadDecoding
-//
-// BedrockLoadDecoding indicates that the configuration could not be decoded
-// into the target struct during the bedrock.Load call.
-// =============================================================================
-
-// BedrockLoadDecodingErrorTemplData Error returned when config decoding fails
-// during bedrock.Load.
-type BedrockLoadDecodingErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td BedrockLoadDecodingErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "bedrock-load-decoding.jaywalk.static-error",
-		Description: "Error returned when config decoding fails during bedrock.Load",
-		Other:       "bedrock.Load: decoding",
-	}
-}
-
-// BedrockLoadDecodingError Error returned when config decoding fails during
-// bedrock.Load.
-type BedrockLoadDecodingError struct {
-	li18ngo.LocalisableError
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e BedrockLoadDecodingError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e BedrockLoadDecodingError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewBedrockLoadDecodingError creates a new BedrockLoadDecodingError wrapping
-// wrapped.
-func NewBedrockLoadDecodingError(wrapped error) error {
-	return &BedrockLoadDecodingError{
-		LocalisableError: li18ngo.LocalisableError{Data: BedrockLoadDecodingErrorTemplData{}},
-		wrapped:          wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ BedrockLoadReadingConfig
-//
-// BedrockLoadReadingConfig indicates that the configuration file could not be
-// read during the bedrock.Load call.
-// =============================================================================
-
-// BedrockLoadReadingConfigErrorTemplData Error returned when reading the config
-// file fails during bedrock.Load.
-type BedrockLoadReadingConfigErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td BedrockLoadReadingConfigErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "bedrock-load-reading-config.jaywalk.static-error",
-		Description: "Error returned when reading the config file fails during bedrock.Load",
-		Other:       "bedrock.Load: reading config",
-	}
-}
-
-// BedrockLoadReadingConfigError Error returned when reading the config file
-// fails during bedrock.Load.
-type BedrockLoadReadingConfigError struct {
-	li18ngo.LocalisableError
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e BedrockLoadReadingConfigError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e BedrockLoadReadingConfigError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewBedrockLoadReadingConfigError creates a new BedrockLoadReadingConfigError
-// wrapping wrapped.
-func NewBedrockLoadReadingConfigError(wrapped error) error {
-	return &BedrockLoadReadingConfigError{
-		LocalisableError: li18ngo.LocalisableError{Data: BedrockLoadReadingConfigErrorTemplData{}},
-		wrapped:          wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ BedrockLoadValidation
-//
-// BedrockLoadValidation indicates that the decoded configuration failed
-// validation during the bedrock.Load call.
-// =============================================================================
-
-// BedrockLoadValidationErrorTemplData Error returned when config validation
-// fails during bedrock.Load.
-type BedrockLoadValidationErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td BedrockLoadValidationErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "bedrock-load-validation.jaywalk.static-error",
-		Description: "Error returned when config validation fails during bedrock.Load",
-		Other:       "bedrock.Load: validation",
-	}
-}
-
-// BedrockLoadValidationError Error returned when config validation fails during
-// bedrock.Load.
-type BedrockLoadValidationError struct {
-	li18ngo.LocalisableError
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e BedrockLoadValidationError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e BedrockLoadValidationError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewBedrockLoadValidationError creates a new BedrockLoadValidationError
-// wrapping wrapped.
-func NewBedrockLoadValidationError(wrapped error) error {
-	return &BedrockLoadValidationError{
-		LocalisableError: li18ngo.LocalisableError{Data: BedrockLoadValidationErrorTemplData{}},
-		wrapped:          wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ BedrockLoadViperSetup
-//
-// BedrockLoadViperSetup indicates that viper could not be configured during the
-// bedrock.Load call.
-// =============================================================================
-
-// BedrockLoadViperSetupErrorTemplData Error returned when viper setup fails
-// during bedrock.Load.
-type BedrockLoadViperSetupErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td BedrockLoadViperSetupErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "bedrock-load-viper-setup.jaywalk.static-error",
-		Description: "Error returned when viper setup fails during bedrock.Load",
-		Other:       "bedrock.Load: viper setup",
-	}
-}
-
-// BedrockLoadViperSetupError Error returned when viper setup fails during
-// bedrock.Load.
-type BedrockLoadViperSetupError struct {
-	li18ngo.LocalisableError
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e BedrockLoadViperSetupError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e BedrockLoadViperSetupError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewBedrockLoadViperSetupError creates a new BedrockLoadViperSetupError
-// wrapping wrapped.
-func NewBedrockLoadViperSetupError(wrapped error) error {
-	return &BedrockLoadViperSetupError{
-		LocalisableError: li18ngo.LocalisableError{Data: BedrockLoadViperSetupErrorTemplData{}},
-		wrapped:          wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ CoreInvalidExtGlobFilterMissingSeparator
-//
-// CoreInvalidExtGlobFilterMissingSeparator is the sentinel core error for an
-// invalid extended glob filter definition. Wrap this error using
-// NewInvalidExtGlobFilterMissingSeparatorError.
-// =============================================================================
-
-// CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData invalid glob ex filter
-// definition; pattern is missing separator.
-type CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-extended-glob-filter-missing-separator.sentinel-error",
-		Description: "invalid glob ex filter definition; pattern is missing separator",
-		Other:       "Invalid glob ex filter definition; pattern is missing separator",
-	}
-}
-
-// CoreInvalidExtGlobFilterMissingSeparatorError invalid glob ex filter
-// definition; pattern is missing separator.
-// Use errors.Is(err, locale.ErrCoreInvalidExtGlobFilterMissingSeparator) to
-// test for this error.
-type CoreInvalidExtGlobFilterMissingSeparatorError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrCoreInvalidExtGlobFilterMissingSeparator is the exported sentinel for
-// CoreInvalidExtGlobFilterMissingSeparatorError.
-var ErrCoreInvalidExtGlobFilterMissingSeparator = CoreInvalidExtGlobFilterMissingSeparatorError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: CoreInvalidExtGlobFilterMissingSeparatorErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ CoreInvalidInCaseFilterDef
-//
-// CoreInvalidInCaseFilterDef is the sentinel core error for an invalid
-// case-insensitive filter definition. Wrap this error using
-// NewInvalidInCaseFilterDefError.
-// =============================================================================
-
-// CoreInvalidInCaseFilterDefErrorTemplData invalid incase filter definition;
-// pattern is missing separator core error.
-type CoreInvalidInCaseFilterDefErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td CoreInvalidInCaseFilterDefErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-incase-filter-definition.sentinel-error",
-		Description: "invalid incase filter definition; pattern is missing separator core error",
-		Other:       "Invalid incase filter definition; pattern is missing separator",
-	}
-}
-
-// CoreInvalidInCaseFilterDefError invalid incase filter definition; pattern is
-// missing separator core error.
-// Use errors.Is(err, locale.ErrCoreInvalidInCaseFilterDef) to test for this
-// error.
-type CoreInvalidInCaseFilterDefError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrCoreInvalidInCaseFilterDef is the exported sentinel for
-// CoreInvalidInCaseFilterDefError.
-var ErrCoreInvalidInCaseFilterDef = CoreInvalidInCaseFilterDefError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: CoreInvalidInCaseFilterDefErrorTemplData{},
-	},
-}
-
-// =============================================================================
 // ❌ CorePanicOccurred
 //
 // CorePanicOccurred is the sentinel core error indicating that a panic was
@@ -391,339 +80,6 @@ var ErrCoreResumeFsMismatch = CoreResumeFsMismatchError{
 }
 
 // =============================================================================
-// ❌ CreatingDecoderFor
-//
-// CreatingDecoderFor indicates that a mapstructure decoder could not be
-// constructed for the named configuration section.
-// =============================================================================
-
-// CreatingDecoderForTemplData Error returned when a mapstructure decoder cannot
-// be created for a config section.
-type CreatingDecoderForTemplData struct {
-	agenorTemplData
-	// Key is the configuration section name
-	Key string
-	// Wrapped is the string representation of the wrapped error,
-	// used for go-i18n template interpolation via {{ .Wrapped }}.
-	Wrapped string
-}
-
-// Message creates a new i18n message using the template data.
-func (td CreatingDecoderForTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "creating-decoder-for.jaywalk.dynamic-error",
-		Description: "Error returned when a mapstructure decoder cannot be created for a config section",
-		Other:       "Creating decoder for '{{.Key}}': '{{.Wrapped}}'",
-	}
-}
-
-// CreatingDecoderForError Error returned when a mapstructure decoder cannot be
-// created for a config section.
-type CreatingDecoderForError struct {
-	li18ngo.LocalisableError
-	CreatingDecoderForTemplData
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e CreatingDecoderForError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e CreatingDecoderForError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewCreatingDecoderForError creates a new CreatingDecoderForError wrapping
-// wrapped.
-func NewCreatingDecoderForError(wrapped error, key string) error {
-	td := CreatingDecoderForTemplData{
-		agenorTemplData: agenorTemplData{},
-		Key:             key,
-		Wrapped:         wrapped.Error(),
-	}
-	return &CreatingDecoderForError{
-		LocalisableError:            li18ngo.LocalisableError{Data: td},
-		CreatingDecoderForTemplData: td,
-		wrapped:                     wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ DecodingSection
-//
-// DecodingSection indicates that mapstructure failed to decode the named
-// configuration section into its target struct.
-// =============================================================================
-
-// DecodingSectionTemplData Error returned when mapstructure decoding of a
-// config section fails.
-type DecodingSectionTemplData struct {
-	agenorTemplData
-	// Key is the configuration section name
-	Key string
-	// Wrapped is the string representation of the wrapped error,
-	// used for go-i18n template interpolation via {{ .Wrapped }}.
-	Wrapped string
-}
-
-// Message creates a new i18n message using the template data.
-func (td DecodingSectionTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "decoding-section.jaywalk.dynamic-error",
-		Description: "Error returned when mapstructure decoding of a config section fails",
-		Other:       "Decoding section '{{.Key}}': '{{.Wrapped}}'",
-	}
-}
-
-// DecodingSectionError Error returned when mapstructure decoding of a config
-// section fails.
-type DecodingSectionError struct {
-	li18ngo.LocalisableError
-	DecodingSectionTemplData
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e DecodingSectionError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e DecodingSectionError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewDecodingSectionError creates a new DecodingSectionError wrapping wrapped.
-func NewDecodingSectionError(wrapped error, key string) error {
-	td := DecodingSectionTemplData{
-		agenorTemplData: agenorTemplData{},
-		Key:             key,
-		Wrapped:         wrapped.Error(),
-	}
-	return &DecodingSectionError{
-		LocalisableError:         li18ngo.LocalisableError{Data: td},
-		DecodingSectionTemplData: td,
-		wrapped:                  wrapped,
-	}
-}
-
-// =============================================================================
-// ❌ FilterChildGlobExNotSupported
-//
-// FilterChildGlobExNotSupported indicates that glob-ex filters cannot be
-// applied to child nodes in this context.
-// =============================================================================
-
-// FilterChildGlobExNotSupportedErrorTemplData glob-ex filter not supported for
-// children.
-type FilterChildGlobExNotSupportedErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td FilterChildGlobExNotSupportedErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "glob-ex-filter-not-supported-for-children.static-error.static-error",
-		Description: "glob-ex filter not supported for children",
-		Other:       "Glob-ex filter not supported for children",
-	}
-}
-
-// FilterChildGlobExNotSupportedError glob-ex filter not supported for children.
-type FilterChildGlobExNotSupportedError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrFilterChildGlobExNotSupported is the exported sentinel error for
-// FilterChildGlobExNotSupportedError.
-var ErrFilterChildGlobExNotSupported = FilterChildGlobExNotSupportedError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: FilterChildGlobExNotSupportedErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ FilterCustomNotSupported
-//
-// FilterCustomNotSupported indicates that custom filters cannot be applied to
-// child nodes in this context.
-// =============================================================================
-
-// FilterCustomNotSupportedErrorTemplData custom filter not supported for
-// children.
-type FilterCustomNotSupportedErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td FilterCustomNotSupportedErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "custom-filter-not-supported-for-children.static-error.static-error",
-		Description: "custom filter not supported for children",
-		Other:       "Custom filter not supported for children",
-	}
-}
-
-// FilterCustomNotSupportedError custom filter not supported for children.
-type FilterCustomNotSupportedError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrFilterCustomNotSupported is the exported sentinel error for
-// FilterCustomNotSupportedError.
-var ErrFilterCustomNotSupported = FilterCustomNotSupportedError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: FilterCustomNotSupportedErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ FilterIsNil
-//
-// FilterIsNil indicates that the caller passed a nil filter reference where a
-// concrete filter implementation was required.
-// =============================================================================
-
-// FilterIsNilErrorTemplData filter is nil error.
-type FilterIsNilErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td FilterIsNilErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "filter-is-nil.static-error",
-		Description: "filter is nil error",
-		Other:       "Filter is nil",
-	}
-}
-
-// FilterIsNilError filter is nil error.
-type FilterIsNilError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrFilterIsNil is the exported sentinel error for FilterIsNilError.
-var ErrFilterIsNil = FilterIsNilError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: FilterIsNilErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ FilterMissingType
-//
-// FilterMissingType indicates that the filter definition is missing a required
-// type field.
-// =============================================================================
-
-// FilterMissingTypeErrorTemplData filter missing type.
-type FilterMissingTypeErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td FilterMissingTypeErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "filter-missing-type.static-error",
-		Description: "filter missing type",
-		Other:       "Filter missing type",
-	}
-}
-
-// FilterMissingTypeError filter missing type.
-type FilterMissingTypeError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrFilterMissingType is the exported sentinel error for
-// FilterMissingTypeError.
-var ErrFilterMissingType = FilterMissingTypeError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: FilterMissingTypeErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ FilterUndefined
-//
-// FilterUndefined indicates that the filter referenced in the traversal options
-// has not been defined.
-// =============================================================================
-
-// FilterUndefinedErrorTemplData filter is undefined error.
-type FilterUndefinedErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td FilterUndefinedErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "filter-is-undefined.static-error",
-		Description: "filter is undefined error",
-		Other:       "Filter is undefined",
-	}
-}
-
-// FilterUndefinedError filter is undefined error.
-type FilterUndefinedError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrFilterUndefined is the exported sentinel error for FilterUndefinedError.
-var ErrFilterUndefined = FilterUndefinedError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: FilterUndefinedErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ FlagsSectionUnexpectedType
-//
-// FlagsSectionUnexpectedType indicates that the flags section of the
-// configuration file was decoded into an unexpected Go type.
-// =============================================================================
-
-// FlagsSectionUnexpectedTypeTemplData Error returned when the flags config
-// section has an unexpected type.
-type FlagsSectionUnexpectedTypeTemplData struct {
-	agenorTemplData
-	// TypeName is the unexpected type
-	TypeName string
-}
-
-// Message creates a new i18n message using the template data.
-func (td FlagsSectionUnexpectedTypeTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "flags-section-unexpected-type.jaywalk.dynamic-error",
-		Description: "Error returned when the flags config section has an unexpected type",
-		Other:       "Flags section has unexpected type '{{.TypeName}}'",
-	}
-}
-
-// FlagsSectionUnexpectedTypeError Error returned when the flags config section
-// has an unexpected type.
-type FlagsSectionUnexpectedTypeError struct {
-	li18ngo.LocalisableError
-	FlagsSectionUnexpectedTypeTemplData
-}
-
-// NewFlagsSectionUnexpectedTypeError creates a new
-// FlagsSectionUnexpectedTypeError.
-func NewFlagsSectionUnexpectedTypeError(typeName string) error {
-	td := FlagsSectionUnexpectedTypeTemplData{
-		agenorTemplData: agenorTemplData{},
-		TypeName:        typeName,
-	}
-	return &FlagsSectionUnexpectedTypeError{
-		LocalisableError:                    li18ngo.LocalisableError{Data: td},
-		FlagsSectionUnexpectedTypeTemplData: td,
-	}
-}
-
-// =============================================================================
 // ❌ IDGeneratorFuncCantBeNil
 //
 // IDGeneratorFuncCantBeNil indicates that a nil function was supplied where an
@@ -791,148 +147,6 @@ var ErrInternalFailedToGetNavigatorDriver = InternalFailedToGetNavigatorDriverEr
 	LocalisableError: li18ngo.LocalisableError{
 		Data: InternalFailedToGetNavigatorDriverErrorTemplData{},
 	},
-}
-
-// =============================================================================
-// ❌ InvalidExtGlobFilterMissingSeparator
-//
-// InvalidExtGlobFilterMissingSeparator indicates that an extended glob filter
-// definition is invalid because the pattern is missing the required separator
-// character.
-// =============================================================================
-
-// InvalidExtGlobFilterMissingSeparatorTemplData invalid glob ex filter
-// definition; pattern is missing separator.
-type InvalidExtGlobFilterMissingSeparatorTemplData struct {
-	agenorTemplData
-	// Pattern is the invalid filter pattern
-	Pattern string
-}
-
-// Message creates a new i18n message using the template data.
-func (td InvalidExtGlobFilterMissingSeparatorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-glob-ex-filter-missing-separator.dynamic-error",
-		Description: "invalid glob ex filter definition; pattern is missing separator",
-		Other:       "Extended glob pattern missing separator, pattern: '{{.Pattern}}'",
-	}
-}
-
-// InvalidExtGlobFilterMissingSeparatorError invalid glob ex filter definition;
-// pattern is missing separator.
-type InvalidExtGlobFilterMissingSeparatorError struct {
-	li18ngo.LocalisableError
-	InvalidExtGlobFilterMissingSeparatorTemplData
-}
-
-// NewInvalidExtGlobFilterMissingSeparatorError creates a new
-// InvalidExtGlobFilterMissingSeparatorError.
-func NewInvalidExtGlobFilterMissingSeparatorError(pattern string) error {
-	td := InvalidExtGlobFilterMissingSeparatorTemplData{
-		agenorTemplData: agenorTemplData{},
-		Pattern:         pattern,
-	}
-	return &InvalidExtGlobFilterMissingSeparatorError{
-		LocalisableError: li18ngo.LocalisableError{Data: td},
-		InvalidExtGlobFilterMissingSeparatorTemplData: td,
-	}
-}
-
-// =============================================================================
-// ❌ InvalidFileSamplingSpecMissingFiles
-//
-// InvalidFileSamplingSpecMissingFiles indicates that the file sampling
-// specification is invalid because the required number-of-files field is
-// absent.
-// =============================================================================
-
-// InvalidFileSamplingSpecMissingFilesErrorTemplData invalid file sampling
-// specification, missing no of files.
-type InvalidFileSamplingSpecMissingFilesErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td InvalidFileSamplingSpecMissingFilesErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-files.static-error",
-		Description: "invalid file sampling specification, missing no of files",
-		Other:       "Invalid file sampling specification, missing no of files",
-	}
-}
-
-// InvalidFileSamplingSpecMissingFilesError invalid file sampling specification,
-// missing no of files.
-type InvalidFileSamplingSpecMissingFilesError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrInvalidFileSamplingSpecMissingFiles is the exported sentinel error for
-// InvalidFileSamplingSpecMissingFilesError.
-var ErrInvalidFileSamplingSpecMissingFiles = InvalidFileSamplingSpecMissingFilesError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidFileSamplingSpecMissingFilesErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ InvalidInCaseFilterDef
-//
-// InvalidInCaseFilterDef indicates that a case-insensitive filter definition is
-// invalid because the pattern is missing the required separator.
-// =============================================================================
-
-// InvalidInCaseFilterDefTemplData invalid incase filter definition; pattern is
-// missing separator wrapper error.
-type InvalidInCaseFilterDefTemplData struct {
-	agenorTemplData
-	// Pattern is the invalid filter pattern
-	Pattern string
-	// Wrapped is the string representation of the wrapped error,
-	// used for go-i18n template interpolation via {{ .Wrapped }}.
-	Wrapped string
-}
-
-// Message creates a new i18n message using the template data.
-func (td InvalidInCaseFilterDefTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "invalid-incase-filter-definition.dynamic-error",
-		Description: "invalid incase filter definition; pattern is missing separator wrapper error",
-		Other:       "'{{.Wrapped}}', pattern: '{{.Pattern}}'",
-	}
-}
-
-// InvalidInCaseFilterDefError invalid incase filter definition; pattern is
-// missing separator wrapper error.
-type InvalidInCaseFilterDefError struct {
-	li18ngo.LocalisableError
-	InvalidInCaseFilterDefTemplData
-	wrapped error
-}
-
-// Error returns the combined wrapped and localised error message.
-func (e InvalidInCaseFilterDefError) Error() string {
-	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
-}
-
-// Unwrap returns the wrapped error.
-func (e InvalidInCaseFilterDefError) Unwrap() error {
-	return e.wrapped
-}
-
-// NewInvalidInCaseFilterDefError creates a new InvalidInCaseFilterDefError
-// wrapping wrapped.
-func NewInvalidInCaseFilterDefError(wrapped error, pattern string) error {
-	td := InvalidInCaseFilterDefTemplData{
-		agenorTemplData: agenorTemplData{},
-		Pattern:         pattern,
-		Wrapped:         wrapped.Error(),
-	}
-	return &InvalidInCaseFilterDefError{
-		LocalisableError:                li18ngo.LocalisableError{Data: td},
-		InvalidInCaseFilterDefTemplData: td,
-		wrapped:                         wrapped,
-	}
 }
 
 // =============================================================================
@@ -1010,40 +224,47 @@ var ErrInvalidResumeStrategy = InvalidResumeStrategyError{
 }
 
 // =============================================================================
-// ❌ InvalidSamplingSpecMissingDirectories
+// ❌ InvalidResumeValue
 //
-// InvalidSamplingSpecMissingDirectories indicates that the file sampling
-// specification is invalid because the required number-of-directories field is
-// absent.
+// InvalidResumeValue indicates that the resume value supplied by the caller is
+// not in a valid value.
 // =============================================================================
 
-// InvalidSamplingSpecMissingDirectoriesErrorTemplData invalid file sampling
-// specification, missing no of directories.
-type InvalidSamplingSpecMissingDirectoriesErrorTemplData struct {
+// InvalidResumeValueTemplData Invalid resume value format error.
+type InvalidResumeValueTemplData struct {
 	agenorTemplData
+	// Actual The resume value provided
+	Actual string
+	// Values The valid values for resume, composed together, probably as CSV
+	Values string
 }
 
 // Message creates a new i18n message using the template data.
-func (td InvalidSamplingSpecMissingDirectoriesErrorTemplData) Message() *i18n.Message {
+func (td InvalidResumeValueTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "invalid-file-sampling-spec-missing-directories.static-error",
-		Description: "invalid file sampling specification, missing no of directories",
-		Other:       "Invalid file sampling specification, missing no of directories",
+		ID:          "invalid-resume-value.dynamic-error",
+		Description: "Invalid resume value format error",
+		Other:       "Invalid resume value, actual: '{{.Actual}}', must be: {{.Values}}",
 	}
 }
 
-// InvalidSamplingSpecMissingDirectoriesError invalid file sampling
-// specification, missing no of directories.
-type InvalidSamplingSpecMissingDirectoriesError struct {
+// InvalidResumeValueError Invalid resume value format error.
+type InvalidResumeValueError struct {
 	li18ngo.LocalisableError
+	InvalidResumeValueTemplData
 }
 
-// ErrInvalidSamplingSpecMissingDirectories is the exported sentinel error for
-// InvalidSamplingSpecMissingDirectoriesError.
-var ErrInvalidSamplingSpecMissingDirectories = InvalidSamplingSpecMissingDirectoriesError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: InvalidSamplingSpecMissingDirectoriesErrorTemplData{},
-	},
+// NewInvalidResumeValueError creates a new InvalidResumeValueError.
+func NewInvalidResumeValueError(actual string, values string) error {
+	td := InvalidResumeValueTemplData{
+		agenorTemplData: agenorTemplData{},
+		Actual:          actual,
+		Values:          values,
+	}
+	return &InvalidResumeValueError{
+		LocalisableError:            li18ngo.LocalisableError{Data: td},
+		InvalidResumeValueTemplData: td,
+	}
 }
 
 // =============================================================================
@@ -1081,113 +302,62 @@ var ErrInvalidSubscription = InvalidSubscriptionError{
 }
 
 // =============================================================================
-// ❌ MissingCustomFilterDefinition
+// ❌ PipelinePreflightFailure
 //
-// MissingCustomFilterDefinition indicates that the traversal configuration
-// references a custom filter but no definition for it was found.
+// Error occurred during pipeline preflight checks
 // =============================================================================
 
-// MissingCustomFilterDefinitionErrorTemplData config error
-// missing-custom-filter-definition.
-type MissingCustomFilterDefinitionErrorTemplData struct {
+// PipelinePreflightFailureTemplData Error occurred during pipeline preflight
+// checks.
+type PipelinePreflightFailureTemplData struct {
 	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td MissingCustomFilterDefinitionErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "missing-custom-filter-definition.static-error",
-		Description: "config error missing-custom-filter-definition",
-		Other:       "Missing custom filter definition (config error)",
-	}
-}
-
-// MissingCustomFilterDefinitionError config error
-// missing-custom-filter-definition.
-type MissingCustomFilterDefinitionError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrMissingCustomFilterDefinition is the exported sentinel error for
-// MissingCustomFilterDefinitionError.
-var ErrMissingCustomFilterDefinition = MissingCustomFilterDefinitionError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: MissingCustomFilterDefinitionErrorTemplData{},
-	},
-}
-
-// =============================================================================
-// ❌ PipelineNotFound
-//
-// PipelineNotFound indicates that a pipeline with the specified name was not
-// found in the traversal configuration.
-// =============================================================================
-
-// PipelineNotFoundTemplData Pipeline not found in config error.
-type PipelineNotFoundTemplData struct {
-	agenorTemplData
-	// Pipeline is the pipeline name that was not found
+	// Pipeline The name of the pipeline for which the preflight check failed
 	Pipeline string
+	// Wrapped is the string representation of the wrapped error,
+	// used for go-i18n template interpolation via {{ .Wrapped }}.
+	Wrapped string
 }
 
 // Message creates a new i18n message using the template data.
-func (td PipelineNotFoundTemplData) Message() *i18n.Message {
+func (td PipelinePreflightFailureTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "pipeline-not-found.dynamic-error",
-		Description: "Pipeline not found in config error",
-		Other:       "Pipeline not found: '{{.Pipeline}}'",
+		ID:          "pipeline-preflight-failure.dynamic-error",
+		Description: "Error occurred during pipeline preflight checks",
+		Other:       "'{{.Wrapped}}' Preflight check failed for pipeline: '{{.Pipeline}}' ",
 	}
 }
 
-// PipelineNotFoundError Pipeline not found in config error.
-type PipelineNotFoundError struct {
+// PipelinePreflightFailureError Error occurred during pipeline preflight
+// checks.
+type PipelinePreflightFailureError struct {
 	li18ngo.LocalisableError
-	PipelineNotFoundTemplData
+	PipelinePreflightFailureTemplData
+	wrapped error
 }
 
-// NewPipelineNotFoundError creates a new PipelineNotFoundError.
-func NewPipelineNotFoundError(pipeline string) error {
-	td := PipelineNotFoundTemplData{
+// Error returns the combined wrapped and localised error message.
+func (e PipelinePreflightFailureError) Error() string {
+	return fmt.Sprintf("%v, %v", e.wrapped.Error(), li18ngo.Text(e.LocalisableError.Data))
+}
+
+// Unwrap returns the wrapped error.
+func (e PipelinePreflightFailureError) Unwrap() error {
+	return e.wrapped
+}
+
+// NewPipelinePreflightFailureError creates a new PipelinePreflightFailureError
+// wrapping wrapped.
+func NewPipelinePreflightFailureError(wrapped error, pipeline string) error {
+	td := PipelinePreflightFailureTemplData{
 		agenorTemplData: agenorTemplData{},
 		Pipeline:        pipeline,
+		Wrapped:         wrapped.Error(),
 	}
-	return &PipelineNotFoundError{
-		LocalisableError:          li18ngo.LocalisableError{Data: td},
-		PipelineNotFoundTemplData: td,
+	return &PipelinePreflightFailureError{
+		LocalisableError:                  li18ngo.LocalisableError{Data: td},
+		PipelinePreflightFailureTemplData: td,
+		wrapped:                           wrapped,
 	}
-}
-
-// =============================================================================
-// ❌ PolyFilterIsInvalid
-//
-// PolyFilterIsInvalid indicates that a poly filter definition fails validation.
-// =============================================================================
-
-// PolyFilterIsInvalidErrorTemplData poly filter definition is invalid error.
-type PolyFilterIsInvalidErrorTemplData struct {
-	agenorTemplData
-}
-
-// Message creates a new i18n message using the template data.
-func (td PolyFilterIsInvalidErrorTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "poly-filter-is-invalid.static-error",
-		Description: "poly filter definition is invalid error",
-		Other:       "poly filter definition is invalid",
-	}
-}
-
-// PolyFilterIsInvalidError poly filter definition is invalid error.
-type PolyFilterIsInvalidError struct {
-	li18ngo.LocalisableError
-}
-
-// ErrPolyFilterIsInvalid is the exported sentinel error for
-// PolyFilterIsInvalidError.
-var ErrPolyFilterIsInvalid = PolyFilterIsInvalidError{
-	LocalisableError: li18ngo.LocalisableError{
-		Data: PolyFilterIsInvalidErrorTemplData{},
-	},
 }
 
 // =============================================================================
@@ -1407,49 +577,6 @@ var ErrUnEqualJSONConversion = UnEqualJSONConversionError{
 	LocalisableError: li18ngo.LocalisableError{
 		Data: UnEqualJSONConversionErrorTemplData{},
 	},
-}
-
-// =============================================================================
-// ❌ UnsupportedFormat
-//
-// UnsupportedFormat indicates that the configuration format requested by the
-// caller has not been registered with the format registry.
-// =============================================================================
-
-// UnsupportedFormatTemplData Error returned when an unregistered config format
-// is requested.
-type UnsupportedFormatTemplData struct {
-	agenorTemplData
-	// Format is the unsupported format
-	Format string
-}
-
-// Message creates a new i18n message using the template data.
-func (td UnsupportedFormatTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "unsupported-format.jaywalk.dynamic-error",
-		Description: "Error returned when an unregistered config format is requested",
-		Other:       "Unsupported format '{{.Format}}'",
-	}
-}
-
-// UnsupportedFormatError Error returned when an unregistered config format is
-// requested.
-type UnsupportedFormatError struct {
-	li18ngo.LocalisableError
-	UnsupportedFormatTemplData
-}
-
-// NewUnsupportedFormatError creates a new UnsupportedFormatError.
-func NewUnsupportedFormatError(format string) error {
-	td := UnsupportedFormatTemplData{
-		agenorTemplData: agenorTemplData{},
-		Format:          format,
-	}
-	return &UnsupportedFormatError{
-		LocalisableError:           li18ngo.LocalisableError{Data: td},
-		UnsupportedFormatTemplData: td,
-	}
 }
 
 // =============================================================================

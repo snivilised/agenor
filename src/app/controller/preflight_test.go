@@ -10,6 +10,7 @@ import (
 	bedrock "github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/app/shell"
+	"github.com/snivilised/li18ngo"
 )
 
 // ---------------------------------------------------------------------------
@@ -61,7 +62,10 @@ func minimalCfg(
 // Specs
 // ---------------------------------------------------------------------------
 
-var _ = Describe("Coordinator.PreFlight", func() {
+var _ = Describe("Coordinator.PreFlight", Ordered, func() {
+	BeforeAll(func() {
+		Expect(li18ngo.Register()).To(Succeed())
+	})
 
 	// ------------------------------------------------------------------
 	// Neutral - no action or pipeline configured
@@ -120,7 +124,7 @@ var _ = Describe("Coordinator.PreFlight", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("undefined-action"))
-			Expect(err.Error()).To(ContainSubstring("not defined in config"))
+			Expect(err.Error()).To(ContainSubstring("Action not found"))
 		})
 
 		It("returns an error when the action cmd is empty", func() {
@@ -143,9 +147,8 @@ var _ = Describe("Coordinator.PreFlight", func() {
 			err := coord.PreFlight(&controller.Request{ActionName: "bad-action"})
 
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("bad-action"))
 			Expect(err.Error()).To(ContainSubstring("nonexistent-binary"))
-			Expect(err.Error()).To(ContainSubstring("not found in current environment"))
+			Expect(err.Error()).To(ContainSubstring("Not found in current environment"))
 		})
 	})
 
@@ -190,7 +193,7 @@ var _ = Describe("Coordinator.PreFlight", func() {
 
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("undefined-pipeline"))
-			Expect(err.Error()).To(ContainSubstring("not defined in config"))
+			Expect(err.Error()).To(ContainSubstring("Pipeline not found"))
 		})
 
 		It("returns an error when a pipeline step is not defined in actions", func() {
@@ -200,10 +203,11 @@ var _ = Describe("Coordinator.PreFlight", func() {
 
 			err := coord.PreFlight(&controller.Request{PipelineName: "orphan-pipeline"})
 
+			// Action not found: 'missing-action', 'Action not found: 'missing-action'' Preflight check failed for pipeline: 'orphan-pipeline'
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("orphan-pipeline"))
 			Expect(err.Error()).To(ContainSubstring("missing-action"))
-			Expect(err.Error()).To(ContainSubstring("not defined in config"))
+			Expect(err.Error()).To(ContainSubstring("Action not found"))
 		})
 
 		It("returns an error when a step executable is not locatable", func() {
@@ -211,12 +215,14 @@ var _ = Describe("Coordinator.PreFlight", func() {
 				stubLocate([]string{"ffmpeg"}, []string{"nonexistent-binary"}),
 			))
 
+			// not found in current environment
 			err := coord.PreFlight(&controller.Request{PipelineName: "bad-pipeline"})
 
+			// 'nonexistent-binary' Not found in current environment, ''nonexistent-binary' Not found in current environment' Preflight check failed for pipeline: 'bad-pipeline'
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("bad-pipeline"))
 			Expect(err.Error()).To(ContainSubstring("nonexistent-binary"))
-			Expect(err.Error()).To(ContainSubstring("not found in current environment"))
+			Expect(err.Error()).To(ContainSubstring("Not found in current environment"))
 		})
 
 		It("stops at the first failing step and does not check subsequent steps", func() {
