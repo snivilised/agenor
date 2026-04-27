@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 // PreFlight validates that the executable named in the first token of
@@ -34,7 +35,7 @@ func (c *Coordinator) PreFlight(req *Request) error {
 func (c *Coordinator) preFlightAction(name string) error {
 	action, ok := c.cfg.Raw.Actions[name]
 	if !ok {
-		return fmt.Errorf("action %q is not defined in config", name)
+		return locale.NewActionNotFoundError(name)
 	}
 
 	return c.preFlightCmd(name, action.Cmd)
@@ -44,12 +45,12 @@ func (c *Coordinator) preFlightAction(name string) error {
 func (c *Coordinator) preFlightPipeline(name string) error {
 	pipeline, ok := c.cfg.Raw.Pipelines[name]
 	if !ok {
-		return fmt.Errorf("pipeline %q is not defined in config", name)
+		return locale.NewPipelineNotFoundError(name)
 	}
 
 	for _, step := range pipeline.Steps {
 		if err := c.preFlightAction(step); err != nil {
-			return fmt.Errorf("pipeline %q: %w", name, err)
+			return locale.NewPipelinePreflightFailureError(err, name)
 		}
 	}
 
@@ -62,16 +63,13 @@ func (c *Coordinator) preFlightPipeline(name string) error {
 func (c *Coordinator) preFlightCmd(actionName, cmd string) error {
 	fields := strings.Fields(cmd)
 	if len(fields) == 0 {
-		return fmt.Errorf("action %q has an empty cmd string", actionName)
+		return locale.NewActionHasEmptyCmdError(actionName)
 	}
 
 	executable := fields[0]
 
 	if _, err := c.locate(executable); err != nil {
-		return fmt.Errorf(
-			"action %q: executable %q not found in current environment: %w",
-			actionName, executable, err,
-		)
+		return locale.NewCmdNotFoundInEnvError(executable)
 	}
 
 	return nil

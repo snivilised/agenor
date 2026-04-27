@@ -3,12 +3,14 @@ package command
 import (
 	"sync"
 
+	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/app/controller"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 const (
@@ -21,12 +23,10 @@ const (
 func (b *Bootstrap) buildRunCommand(container *assist.CobraContainer) {
 	runCmd := &cobra.Command{
 		Use:   "run <directory>",
-		Short: "run a concurrent directory tree traversal using a worker pool",
-		Long: `Run traverses a directory tree concurrently via an agenor worker pool.
-Flags are identical to walk, plus --cpu and --now for worker pool control.
-Use --action or --pipeline to name a config-defined operation.`,
-		Args: cobra.ExactArgs(1),
-		RunE: b.runRun,
+		Short: li18ngo.Text(locale.RunCmdShortDescTemplData{}),
+		Long:  li18ngo.Text(locale.RunCmdLongDescTemplData{}),
+		Args:  cobra.ExactArgs(1),
+		RunE:  b.runRun,
 	}
 
 	runPs := assist.NewParamSet[RunParameterSet](runCmd)
@@ -34,7 +34,7 @@ Use --action or --pipeline to name a config-defined operation.`,
 	// --subscribe(-s): which node types to visit
 	runPs.BindString(
 		assist.NewFlagInfo(
-			"subscribe node types to visit: \"files\", \"dirs\" or \"all\" (default)",
+			li18ngo.Text(locale.SubscribeFlagDescTemplData{}),
 			"s",
 			defaultRunSubscribe,
 		),
@@ -44,7 +44,7 @@ Use --action or --pipeline to name a config-defined operation.`,
 	// --action(-a)
 	runPs.BindString(
 		assist.NewFlagInfo(
-			"action name of the config-defined action to invoke for each matched node",
+			li18ngo.Text(locale.ActionFlagDescTemplData{}),
 			"a",
 			defaultRunAction,
 		),
@@ -54,7 +54,7 @@ Use --action or --pipeline to name a config-defined operation.`,
 	// --pipeline(-p)
 	runPs.BindString(
 		assist.NewFlagInfo(
-			"pipeline name of the config-defined pipeline to execute",
+			li18ngo.Text(locale.PipelineFlagDescTemplData{}),
 			"p",
 			defaultRunPipeline,
 		),
@@ -64,7 +64,7 @@ Use --action or --pipeline to name a config-defined operation.`,
 	// --resume(-r)
 	runPs.BindString(
 		assist.NewFlagInfo(
-			`resume strategy for an interrupted traversal: "spawn" or "fastward"`,
+			li18ngo.Text(locale.ResumeFlagDescTemplData{}),
 			"r",
 			defaultRunResume,
 		),

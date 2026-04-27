@@ -144,6 +144,26 @@ func NewNodeVisitedTemplData(path string) NodeVisitedTemplData {
 }
 
 // =============================================================================
+// 📨 Permissive
+//
+// Word: permissive
+// =============================================================================
+
+// PermissiveTemplData Word: permissive.
+type PermissiveTemplData struct {
+	agenorTemplData
+}
+
+// Message returns the i18n message for PermissiveTemplData.
+func (td PermissiveTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "permissive.word",
+		Description: "Word: permissive",
+		Other:       "permissive",
+	}
+}
+
+// =============================================================================
 // 📨 PipelineFailed
 //
 // PipelineFailed is printed when a named pipeline returns an error while
@@ -251,6 +271,26 @@ func NewPlaceholderBreachTemplData(placeholder string, resolvedPath string) Plac
 }
 
 // =============================================================================
+// 📨 Prohibitive
+//
+// Word: prohibitive
+// =============================================================================
+
+// ProhibitiveTemplData Word: prohibitive.
+type ProhibitiveTemplData struct {
+	agenorTemplData
+}
+
+// Message returns the i18n message for ProhibitiveTemplData.
+func (td ProhibitiveTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "prohibitive.word",
+		Description: "Word: prohibitive",
+		Other:       "prohibitive",
+	}
+}
+
+// =============================================================================
 // 📨 TraversalComplete
 //
 // TraversalComplete is printed when a traversal finishes successfully,
@@ -297,7 +337,7 @@ func NewTraversalCompleteTemplData(files uint, dirs uint, elapsed string) Traver
 // TraversalFailedTemplData Printed when the traversal itself fails.
 type TraversalFailedTemplData struct {
 	agenorTemplData
-	// Err is the error message
+	// Err Is the error message
 	Err string
 }
 
@@ -315,36 +355,5 @@ func NewTraversalFailedTemplData(err string) TraversalFailedTemplData {
 	return TraversalFailedTemplData{
 		agenorTemplData: agenorTemplData{},
 		Err:             err,
-	}
-}
-
-// =============================================================================
-// 📨 UsingConfigFile
-//
-// UsingConfigFile is printed on startup to indicate which configuration file
-// has been loaded.
-// =============================================================================
-
-// UsingConfigFileTemplData Message to indicate which config is being used.
-type UsingConfigFileTemplData struct {
-	agenorTemplData
-	// ConfigFileName is the name of the config file being used
-	ConfigFileName string
-}
-
-// Message returns the i18n message for UsingConfigFileTemplData.
-func (td UsingConfigFileTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "using-config-file",
-		Description: "Message to indicate which config is being used",
-		Other:       "Using config file: '{{.ConfigFileName}}'",
-	}
-}
-
-// NewUsingConfigFileTemplData creates a new UsingConfigFileTemplData.
-func NewUsingConfigFileTemplData(configFileName string) UsingConfigFileTemplData {
-	return UsingConfigFileTemplData{
-		agenorTemplData: agenorTemplData{},
-		ConfigFileName:  configFileName,
 	}
 }

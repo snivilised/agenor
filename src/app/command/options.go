@@ -2,9 +2,11 @@ package command
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/locale"
 )
 
 // buildOptions translates shared flag values into agenor option functions.
@@ -39,16 +41,17 @@ func buildOptions(families SharedFamilies) []pref.Option {
 
 // resolveResumeStrategy maps the --resume flag string to the agenor constant.
 func resolveResumeStrategy(resume string) (agenor.ResumeStrategy, error) {
-	// TODO: Shouldn't this be a map?
 	switch resume {
 	case ResumeStrategySpawn:
 		return agenor.ResumeStrategySpawn, nil
 	case ResumeStrategyFastward:
 		return agenor.ResumeStrategyFastward, nil
 	default:
-		return 0, fmt.Errorf(
-			"invalid --resume value %q: must be %q or %q",
-			resume, ResumeStrategySpawn, ResumeStrategyFastward,
+		return 0, locale.NewInvalidResumeValueError(
+			resume,
+			fmt.Sprintf("'%s'", strings.Join([]string{
+				ResumeStrategySpawn, ResumeStrategyFastward,
+			}, ", ")),
 		)
 	}
 }
