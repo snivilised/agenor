@@ -4,7 +4,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
-	"github.com/snivilised/jaywalk/src/app/ui"
+	"github.com/snivilised/jaywalk/src/app/report"
 )
 
 // Request holds the fields common to all traversal requests.
@@ -36,8 +36,10 @@ type Request struct {
 	// this to detect placeholder breaches.
 	Root string
 
-	// UI is the display manager injected by Bootstrap via PersistentPreRunE.
-	UI ui.Manager
+	// UI is the Presenter injected by Bootstrap via PersistentPreRunE.
+	// It receives traversal events and decides how to render them.
+	// The controller never formats output directly.
+	UI report.Presenter
 }
 
 // PrimeRequest carries everything the coordinator needs to execute a

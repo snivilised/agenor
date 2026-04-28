@@ -6,7 +6,7 @@ import (
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 
-	"github.com/snivilised/jaywalk/src/app/ui"
+	"github.com/snivilised/jaywalk/src/app/report"
 )
 
 // ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ type WalkInputs struct {
 
 	// UI is the display manager selected by --tui. All output to the
 	// terminal is routed through this interface.
-	UI ui.Manager
+	UI report.Presenter
 
 	// Jay-specific flags
 	ParamSet *assist.ParamSet[WalkParameterSet]
@@ -79,7 +79,7 @@ type RunInputs struct {
 
 	// UI is the display manager selected by --tui. All output to the
 	// terminal is routed through this interface.
-	UI ui.Manager
+	UI report.Presenter
 
 	// Jay-specific flags
 	ParamSet *assist.ParamSet[RunParameterSet]
