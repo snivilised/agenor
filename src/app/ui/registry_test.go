@@ -29,29 +29,30 @@ var _ = Describe("ui.New", Ordered, func() {
 	})
 
 	Context("given an empty mode string", func() {
-		It("returns the default linear manager", func() {
-			m, err := ui.New("")
+		It("returns the default linear presenter", func() {
+			p, err := ui.New("")
 			Expect(err).To(BeNil())
-			Expect(m).NotTo(BeNil())
+			Expect(p).NotTo(BeNil())
 		})
 	})
 
 	Context("given mode 'linear'", func() {
-		It("returns a Manager without error", func() {
-			m, err := ui.New(ui.ModeLinear)
+		It("returns a Presenter without error", func() {
+			p, err := ui.New(ui.ModeLinear)
 			Expect(err).To(BeNil())
-			Expect(m).NotTo(BeNil())
+			Expect(p).NotTo(BeNil())
 		})
 	})
 
 	Context("given an unknown mode", func() {
-		It("returns an ErrUnknownMode error", func() {
-			m, err := ui.New("flashy")
-			Expect(m).To(BeNil())
+		It("returns an error containing the unknown mode name", func() {
+			p, err := ui.New("flashy")
+			Expect(p).To(BeNil())
 			Expect(err).NotTo(BeNil())
-
-			var unknownErr *ui.ErrUnknownMode
-			Expect(err).To(BeAssignableToTypeOf(unknownErr))
+			// TODO: once lingo generates UnknownModeError, replace the
+			// ContainSubstring check with:
+			//   var target *locale.UnknownModeError
+			//   Expect(errors.As(err, &target)).To(BeTrue())
 			Expect(err.Error()).To(ContainSubstring("flashy"))
 		})
 	})
@@ -60,29 +61,36 @@ var _ = Describe("ui.New", Ordered, func() {
 var _ = Describe("RegisterMode", func() {
 	Context("registering a new mode", func() {
 		It("makes the mode available via New", func() {
-			ui.RegisterMode("test-stub", func() ui.Manager {
-				return &stubManager{}
+			err := ui.RegisterMode("test-stub", func() report.Presenter {
+				return &stubPresenter{}
 			})
-			m, err := ui.New("test-stub")
 			Expect(err).To(BeNil())
-			Expect(m).NotTo(BeNil())
+
+			p, err := ui.New("test-stub")
+			Expect(err).To(BeNil())
+			Expect(p).NotTo(BeNil())
 		})
 	})
 
 	Context("registering a duplicate mode", func() {
-		It("panics", func() {
-			Expect(func() {
-				ui.RegisterMode("test-stub", func() ui.Manager {
-					return &stubManager{}
-				})
-			}).To(Panic())
+		It("returns an error", func() {
+			// "test-stub" was registered in the previous spec; registering
+			// it again must return an error, not panic.
+			err := ui.RegisterMode("test-stub", func() report.Presenter {
+				return &stubPresenter{}
+			})
+			Expect(err).NotTo(BeNil())
+			// TODO: once lingo generates DuplicateModeError, add:
+			//   var target *locale.DuplicateModeError
+			//   Expect(errors.As(err, &target)).To(BeTrue())
+			Expect(err.Error()).To(ContainSubstring("test-stub"))
 		})
 	})
 })
 
-var _ = Describe("linear Manager", Ordered, func() {
+var _ = Describe("linear Presenter", Ordered, func() {
 	var (
-		m    ui.Manager
+		p    report.Presenter
 		node *core.Node
 	)
 
@@ -98,7 +106,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 
 	BeforeEach(func() {
 		var err error
-		m, err = ui.New(ui.ModeLinear)
+		p, err = ui.New(ui.ModeLinear)
 		Expect(err).To(BeNil())
 		node = &core.Node{Path: "/some/path/file.txt"}
 	})
@@ -106,7 +114,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 	Describe("OnNodeEvent", func() {
 		It("does not panic for a valid node", func() {
 			Expect(func() {
-				m.OnNodeEvent(&report.NeutralEvent{
+				p.OnNodeEvent(&report.NeutralEvent{
 					DisplayEvent: report.DisplayEvent{Node: node},
 				})
 			}).NotTo(Panic())
@@ -116,7 +124,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 	Describe("OnActionEvent", func() {
 		It("does not panic on success", func() {
 			Expect(func() {
-				m.OnActionEvent(&report.ActionEvent{
+				p.OnActionEvent(&report.ActionEvent{
 					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
 				})
 			}).NotTo(Panic())
@@ -124,7 +132,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 
 		It("does not panic on failure", func() {
 			Expect(func() {
-				m.OnActionEvent(&report.ActionEvent{
+				p.OnActionEvent(&report.ActionEvent{
 					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
 					Err:          errors.New("action failed"),
 				})
@@ -135,7 +143,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 	Describe("OnPipelineEvent", func() {
 		It("does not panic on success", func() {
 			Expect(func() {
-				m.OnPipelineEvent(&report.PipelineEvent{
+				p.OnPipelineEvent(&report.PipelineEvent{
 					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
 				})
 			}).NotTo(Panic())
@@ -143,7 +151,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 
 		It("does not panic on failure", func() {
 			Expect(func() {
-				m.OnPipelineEvent(&report.PipelineEvent{
+				p.OnPipelineEvent(&report.PipelineEvent{
 					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
 					Err:          errors.New("pipeline failed"),
 				})
@@ -154,7 +162,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 	Describe("OnComplete", func() {
 		It("does not panic on a successful traversal", func() {
 			Expect(func() {
-				m.OnComplete(&report.Traversal{
+				p.OnComplete(&report.Traversal{
 					FilesVisited: 10,
 					DirsVisited:  3,
 				})
@@ -163,7 +171,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 
 		It("does not panic when the traversal contains an error", func() {
 			Expect(func() {
-				m.OnComplete(&report.Traversal{
+				p.OnComplete(&report.Traversal{
 					Err: errors.New("something broke"),
 				})
 			}).NotTo(Panic())
@@ -173,7 +181,7 @@ var _ = Describe("linear Manager", Ordered, func() {
 	Describe("OnSkipEvent", func() {
 		It("does not panic for a populated skip event", func() {
 			Expect(func() {
-				m.OnSkipEvent(&report.SkipEvent{
+				p.OnSkipEvent(&report.SkipEvent{
 					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
 					Placeholder:  "{{.grand}}",
 					ResolvedPath: "/some",
@@ -184,13 +192,13 @@ var _ = Describe("linear Manager", Ordered, func() {
 })
 
 // ---------------------------------------------------------------------------
-// Test double - satisfies ui.Manager for registration tests
+// Test double - satisfies report.Presenter for registration tests
 // ---------------------------------------------------------------------------
 
-type stubManager struct{}
+type stubPresenter struct{}
 
-func (s *stubManager) OnNodeEvent(_ *report.NeutralEvent)      {}
-func (s *stubManager) OnActionEvent(_ *report.ActionEvent)     {}
-func (s *stubManager) OnPipelineEvent(_ *report.PipelineEvent) {}
-func (s *stubManager) OnSkipEvent(_ *report.SkipEvent)         {}
-func (s *stubManager) OnComplete(_ *report.Traversal)          {}
+func (s *stubPresenter) OnNodeEvent(_ *report.NeutralEvent)      {}
+func (s *stubPresenter) OnActionEvent(_ *report.ActionEvent)     {}
+func (s *stubPresenter) OnPipelineEvent(_ *report.PipelineEvent) {}
+func (s *stubPresenter) OnSkipEvent(_ *report.SkipEvent)         {}
+func (s *stubPresenter) OnComplete(_ *report.Traversal)          {}

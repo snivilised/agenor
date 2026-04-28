@@ -18,6 +18,7 @@ import (
 
 	"github.com/snivilised/jaywalk/src/app/bedrock"
 	jac "github.com/snivilised/jaywalk/src/app/controller"
+	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/shell"
 	"github.com/snivilised/jaywalk/src/app/ui"
 )
@@ -86,7 +87,7 @@ type Bootstrap struct {
 
 	// UI is resolved from --tui in PersistentPreRunE and passed
 	// into requests; Bootstrap does not use it directly.
-	UI ui.Manager
+	UI report.Presenter
 
 	// coord is the single Coordinator instance wired at startup and
 	// shared by all command handlers.
