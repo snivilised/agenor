@@ -197,6 +197,10 @@ var _ = Describe("linear Presenter", Ordered, func() {
 
 type stubPresenter struct{}
 
+// OnBegin is called once before any traversal events, with the
+// opening metadata. Implementations should use this to render
+// any opening banner or header.
+func (s *stubPresenter) OnBegin(_ *report.BeginEvent)            {}
 func (s *stubPresenter) OnNodeEvent(_ *report.NeutralEvent)      {}
 func (s *stubPresenter) OnActionEvent(_ *report.ActionEvent)     {}
 func (s *stubPresenter) OnPipelineEvent(_ *report.PipelineEvent) {}
