@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"os/exec"
+	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
@@ -73,7 +74,7 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 		Tree: req.Tree,
 	}
 
-	return c.execute(ctx, &req.Request, facade, t)
+	return c.execute(ctx, &req.Request, facade, t, true, "")
 }
 
 // ExecuteResume resumes an interrupted traversal using the scenario
@@ -91,22 +92,33 @@ func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) err
 		Strategy: req.Strategy,
 	}
 
-	return c.execute(ctx, &req.Request, facade, t)
+	return c.execute(ctx, &req.Request, facade, t, false, req.ResumeFrom)
 }
 
 // execute is the shared orchestration path for both prime and resume
 // traversals. PreFlight is always the first step - a failure here
-// returns immediately before any traversal begins. On success it calls
-// the scenario, collects metrics, and notifies the UI via OnComplete.
+// returns immediately before any traversal begins. On success it fires
+// OnBegin, calls the scenario, collects metrics, and notifies the UI
+// via OnComplete.
 func (c *Coordinator) execute(
 	ctx context.Context,
 	req *Request,
 	facade pref.Facade,
 	t *report.Traversal,
+	isPrime bool,
+	resumeFrom string,
 ) error {
 	if err := c.PreFlight(req); err != nil {
 		return err
 	}
+
+	req.UI.OnBegin(&report.BeginEvent{
+		Root:       req.Root,
+		Caption:    captionFor(req),
+		StartedAt:  time.Now(),
+		IsPrime:    isPrime,
+		ResumeFrom: resumeFrom,
+	})
 
 	result, err := req.Scenario(facade, req.Options...).Navigate(ctx)
 
@@ -120,4 +132,20 @@ func (c *Coordinator) execute(
 	req.UI.OnComplete(t)
 
 	return err
+}
+
+// captionFor builds the human-readable traversal options description
+// shown in the opening banner. It derives this from the request so that
+// prism does not need to know about agenor subscription types.
+//
+//nolint:exhaustive // enums.SubscribeDirectoriesWithFiles, enums.SubscribeUniversal
+func captionFor(req *Request) string {
+	switch req.Subscription {
+	case enums.SubscribeFiles:
+		return "files only"
+	case enums.SubscribeDirectories:
+		return "folders only"
+	default:
+		return "files and folders"
+	}
 }

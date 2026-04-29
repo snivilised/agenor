@@ -59,4 +59,9 @@ type ResumeRequest struct {
 
 	// Strategy controls how the resume proceeds within agenor.
 	Strategy enums.ResumeStrategy
+
+	// ResumeFrom is the path from which the traversal continues. Sourced
+	// from the restored checkpoint state. Passed to OnBegin so the
+	// renderer can display the resume point in the opening banner.
+	ResumeFrom string
 }
