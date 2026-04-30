@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"io"
-	"os"
 
-	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
@@ -81,13 +79,6 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 	// This determines whether TrueColor, ANSI-256, ANSI-16, or plain
 	// text output is used. colorprofile.Detect handles NO_COLOR, isatty,
 	// COLORTERM and TERM inspection automatically.
-	profile := colorprofile.Detect(w, os.Environ())
-
-	// complete returns the best available color.Color for a SemanticColour
-	// given the detected profile. lipgloss.Complete selects from the three
-	// tiers in order: ANSI-16 first for low-capability terminals, then
-	// ANSI-256, then TrueColor for capable terminals.
-	complete := lipgloss.Complete(profile)
 
 	resolve := func(sc SemanticColour, field string) (color.Color, error) {
 		ansi, ansi256, trueCol, err := sc.Resolve()
@@ -95,9 +86,15 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 			return nil, fmt.Errorf("palette.%s: %w", field, err)
 		}
 
-		return complete(ansi, ansi256, trueCol), nil
+		switch {
+		case trueCol != nil:
+			return trueCol, nil
+		case ansi256 != nil:
+			return ansi256, nil
+		default:
+			return ansi, nil
+		}
 	}
-
 	banner, err := resolve(palette.Banner, "banner")
 	if err != nil {
 		return Theme{}, err

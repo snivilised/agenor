@@ -40,6 +40,7 @@
     "cmds",
     "Cobrass",
     "colorprofile",
+    "COLORTERM",
     "copyloopvar",
     "coverb",
     "coverpkg",
