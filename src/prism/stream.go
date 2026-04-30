@@ -71,27 +71,39 @@ func (r *streamRenderer) Show(motif Motif) {
 		)
 
 	case motif.Skipped:
-		name = r.theme.SkippedStyle.Render(
-			fmt.Sprintf("~ %s  [skipped: %s -> %s]",
-				motif.Name,
-				motif.Placeholder,
-				motif.ResolvedPath,
-			),
+		skippedInfo := fmt.Sprintf("  [skipped: %s -> %s]",
+			motif.Placeholder,
+			motif.ResolvedPath,
 		)
-
-	case motif.ActionName != "":
-		name = r.theme.FileStyle.Render(motif.Name) +
-			r.theme.ActionStyle.Render("  via "+motif.ActionName)
-
-	case motif.PipelineName != "":
-		name = r.theme.FileStyle.Render(motif.Name) +
-			r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
+		if motif.IsDir {
+			name = r.theme.DirStyle.Render("~ "+motif.Name+"/") +
+				r.theme.SkippedStyle.Render(skippedInfo)
+		} else {
+			name = r.theme.FileStyle.Render("~ "+motif.Name) +
+				r.theme.SkippedStyle.Render(skippedInfo)
+		}
 
 	case motif.IsDir:
-		name = r.theme.DirStyle.Render(motif.Name + "/")
+		dirName := r.theme.DirStyle.Render(motif.Name + "/")
+		switch {
+		case motif.ActionName != "":
+			name = dirName + r.theme.ActionStyle.Render("  via "+motif.ActionName)
+		case motif.PipelineName != "":
+			name = dirName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
+		default:
+			name = dirName
+		}
 
 	default:
-		name = r.theme.FileStyle.Render(motif.Name)
+		fileName := r.theme.FileStyle.Render(motif.Name)
+		switch {
+		case motif.ActionName != "":
+			name = fileName + r.theme.ActionStyle.Render("  via "+motif.ActionName)
+		case motif.PipelineName != "":
+			name = fileName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
+		default:
+			name = fileName
+		}
 	}
 
 	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)

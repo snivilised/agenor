@@ -13,12 +13,12 @@ require github.com/snivilised/mamba v0.1.1
 
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/charmbracelet/colorprofile v0.3.1
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta.3
 	github.com/mitchellh/mapstructure v1.5.0
 )
 
 require (
+	github.com/charmbracelet/colorprofile v0.3.1 // indirect
 	github.com/charmbracelet/x/ansi v0.8.0 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
