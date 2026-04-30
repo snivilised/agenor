@@ -27,7 +27,7 @@ func newStreamRenderer(theme Theme, w io.Writer) Renderer {
 }
 
 // Begin renders the opening banner using the Overture metadata. The
-// banner adapts to indicate whether this is a prime or resume traversal.
+// banner adapts to indicate prime or resume traversal.
 func (r *streamRenderer) Begin(overture Overture) {
 	var title string
 
@@ -56,8 +56,8 @@ func (r *streamRenderer) Begin(overture Overture) {
 }
 
 // Show renders a single Motif immediately to the output writer.
-// Directories and files are styled differently. Actions, pipelines,
-// skips, and errors each get distinct visual treatment.
+// Errors, skips, actions, pipelines, directories and files each receive
+// distinct visual treatment.
 func (r *streamRenderer) Show(motif Motif) {
 	indent := r.indentFor(motif.Depth)
 	depth := r.theme.DepthStyle.Render(indent)
@@ -71,7 +71,7 @@ func (r *streamRenderer) Show(motif Motif) {
 		)
 
 	case motif.Skipped:
-		name = r.theme.MutedStyle.Render(
+		name = r.theme.SkippedStyle.Render(
 			fmt.Sprintf("~ %s  [skipped: %s -> %s]",
 				motif.Name,
 				motif.Placeholder,
@@ -81,11 +81,11 @@ func (r *streamRenderer) Show(motif Motif) {
 
 	case motif.ActionName != "":
 		name = r.theme.FileStyle.Render(motif.Name) +
-			r.theme.MutedStyle.Render("  via "+motif.ActionName)
+			r.theme.ActionStyle.Render("  via "+motif.ActionName)
 
 	case motif.PipelineName != "":
 		name = r.theme.FileStyle.Render(motif.Name) +
-			r.theme.MutedStyle.Render("  via "+motif.PipelineName)
+			r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
 
 	case motif.IsDir:
 		name = r.theme.DirStyle.Render(motif.Name + "/")
@@ -98,7 +98,7 @@ func (r *streamRenderer) Show(motif Motif) {
 }
 
 // End renders the closing summary box with traversal counts, elapsed
-// time, and any errors encountered. Labels adapt for resume traversals.
+// time, and any errors. Labels adapt for resume traversals.
 func (r *streamRenderer) End(summary Summary) {
 	fileLabel := "Files"
 	dirLabel := "Directories"
@@ -117,7 +117,9 @@ func (r *streamRenderer) End(summary Summary) {
 	if len(summary.Errors) > 0 {
 		lines = append(lines,
 			r.summaryRow("Errors",
-				r.theme.ErrorStyle.Render(fmt.Sprintf("%d", len(summary.Errors))),
+				r.theme.ErrorStyle.Render(
+					fmt.Sprintf("%d", len(summary.Errors)),
+				),
 			),
 		)
 
@@ -139,15 +141,14 @@ func (r *streamRenderer) summaryRow(label, value string) string {
 }
 
 // indentFor returns the indent prefix string for the given depth level.
-// Depth 0 (the root) produces no indent. Each subsequent level adds two
-// spaces. Tree-branch glyphs (such as, ├── and └──) are deferred until
-// sibling tracking is available from the agenor side.
+// Depth 0 produces no indent. Tree-branch glyphs (such as ├── and └──)
+// are deferred until sibling tracking is available from agenor.
 func (r *streamRenderer) indentFor(depth uint) string {
 	if depth == 0 {
 		return ""
 	}
 
-	return strings.Repeat("  ", int(depth)) //nolint:gosec // overflow not likely
+	return strings.Repeat("  ", int(depth)) //nolint: gosec // overflow
 }
 
 // formatElapsed produces a human-readable elapsed duration string.

@@ -77,7 +77,7 @@ type ConfigureOptionFn func(*ConfigureOptions)
 // Code smell checklist (should remain clean):
 //   - No direct calls to agenor from Bootstrap
 //   - No UI rendering logic in Bootstrap
-//   - No flag interpretation beyond resolving --tui into a ui.Manager
+//   - No flag interpretation beyond resolving --tui and --theme
 type Bootstrap struct {
 	container *assist.CobraContainer
 	options   ConfigureOptions
@@ -85,9 +85,13 @@ type Bootstrap struct {
 	// Cfg is populated after configure() reads viper.
 	Cfg *bedrock.Config
 
-	// UI is resolved from --tui in PersistentPreRunE and passed
-	// into requests; Bootstrap does not use it directly.
+	// UI is resolved from --tui and --theme in PersistentPreRunE and
+	// passed into requests. Bootstrap does not use it directly.
 	UI report.Presenter
+
+	// themeLoader resolves named themes from the themes directory.
+	// Constructed once in Root() and reused in PersistentPreRunE.
+	themeLoader *bedrock.ThemeLoader
 
 	// coord is the single Coordinator instance wired at startup and
 	// shared by all command handlers.
@@ -130,9 +134,9 @@ func (b *Bootstrap) prepare() {
 	}
 }
 
-// Root builds the command tree and returns the root command, ready
-// to be executed. This is the composition root: all wiring happens
-// here and only here.
+// Root builds the command tree and returns the root command, ready to
+// be executed. This is the composition root: all wiring happens here
+// and only here.
 func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	b.prepare()
 
@@ -142,17 +146,18 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 
 	b.configure()
 
-	// Detect the shell environment once at startup. This is an
-	// unrecoverable failure - if we cannot determine the environment
-	// we cannot safely validate action executables before a traversal.
+	// Detect the shell environment once at startup.
 	env, err := shell.Detect()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
+	// Construct the ThemeLoader once - it resolves JAY_THEMES_DIR or
+	// falls back to the XDG default (~/.config/jay/themes/).
+	b.themeLoader = bedrock.NewThemeLoader()
+
 	// Construct the Coordinator once with the detected locate function.
-	// Command handlers receive it via b.coord - they never construct it.
 	b.coord = jac.New(b.Cfg, jac.WithLocate(env.Locate))
 
 	b.container = assist.NewCobraContainer(
@@ -162,16 +167,22 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 			Long:    li18ngo.Text(locale.RootCmdLongDescTemplData{}),
 			Version: fmt.Sprintf("'%v'", Version),
 
-			// PersistentPreRunE resolves --tui into a ui.Manager and
-			// stores it on Bootstrap so command handlers can include it
-			// in their requests. This is the only UI concern Bootstrap
-			// is permitted to touch.
+			// PersistentPreRunE resolves --tui and --theme into a
+			// ui.Presenter backed by the appropriate prism.Renderer.
+			// This is the only UI concern Bootstrap is permitted to touch.
 			PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
-				mgr, err := ui.New(b.rootPs.Native.TUI)
+				palette, err := b.themeLoader.Load(b.rootPs.Native.Theme)
 				if err != nil {
 					return err
 				}
+
+				mgr, err := ui.New(b.rootPs.Native.TUI, palette)
+				if err != nil {
+					return err
+				}
+
 				b.UI = mgr
+
 				return nil
 			},
 
@@ -261,15 +272,35 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 	root := container.Root()
 
 	b.rootPs = assist.NewParamSet[RootParameterSet](root)
+
+	// --tui(-t): display mode, inherited by all sub-commands.
 	b.rootPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
-			`tui display mode: "linear" (default) or a named Charm-based renderer`,
+			`tui display mode: "linear" (default), "porthole", "lanes"`,
 			"t",
 			ui.ModeDefault,
 			root.PersistentFlags(),
 		),
 		&b.rootPs.Native.TUI,
 	)
+
+	// --theme: colour theme name, inherited by all sub-commands.
+	// "system" (default) uses ANSI-16 colours from the terminal theme.
+	// Any other value loads <name>.yaml from the themes directory.
+	b.rootPs.BindString(
+		assist.NewFlagInfoOnFlagSet(
+			fmt.Sprintf(
+				`colour theme name (default "system" uses terminal theme colours; `+
+					`custom themes loaded from %s)`,
+				b.themeLoader.ThemesDir(),
+			),
+			"",
+			bedrock.ThemeSystemName,
+			root.PersistentFlags(),
+		),
+		&b.rootPs.Native.Theme,
+	)
+
 	container.MustRegisterParamSet(RootPsName, b.rootPs)
 
 	b.previewFam = assist.NewParamSet[store.PreviewParameterSet](root)

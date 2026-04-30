@@ -1,21 +1,22 @@
 package prism
 
 import (
+	"fmt"
 	"io"
 	"time"
 )
 
-// ViewKind identifies the rendering view to use. Defined as a typed string
-// rather than an iota so that the set remains open - new views can be added
-// in future without modifying this file.
+// ViewKind identifies the rendering view to use. Defined as a typed
+// string rather than an iota so that the set remains open - new views
+// can be added in future without modifying this file.
 type ViewKind string
 
 const (
 	// StreamView is a linear scrolling output view rendered with lipgloss.
 	StreamView ViewKind = "stream"
 
-	// PortholeView is a bubbletea view with a static header and footer and
-	// vertically scrolling content between them.
+	// PortholeView is a bubbletea view with a static header and footer
+	// and vertically scrolling content between them.
 	PortholeView ViewKind = "porthole"
 
 	// LanesView is a bubbletea view showing parallel lanes of activity,
@@ -23,7 +24,8 @@ const (
 	LanesView ViewKind = "lanes"
 )
 
-// NavigationKind identifies whether a traversal is fresh or a continuation.
+// NavigationKind identifies whether a traversal is fresh or a
+// continuation from a checkpoint.
 type NavigationKind string
 
 const (
@@ -34,24 +36,22 @@ const (
 	ResumeNavigation NavigationKind = "resume"
 )
 
-// SurveyResult carries the output of a two-phase navigation survey pass.
-// It is populated by the controller/dispatch layer after the survey phase
-// completes and passed to the renderer via Overture so that views can
-// display accurate progress and use max depth for layout calculations.
-// Nil means no survey was performed - single-phase navigation only.
+// SurveyResult carries the output of a two-phase navigation survey
+// pass. Populated by controller/dispatch after the survey phase and
+// passed to the renderer via Overture. Nil means single-phase
+// navigation - no survey was performed.
 type SurveyResult struct {
-	// NodeCount is the total number of nodes that will be visited in the
-	// execute phase. Enables accurate progress reporting.
+	// NodeCount is the total nodes to be visited in the execute phase.
+	// Enables accurate progress reporting.
 	NodeCount uint
 
-	// MaxDepth is the deepest level encountered during the survey phase.
-	// Used by views for layout calculations such as indent budget and
-	// lane column widths.
+	// MaxDepth is the deepest level seen during the survey phase.
+	// Used by views for layout calculations.
 	MaxDepth uint
 }
 
-// Overture carries the metadata known at the start of a traversal. It is
-// passed to Renderer.Begin and used to render the opening display.
+// Overture carries the metadata known at the start of a traversal.
+// Passed to Renderer.Begin to render the opening display.
 type Overture struct {
 	// Root is the top-level path being traversed.
 	Root string
@@ -75,10 +75,10 @@ type Overture struct {
 	Survey *SurveyResult
 }
 
-// Motif is the unit of render-able content passed to Renderer.Show for
+// Motif is the unit of renderable content passed to Renderer.Show for
 // each item encountered during traversal. Fields are generic filesystem
 // and execution concepts - no jaywalk or agenor types appear here.
-// Depth is sourced from node.Extension.Depth in agenor.
+// Depth is sourced from node.Extension.Level in agenor.
 type Motif struct {
 	// Path is the full path of the item.
 	Path string
@@ -90,7 +90,7 @@ type Motif struct {
 	IsDir bool
 
 	// Depth is the number of levels below the traversal root, sourced
-	// from node.Extension.Depth in agenor.
+	// from node.Extension.Level in agenor.
 	Depth uint
 
 	// ActionName is the name of the action executed against this node.
@@ -118,8 +118,8 @@ type Motif struct {
 	Err error
 }
 
-// Summary carries the result of a completed traversal. It is passed to
-// Renderer.End and used to render the closing display.
+// Summary carries the result of a completed traversal. Passed to
+// Renderer.End to render the closing display.
 type Summary struct {
 	// FilesVisited is the count of files encountered.
 	FilesVisited uint
@@ -142,30 +142,34 @@ type Summary struct {
 // implement this interface. Callers depend on Renderer, never on a
 // concrete view type.
 type Renderer interface {
-	// Begin is called once before any traversal events, with the opening
-	// metadata.
+	// Begin is called once before any traversal events.
 	Begin(overture Overture)
 
 	// Show is called for each item encountered during traversal.
 	Show(motif Motif)
 
-	// End is called once when traversal completes, with the result summary.
+	// End is called once when traversal completes.
 	End(summary Summary)
 }
 
-// New constructs a Renderer for the requested view kind. The writer w is
-// the output destination; pass os.Stdout for production use or a
-// bytes.Buffer in tests. Dark/light detection and colour downsampling
-// are handled automatically by lipgloss v2 against w - no colour profile
-// need be supplied by the caller.
-func New(kind ViewKind, w io.Writer) Renderer {
-	theme := NewTheme(w)
+// New constructs a Renderer for the requested view kind using the given
+// Palette. The writer w is the output destination; pass os.Stdout for
+// production use or a bytes.Buffer in tests.
+//
+// Returns an error if the Palette contains unrecognised colour names,
+// which would indicate a malformed user theme file. Bootstrap should
+// treat this as a startup failure.
+func New(kind ViewKind, palette Palette, w io.Writer) (Renderer, error) {
+	theme, err := NewTheme(palette, w)
+	if err != nil {
+		return nil, fmt.Errorf("prism.New: %w", err)
+	}
 
 	//nolint:exhaustive // prism.PortholeView, prism.LanesView
 	switch kind {
 	case StreamView:
-		return newStreamRenderer(theme, w)
+		return newStreamRenderer(theme, w), nil
 	default:
-		return newStreamRenderer(theme, w)
+		return newStreamRenderer(theme, w), nil
 	}
 }
