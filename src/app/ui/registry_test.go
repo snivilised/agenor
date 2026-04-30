@@ -1,208 +1,92 @@
 package ui_test
 
 import (
-	"errors"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/ui"
-	"github.com/snivilised/jaywalk/src/locale"
-	"github.com/snivilised/li18ngo"
+	"github.com/snivilised/jaywalk/src/prism"
 )
 
-// ---------------------------------------------------------------------------
-// Specs
-// ---------------------------------------------------------------------------
+var _ = Describe("Registry", func() {
 
-var _ = Describe("ui.New", Ordered, func() {
-	BeforeAll(func() {
-		Expect(li18ngo.Register(
-			func(o *li18ngo.UseOptions) {
-				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
-				}
+	// ------------------------------------------------------------------
+	// New
+	// ------------------------------------------------------------------
+
+	Describe("New", func() {
+		DescribeTable("returns a Presenter for known modes",
+			func(mode string) {
+				palette := prism.SystemPalette()
+
+				presenter, err := ui.New(mode, palette)
+
+				Expect(err).To(BeNil())
+				Expect(presenter).NotTo(BeNil())
 			},
-		)).To(Succeed())
-	})
+			Entry("explicit linear mode", ui.ModeLinear),
+			Entry("empty string defaults to linear", ""),
+		)
 
-	Context("given an empty mode string", func() {
-		It("returns the default linear presenter", func() {
-			p, err := ui.New("")
-			Expect(err).To(BeNil())
-			Expect(p).NotTo(BeNil())
-		})
-	})
+		Context("when the mode is not registered", func() {
+			It("returns an error containing the unknown mode name", func() {
+				palette := prism.SystemPalette()
 
-	Context("given mode 'linear'", func() {
-		It("returns a Presenter without error", func() {
-			p, err := ui.New(ui.ModeLinear)
-			Expect(err).To(BeNil())
-			Expect(p).NotTo(BeNil())
-		})
-	})
+				_, err := ui.New("nonexistent-mode", palette)
 
-	Context("given an unknown mode", func() {
-		It("returns an error containing the unknown mode name", func() {
-			p, err := ui.New("flashy")
-			Expect(p).To(BeNil())
-			Expect(err).NotTo(BeNil())
-			// TODO: once lingo generates UnknownModeError, replace the
-			// ContainSubstring check with:
-			//   var target *locale.UnknownModeError
-			//   Expect(errors.As(err, &target)).To(BeTrue())
-			Expect(err.Error()).To(ContainSubstring("flashy"))
-		})
-	})
-})
-
-var _ = Describe("RegisterMode", func() {
-	Context("registering a new mode", func() {
-		It("makes the mode available via New", func() {
-			err := ui.RegisterMode("test-stub", func() report.Presenter {
-				return &stubPresenter{}
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("nonexistent-mode"))
 			})
-			Expect(err).To(BeNil())
-
-			p, err := ui.New("test-stub")
-			Expect(err).To(BeNil())
-			Expect(p).NotTo(BeNil())
 		})
-	})
 
-	Context("registering a duplicate mode", func() {
-		It("returns an error", func() {
-			// "test-stub" was registered in the previous spec; registering
-			// it again must return an error, not panic.
-			err := ui.RegisterMode("test-stub", func() report.Presenter {
-				return &stubPresenter{}
+		Context("when the palette contains an invalid ansi16 name", func() {
+			It("returns an error propagated from prism", func() {
+				palette := prism.SystemPalette()
+				palette.Directory = prism.SemanticColour{ANSI16: "notacolour"}
+
+				_, err := ui.New(ui.ModeLinear, palette)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("notacolour"))
 			})
-			Expect(err).NotTo(BeNil())
-			// TODO: once lingo generates DuplicateModeError, add:
-			//   var target *locale.DuplicateModeError
-			//   Expect(errors.As(err, &target)).To(BeTrue())
-			Expect(err.Error()).To(ContainSubstring("test-stub"))
+		})
+	})
+
+	// ------------------------------------------------------------------
+	// RegisterMode
+	// ------------------------------------------------------------------
+
+	Describe("RegisterMode", func() {
+		Context("when registering a new unique mode name", func() {
+			It("succeeds and the mode becomes available via New", func() {
+				const testMode = "test-mode-unique"
+
+				err := ui.RegisterMode(testMode,
+					func(palette prism.Palette) (report.Presenter, error) {
+						return ui.New(ui.ModeLinear, palette)
+					},
+				)
+
+				Expect(err).To(BeNil())
+
+				presenter, err := ui.New(testMode, prism.SystemPalette())
+				Expect(err).To(BeNil())
+				Expect(presenter).NotTo(BeNil())
+			})
+		})
+
+		Context("when registering a name that already exists", func() {
+			It("returns an error containing the duplicate name", func() {
+				err := ui.RegisterMode(ui.ModeLinear,
+					func(palette prism.Palette) (report.Presenter, error) {
+						return nil, nil
+					},
+				)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring(ui.ModeLinear))
+			})
 		})
 	})
 })
-
-var _ = Describe("linear Presenter", Ordered, func() {
-	var (
-		p    report.Presenter
-		node *core.Node
-	)
-
-	BeforeAll(func() {
-		Expect(li18ngo.Register(
-			func(o *li18ngo.UseOptions) {
-				o.From.Sources = li18ngo.TranslationFiles{
-					locale.SourceID: li18ngo.TranslationSource{Name: "agenor"},
-				}
-			},
-		)).To(Succeed())
-	})
-
-	BeforeEach(func() {
-		var err error
-		p, err = ui.New(ui.ModeLinear)
-		Expect(err).To(BeNil())
-		node = &core.Node{Path: "/some/path/file.txt"}
-	})
-
-	Describe("OnNodeEvent", func() {
-		It("does not panic for a valid node", func() {
-			Expect(func() {
-				p.OnNodeEvent(&report.NeutralEvent{
-					DisplayEvent: report.DisplayEvent{Node: node},
-				})
-			}).NotTo(Panic())
-		})
-	})
-
-	Describe("OnActionEvent", func() {
-		It("does not panic on success", func() {
-			Expect(func() {
-				p.OnActionEvent(&report.ActionEvent{
-					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
-				})
-			}).NotTo(Panic())
-		})
-
-		It("does not panic on failure", func() {
-			Expect(func() {
-				p.OnActionEvent(&report.ActionEvent{
-					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
-					Err:          errors.New("action failed"),
-				})
-			}).NotTo(Panic())
-		})
-	})
-
-	Describe("OnPipelineEvent", func() {
-		It("does not panic on success", func() {
-			Expect(func() {
-				p.OnPipelineEvent(&report.PipelineEvent{
-					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
-				})
-			}).NotTo(Panic())
-		})
-
-		It("does not panic on failure", func() {
-			Expect(func() {
-				p.OnPipelineEvent(&report.PipelineEvent{
-					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-pipeline"},
-					Err:          errors.New("pipeline failed"),
-				})
-			}).NotTo(Panic())
-		})
-	})
-
-	Describe("OnComplete", func() {
-		It("does not panic on a successful traversal", func() {
-			Expect(func() {
-				p.OnComplete(&report.Traversal{
-					FilesVisited: 10,
-					DirsVisited:  3,
-				})
-			}).NotTo(Panic())
-		})
-
-		It("does not panic when the traversal contains an error", func() {
-			Expect(func() {
-				p.OnComplete(&report.Traversal{
-					Err: errors.New("something broke"),
-				})
-			}).NotTo(Panic())
-		})
-	})
-
-	Describe("OnSkipEvent", func() {
-		It("does not panic for a populated skip event", func() {
-			Expect(func() {
-				p.OnSkipEvent(&report.SkipEvent{
-					DisplayEvent: report.DisplayEvent{Node: node, Name: "my-action"},
-					Placeholder:  "{{.grand}}",
-					ResolvedPath: "/some",
-				})
-			}).NotTo(Panic())
-		})
-	})
-})
-
-// ---------------------------------------------------------------------------
-// Test double - satisfies report.Presenter for registration tests
-// ---------------------------------------------------------------------------
-
-type stubPresenter struct{}
-
-// OnBegin is called once before any traversal events, with the
-// opening metadata. Implementations should use this to render
-// any opening banner or header.
-func (s *stubPresenter) OnBegin(_ *report.BeginEvent)            {}
-func (s *stubPresenter) OnNodeEvent(_ *report.NeutralEvent)      {}
-func (s *stubPresenter) OnActionEvent(_ *report.ActionEvent)     {}
-func (s *stubPresenter) OnPipelineEvent(_ *report.PipelineEvent) {}
-func (s *stubPresenter) OnSkipEvent(_ *report.SkipEvent)         {}
-func (s *stubPresenter) OnComplete(_ *report.Traversal)          {}

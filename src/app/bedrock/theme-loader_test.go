@@ -1,0 +1,211 @@
+package bedrock_test
+
+import (
+	"os"
+	"path/filepath"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/snivilised/jaywalk/src/app/bedrock"
+	"github.com/snivilised/jaywalk/src/prism"
+)
+
+// validThemeYAML is a minimal well-formed theme file covering a subset
+// of palette entries. The loader must tolerate absent entries - they
+// will be zero-value SemanticColour structs, which resolve without error.
+const validThemeYAML = `
+palette:
+  banner:
+    ansi16: "magenta"
+    ansi256: "99"
+    true-color: "#5C4AE4"
+  directory:
+    ansi16: "cyan"
+    ansi256: "116"
+    true-color: "#89DCEB"
+  error:
+    ansi16: "red"
+    ansi256: "211"
+    true-color: "#F38BA8"
+`
+
+// invalidANSI16YAML contains a palette entry with an unrecognised
+// ansi16 name. The loader itself does not validate colour names - that
+// is prism's responsibility at NewTheme time. So loading succeeds but
+// the returned palette will fail at NewTheme.
+const invalidANSI16YAML = `
+palette:
+  directory:
+    ansi16: "notacolour"
+`
+
+// missingPaletteYAML is a valid YAML file that lacks the required
+// top-level 'palette' key.
+const missingPaletteYAML = `
+name: broken-theme
+`
+
+var _ = Describe("ThemeLoader", Ordered, func() {
+	var themesDir string
+
+	BeforeAll(func() {
+		// Create a temporary themes directory for all tests in this suite.
+		var err error
+		themesDir, err = os.MkdirTemp("", "jay-themes-*")
+		Expect(err).To(BeNil())
+	})
+
+	AfterAll(func() {
+		_ = os.RemoveAll(themesDir)
+	})
+
+	// ------------------------------------------------------------------
+	// JAY_THEMES_DIR env var
+	// ------------------------------------------------------------------
+
+	Describe("NewThemeLoader", func() {
+		Context("when JAY_THEMES_DIR is set", func() {
+			It("uses the env var path as the themes directory", func() {
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				Expect(loader.ThemesDir()).To(Equal(themesDir))
+			})
+		})
+
+		Context("when JAY_THEMES_DIR is not set", func() {
+			It("uses the XDG default path containing 'jay/themes'", func() {
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				loader := bedrock.NewThemeLoader()
+
+				Expect(loader.ThemesDir()).To(ContainSubstring(
+					filepath.Join("jay", "themes"),
+				))
+			})
+		})
+	})
+
+	// ------------------------------------------------------------------
+	// Load - system palette
+	// ------------------------------------------------------------------
+
+	Describe("Load", func() {
+		Context("when the theme name is empty", func() {
+			It("returns the system palette without reading any file", func() {
+				loader := bedrock.NewThemeLoader()
+
+				palette, err := loader.Load("")
+
+				Expect(err).To(BeNil())
+				Expect(palette).To(Equal(prism.SystemPalette()))
+			})
+		})
+
+		Context("when the theme name is 'system'", func() {
+			It("returns the system palette without reading any file", func() {
+				loader := bedrock.NewThemeLoader()
+
+				palette, err := loader.Load(bedrock.ThemeSystemName)
+
+				Expect(err).To(BeNil())
+				Expect(palette).To(Equal(prism.SystemPalette()))
+			})
+		})
+
+		// ------------------------------------------------------------------
+		// Load - file-based themes
+		// ------------------------------------------------------------------
+
+		Context("when loading from a valid theme file", func() {
+			It("decodes the palette correctly", func() {
+				writeThemeFile(themesDir, "my-theme", validThemeYAML)
+
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				palette, err := loader.Load("my-theme")
+
+				Expect(err).To(BeNil())
+				Expect(palette.Banner.ANSI16).To(Equal("magenta"))
+				Expect(palette.Banner.ANSI256).To(Equal("99"))
+				Expect(palette.Banner.TrueColor).To(Equal("#5C4AE4"))
+				Expect(palette.Directory.ANSI16).To(Equal("cyan"))
+				Expect(palette.Error.ANSI16).To(Equal("red"))
+			})
+		})
+
+		Context("when the theme file does not exist", func() {
+			It("returns an error containing the theme name", func() {
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				_, err := loader.Load("nonexistent-theme")
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("nonexistent-theme"))
+			})
+		})
+
+		Context("when the theme file is missing the palette key", func() {
+			It("returns an error mentioning 'palette'", func() {
+				writeThemeFile(themesDir, "no-palette", missingPaletteYAML)
+
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				_, err := loader.Load("no-palette")
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("palette"))
+			})
+		})
+
+		Context("when a theme file has an unrecognised ansi16 name", func() {
+			It("loads successfully - colour validation is prism's responsibility", func() {
+				writeThemeFile(themesDir, "bad-colours", invalidANSI16YAML)
+
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				palette, err := loader.Load("bad-colours")
+
+				// Loader does not validate colour names - it returns the raw
+				// decoded palette. The error surfaces later in prism.NewTheme.
+				Expect(err).To(BeNil())
+				Expect(palette.Directory.ANSI16).To(Equal("notacolour"))
+			})
+		})
+	})
+})
+
+// writeThemeFile writes content to <dir>/<name>.yaml.
+func writeThemeFile(dir, name, content string) {
+	path := filepath.Join(dir, name+".yaml")
+	err := os.WriteFile(path, []byte(content), 0600)
+	Expect(err).To(BeNil())
+}

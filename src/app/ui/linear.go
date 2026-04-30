@@ -11,12 +11,13 @@ import (
 // report events into prism.Motif calls and delegates all formatting
 // and output to the prism.Renderer. It contains no formatting logic.
 //
-// It is safe for concurrent use - all renderer calls are serialised
-// through a mutex so interleaved output from the run command's worker
-// pool is avoided.
+// Safe for concurrent use - all renderer calls are serialised through
+// a mutex so interleaved output from the run command's worker pool is
+// avoided.
 type linear struct {
 	mu       sync.Mutex
 	renderer prism.Renderer
+	kind     prism.NavigationKind // remembered from OnBegin for use in OnComplete
 }
 
 // OnBegin translates the BeginEvent into a prism.Overture and calls
@@ -30,6 +31,8 @@ func (l *linear) OnBegin(e *report.BeginEvent) {
 		kind = prism.ResumeNavigation
 	}
 
+	l.kind = kind
+
 	l.renderer.Begin(prism.Overture{
 		Root:       e.Root,
 		Caption:    e.Caption,
@@ -39,9 +42,8 @@ func (l *linear) OnBegin(e *report.BeginEvent) {
 	})
 }
 
-// OnNodeEvent translates a neutral node visit into a prism.Motif and
-// calls renderer.Show. Depth is sourced from node.Extension.Depth as
-// provided by agenor.
+// OnNodeEvent translates a neutral node visit into a prism.Motif.
+// Depth is sourced from node.Extension.Depth as provided by agenor.
 func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -50,13 +52,11 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 		Path:  e.Node.Path,
 		Name:  e.Node.Extension.Name,
 		IsDir: e.Node.IsDirectory(),
-		Depth: uint(e.Node.Extension.Depth), //nolint:gosec // overflow not likely
+		Depth: uint(e.Node.Extension.Depth), //nolint: gosec // overflow
 	})
 }
 
-// OnActionEvent translates an action event into a prism.Motif. The
-// action name and any error are carried on the motif so the renderer
-// can style them appropriately.
+// OnActionEvent translates an action event into a prism.Motif.
 func (l *linear) OnActionEvent(e *report.ActionEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -65,7 +65,7 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 		Path:       e.Node.Path,
 		Name:       e.Node.Extension.Name,
 		IsDir:      e.Node.IsDirectory(),
-		Depth:      uint(e.Node.Extension.Depth), //nolint:gosec // overflow not likely
+		Depth:      uint(e.Node.Extension.Depth), //nolint: gosec // overflow
 		ActionName: e.Name,
 		Err:        e.Err,
 	})
@@ -80,14 +80,14 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 		Path:         e.Node.Path,
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth), //nolint:gosec // overflow not likely
+		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
 		PipelineName: e.Name,
 		Err:          e.Err,
 	})
 }
 
 // OnSkipEvent translates a skip event into a prism.Motif flagged as
-// skipped, so the renderer can style it with a warning indicator.
+// skipped so the renderer can apply warning styling.
 func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -96,7 +96,7 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 		Path:         e.Node.Path,
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth), //nolint:gosec // overflow not likely
+		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
 		ActionName:   e.Name,
 		Skipped:      true,
 		Placeholder:  e.Placeholder,
@@ -105,7 +105,8 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 }
 
 // OnComplete translates the Traversal outcome into a prism.Summary and
-// calls renderer.End to render the closing summary box.
+// calls renderer.End to render the closing summary box. Kind is carried
+// from OnBegin so the summary labels correctly for resume traversals.
 func (l *linear) OnComplete(t *report.Traversal) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -120,5 +121,15 @@ func (l *linear) OnComplete(t *report.Traversal) {
 		DirsVisited:  t.DirsVisited,
 		Elapsed:      t.Elapsed,
 		Errors:       errs,
+		Kind:         l.kind,
 	})
+}
+
+// NewLinearWithRenderer constructs a linear presenter backed by the
+// given renderer. Intended for use in tests only - production code
+// constructs linear via the ui registry using New(). This allows a
+// spy or stub renderer to be injected without going through prism.New
+// and without requiring a real terminal.
+func NewLinearWithRenderer(r prism.Renderer) report.Presenter {
+	return &linear{renderer: r}
 }

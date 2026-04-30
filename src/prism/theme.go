@@ -1,15 +1,18 @@
 package prism
 
 import (
+	"fmt"
+	"image/color"
 	"io"
 	"os"
 
+	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/lipgloss/v2"
 )
 
-// Theme holds all lipgloss styles used by a renderer. Constructed once via
-// NewTheme and injected into the renderer - no package-level style variables
-// exist. Dark/light palette selection is handled automatically by lipgloss v2.
+// Theme holds all lipgloss styles used by a renderer. Constructed once
+// via NewTheme and injected into the renderer. No package-level style
+// variables exist anywhere in prism.
 type Theme struct {
 	// BannerStyle is applied to the overture banner block.
 	BannerStyle lipgloss.Style
@@ -29,6 +32,15 @@ type Theme struct {
 	// DepthStyle is applied to the depth indent prefix in Show output.
 	DepthStyle lipgloss.Style
 
+	// ActionStyle is applied to action names shown alongside nodes.
+	ActionStyle lipgloss.Style
+
+	// PipelineStyle is applied to pipeline names shown alongside nodes.
+	PipelineStyle lipgloss.Style
+
+	// SkippedStyle is applied to nodes whose action was skipped.
+	SkippedStyle lipgloss.Style
+
 	// SummaryBoxStyle is the outer container style for the closing summary.
 	SummaryBoxStyle lipgloss.Style
 
@@ -43,66 +55,128 @@ type Theme struct {
 
 	// MutedStyle is applied to secondary or de-emphasised text.
 	MutedStyle lipgloss.Style
+
+	// ProgressStyle is applied to progress indicators.
+	ProgressStyle lipgloss.Style
+
+	// WorkerStyle is applied to active concurrent worker indicators.
+	WorkerStyle lipgloss.Style
+
+	// WorkerIdleStyle is applied to idle concurrent worker indicators.
+	WorkerIdleStyle lipgloss.Style
+
+	// LaneHeaderStyle is applied to per-worker lane identity headers.
+	LaneHeaderStyle lipgloss.Style
 }
 
-// NewTheme constructs a Theme by detecting the terminal's dark/light
-// background via lipgloss v2 against the provided writer. If detection
-// fails (e.g. in a test with a non-TTY writer) dark mode is assumed as
-// a safe fallback - colours are still applied but downsampled to nothing
-// by lipgloss when output is not a TTY.
+// NewTheme constructs a Theme from the given Palette. The colour profile
+// is detected from the environment via colorprofile.Detect so that
+// lipgloss can select the best available colour tier (TrueColor,
+// ANSI-256, ANSI-16, or none) at style construction time.
 //
-// Colour downsampling (TrueColor -> ANSI256 -> ANSI -> none) is handled
-// automatically by lipgloss.Fprintln and friends at render time.
-func NewTheme(w io.Writer) Theme {
-	// HasDarkBackground returns (bool, error) in lipgloss v2. Errors occur
-	// when the terminal cannot be queried (non-TTY, piped output, tests).
-	// We fall back to dark rather than propagating the error - a rendering
-	// library should never force callers into error handling for cosmetic
-	// decisions.
+// Returns an error if any palette entry contains an unrecognised ANSI-16
+// colour name. Bootstrap should treat this as a startup failure.
+func NewTheme(palette Palette, w io.Writer) (Theme, error) {
+	// Detect the terminal colour profile from the writer's environment.
+	// This determines whether TrueColor, ANSI-256, ANSI-16, or plain
+	// text output is used. colorprofile.Detect handles NO_COLOR, isatty,
+	// COLORTERM and TERM inspection automatically.
+	profile := colorprofile.Detect(w, os.Environ())
 
-	hasDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
-	ld := lipgloss.LightDark(hasDark)
+	// complete returns the best available color.Color for a SemanticColour
+	// given the detected profile. lipgloss.Complete selects from the three
+	// tiers in order: ANSI-16 first for low-capability terminals, then
+	// ANSI-256, then TrueColor for capable terminals.
+	complete := lipgloss.Complete(profile)
 
-	// Colour palette - one declaration per semantic role, light/dark
-	// variants resolved at construction time by ld().
-	banner := ld(
-		lipgloss.Color("#7C3AED"), // light: vivid violet
-		lipgloss.Color("#5C4AE4"), // dark:  indigo
-	)
-	bannerText := lipgloss.Color("#FFFFFF")
+	resolve := func(sc SemanticColour, field string) (color.Color, error) {
+		ansi, ansi256, trueCol, err := sc.Resolve()
+		if err != nil {
+			return nil, fmt.Errorf("palette.%s: %w", field, err)
+		}
 
-	dirFg := ld(
-		lipgloss.Color("#0369A1"), // light: ocean blue
-		lipgloss.Color("#89DCEB"), // dark:  sky cyan
-	)
-	fileFg := ld(
-		lipgloss.Color("#1E293B"), // light: near-black slate
-		lipgloss.Color("#CDD6F4"), // dark:  lavender white
-	)
-	depthFg := ld(
-		lipgloss.Color("#94A3B8"), // light: muted slate
-		lipgloss.Color("#6C7086"), // dark:  muted overlay
-	)
-	summaryBorder := ld(
-		lipgloss.Color("#7C3AED"),
-		lipgloss.Color("#5C4AE4"),
-	)
-	summaryLabel := ld(
-		lipgloss.Color("#1D4ED8"), // light: strong blue
-		lipgloss.Color("#89B4FA"), // dark:  soft blue
-	)
-	summaryValue := ld(
-		lipgloss.Color("#1E293B"),
-		lipgloss.Color("#CDD6F4"),
-	)
-	errorFg := ld(
-		lipgloss.Color("#DC2626"), // light: red
-		lipgloss.Color("#F38BA8"), // dark:  rose
-	)
-	muted := ld(
-		lipgloss.Color("#94A3B8"),
-		lipgloss.Color("#6C7086"),
-	)
+		return complete(ansi, ansi256, trueCol), nil
+	}
+
+	banner, err := resolve(palette.Banner, "banner")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	bannerText, err := resolve(palette.BannerText, "banner-text")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	dir, err := resolve(palette.Directory, "directory")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	file, err := resolve(palette.File, "file")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	action, err := resolve(palette.Action, "action")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	pipeline, err := resolve(palette.Pipeline, "pipeline")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	skipped, err := resolve(palette.Skipped, "skipped")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	errorCol, err := resolve(palette.Error, "error")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	muted, err := resolve(palette.Muted, "muted")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	progress, err := resolve(palette.Progress, "progress")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	summaryBorder, err := resolve(palette.SummaryBorder, "summary-border")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	summaryLabel, err := resolve(palette.SummaryLabel, "summary-label")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	summaryValue, err := resolve(palette.SummaryValue, "summary-value")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	worker, err := resolve(palette.Worker, "worker")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	workerIdle, err := resolve(palette.WorkerIdle, "worker-idle")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	laneHeader, err := resolve(palette.LaneHeader, "lane-header")
+	if err != nil {
+		return Theme{}, err
+	}
 
 	return Theme{
 		BannerStyle: lipgloss.NewStyle().
@@ -121,14 +195,24 @@ func NewTheme(w io.Writer) Theme {
 			Faint(true),
 
 		DirStyle: lipgloss.NewStyle().
-			Foreground(dirFg).
+			Foreground(dir).
 			Bold(true),
 
 		FileStyle: lipgloss.NewStyle().
-			Foreground(fileFg),
+			Foreground(file),
 
 		DepthStyle: lipgloss.NewStyle().
-			Foreground(depthFg).
+			Foreground(muted).
+			Faint(true),
+
+		ActionStyle: lipgloss.NewStyle().
+			Foreground(action),
+
+		PipelineStyle: lipgloss.NewStyle().
+			Foreground(pipeline),
+
+		SkippedStyle: lipgloss.NewStyle().
+			Foreground(skipped).
 			Faint(true),
 
 		SummaryBoxStyle: lipgloss.NewStyle().
@@ -146,11 +230,26 @@ func NewTheme(w io.Writer) Theme {
 			Foreground(summaryValue),
 
 		ErrorStyle: lipgloss.NewStyle().
-			Foreground(errorFg).
+			Foreground(errorCol).
 			Bold(true),
 
 		MutedStyle: lipgloss.NewStyle().
 			Foreground(muted).
 			Faint(true),
-	}
+
+		ProgressStyle: lipgloss.NewStyle().
+			Foreground(progress),
+
+		WorkerStyle: lipgloss.NewStyle().
+			Foreground(worker).
+			Bold(true),
+
+		WorkerIdleStyle: lipgloss.NewStyle().
+			Foreground(workerIdle).
+			Faint(true),
+
+		LaneHeaderStyle: lipgloss.NewStyle().
+			Foreground(laneHeader).
+			Bold(true),
+	}, nil
 }
