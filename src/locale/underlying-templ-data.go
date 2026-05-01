@@ -198,6 +198,35 @@ Use --action or --pipeline to name a config-defined operation.
 	},
 
 	// -------------------------------------------------------------------------
+	// query-cmd: Cobra messages
+	// -------------------------------------------------------------------------
+
+	"query-command-short-description": {
+		MessageID:   "query-command-short-description",
+		Seed:        "QueryCmdShortDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "query acts as a non destructive directory tree inquiry",
+		Story: "QueryCmdShortDesc is the short description shown in" +
+			" cobra help output for the query command.",
+		Other: "query navigates the directory tree via a walk traversal",
+		File:  "query-cmd",
+	},
+
+	"query-command-long-description": {
+		MessageID:   "query-command-long-description",
+		Seed:        "QueryCmdLongDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "query acts as a non destructive directory tree inquiry",
+		Story: "QueryCmdLongDesc is the long description shown in" +
+			" cobra help output for the nav command.",
+		Other: "query command walks the directory tree showing nodes that " +
+			" satisfy filtering criteria when present. Can be used as a kind of dry " +
+			"run traversal, except no actions or pipelines are invoked as in the case " +
+			"for walk and run commands.",
+		File: "query-cmd",
+	},
+
+	// -------------------------------------------------------------------------
 	// shell:Error messages
 	// -------------------------------------------------------------------------
 
@@ -917,6 +946,23 @@ Use --action or --pipeline to name a config-defined operation.
 				Note:   "Elapsed",
 				GoType: "string",
 				Tale:   "is the total time elapsed during the traversal",
+			},
+		},
+	},
+
+	"command-is-not-user-invocable-prompt": {
+		MessageID:   "command-is-not-user-invocable-prompt",
+		Seed:        "CommandIsNotUserInvocablePrompt",
+		TypeName:    enums.UnderlyingTypeDynamicGeneral,
+		Description: "command is not a user invocable",
+		Story: "CommandIsNotUserInvocablePrompt is the message shown during startup" +
+			" if the user accidentally invokes this ghost sub command, before exiting.",
+		Other: "{{.Command}} is hidden and not designed to be directly invoked",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "is the name of the ghost command",
 			},
 		},
 	},

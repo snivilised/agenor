@@ -47,13 +47,17 @@ type RootParameterSet struct {
 }
 
 // ---------------------------------------------------------------------------
-// Walk parameter set
+// Nav parameter set
 // ---------------------------------------------------------------------------
 
-// WalkParameterSet holds the jay-specific flags for the walk command.
-// Shared families (preview, cascade, sampling, poly-filter) are
-// registered separately and are not embedded here.
-type WalkParameterSet struct {
+// NavParameterSet holds the jay-specific flags that are common to all
+// navigation commands (walk, run, query). It is registered on the ghost
+// nav command as a persistent param-set so that walk, run, and query all
+// inherit these flags without duplication.
+//
+// Previously these fields were duplicated across WalkParameterSet and
+// RunParameterSet. Those types have been removed.
+type NavParameterSet struct {
 	store.ParameterSetWithOverrides
 
 	// Subscribe controls which node types are visited.
@@ -70,34 +74,6 @@ type WalkParameterSet struct {
 
 	// Resume defines the resume strategy for interrupted traversals.
 	// Maps to --resume(-r).
-	// Valid values: "spawn", "fastward". Empty means prime (no resume).
-	Resume string
-}
-
-// ---------------------------------------------------------------------------
-// Run parameter set
-// ---------------------------------------------------------------------------
-
-// RunParameterSet holds the jay-specific flags for the run command.
-// It mirrors WalkParameterSet; run additionally gets
-// WorkerPoolParameterSet via a separate family registration.
-type RunParameterSet struct {
-	store.ParameterSetWithOverrides
-
-	// Subscribe controls which node types are visited.
-	// Valid values: "files", "dirs", "all". Maps to --subscribe(-s).
-	Subscribe string
-
-	// Action names the config-defined action to invoke for each node.
-	// Maps to --action(-a).
-	Action string
-
-	// Pipeline names the config-defined pipeline to execute.
-	// Maps to --pipeline(-p).
-	Pipeline string
-
-	// Resume defines the resume strategy for interrupted traversals.
-	// Maps to --resume(-r).
-	// Valid values: "spawn", "fastward". Empty means prime (no resume).
+	// Valid values: "spawn", "fast". Empty means prime (no resume).
 	Resume string
 }

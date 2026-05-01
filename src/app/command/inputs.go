@@ -2,11 +2,10 @@ package command
 
 import (
 	"github.com/snivilised/jaywalk/src/agenor/enums"
+	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
-
-	"github.com/snivilised/jaywalk/src/app/report"
 )
 
 // ---------------------------------------------------------------------------
@@ -30,27 +29,26 @@ func ResolveSubscription(flag string) (enums.Subscription, error) {
 }
 
 // ---------------------------------------------------------------------------
-// Shared families bundle - embedded in both WalkInputs and RunInputs
+// NavFamilies - shared by all navigation commands
 // ---------------------------------------------------------------------------
 
-// SharedFamilies groups the mamba param-set pointers registered on the
-// root command as persistent flags, inherited by all sub-commands.
-// Note: CliInteractionParameterSet is NOT included here because --tui is
-// a string flag on RootParameterSet, allowing the user to select a named
-// display mode rather than a simple on/off boolean.
-type SharedFamilies struct {
+// NavFamilies groups the mamba param-set pointers registered on the ghost
+// nav command as persistent flags. All navigation commands (walk, run, query)
+// inherit these automatically through the cobra parent/child relationship.
+type NavFamilies struct {
 	Preview  *assist.ParamSet[store.PreviewParameterSet]
 	Cascade  *assist.ParamSet[store.CascadeParameterSet]
 	Sampling *assist.ParamSet[store.SamplingParameterSet]
+	PolyFam  *assist.ParamSet[store.PolyFilterParameterSet]
 }
 
 // ---------------------------------------------------------------------------
 // WalkInputs - consumed by the walk RunE handler
 // ---------------------------------------------------------------------------
 
-// WalkInputs collects all flag values needed to build a Walk invocation.
+// WalkInputs collects all flag values needed to build a walk invocation.
 type WalkInputs struct {
-	SharedFamilies
+	NavFamilies
 
 	// Tree is the positional directory argument.
 	Tree string
@@ -59,20 +57,18 @@ type WalkInputs struct {
 	// terminal is routed through this interface.
 	UI report.Presenter
 
-	// Jay-specific flags
-	ParamSet *assist.ParamSet[WalkParameterSet]
-
-	// Per-command filter family (not inherited from root)
-	PolyFam *assist.ParamSet[store.PolyFilterParameterSet]
+	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
+	// resume) inherited from the ghost nav command.
+	ParamSet *assist.ParamSet[NavParameterSet]
 }
 
 // ---------------------------------------------------------------------------
 // RunInputs - consumed by the run RunE handler
 // ---------------------------------------------------------------------------
 
-// RunInputs collects all flag values needed to build a Run invocation.
+// RunInputs collects all flag values needed to build a run invocation.
 type RunInputs struct {
-	SharedFamilies
+	NavFamilies
 
 	// Tree is the positional directory argument.
 	Tree string
@@ -81,12 +77,32 @@ type RunInputs struct {
 	// terminal is routed through this interface.
 	UI report.Presenter
 
-	// Jay-specific flags
-	ParamSet *assist.ParamSet[RunParameterSet]
+	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
+	// resume) inherited from the ghost nav command.
+	ParamSet *assist.ParamSet[NavParameterSet]
 
-	// Per-command filter family (not inherited from root)
-	PolyFam *assist.ParamSet[store.PolyFilterParameterSet]
-
-	// Run-only family
+	// WorkerPool holds the run-exclusive concurrency flags (--cpu, --now).
 	WorkerPool *assist.ParamSet[store.WorkerPoolParameterSet]
+}
+
+// ---------------------------------------------------------------------------
+// QueryInputs - consumed by the query RunE handler
+// ---------------------------------------------------------------------------
+
+// QueryInputs collects all flag values needed to build a query invocation.
+// Query is a single-threaded, read-only traversal - it visits nodes but
+// executes no actions or pipelines.
+type QueryInputs struct {
+	NavFamilies
+
+	// Tree is the positional directory argument.
+	Tree string
+
+	// UI is the display manager selected by --tui. All output to the
+	// terminal is routed through this interface.
+	UI report.Presenter
+
+	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
+	// resume) inherited from the ghost nav command.
+	ParamSet *assist.ParamSet[NavParameterSet]
 }

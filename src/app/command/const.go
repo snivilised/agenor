@@ -18,21 +18,25 @@ const (
 	// root
 	RootPsName = "root-ps"
 
-	// shared families (registered on root, inherited by sub-commands)
+	// nav ghost command param-set
+	NavPsName = "nav-ps"
+
+	// shared families (registered on nav ghost, inherited by walk/run/query)
 	PreviewFamName     = "preview-fam"
 	CascadeFamName     = "cascade-fam"
 	InteractionFamName = "interaction-fam"
 	SamplingFamName    = "sampling-fam"
 
+	// poly-filter family (registered on nav ghost, inherited by walk/run/query)
+	PolyFamName = "poly-fam"
+
 	// run-only family
 	WorkerPoolFamName = "worker-pool-fam"
 
-	// filter family (registered per-command, not inherited)
-	PolyFamName = "poly-fam"
-
 	// jay-specific param sets
-	WalkPsName = "walk-ps"
-	RunPsName  = "run-ps"
+	WalkPsName  = "walk-ps"
+	RunPsName   = "run-ps"
+	QueryPsName = "query-ps"
 )
 
 // ---------------------------------------------------------------------------
