@@ -3,13 +3,13 @@ module github.com/snivilised/jaywalk
 go 1.26.0
 
 require (
-	github.com/onsi/ginkgo/v2 v2.28.2
-	github.com/onsi/gomega v1.39.1
+	github.com/onsi/ginkgo/v2 v2.28.3
+	github.com/onsi/gomega v1.40.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
 )
 
-require github.com/snivilised/mamba v0.1.1
+require github.com/snivilised/mamba v0.1.2
 
 require (
 	github.com/adrg/xdg v0.5.3

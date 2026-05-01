@@ -74,6 +74,16 @@ type ConfigureOptionFn func(*ConfigureOptions)
 // creates the Coordinator, and connects everything together.
 // It contains no business logic and no traversal decisions.
 //
+// Command hierarchy:
+//
+//	root  (global persistent flags: --tui, --theme, --language)
+//	  nav (ghost; nav persistent flags: all navigation families)
+//	    walk
+//	    run
+//	    query
+//	  verify
+//	  theme
+//
 // Code smell checklist (should remain clean):
 //   - No direct calls to agenor from Bootstrap
 //   - No UI rendering logic in Bootstrap
@@ -100,18 +110,14 @@ type Bootstrap struct {
 	// root param-set
 	rootPs *assist.ParamSet[RootParameterSet]
 
-	// shared persistent families
+	// nav ghost param-set and persistent families, inherited by walk, run, and query.
+	navPs       *assist.ParamSet[NavParameterSet]
 	previewFam  *assist.ParamSet[store.PreviewParameterSet]
 	cascadeFam  *assist.ParamSet[store.CascadeParameterSet]
 	samplingFam *assist.ParamSet[store.SamplingParameterSet]
+	polyFam     *assist.ParamSet[store.PolyFilterParameterSet]
 
-	// walk command
-	walkPs      *assist.ParamSet[WalkParameterSet]
-	walkPolyFam *assist.ParamSet[store.PolyFilterParameterSet]
-
-	// run command
-	runPs         *assist.ParamSet[RunParameterSet]
-	runPolyFam    *assist.ParamSet[store.PolyFilterParameterSet]
+	// run-exclusive family
 	workerPoolFam *assist.ParamSet[store.WorkerPoolParameterSet]
 }
 
@@ -192,9 +198,12 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 		},
 	)
 
+	// Registration order matters - parent must be registered before children.
 	b.buildRootCommand(b.container)
+	b.buildNavCommand(b.container) // ghost; must precede walk/run/query
 	b.buildWalkCommand(b.container)
 	b.buildRunCommand(b.container)
+	b.buildQueryCommand(b.container)
 
 	return b.container.Root()
 }
@@ -268,6 +277,9 @@ func handleLangSetting() {
 // buildRootCommand
 // ---------------------------------------------------------------------------
 
+// buildRootCommand registers the truly global persistent flags on root:
+// --tui, --theme, and --language. Navigation families live on the ghost
+// nav command so that utility commands (verify, theme) do not inherit them.
 func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 	root := container.Root()
 
@@ -302,25 +314,19 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 	)
 
 	container.MustRegisterParamSet(RootPsName, b.rootPs)
-
-	b.previewFam = assist.NewParamSet[store.PreviewParameterSet](root)
-	b.previewFam.Native.BindAll(b.previewFam, root.PersistentFlags())
-	container.MustRegisterParamSet(PreviewFamName, b.previewFam)
-
-	b.cascadeFam = assist.NewParamSet[store.CascadeParameterSet](root)
-	b.cascadeFam.Native.BindAll(b.cascadeFam, root.PersistentFlags())
-	container.MustRegisterParamSet(CascadeFamName, b.cascadeFam)
-
-	b.samplingFam = assist.NewParamSet[store.SamplingParameterSet](root)
-	b.samplingFam.Native.BindAll(b.samplingFam, root.PersistentFlags())
-	container.MustRegisterParamSet(SamplingFamName, b.samplingFam)
 }
 
-// sharedFamilies is a convenience accessor used by runWalk and runRun.
-func (b *Bootstrap) sharedFamilies() SharedFamilies {
-	return SharedFamilies{
+// ---------------------------------------------------------------------------
+// navFamilies
+// ---------------------------------------------------------------------------
+
+// navFamilies is a convenience accessor used by runWalk, runRun, and
+// runQuery to obtain the nav-level flag families in a single bundle.
+func (b *Bootstrap) navFamilies() NavFamilies {
+	return NavFamilies{
 		Preview:  b.previewFam,
 		Cascade:  b.cascadeFam,
 		Sampling: b.samplingFam,
+		PolyFam:  b.polyFam,
 	}
 }
