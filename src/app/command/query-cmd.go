@@ -1,8 +1,6 @@
 package command
 
 import (
-	"sync"
-
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/mamba/assist"
 	"github.com/spf13/cobra"
@@ -21,16 +19,16 @@ func (b *Bootstrap) buildQueryCommand(container *assist.CobraContainer) {
 		RunE:  b.runQuery,
 	}
 
-	// query is a read-only traversal - it visits nodes on a single thread
-	// but executes no actions or pipelines. The --action and --pipeline
-	// flags are inherited from nav but ignored at the controller level.
-
 	container.MustRegisterCommand("nav", queryCmd)
 }
 
 // runQuery is the RunE handler for the query command. It reads flags from
 // the nav-level param-sets (all inherited), constructs the agenor.Goldfish
 // scenario, and delegates to the coordinator.
+//
+// When --action or --pipeline is supplied, query displays which activator
+// would be invoked per node without executing it. When neither is supplied,
+// query displays the nodes that would be visited.
 func (b *Bootstrap) runQuery(cmd *cobra.Command, args []string) error {
 	subscription, err := ResolveSubscription(b.navPs.Native.Subscribe)
 	if err != nil {
@@ -39,13 +37,12 @@ func (b *Bootstrap) runQuery(cmd *cobra.Command, args []string) error {
 
 	opts := buildOptions(b.navFamilies())
 
-	const isWalk = true
-	wg := &sync.WaitGroup{}
-
 	base := controller.Request{
 		Subscription: subscription,
 		Options:      opts,
-		Scenario:     agenor.Goldfish(isWalk, wg),
+		ActionName:   b.navPs.Native.Action,
+		PipelineName: b.navPs.Native.Pipeline,
+		Scenario:     agenor.SlowPrime,
 		UI:           b.UI,
 	}
 

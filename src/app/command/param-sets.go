@@ -50,13 +50,8 @@ type RootParameterSet struct {
 // Nav parameter set
 // ---------------------------------------------------------------------------
 
-// NavParameterSet holds the jay-specific flags that are common to all
-// navigation commands (walk, run, query). It is registered on the ghost
-// nav command as a persistent param-set so that walk, run, and query all
-// inherit these flags without duplication.
-//
-// Previously these fields were duplicated across WalkParameterSet and
-// RunParameterSet. Those types have been removed.
+// NavParameterSet holds the jay-specific flags inherited by all navigation
+// commands (walk, run, query) via the ghost nav command.
 type NavParameterSet struct {
 	store.ParameterSetWithOverrides
 
@@ -71,6 +66,17 @@ type NavParameterSet struct {
 	// Pipeline names the config-defined pipeline to execute.
 	// Maps to --pipeline(-p).
 	Pipeline string
+}
+
+// ---------------------------------------------------------------------------
+// Exec parameter set
+// ---------------------------------------------------------------------------
+
+// ExecParameterSet holds the jay-specific flags inherited by execution
+// commands (walk, run) via the ghost exec command. Query does not inherit
+// these flags since it performs no execution and cannot be resumed.
+type ExecParameterSet struct {
+	store.ParameterSetWithOverrides
 
 	// Resume defines the resume strategy for interrupted traversals.
 	// Maps to --resume(-r).

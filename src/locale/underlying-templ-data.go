@@ -20,8 +20,25 @@ var _ = lingo.Underliers{
 		TypeName:    enums.UnderlyingTypeStaticCobra,
 		Description: "Cobra flag description for TUI flag",
 		Story:       "Cobra flag description for TUI flag",
-		Other:       "tui denotes what view to use",
+		Other:       "tui denotes what view to use (default: linear)",
 		File:        "flags",
+	},
+
+	"theme-flag-description": {
+		MessageID:   "theme-flag-description",
+		Seed:        "ThemeFlagDesc",
+		TypeName:    enums.UnderlyingTypeDynamicCobra,
+		Description: "Cobra flag description for theme flag",
+		Story:       "Cobra flag description for theme flag",
+		Other:       "theme denotes colour theme selection (default: system), loaded from '{{.Path}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Path",
+				GoType: "string",
+				Tale:   "The path to the colour themes file",
+			},
+		},
+		File: "flags",
 	},
 
 	"subscribe-flag-description": {
@@ -66,6 +83,88 @@ var _ = lingo.Underliers{
 		Story: "Cobra flag description for resume flag",
 		Other: "resume denotes the strategy to use to continue a previously interrupted " +
 			"navigation: 'spawn' or 'ff'",
+		File: "flags",
+	},
+
+	// -------------------------------------------------------------------------
+	// flags: Error messages
+	// -------------------------------------------------------------------------
+
+	"mark-inherited-flags-one-required.dynamic-error": {
+		MessageID: "mark-inherited-flags-one-required.dynamic-error",
+		Seed:      "MarkInheritedFlagsOneRequired",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Error message displayed when user fails to specify one of a set " +
+			"of flags, required for a particular command",
+		Story: "This error is the equivalent of cobra's MarkFlagsOneRequired that does not " +
+			"work, if the flag is inherited. The cobra version only works when called from the " +
+			"command that actually defines the flag, so MarkInheritedFlagsOneRequired is a " +
+			"work-around for this deficiency.",
+		Other: "Missing flag for command '{{.Command}}', one of these must be specified: '{{.Flags}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command for which the flags are required",
+			},
+			{
+				Note:   "Flags",
+				GoType: "string",
+				Tale:   "The set of flags, one of which is required",
+			},
+		},
+		File: "flags",
+	},
+
+	"mark-inherited-flag-required.dynamic-error": {
+		MessageID: "mark-inherited-flag-required.dynamic-error",
+		Seed:      "MarkInheritedFlagsRequired",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Error message displayed when user fails to specify a mandatory " +
+			"flag, required for a particular command",
+		Story: "This error is the equivalent of cobra's MarkFlagsRequired that does not " +
+			"work, if the flag is inherited. The cobra version only works when called from the " +
+			"command that actually defines the flag, so MarkInheritedFlagsRequired is a " +
+			"work-around for this deficiency.",
+		Other: "missing mandatory flag: '{{.Flag}}' required for command '{{.Command}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command for which the flags are required",
+			},
+			{
+				Note:   "Flag",
+				GoType: "string",
+				Tale:   "The name of the missing flag",
+			},
+		},
+		File: "flags",
+	},
+
+	"mutually-exclusive-flags-present.dynamic-error": {
+		MessageID: "mutually-exclusive-flags-present.dynamic-error",
+		Seed:      "MutuallyExclusiveFlagsPresent",
+		TypeName:  enums.UnderlyingTypeDynamicError,
+		Description: "Error message displayed when user specifies flags " +
+			"that can't be specified together",
+		Story: "This error is the equivalent of cobra's MarkFlagsMutuallyExclusive that does not " +
+			"work, if the flags are inherited. The cobra version only works when called from the " +
+			"command that actually defines the flags, so MarkInheritedFlagsMutuallyExclusive is a " +
+			"work-around for this deficiency.",
+		Other: "Mutually exclusive flags '{{.Flags}}', defined for command '{{.Command}}'",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "The command for which mutually exclusive flags have been defined",
+			},
+			{
+				Note:   "Flags",
+				GoType: "string",
+				Tale:   "The set of mutually exclusive flags that have been defined",
+			},
+		},
 		File: "flags",
 	},
 
@@ -224,6 +323,49 @@ Use --action or --pipeline to name a config-defined operation.
 			"run traversal, except no actions or pipelines are invoked as in the case " +
 			"for walk and run commands.",
 		File: "query-cmd",
+	},
+
+	// -------------------------------------------------------------------------
+	// ghost-cmds: Cobra messages
+	// -------------------------------------------------------------------------
+
+	"command-is-a-ghost": {
+		MessageID:   "command-is-a-ghost",
+		Seed:        "CommandIsAGhost",
+		TypeName:    enums.UnderlyingTypeDynamicCobra,
+		Description: "command is a ghost",
+		Story:       "CommandIsAGhost is use for the long and short text of a ghost command",
+		Other:       "{{.Command}} is a ghost",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "is the name of the ghost command",
+			},
+		},
+		File: "ghost-cmds",
+	},
+
+	// -------------------------------------------------------------------------
+	// ghost-cmds: General messages
+	// -------------------------------------------------------------------------
+
+	"command-is-not-user-invocable-prompt": {
+		MessageID:   "command-is-not-user-invocable-prompt",
+		Seed:        "CommandIsNotUserInvocablePrompt",
+		TypeName:    enums.UnderlyingTypeDynamicGeneral,
+		Description: "command is not a user invocable",
+		Story: "CommandIsNotUserInvocablePrompt is the message shown during startup" +
+			" if the user accidentally invokes this ghost sub command, before exiting.",
+		Other: "{{.Command}} is hidden and not designed to be directly invoked",
+		Fields: []lingo.UnderlyingField{
+			{
+				Note:   "Command",
+				GoType: "string",
+				Tale:   "is the name of the ghost command",
+			},
+		},
+		File: "ghost-cmds",
 	},
 
 	// -------------------------------------------------------------------------
@@ -950,23 +1092,6 @@ Use --action or --pipeline to name a config-defined operation.
 		},
 	},
 
-	"command-is-not-user-invocable-prompt": {
-		MessageID:   "command-is-not-user-invocable-prompt",
-		Seed:        "CommandIsNotUserInvocablePrompt",
-		TypeName:    enums.UnderlyingTypeDynamicGeneral,
-		Description: "command is not a user invocable",
-		Story: "CommandIsNotUserInvocablePrompt is the message shown during startup" +
-			" if the user accidentally invokes this ghost sub command, before exiting.",
-		Other: "{{.Command}} is hidden and not designed to be directly invoked",
-		Fields: []lingo.UnderlyingField{
-			{
-				Note:   "Command",
-				GoType: "string",
-				Tale:   "is the name of the ghost command",
-			},
-		},
-	},
-
 	// -------------------------------------------------------------------------
 	// Error messages
 	// -------------------------------------------------------------------------
@@ -1211,6 +1336,8 @@ Use --action or --pipeline to name a config-defined operation.
 			},
 		},
 	},
+
+	// words
 
 	"prohibitive.word": {
 		MessageID:   "prohibitive.word",

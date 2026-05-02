@@ -21,6 +21,9 @@ const (
 	// nav ghost command param-set
 	NavPsName = "nav-ps"
 
+	// exec ghost command param-set
+	ExecPsName = "exec-ps"
+
 	// shared families (registered on nav ghost, inherited by walk/run/query)
 	PreviewFamName     = "preview-fam"
 	CascadeFamName     = "cascade-fam"

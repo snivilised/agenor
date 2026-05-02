@@ -27,15 +27,19 @@ func (b *Bootstrap) buildRunCommand(container *assist.CobraContainer) {
 	b.workerPoolFam.Native.BindAll(b.workerPoolFam, runCmd.Flags())
 	container.MustRegisterParamSet(WorkerPoolFamName, b.workerPoolFam)
 
-	container.MustRegisterCommand("nav", runCmd)
+	container.MustRegisterCommand("exec", runCmd)
 }
 
 // runRun is the RunE handler for the run command. It reads flags from
-// the nav-level param-sets (all inherited) plus the run-exclusive
+// the nav and exec param-sets (all inherited) plus the run-exclusive
 // worker-pool family, constructs the agenor.Hare scenario, and delegates
 // to the coordinator. The WaitGroup is owned here - the adapter created
 // it and waits on it after the coordinator returns.
 func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
+	if err := requireActivator(b.navPs.Native.Action, b.navPs.Native.Pipeline); err != nil {
+		return err
+	}
+
 	subscription, err := ResolveSubscription(b.navPs.Native.Subscribe)
 	if err != nil {
 		return err
@@ -43,15 +47,13 @@ func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
 
 	opts := buildOptions(b.navFamilies())
 
-	// Worker pool options are appended here - they come from run-exclusive
-	// flags and the coordinator has no knowledge of them.
 	if b.workerPoolFam.Native.CPU {
 		opts = append(opts, agenor.WithCPU())
 	} else if n := b.workerPoolFam.Native.NoWorkers; n > 0 {
 		opts = append(opts, agenor.WithNoW(uint(n)))
 	}
 
-	isPrime := b.navPs.Native.Resume == ""
+	isPrime := b.execPs.Native.Resume == ""
 	wg := &sync.WaitGroup{}
 
 	base := controller.Request{
@@ -71,7 +73,7 @@ func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
 			Tree:    args[0],
 		})
 	} else {
-		strategy, e := resolveResumeStrategy(b.navPs.Native.Resume)
+		strategy, e := resolveResumeStrategy(b.execPs.Native.Resume)
 		if e != nil {
 			return e
 		}

@@ -114,39 +114,6 @@ func NewActionVisitedTemplData(name string, path string) ActionVisitedTemplData 
 }
 
 // =============================================================================
-// 📨 CommandIsNotUserInvocablePrompt
-//
-// CommandIsNotUserInvocablePrompt is the message shown during startup if the
-// user accidentally invokes this ghost sub command, before exiting.
-// =============================================================================
-
-// CommandIsNotUserInvocablePromptTemplData command is not a user invocable.
-type CommandIsNotUserInvocablePromptTemplData struct {
-	agenorTemplData
-	// Command is the name of the ghost command
-	Command string
-}
-
-// Message returns the i18n message for
-// CommandIsNotUserInvocablePromptTemplData.
-func (td CommandIsNotUserInvocablePromptTemplData) Message() *i18n.Message {
-	return &i18n.Message{
-		ID:          "command-is-not-user-invocable-prompt",
-		Description: "command is not a user invocable",
-		Other:       "{{.Command}} is hidden and not designed to be directly invoked",
-	}
-}
-
-// NewCommandIsNotUserInvocablePromptTemplData creates a new
-// CommandIsNotUserInvocablePromptTemplData.
-func NewCommandIsNotUserInvocablePromptTemplData(command string) CommandIsNotUserInvocablePromptTemplData {
-	return CommandIsNotUserInvocablePromptTemplData{
-		agenorTemplData: agenorTemplData{},
-		Command:         command,
-	}
-}
-
-// =============================================================================
 // 📨 NodeVisited
 //
 // NodeVisited is printed for each filesystem node encountered during traversal.
