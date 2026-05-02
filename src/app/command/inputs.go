@@ -1,6 +1,8 @@
 package command
 
 import (
+	"strings"
+
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/locale"
@@ -26,6 +28,23 @@ func ResolveSubscription(flag string) (enums.Subscription, error) {
 	default:
 		return 0, locale.ErrInvalidSubscription
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Activator validation
+// ---------------------------------------------------------------------------
+
+// requireActivator returns an error if neither --action nor --pipeline has
+// been supplied. This enforces the one-required constraint that cobra cannot
+// express across inherited persistent flags.
+// See https://github.com/spf13/cobra/issues/921.
+func requireActivator(action, pipeline string) error {
+	flags := strings.Join([]string{action, pipeline}, ", ")
+	if action == "" && pipeline == "" {
+		return locale.NewMarkInheritedFlagsOneRequiredError("cmd", flags)
+	}
+
+	return nil
 }
 
 // ---------------------------------------------------------------------------
@@ -57,9 +76,13 @@ type WalkInputs struct {
 	// terminal is routed through this interface.
 	UI report.Presenter
 
-	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
-	// resume) inherited from the ghost nav command.
-	ParamSet *assist.ParamSet[NavParameterSet]
+	// NavPs holds the nav-level flags (subscribe, action, pipeline)
+	// inherited from the ghost nav command.
+	NavPs *assist.ParamSet[NavParameterSet]
+
+	// ExecPs holds the exec-level flags (resume) inherited from the
+	// ghost exec command.
+	ExecPs *assist.ParamSet[ExecParameterSet]
 }
 
 // ---------------------------------------------------------------------------
@@ -77,9 +100,13 @@ type RunInputs struct {
 	// terminal is routed through this interface.
 	UI report.Presenter
 
-	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
-	// resume) inherited from the ghost nav command.
-	ParamSet *assist.ParamSet[NavParameterSet]
+	// NavPs holds the nav-level flags (subscribe, action, pipeline)
+	// inherited from the ghost nav command.
+	NavPs *assist.ParamSet[NavParameterSet]
+
+	// ExecPs holds the exec-level flags (resume) inherited from the
+	// ghost exec command.
+	ExecPs *assist.ParamSet[ExecParameterSet]
 
 	// WorkerPool holds the run-exclusive concurrency flags (--cpu, --now).
 	WorkerPool *assist.ParamSet[store.WorkerPoolParameterSet]
@@ -90,8 +117,8 @@ type RunInputs struct {
 // ---------------------------------------------------------------------------
 
 // QueryInputs collects all flag values needed to build a query invocation.
-// Query is a single-threaded, read-only traversal - it visits nodes but
-// executes no actions or pipelines.
+// Query is a read-only traversal - it visits nodes on a single thread and
+// displays which action or pipeline would be invoked, without executing them.
 type QueryInputs struct {
 	NavFamilies
 
@@ -102,7 +129,7 @@ type QueryInputs struct {
 	// terminal is routed through this interface.
 	UI report.Presenter
 
-	// ParamSet holds the nav-level flags (subscribe, action, pipeline,
-	// resume) inherited from the ghost nav command.
-	ParamSet *assist.ParamSet[NavParameterSet]
+	// NavPs holds the nav-level flags (subscribe, action, pipeline)
+	// inherited from the ghost nav command.
+	NavPs *assist.ParamSet[NavParameterSet]
 }

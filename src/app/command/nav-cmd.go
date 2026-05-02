@@ -15,7 +15,6 @@ const (
 	defaultNavSubscribe = SubscribeFlagDefault
 	defaultNavAction    = ""
 	defaultNavPipeline  = ""
-	defaultNavResume    = ""
 )
 
 // buildNavCommand constructs the ghost nav command. It is never intended
@@ -25,19 +24,17 @@ const (
 // commands (verify, theme) are kept clean of navigation flags.
 //
 // nav is registered as a rooted command (child of root) so that cobra's
-// persistent flag propagation flows: root -> nav -> walk/run/query.
+// persistent flag propagation flows: root -> nav -> exec -> walk/run
+//
+//	-> query
 func (b *Bootstrap) buildNavCommand(container *assist.CobraContainer) {
 	root := container.Root()
 
 	navCmd := &cobra.Command{
 		Use:    "nav",
 		Hidden: true,
-		Short:  "nav is a ghost command",
-		Long:   "nav is a ghost command",
-
-		// nav has no RunE. If the user accidentally types "jay nav", Run
-		// prints a friendly explanation then shows root help so they can
-		// find what they actually need.
+		Short:  li18ngo.Text(locale.NewCommandIsAGhostTemplData("nav")),
+		Long:   li18ngo.Text(locale.NewCommandIsAGhostTemplData("nav")),
 		Run: func(_ *cobra.Command, _ []string) {
 			fmt.Println(
 				li18ngo.Text(locale.NewCommandIsNotUserInvocablePromptTemplData("nav")),
@@ -46,7 +43,6 @@ func (b *Bootstrap) buildNavCommand(container *assist.CobraContainer) {
 		},
 	}
 
-	// nav-ps: subscribe, action, pipeline, resume.
 	b.navPs = assist.NewParamSet[NavParameterSet](navCmd)
 
 	// --subscribe(-s): which node types to visit.
@@ -60,7 +56,7 @@ func (b *Bootstrap) buildNavCommand(container *assist.CobraContainer) {
 		&b.navPs.Native.Subscribe,
 	)
 
-	// --action(-a): name of a config-defined action to run per node.
+	// --action(-a): name of a config-defined action to invoke per node.
 	b.navPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
 			li18ngo.Text(locale.ActionFlagDescTemplData{}),
@@ -80,17 +76,6 @@ func (b *Bootstrap) buildNavCommand(container *assist.CobraContainer) {
 			navCmd.PersistentFlags(),
 		),
 		&b.navPs.Native.Pipeline,
-	)
-
-	// --resume(-r): resume strategy for interrupted traversals.
-	b.navPs.BindString(
-		assist.NewFlagInfoOnFlagSet(
-			li18ngo.Text(locale.ResumeFlagDescTemplData{}),
-			"r",
-			defaultNavResume,
-			navCmd.PersistentFlags(),
-		),
-		&b.navPs.Native.Resume,
 	)
 
 	// family: preview [--dry-run]

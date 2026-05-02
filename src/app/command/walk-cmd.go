@@ -19,20 +19,24 @@ func (b *Bootstrap) buildWalkCommand(container *assist.CobraContainer) {
 		RunE:  b.runWalk,
 	}
 
-	container.MustRegisterCommand("nav", walkCmd)
+	container.MustRegisterCommand("exec", walkCmd)
 }
 
 // runWalk is the RunE handler for the walk command. It reads flags from
-// the nav-level param-sets (all inherited), constructs the agenor.Tortoise
-// scenario, and delegates to the coordinator.
+// the nav and exec param-sets (all inherited), constructs the
+// agenor.Tortoise scenario, and delegates to the coordinator.
 func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
+	if err := requireActivator(b.navPs.Native.Action, b.navPs.Native.Pipeline); err != nil {
+		return err
+	}
+
 	subscription, err := ResolveSubscription(b.navPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
 	opts := buildOptions(b.navFamilies())
-	isPrime := b.navPs.Native.Resume == ""
+	isPrime := b.execPs.Native.Resume == ""
 
 	base := controller.Request{
 		Subscription: subscription,
@@ -50,7 +54,7 @@ func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
 		})
 	}
 
-	strategy, err := resolveResumeStrategy(b.navPs.Native.Resume)
+	strategy, err := resolveResumeStrategy(b.execPs.Native.Resume)
 	if err != nil {
 		return err
 	}

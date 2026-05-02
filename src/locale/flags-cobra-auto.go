@@ -90,6 +90,36 @@ func (td SubscribeFlagDescTemplData) Message() *i18n.Message {
 }
 
 // =============================================================================
+// 🧊 ThemeFlagDesc
+//
+// Cobra flag description for theme flag
+// =============================================================================
+
+// ThemeFlagDescTemplData Cobra flag description for theme flag.
+type ThemeFlagDescTemplData struct {
+	agenorTemplData
+	// Path The path to the colour themes file
+	Path string
+}
+
+// Message returns the i18n message for ThemeFlagDescTemplData.
+func (td ThemeFlagDescTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "theme-flag-description",
+		Description: "Cobra flag description for theme flag",
+		Other:       "theme denotes colour theme selection (default: system), loaded from '{{.Path}}'",
+	}
+}
+
+// NewThemeFlagDescTemplData creates a new ThemeFlagDescTemplData.
+func NewThemeFlagDescTemplData(path string) ThemeFlagDescTemplData {
+	return ThemeFlagDescTemplData{
+		agenorTemplData: agenorTemplData{},
+		Path:            path,
+	}
+}
+
+// =============================================================================
 // 🧊 TuiFlagDesc
 //
 // Cobra flag description for TUI flag
@@ -105,6 +135,6 @@ func (td TuiFlagDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "tui-flag-description",
 		Description: "Cobra flag description for TUI flag",
-		Other:       "tui denotes what view to use",
+		Other:       "tui denotes what view to use (default: linear)",
 	}
 }

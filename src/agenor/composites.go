@@ -72,21 +72,21 @@ type (
 //	agenor.Hydra(isWalk, isPrime, &wg)(facade, options...).Navigate(ctx)
 func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 	if isWalk && isPrime {
-		return slowPrime
+		return SlowPrime
 	}
 
 	if isWalk && !isPrime {
-		return slowResume
+		return SlowResume
 	}
 
 	if !isWalk && isPrime {
 		return func(facade pref.Facade, settings ...pref.Option) Navigator {
-			return fastPrime(facade, wg, settings...)
+			return FastPrime(facade, wg, settings...)
 		}
 	}
 
 	return func(facade pref.Facade, settings ...pref.Option) Navigator {
-		return fastResume(facade, wg, settings...)
+		return FastResume(facade, wg, settings...)
 	}
 }
 
@@ -122,12 +122,12 @@ func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
 	if isPrime {
 		return func(facade pref.Facade, settings ...pref.Option) Navigator {
-			return fastPrime(facade, wg, settings...)
+			return FastPrime(facade, wg, settings...)
 		}
 	}
 
 	return func(facade pref.Facade, settings ...pref.Option) Navigator {
-		return fastResume(facade, wg, settings...)
+		return FastResume(facade, wg, settings...)
 	}
 }
 
@@ -162,10 +162,10 @@ func Hare(isPrime bool, wg pants.WaitGroup) Scenario {
 //	agenor.Tortoise(isPrime)(facade, options...).Navigate(ctx)
 func Tortoise(isPrime bool) Scenario {
 	if isPrime {
-		return slowPrime
+		return SlowPrime
 	}
 
-	return slowResume
+	return SlowResume
 }
 
 // Goldfish is a composite that a client can use to build a cli that only implements
@@ -199,36 +199,36 @@ func Tortoise(isPrime bool) Scenario {
 //	agenor.Goldfish(isWalk, &wg)(facade, options...).Navigate(ctx)
 func Goldfish(isWalk bool, wg pants.WaitGroup) Scenario {
 	if isWalk {
-		return slowPrime
+		return SlowPrime
 	}
 
 	return func(facade pref.Facade, settings ...pref.Option) Navigator {
-		return fastPrime(facade, wg, settings...)
+		return FastPrime(facade, wg, settings...)
 	}
 }
 
-func slowPrime(facade pref.Facade, settings ...pref.Option) Navigator {
+func SlowPrime(facade pref.Facade, settings ...pref.Option) Navigator {
 	return Walk().Configure().Extent(Prime(
 		facade,
 		settings...,
 	))
 }
 
-func slowResume(facade pref.Facade, settings ...pref.Option) Navigator {
+func SlowResume(facade pref.Facade, settings ...pref.Option) Navigator {
 	return Walk().Configure().Extent(Resume(
 		facade,
 		settings...,
 	))
 }
 
-func fastPrime(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
+func FastPrime(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
 	return Run(wg).Configure().Extent(Prime(
 		facade,
 		settings...,
 	))
 }
 
-func fastResume(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
+func FastResume(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
 	return Run(wg).Configure().Extent(Resume(
 		facade,
 		settings...,

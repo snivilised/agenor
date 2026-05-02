@@ -76,11 +76,14 @@ type ConfigureOptionFn func(*ConfigureOptions)
 //
 // Command hierarchy:
 //
-//	root  (global persistent flags: --tui, --theme, --language)
-//	  nav (ghost; nav persistent flags: all navigation families)
-//	    walk
-//	    run
-//	    query
+//	root                     (global persistent flags: --tui, --theme, --language)
+//	  nav (ghost)            (nav persistent flags: --subscribe, --action, --pipeline
+//	  │                       + cascade, sampling, preview, poly-filter families)
+//	  │  exec (ghost)        (exec persistent flags: --resume
+//	  │  │                    + MarkFlagsOneRequired("action", "pipeline"))
+//	  │  │  walk
+//	  │  │  run
+//	  │  query
 //	  verify
 //	  theme
 //
@@ -117,6 +120,9 @@ type Bootstrap struct {
 	samplingFam *assist.ParamSet[store.SamplingParameterSet]
 	polyFam     *assist.ParamSet[store.PolyFilterParameterSet]
 
+	// exec ghost param-set, inherited by walk and run only.
+	execPs *assist.ParamSet[ExecParameterSet]
+
 	// run-exclusive family
 	workerPoolFam *assist.ParamSet[store.WorkerPoolParameterSet]
 }
@@ -152,18 +158,13 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 
 	b.configure()
 
-	// Detect the shell environment once at startup.
 	env, err := shell.Detect()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	// Construct the ThemeLoader once - it resolves JAY_THEMES_DIR or
-	// falls back to the XDG default (~/.config/jay/themes/).
 	b.themeLoader = bedrock.NewThemeLoader()
-
-	// Construct the Coordinator once with the detected locate function.
 	b.coord = jac.New(b.Cfg, jac.WithLocate(env.Locate))
 
 	b.container = assist.NewCobraContainer(
@@ -173,9 +174,6 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 			Long:    li18ngo.Text(locale.RootCmdLongDescTemplData{}),
 			Version: fmt.Sprintf("'%v'", Version),
 
-			// PersistentPreRunE resolves --tui and --theme into a
-			// ui.Presenter backed by the appropriate prism.Renderer.
-			// This is the only UI concern Bootstrap is permitted to touch.
 			PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 				palette, err := b.themeLoader.Load(b.rootPs.Native.Theme)
 				if err != nil {
@@ -198,9 +196,10 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 		},
 	)
 
-	// Registration order matters - parent must be registered before children.
+	// Registration order matters: parent must be registered before children.
 	b.buildRootCommand(b.container)
-	b.buildNavCommand(b.container) // ghost; must precede walk/run/query
+	b.buildNavCommand(b.container)
+	b.buildExecCommand(b.container)
 	b.buildWalkCommand(b.container)
 	b.buildRunCommand(b.container)
 	b.buildQueryCommand(b.container)
@@ -285,10 +284,9 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 
 	b.rootPs = assist.NewParamSet[RootParameterSet](root)
 
-	// --tui(-t): display mode, inherited by all sub-commands.
 	b.rootPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
-			`tui display mode: "linear" (default), "porthole", "lanes"`,
+			li18ngo.Text(locale.TuiFlagDescTemplData{}),
 			"t",
 			ui.ModeDefault,
 			root.PersistentFlags(),
@@ -296,16 +294,14 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 		&b.rootPs.Native.TUI,
 	)
 
-	// --theme: colour theme name, inherited by all sub-commands.
-	// "system" (default) uses ANSI-16 colours from the terminal theme.
-	// Any other value loads <name>.yaml from the themes directory.
 	b.rootPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
-			fmt.Sprintf(
-				`colour theme name (default "system" uses terminal theme colours; `+
-					`custom themes loaded from %s)`,
-				b.themeLoader.ThemesDir(),
-			),
+			// fmt.Sprintf(
+			// 	`colour theme name (default "system" uses terminal theme colours; `+
+			// 		`custom themes loaded from %s)`,
+			// 	b.themeLoader.ThemesDir(),
+			// ),
+			li18ngo.Text(locale.NewThemeFlagDescTemplData(b.themeLoader.ThemesDir())),
 			"",
 			bedrock.ThemeSystemName,
 			root.PersistentFlags(),
