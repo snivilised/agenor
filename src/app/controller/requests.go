@@ -13,8 +13,8 @@ type Request struct {
 	// Subscription controls which node types are visited.
 	Subscription enums.Subscription
 
-	// Options are the agenor option functions derived from shared flags.
-	Options []pref.Option
+	// Settings are the agenor option functions derived from shared flags.
+	Settings []pref.Option
 
 	// ActionName is the name of the configured action to execute per node.
 	// Empty when no action is configured.

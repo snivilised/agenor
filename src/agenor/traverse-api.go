@@ -73,6 +73,10 @@ type (
 	// Servant provides the client with facility to request properties
 	Servant = core.Servant
 
+	// PeerInfo contains peer-relative position data for a node,
+	// resolved after filtering.
+	PeerInfo = core.PeerInfo
+
 	// 🌀 enums
 
 	// Subscription represents the types of file system nodes that can be subscribed to

@@ -19,6 +19,7 @@ var (
 		enums.RoleNanny,
 		enums.RoleClientFilter,
 		enums.RoleSampler,
+		enums.RolePeer,
 		// anchor goes at this end
 	}
 )

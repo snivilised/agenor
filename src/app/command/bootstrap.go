@@ -296,11 +296,6 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 
 	b.rootPs.BindString(
 		assist.NewFlagInfoOnFlagSet(
-			// fmt.Sprintf(
-			// 	`colour theme name (default "system" uses terminal theme colours; `+
-			// 		`custom themes loaded from %s)`,
-			// 	b.themeLoader.ThemesDir(),
-			// ),
 			li18ngo.Text(locale.NewThemeFlagDescTemplData(b.themeLoader.ThemesDir())),
 			"",
 			bedrock.ThemeSystemName,

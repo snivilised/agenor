@@ -11,9 +11,9 @@ import (
 	"github.com/snivilised/jaywalk/src/locale"
 )
 
-// buildOptions translates shared flag values into agenor option functions.
+// createSettings translates shared flag values into agenor option functions.
 // Shared between walk and run commands.
-func buildOptions(families NavFamilies) []pref.Option {
+func createSettings(families NavFamilies) []pref.Option {
 	var opts []pref.Option
 
 	if families.Cascade.Native.NoRecurse {

@@ -34,6 +34,10 @@ type (
 		//
 		Hibernate core.HibernateOptions
 
+		// Peer
+		//
+		View ViewBehaviours
+
 		// Concurrency contains options relating concurrency
 		//
 		Concurrency ConcurrencyOptions
@@ -53,6 +57,10 @@ type (
 		// Defects contains error handling options
 		//
 		Defects DefectOptions
+
+		// Configurer represents something that can configure the options
+		//
+		Configurer TraversalConfigurer
 	}
 
 	// Option functional traverse options

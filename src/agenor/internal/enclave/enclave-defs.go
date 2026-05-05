@@ -178,6 +178,15 @@ type (
 		// Supervisor provides access to the supervisor, which allows the guardian to
 		// interact with the supervisor during navigation.
 		Supervisor() *Supervisor
+
+		// Poke invokes the client directly, bypassing the guardian chain.
+		// Used by plugins that need to deliver a different servant than the
+		// one currently being processed, such as the peer plugin which
+		// delivers the previously buffered node rather than the current one.
+		Poke(servant core.Servant) error
+
+		// Flush
+		Flush(servant core.Servant, inspection Inspection) error
 	}
 
 	// Resources are dependencies required for navigation

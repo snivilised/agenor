@@ -3,6 +3,7 @@ package ui
 import (
 	"sync"
 
+	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/prism"
 )
@@ -18,6 +19,10 @@ type linear struct {
 	mu       sync.Mutex
 	renderer prism.Renderer
 	kind     prism.NavigationKind // remembered from OnBegin for use in OnComplete
+}
+
+func (l *linear) OnTraversalOptions(o *pref.Options) {
+	o.View.Peer.IsActive = true
 }
 
 // OnBegin translates the BeginEvent into a prism.Overture and calls
@@ -49,10 +54,12 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 	defer l.mu.Unlock()
 
 	l.renderer.Show(prism.Motif{
-		Path:  e.Node.Path,
-		Name:  e.Node.Extension.Name,
-		IsDir: e.Node.IsDirectory(),
-		Depth: uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		Path:        e.Node.Path,
+		Name:        e.Node.Extension.Name,
+		IsDir:       e.Node.IsDirectory(),
+		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		IsLast:      e.IsLast,
+		IndentStack: e.IndentStack,
 	})
 }
 
@@ -62,12 +69,14 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 	defer l.mu.Unlock()
 
 	l.renderer.Show(prism.Motif{
-		Path:       e.Node.Path,
-		Name:       e.Node.Extension.Name,
-		IsDir:      e.Node.IsDirectory(),
-		Depth:      uint(e.Node.Extension.Depth), //nolint: gosec // overflow
-		ActionName: e.Name,
-		Err:        e.Err,
+		Path:        e.Node.Path,
+		Name:        e.Node.Extension.Name,
+		IsDir:       e.Node.IsDirectory(),
+		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		ActionName:  e.Name,
+		Err:         e.Err,
+		IsLast:      e.IsLast,
+		IndentStack: e.IndentStack,
 	})
 }
 
@@ -83,6 +92,8 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
 		PipelineName: e.Name,
 		Err:          e.Err,
+		IsLast:       e.IsLast,
+		IndentStack:  e.IndentStack,
 	})
 }
 
@@ -101,6 +112,8 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 		Skipped:      true,
 		Placeholder:  e.Placeholder,
 		ResolvedPath: e.ResolvedPath,
+		IsLast:       e.IsLast,
+		IndentStack:  e.IndentStack,
 	})
 }
 

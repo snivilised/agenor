@@ -63,6 +63,7 @@ func (n *navigatorAgent) top(ctx context.Context,
 			_, te := ns.mediator.impl.Traverse(ctx, ns,
 				servant{
 					node: core.Top(ns.tree, info),
+					peer: nil, // tbd
 				},
 			)
 

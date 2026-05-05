@@ -26,4 +26,7 @@ const (
 
 	// RoleFastward represents the fastward role
 	RoleFastward // fastward-role
+
+	// RolePeer represents the peer buffering role
+	RolePeer // peer
 )

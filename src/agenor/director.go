@@ -6,11 +6,12 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/filter"
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/hiber"
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/nanny"
+	"github.com/snivilised/jaywalk/src/agenor/internal/feat/peer"
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/resume"
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/sampling"
 	"github.com/snivilised/jaywalk/src/agenor/internal/kernel"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 )
 
 type (
@@ -31,7 +32,7 @@ func features(o *pref.Options,
 			// order. How can we decouple ourselves from this
 			// requirement? => the cure is worse than the disease
 			//
-			hiber.IfActive, nanny.IfActive, filter.IfActive, sampling.IfActive,
+			hiber.IfActive, nanny.IfActive, filter.IfActive, sampling.IfActive, peer.IfActive,
 		}
 	)
 

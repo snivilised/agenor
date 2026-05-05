@@ -57,6 +57,24 @@ type (
 		// the client to access information about the file system entity (file or directory)
 		// that is currently being handled by the traversal process.
 		Node() *Node
+
+		// Peer returns the peer-relative position data for the current node, if available.
+		// This allows the client to access information about the node's position relative
+		// to its siblings and ancestors, which can be useful for rendering or other
+		// processing that depends on the node's context within the file system hierarchy.
+		Peer() *PeerInfo
+	}
+
+	// PeerInfo contains peer-relative position data for a node,
+	// resolved after filtering.
+	PeerInfo struct {
+		// IsLast is true if no filtered siblings follow this node.
+		IsLast bool
+		// IndentStack records, per ancestor depth, whether that
+		// ancestor was the last child at its level. Used by renderers
+		// to determine whether to draw a continuation line or blank
+		// indent for each depth column.
+		IndentStack []bool
 	}
 
 	// Forest contains the logical file systems required

@@ -2,6 +2,7 @@ package kernel
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
@@ -90,6 +91,27 @@ func (m *mediator) Swap(decorator core.Client) {
 func (m *mediator) Invoke(servant core.Servant,
 	inspection enclave.Inspection,
 ) error {
+	return m.guardian.Invoke(servant, inspection)
+}
+
+// Poke invokes the client directly, bypassing the guardian chain.
+// Used by plugins that need to deliver a different servant than the
+// one currently being processed, such as the peer plugin which
+// delivers the previously buffered node rather than the current one.
+func (m *mediator) Poke(servant core.Servant) error {
+	return m.guardian.Poke(servant)
+}
+
+// Flush is the same as invoke but is invoked as a result of the peer plugin
+// flushing its buffer, which means it needs to accept the inspection as well,
+// which is used to enrich the peer info that is emitted with the flush. This
+// is used to allow the peer plugin to flush its buffer with the enriched
+// peer info, which is necessary for the peer plugin to function correctly.
+// When active, this should only happen once per traversal.
+func (m *mediator) Flush(servant core.Servant,
+	inspection enclave.Inspection,
+) error {
+	fmt.Println("🔆🔆🔆 DEBUG: mediator.Flush 🔆🔆🔆")
 	return m.guardian.Invoke(servant, inspection)
 }
 
