@@ -6,21 +6,43 @@ import (
 	"github.com/snivilised/jaywalk/src/locale"
 )
 
-// handleNode dispatches to the appropriate per-node handler based on
+// handleServant dispatches to the appropriate per-node handler based on
 // whether an action, pipeline, or neither is configured on the request.
-func (c *Coordinator) handleNode(node *core.Node, req *Request, t *report.Traversal) error {
+func (c *Coordinator) handleServant(servant core.Servant, req *Request, t *report.Traversal) error {
+	node := servant.Node()
+	peer := servant.Peer()
+
+	var (
+		isLast      bool
+		indentStack []bool
+	)
+
+	if peer != nil {
+		isLast = peer.IsLast
+		indentStack = peer.IndentStack
+	} else {
+		indentStack = []bool{}
+	}
+
 	switch {
 	case req.PipelineName != "":
 		e := c.executePipeline(node, req.PipelineName, req.Root)
 		if e.Skipped {
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
-				DisplayEvent: report.DisplayEvent{Node: node, Name: req.PipelineName},
+				DisplayEvent: report.DisplayEvent{
+					Node:        node,
+					IsLast:      isLast,
+					IndentStack: indentStack,
+					Name:        req.PipelineName,
+				},
 				Placeholder:  e.Placeholder,
 				ResolvedPath: e.ResolvedPath,
 			})
 			return nil
 		}
+		e.Event.IsLast = isLast
+		e.Event.IndentStack = indentStack
 		req.UI.OnPipelineEvent(e.Event)
 		return e.Event.Err
 
@@ -29,18 +51,29 @@ func (c *Coordinator) handleNode(node *core.Node, req *Request, t *report.Traver
 		if e.Skipped {
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
-				DisplayEvent: report.DisplayEvent{Node: node, Name: req.ActionName},
+				DisplayEvent: report.DisplayEvent{
+					Node:        node,
+					IsLast:      isLast,
+					IndentStack: indentStack,
+					Name:        req.ActionName,
+				},
 				Placeholder:  e.Placeholder,
 				ResolvedPath: e.ResolvedPath,
 			})
 			return nil
 		}
+		e.Event.IsLast = isLast
+		e.Event.IndentStack = indentStack
 		req.UI.OnActionEvent(e.Event)
 		return e.Event.Err
 
 	default:
 		req.UI.OnNodeEvent(&report.NeutralEvent{
-			DisplayEvent: report.DisplayEvent{Node: node},
+			DisplayEvent: report.DisplayEvent{
+				Node:        node,
+				IsLast:      isLast,
+				IndentStack: indentStack,
+			},
 		})
 		return nil
 	}

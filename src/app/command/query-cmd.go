@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
+	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -35,11 +36,12 @@ func (b *Bootstrap) runQuery(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	opts := buildOptions(b.navFamilies())
+	settings := createSettings(b.navFamilies())
+	settings = append(settings, pref.WithTraversalConfigurer(b.UI))
 
 	base := controller.Request{
 		Subscription: subscription,
-		Options:      opts,
+		Settings:     settings,
 		ActionName:   b.navPs.Native.Action,
 		PipelineName: b.navPs.Native.Pipeline,
 		Scenario:     agenor.SlowPrime,

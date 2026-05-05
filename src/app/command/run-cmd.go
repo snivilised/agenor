@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
+	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -45,12 +46,13 @@ func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	opts := buildOptions(b.navFamilies())
+	settings := createSettings(b.navFamilies())
+	settings = append(settings, pref.WithTraversalConfigurer(b.UI))
 
 	if b.workerPoolFam.Native.CPU {
-		opts = append(opts, agenor.WithCPU())
+		settings = append(settings, agenor.WithCPU())
 	} else if n := b.workerPoolFam.Native.NoWorkers; n > 0 {
-		opts = append(opts, agenor.WithNoW(uint(n)))
+		settings = append(settings, agenor.WithNoW(uint(n)))
 	}
 
 	isPrime := b.execPs.Native.Resume == ""
@@ -58,7 +60,7 @@ func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
 
 	base := controller.Request{
 		Subscription: subscription,
-		Options:      opts,
+		Settings:     settings,
 		ActionName:   b.navPs.Native.Action,
 		PipelineName: b.navPs.Native.Pipeline,
 		Scenario:     agenor.Hare(isPrime, wg),

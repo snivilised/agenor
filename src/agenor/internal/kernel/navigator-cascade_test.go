@@ -140,7 +140,7 @@ var _ = Describe("navigator", Ordered, func() {
 				Subscription: enums.SubscribeUniversal,
 				Callback:     lab.UniversalCallback("CONTAINS-FOLDERS"),
 				ExpectedNoOf: lab.Quantities{
-					Files:       0,
+					Files:       14,
 					Directories: 8,
 				},
 			},

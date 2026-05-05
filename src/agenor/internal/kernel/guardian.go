@@ -65,7 +65,7 @@ func (a *anchor) swap(decorator core.Client) core.Client {
 	return swap
 }
 
-// guardian controls access to the client callback
+// guardian controls access to the client callback.
 type guardian struct {
 	container iterationContainer
 	master    enclave.GuardianSealer
@@ -117,11 +117,10 @@ func (g *guardian) arrange(active, order []enums.Role) {
 	})
 }
 
-// Decorate adds a decorator to the chain.
-// role indicates the guise under which the decorator is being applied.
-// Not all roles can be decorated (sealed). The fastward-resume decorator is
-// sealed. If an attempt is made to Decorate a sealed decorator,
-// an error is returned.
+// Decorate adds a decorator to the chain. The role indicates the guise
+// under which the decorator is being applied. Not all roles can be
+// decorated - the fastward-resume decorator is sealed. If an attempt
+// is made to decorate a sealed decorator, an error is returned.
 func (g *guardian) Decorate(link enclave.Link) error {
 	top := g.container.chain[g.container.positions.Top()]
 
@@ -145,8 +144,6 @@ func (g *guardian) Unwind(role enums.Role) error {
 	delete(g.container.chain, role)
 	g.container.positions.Delete(role)
 
-	// TODO: required only for fastward resume or hibernation
-	//
 	return nil
 }
 
@@ -155,6 +152,12 @@ func (g *guardian) Unwind(role enums.Role) error {
 // of the chain.
 func (g *guardian) Invoke(servant core.Servant, inspection enclave.Inspection) error {
 	return g.container.invoker.Invoke(servant, inspection)
+}
+
+// Poke invokes the client directly, bypassing the guardian chain.
+func (g *guardian) Poke(servant core.Servant) error {
+	_, err := g.anchor.Next(servant, nil)
+	return err
 }
 
 func (g *guardian) iterate(servant core.Servant, inspection enclave.Inspection) error {
@@ -176,8 +179,7 @@ func (g *guardian) Swap(decorator core.Client) {
 
 // Benign is used when a master sealer has not been registered. It is
 // permissive in nature.
-type Benign struct {
-}
+type Benign struct{}
 
 // Seal seals the decorator, preventing it from being decorated.
 func (m *Benign) Seal(enclave.Link) error {

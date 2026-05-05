@@ -75,7 +75,7 @@ type Overture struct {
 	Survey *SurveyResult
 }
 
-// Motif is the unit of renderable content passed to Renderer.Show for
+// Motif is the unit of render-able content passed to Renderer.Show for
 // each item encountered during traversal. Fields are generic filesystem
 // and execution concepts - no jaywalk or agenor types appear here.
 // Depth is sourced from node.Extension.Level in agenor.
@@ -116,6 +116,25 @@ type Motif struct {
 	// Err is any error produced by the action or pipeline for this node.
 	// Nil when the node was visited without error.
 	Err error
+
+	// IsLast is true when this is the last motif to be rendered in the traversal.
+	// This can be used by the renderer to apply special styling or
+	// behavior to the final item, such as a distinctive end marker or
+	// summary display. Populated by the controller when it detects that
+	// the current node is the last one in the traversal, which may be
+	// determined by tracking the number of nodes rendered against the total
+	// node count from a prior survey phase or by detecting completion of
+	// the traversal process.
+	IsLast bool
+
+	// IndentStack is a stack of booleans representing whether each level of
+	// indentation should include a vertical line (true) or just spaces (false).
+	// The length of the stack corresponds to the depth of the motif, and each
+	// element indicates whether to render a line for that level of depth. This
+	// allows the renderer to create a visual representation of the file system
+	// hierarchy, with lines connecting sibling nodes and indicating parent-child
+	// relationships.
+	IndentStack []bool
 }
 
 // Summary carries the result of a completed traversal. Passed to

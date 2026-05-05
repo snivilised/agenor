@@ -10,8 +10,10 @@ import (
 // the node that triggered the event and an optional name identifying the
 // action or pipeline that was invoked. Name is empty for NodeEvent.
 type DisplayEvent struct {
-	Node *core.Node
-	Name string
+	Node        *core.Node
+	IsLast      bool
+	IndentStack []bool
+	Name        string
 }
 
 // NeutralEvent is emitted per node visit when no action or pipeline is

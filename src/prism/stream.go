@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 )
 
 // streamRenderer is the linear scrolling view. Output is written
@@ -85,28 +86,33 @@ func (r *streamRenderer) Show(motif Motif) {
 
 	case motif.IsDir:
 		dirName := r.theme.DirStyle.Render(motif.Name + "/")
+		// lo.Ternary(motif.IsLast, "└── ", "├── ")
 		switch {
 		case motif.ActionName != "":
-			name = dirName + r.theme.ActionStyle.Render("  via "+motif.ActionName)
+			name = dirName + r.theme.ActionStyle.Render("  via "+motif.ActionName+r.branch(motif.IsLast))
 		case motif.PipelineName != "":
-			name = dirName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
+			name = dirName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName+r.branch(motif.IsLast))
 		default:
-			name = dirName
+			name = dirName + r.branch(motif.IsLast)
 		}
 
 	default:
 		fileName := r.theme.FileStyle.Render(motif.Name)
 		switch {
 		case motif.ActionName != "":
-			name = fileName + r.theme.ActionStyle.Render("  via "+motif.ActionName)
+			name = fileName + r.theme.ActionStyle.Render("  via "+motif.ActionName+r.branch(motif.IsLast))
 		case motif.PipelineName != "":
-			name = fileName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName)
+			name = fileName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName+r.branch(motif.IsLast))
 		default:
-			name = fileName
+			name = fileName + r.branch(motif.IsLast)
 		}
 	}
 
 	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)
+}
+
+func (r *streamRenderer) branch(last bool) string {
+	return lo.Ternary(last, " ⛔️", "")
 }
 
 // End renders the closing summary box with traversal counts, elapsed

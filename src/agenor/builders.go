@@ -4,8 +4,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/internal/kernel"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/internal/third/lo"
 )
 
 type buildArtefacts struct {
@@ -25,6 +25,7 @@ type Builders struct {
 	scaffold  scaffoldBuilder
 	navigator kernel.NavigatorBuilder
 	plugins   pluginsBuilder
+	// presenter report.Presenter
 }
 
 func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
@@ -43,6 +44,11 @@ func (bs *Builders) buildAll(addons ...Addon) (*buildArtefacts, error) {
 			kc:  kernel.HadesNav(o, err),
 			ext: ext,
 		}, err
+	}
+
+	if o.Configurer != nil {
+		o.Configurer.OnTraversalOptions(o)
+		o.Configurer = nil
 	}
 
 	// BUILD NAVIGATOR

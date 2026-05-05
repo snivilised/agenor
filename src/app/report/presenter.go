@@ -1,6 +1,10 @@
 package report
 
-import "time"
+import (
+	"time"
+
+	"github.com/snivilised/jaywalk/src/agenor/pref"
+)
 
 // BeginEvent carries the metadata known at the start of a traversal.
 // It is passed to Presenter.OnBegin before any node events are fired.
@@ -32,6 +36,12 @@ type BeginEvent struct {
 // that both the ui package and the prism package can depend on report
 // without creating a circular dependency between them.
 type Presenter interface {
+	// OnTraversalOptions is called with the resolved options for a traversal,
+	// allowing the presenter to configure itself based on the options. This is
+	// called before OnBegin, so the presenter can use the options to influence
+	// how it renders the beginning of the traversal.
+	OnTraversalOptions(o *pref.Options)
+
 	// OnBegin is called once before any traversal events, with the
 	// opening metadata. Implementations should use this to render
 	// any opening banner or header.

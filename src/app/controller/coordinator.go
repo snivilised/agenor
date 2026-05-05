@@ -68,7 +68,7 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 		Subscription: req.Subscription,
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleNode(servant.Node(), &req.Request, t)
+				return c.handleServant(servant, &req.Request, t)
 			},
 		},
 		Tree: req.Tree,
@@ -86,7 +86,7 @@ func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) err
 	facade := &pref.Relic{
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleNode(servant.Node(), &req.Request, t)
+				return c.handleServant(servant, &req.Request, t)
 			},
 		},
 		Strategy: req.Strategy,
@@ -120,7 +120,7 @@ func (c *Coordinator) execute(
 		ResumeFrom: resumeFrom,
 	})
 
-	result, err := req.Scenario(facade, req.Options...).Navigate(ctx)
+	result, err := req.Scenario(facade, req.Settings...).Navigate(ctx)
 
 	t.Err = err
 	if result != nil {

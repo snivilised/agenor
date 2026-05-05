@@ -23,13 +23,16 @@ func (n *navigatorUniversal) Traverse(ctx context.Context,
 	servant core.Servant,
 ) (bool, error) {
 	current := servant.Node()
-	descended := ns.mediator.descend(current)
+	isDir := current.IsDirectory()
+	descended := isDir && ns.mediator.descend(current)
 
 	defer func(permit bool) {
-		ns.mediator.ascend(current, permit)
+		if isDir {
+			ns.mediator.ascend(current, permit)
+		}
 	}(descended)
 
-	if !descended {
+	if isDir && !descended {
 		return continueTraversal, nil
 	}
 
@@ -37,6 +40,10 @@ func (n *navigatorUniversal) Traverse(ctx context.Context,
 
 	if e := ns.mediator.Invoke(servant, vapour); e != nil {
 		return continueTraversal, e
+	}
+
+	if !isDir {
+		return continueTraversal, nil
 	}
 
 	if skip, e := ns.mediator.o.Defects.Skip.Ask(

@@ -59,6 +59,21 @@ type NavFamilies struct {
 	Cascade  *assist.ParamSet[store.CascadeParameterSet]
 	Sampling *assist.ParamSet[store.SamplingParameterSet]
 	PolyFam  *assist.ParamSet[store.PolyFilterParameterSet]
+
+	// Tree is the positional directory argument.
+	Tree string
+
+	// UI is the display manager selected by --tui. All output to the
+	// terminal is routed through this interface.
+	UI report.Presenter
+
+	// NavPs holds the nav-level flags (subscribe, action, pipeline)
+	// inherited from the ghost nav command.
+	NavPs *assist.ParamSet[NavParameterSet]
+
+	// ExecPs holds the exec-level flags (resume) inherited from the
+	// ghost exec command.
+	ExecPs *assist.ParamSet[ExecParameterSet]
 }
 
 // ---------------------------------------------------------------------------
@@ -68,21 +83,6 @@ type NavFamilies struct {
 // WalkInputs collects all flag values needed to build a walk invocation.
 type WalkInputs struct {
 	NavFamilies
-
-	// Tree is the positional directory argument.
-	Tree string
-
-	// UI is the display manager selected by --tui. All output to the
-	// terminal is routed through this interface.
-	UI report.Presenter
-
-	// NavPs holds the nav-level flags (subscribe, action, pipeline)
-	// inherited from the ghost nav command.
-	NavPs *assist.ParamSet[NavParameterSet]
-
-	// ExecPs holds the exec-level flags (resume) inherited from the
-	// ghost exec command.
-	ExecPs *assist.ParamSet[ExecParameterSet]
 }
 
 // ---------------------------------------------------------------------------
@@ -92,21 +92,6 @@ type WalkInputs struct {
 // RunInputs collects all flag values needed to build a run invocation.
 type RunInputs struct {
 	NavFamilies
-
-	// Tree is the positional directory argument.
-	Tree string
-
-	// UI is the display manager selected by --tui. All output to the
-	// terminal is routed through this interface.
-	UI report.Presenter
-
-	// NavPs holds the nav-level flags (subscribe, action, pipeline)
-	// inherited from the ghost nav command.
-	NavPs *assist.ParamSet[NavParameterSet]
-
-	// ExecPs holds the exec-level flags (resume) inherited from the
-	// ghost exec command.
-	ExecPs *assist.ParamSet[ExecParameterSet]
 
 	// WorkerPool holds the run-exclusive concurrency flags (--cpu, --now).
 	WorkerPool *assist.ParamSet[store.WorkerPoolParameterSet]
