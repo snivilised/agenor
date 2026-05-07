@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 )
 
@@ -15,7 +16,7 @@ type session struct {
 }
 
 func (s *session) start() {
-	s.started = time.Now()
+	s.started = core.Now()
 	s.sync.Ignite(&enclave.Ignition{
 		Session: s,
 	})

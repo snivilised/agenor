@@ -47,6 +47,7 @@ func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
 		PipelineName: b.navPs.Native.Pipeline,
 		Scenario:     agenor.Tortoise(isPrime),
 		UI:           b.UI,
+		GetForest:    b.options.GetForest,
 	}
 
 	if isPrime {

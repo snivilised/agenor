@@ -40,6 +40,9 @@ type Request struct {
 	// It receives traversal events and decides how to render them.
 	// The controller never formats output directly.
 	UI report.Presenter
+
+	// GetForest is the pref.BuildForest used to construct the file system
+	GetForest pref.BuildForest
 }
 
 // PrimeRequest carries everything the coordinator needs to execute a

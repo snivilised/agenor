@@ -58,6 +58,13 @@ func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 // has occurred. This allows the depth to reflect the actual level of traversal
 // in the directory structure, where a depth of zero corresponds to the
 // root level.
+//
+// The periscope tracks directory traversal depth - how many levels deep the
+// navigator has descended into the directory hierarchy. A file is not descended
+// into, so it does not increment the periscope. A file at depth 1 means "this
+// file lives inside a directory that is 1 level deep from the root". That is
+// semantically correct and consistent - node.Extension.Depth answers the
+// question "how deep is the directory containing this node".
 func (p *Periscope) Depth() int {
 	return p.depth - 1
 }

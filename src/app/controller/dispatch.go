@@ -8,18 +8,26 @@ import (
 
 // handleServant dispatches to the appropriate per-node handler based on
 // whether an action, pipeline, or neither is configured on the request.
-func (c *Coordinator) handleServant(servant core.Servant, req *Request, t *report.Traversal) error {
+func (c *Coordinator) handleServant(
+	servant core.Servant,
+	req *Request,
+	t *report.Traversal,
+	peerInfoMap PeerInfoMap,
+) error {
 	node := servant.Node()
-	peer := servant.Peer()
 
 	var (
 		isLast      bool
 		indentStack []bool
 	)
 
-	if peer != nil {
-		isLast = peer.IsLast
-		indentStack = peer.IndentStack
+	if peerInfoMap != nil {
+		if info, ok := peerInfoMap[node.Path]; ok {
+			isLast = info.IsLast
+			indentStack = info.IndentStack
+		} else {
+			indentStack = []bool{}
+		}
 	} else {
 		indentStack = []bool{}
 	}

@@ -69,6 +69,17 @@ func (n *Node) IsDirectory() bool {
 	return n.dir
 }
 
+// VisualDepth returns the visual indent level for a node. Directories
+// use their own depth, files use depth+1 since they are visually one
+// level deeper than their parent directory's depth value.
+func (n *Node) VisualDepth() int {
+	if n.IsDirectory() {
+		return n.Extension.Depth
+	}
+
+	return n.Extension.Depth + 1
+}
+
 func isDir(n *Node) bool {
 	if n.Entry != nil {
 		return n.Entry.IsDir()

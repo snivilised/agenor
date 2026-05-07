@@ -16,6 +16,27 @@ type DisplayEvent struct {
 	Name        string
 }
 
+// BeginEvent carries the metadata known at the start of a traversal.
+// It is passed to Presenter.OnBegin before any node events are fired.
+type BeginEvent struct {
+	// Root is the top-level path being traversed.
+	Root string
+
+	// Caption is a human-readable description of the traversal options.
+	Caption string
+
+	// StartedAt is the time the traversal began.
+	StartedAt time.Time
+
+	// IsPrime indicates whether this is a fresh traversal. False means
+	// this is a resume from a checkpoint.
+	IsPrime bool
+
+	// ResumeFrom is the path from which a resume traversal continues.
+	// Populated only when IsPrime is false.
+	ResumeFrom string
+}
+
 // NeutralEvent is emitted per node visit when no action or pipeline is
 // configured. The UI decides how to render the node information.
 type NeutralEvent struct {

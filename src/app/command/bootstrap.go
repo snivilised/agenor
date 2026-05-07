@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/cubiest/jibberjabber"
+	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
@@ -57,8 +59,9 @@ type ConfigInfo struct {
 // ConfigureOptions groups options that influence how Bootstrap
 // initialises localisation and configuration.
 type ConfigureOptions struct {
-	Detector LocaleDetector
-	Config   ConfigInfo
+	Detector  LocaleDetector
+	Config    ConfigInfo
+	GetForest pref.BuildForest
 }
 
 // ConfigureOptionFn is a functional option used to modify
@@ -132,7 +135,7 @@ type Bootstrap struct {
 // ---------------------------------------------------------------------------
 
 func (b *Bootstrap) prepare() {
-	home, err := os.UserHomeDir()
+	home, err := core.Home()
 	cobra.CheckErr(err)
 
 	b.options = ConfigureOptions{
@@ -165,7 +168,10 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	}
 
 	b.themeLoader = bedrock.NewThemeLoader()
-	b.coord = jac.New(b.Cfg, jac.WithLocate(env.Locate))
+	b.coord = jac.New(b.Cfg,
+		jac.WithLocate(env.Locate),
+		jac.WithForest(b.options.GetForest),
+	)
 
 	b.container = assist.NewCobraContainer(
 		&cobra.Command{

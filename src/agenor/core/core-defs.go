@@ -4,6 +4,7 @@ package core
 
 import (
 	"io/fs"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -154,6 +155,9 @@ type (
 	// TimeFunc get time
 	TimeFunc func() time.Time
 
+	// HomeFunc returns the home directory path for the current user.
+	HomeFunc func() (string, error)
+
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
 	SimpleHandler func()
@@ -200,6 +204,9 @@ var (
 	// Now is the function used to compute the current time
 	Now TimeFunc
 
+	// Home is the function used to compute the home directory path for the current user.
+	Home HomeFunc
+
 	// Perms defines the default permissions used to create administrative
 	// files and directories.
 	Perms Permissions
@@ -211,6 +218,7 @@ var (
 
 func init() {
 	Now = time.Now
+	Home = os.UserHomeDir
 	Perms = Permissions{
 		File: filePerm,
 		Dir:  dirPerm,

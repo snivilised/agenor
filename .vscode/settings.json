@@ -81,6 +81,7 @@
     "Fprintln",
     "Frandisco",
     "fset",
+    "fsname",
     "fsnotify",
     "fsys",
     "Fugazi",
