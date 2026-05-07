@@ -90,7 +90,7 @@ var _ = Describe("linear", Ordered, func() {
 	Describe("OnBegin", func() {
 		Context("for a prime traversal", func() {
 			It("passes PrimeNavigation kind and root to renderer.Begin", func() {
-				now := time.Now()
+				now := core.Now()
 
 				presenter.OnBegin(&report.BeginEvent{
 					Root:      "/home/user/docs",
@@ -113,7 +113,7 @@ var _ = Describe("linear", Ordered, func() {
 				presenter.OnBegin(&report.BeginEvent{
 					Root:       "/home/user/docs",
 					Caption:    "files only",
-					StartedAt:  time.Now(),
+					StartedAt:  core.Now(),
 					IsPrime:    false,
 					ResumeFrom: "/home/user/docs/subdir",
 				})

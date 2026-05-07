@@ -93,6 +93,11 @@ type Motif struct {
 	// from node.Extension.Level in agenor.
 	Depth uint
 
+	// VisualDepth is the visual indent level for this item. For directories
+	// this is the same as Depth, but for files it is Depth+1 since they are
+	// visually one level deeper than their parent directory.
+	VisualDepth uint
+
 	// ActionName is the name of the action executed against this node.
 	// Empty when no action was configured.
 	ActionName string

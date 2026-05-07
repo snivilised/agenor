@@ -1,31 +1,8 @@
 package report
 
 import (
-	"time"
-
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 )
-
-// BeginEvent carries the metadata known at the start of a traversal.
-// It is passed to Presenter.OnBegin before any node events are fired.
-type BeginEvent struct {
-	// Root is the top-level path being traversed.
-	Root string
-
-	// Caption is a human-readable description of the traversal options.
-	Caption string
-
-	// StartedAt is the time the traversal began.
-	StartedAt time.Time
-
-	// IsPrime indicates whether this is a fresh traversal. False means
-	// this is a resume from a checkpoint.
-	IsPrime bool
-
-	// ResumeFrom is the path from which a resume traversal continues.
-	// Populated only when IsPrime is false.
-	ResumeFrom string
-}
 
 // Presenter is the interface all display implementations satisfy.
 // It is purely reactive - all methods are event notifications. The
@@ -67,4 +44,27 @@ type Presenter interface {
 	// OnComplete is called once at the end of a traversal with the full
 	// structured outcome.
 	OnComplete(t *Traversal)
+}
+
+// PeerAware is an optional interface that a Presenter can implement to
+// opt into the peer info facility. When a view implements PeerAware,
+// the coordinator runs a preview traversal before the live pass to build
+// the PeerInfoMap, which provides correct IsLast and IndentStack values
+// for every node regardless of filtering or sampling.
+// Views that do not need peer info simply do not implement this interface
+// and are entirely unaffected by the peer info machinery.
+type PeerAware interface {
+	// NeedsPeerInfo reports whether this view requires peer position data.
+	// Returning true causes the coordinator to run a preview traversal.
+	NeedsPeerInfo() bool
+
+	// OnPeerInfoBegin is called after the preview traversal completes,
+	// with the total file and directory counts collected during the
+	// preview. Views can use these counts to display a progress indicator
+	// during the live traversal.
+	OnPeerInfoBegin(files, dirs uint)
+
+	// OnPeerInfoEnd is called when the live traversal completes, allowing
+	// the view to tear down any progress indicator it displayed.
+	OnPeerInfoEnd()
 }

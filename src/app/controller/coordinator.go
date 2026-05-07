@@ -2,10 +2,11 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
-	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor"
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/bedrock"
@@ -20,8 +21,9 @@ import (
 //
 // Dependency direction: command -> controller -> agenor
 type Coordinator struct {
-	cfg    *bedrock.Config
-	locate shell.LocateFunc
+	cfg           *bedrock.Config
+	locate        shell.LocateFunc
+	forestBuilder pref.BuildForest
 }
 
 // CoordinatorOption is a functional option for Coordinator.
@@ -37,10 +39,18 @@ func WithLocate(fn shell.LocateFunc) CoordinatorOption {
 	}
 }
 
-// New returns a ready-to-use Coordinator. cfg must not be nil. The locate
-// field is initialised to exec.LookPath as a safe default; callers should
-// supply the result of shell.Detect().Locate via WithLocate for full
-// platform-appropriate resolution. Bootstrap always does this.
+// WithForest allows injection of a pref.BuildForest, which is used to construct
+// the file systems during traversal. This is primarily intended for testing,
+// where a stubbed file system can be used to simulate various scenarios without
+// relying on the real file system. In production, the Coordinator will use the
+// default file system builder if this option is not provided.
+func WithForest(forestBuilder pref.BuildForest) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.forestBuilder = forestBuilder
+	}
+}
+
+// New returns a ready-to-use Coordinator. cfg must not be nil.
 func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 	c := &Coordinator{
 		cfg:    cfg,
@@ -55,56 +65,96 @@ func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 }
 
 // ExecutePrime runs a fresh directory traversal using the scenario
-// provided on the request. The command adapter is responsible for
-// constructing the correct agenor.Scenario (Tortoise or Hare).
+// provided on the request. When the presenter implements PeerAware
+// and NeedsPeerInfo returns true, a preview traversal is run first
+// to build the PeerInfoMap and collect node counts for the progress
+// indicator. The live traversal reuses the options built during the
+// preview pass.
 func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error {
-	// Root is sourced from Tree for prime traversals. Resume will source
-	// it from restored checkpoint state when implemented.
 	req.Root = req.Tree
 
-	t := &report.Traversal{}
+	traversal := &report.Traversal{}
+	view, isPeerAware := req.UI.(report.PeerAware)
 
+	if isPeerAware && view.NeedsPeerInfo() {
+		// Execute the preview traversal to build the PeerInfoMap and collect.
+		fmt.Println("🦄 DEBUG: Coordinator.ExecutePrime: peer aware ... 🦄")
+		peerInfoMap, builtOptions, result, err := buildPeerInfoMap(
+			ctx, req, req.Settings,
+		)
+		if err != nil {
+			return err
+		}
+
+		view.OnPeerInfoBegin(
+			result.Metrics().Count(enums.MetricNoFilesInvoked),
+			result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
+		)
+
+		facade := &pref.Using{
+			Subscription: req.Subscription,
+			Head: pref.Head{
+				Handler: func(servant agenor.Servant) error {
+					return c.handleServant(servant, &req.Request, traversal, peerInfoMap)
+				},
+				GetForest: c.forestBuilder,
+			},
+			Tree: req.Tree,
+			O:    builtOptions,
+		}
+
+		// Execute the live traversal with the peer info map and options from the
+		// preview pass.
+		err = c.execute(ctx, &req.Request, facade, traversal, true, "")
+		view.OnPeerInfoEnd()
+
+		return err
+	}
+
+	fmt.Println("🦁 DEBUG: Coordinator.ExecutePrime: executing live traversal only ... 🦁")
 	facade := &pref.Using{
 		Subscription: req.Subscription,
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleServant(servant, &req.Request, t)
+				return c.handleServant(servant, &req.Request, traversal, nil)
 			},
+			GetForest: c.forestBuilder,
 		},
 		Tree: req.Tree,
 	}
 
-	return c.execute(ctx, &req.Request, facade, t, true, "")
+	// Execute the live traversal without peer info.
+	return c.execute(ctx, &req.Request, facade, traversal, true, "")
 }
 
-// ExecuteResume resumes an interrupted traversal using the scenario
-// provided on the request. The command adapter is responsible for
-// constructing the correct agenor.Scenario (Tortoise or Hare).
+// ExecuteResume resumes an interrupted traversal. Peer info is not
+// currently supported for resume - this will be addressed in a
+// dedicated issue.
 func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) error {
-	t := &report.Traversal{}
+	traversal := &report.Traversal{}
+
+	// TODO: implement peer info support for resume traversals.
 
 	facade := &pref.Relic{
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleServant(servant, &req.Request, t)
+				return c.handleServant(servant, &req.Request, traversal, nil)
 			},
 		},
 		Strategy: req.Strategy,
 	}
 
-	return c.execute(ctx, &req.Request, facade, t, false, req.ResumeFrom)
+	// Execute the live traversal without peer info.
+	return c.execute(ctx, &req.Request, facade, traversal, false, req.ResumeFrom)
 }
 
 // execute is the shared orchestration path for both prime and resume
-// traversals. PreFlight is always the first step - a failure here
-// returns immediately before any traversal begins. On success it fires
-// OnBegin, calls the scenario, collects metrics, and notifies the UI
-// via OnComplete.
+// traversals.
 func (c *Coordinator) execute(
 	ctx context.Context,
 	req *Request,
 	facade pref.Facade,
-	t *report.Traversal,
+	traversal *report.Traversal,
 	isPrime bool,
 	resumeFrom string,
 ) error {
@@ -115,29 +165,25 @@ func (c *Coordinator) execute(
 	req.UI.OnBegin(&report.BeginEvent{
 		Root:       req.Root,
 		Caption:    captionFor(req),
-		StartedAt:  time.Now(),
+		StartedAt:  core.Now(),
 		IsPrime:    isPrime,
 		ResumeFrom: resumeFrom,
 	})
 
 	result, err := req.Scenario(facade, req.Settings...).Navigate(ctx)
 
-	t.Err = err
+	traversal.Err = err
 	if result != nil {
-		t.FilesVisited = result.Metrics().Count(enums.MetricNoFilesInvoked)
-		t.DirsVisited = result.Metrics().Count(enums.MetricNoDirectoriesInvoked)
-		t.Elapsed = result.Session().Elapsed()
+		traversal.FilesVisited = result.Metrics().Count(enums.MetricNoFilesInvoked)
+		traversal.DirsVisited = result.Metrics().Count(enums.MetricNoDirectoriesInvoked)
+		traversal.Elapsed = result.Session().Elapsed()
 	}
 
-	req.UI.OnComplete(t)
+	req.UI.OnComplete(traversal)
 
 	return err
 }
 
-// captionFor builds the human-readable traversal options description
-// shown in the opening banner. It derives this from the request so that
-// prism does not need to know about agenor subscription types.
-//
 //nolint:exhaustive // enums.SubscribeDirectoriesWithFiles, enums.SubscribeUniversal
 func captionFor(req *Request) string {
 	switch req.Subscription {

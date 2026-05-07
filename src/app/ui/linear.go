@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/snivilised/jaywalk/src/agenor/pref"
@@ -22,6 +23,7 @@ type linear struct {
 }
 
 func (l *linear) OnTraversalOptions(o *pref.Options) {
+	fmt.Println("🐸 DEBUG:linear.OnTraversalOptions 🐸")
 	o.View.Peer.IsActive = true
 }
 
@@ -58,6 +60,7 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 		Name:        e.Node.Extension.Name,
 		IsDir:       e.Node.IsDirectory(),
 		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		VisualDepth: uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
 		IsLast:      e.IsLast,
 		IndentStack: e.IndentStack,
 	})
@@ -73,6 +76,7 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 		Name:        e.Node.Extension.Name,
 		IsDir:       e.Node.IsDirectory(),
 		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		VisualDepth: uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
 		ActionName:  e.Name,
 		Err:         e.Err,
 		IsLast:      e.IsLast,
@@ -90,6 +94,7 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
 		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		VisualDepth:  uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
 		PipelineName: e.Name,
 		Err:          e.Err,
 		IsLast:       e.IsLast,
@@ -108,6 +113,7 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
 		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
+		VisualDepth:  uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
 		ActionName:   e.Name,
 		Skipped:      true,
 		Placeholder:  e.Placeholder,
@@ -136,6 +142,26 @@ func (l *linear) OnComplete(t *report.Traversal) {
 		Errors:       errs,
 		Kind:         l.kind,
 	})
+}
+
+// NeedsPeerInfo reports whether this view requires peer position data.
+// Returning true causes the coordinator to run a preview traversal.
+func (l *linear) NeedsPeerInfo() bool {
+	return true
+}
+
+// OnPeerInfoBegin is called after the preview traversal completes,
+// with the total file and directory counts collected during the
+// preview. Views can use these counts to display a progress indicator
+// during the live traversal.
+func (l *linear) OnPeerInfoBegin(files, dirs uint) {
+	fmt.Printf("🐸 DEBUG: linear.OnPeerInfoBegin (files: %d, dirs:%d) 🐸\n", files, dirs)
+}
+
+// OnPeerInfoEnd is called when the live traversal completes, allowing
+// the view to tear down any progress indicator it displayed.
+func (l *linear) OnPeerInfoEnd() {
+	fmt.Println("🐸 DEBUG: linear.OnPeerInfoEnd 🐸")
 }
 
 // NewLinearWithRenderer constructs a linear presenter backed by the

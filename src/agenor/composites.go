@@ -165,7 +165,7 @@ func Tortoise(isPrime bool) Scenario {
 		return SlowPrime
 	}
 
-	return SlowResume
+	return SlowResume // TODO: this looks wrong
 }
 
 // Goldfish is a composite that a client can use to build a cli that only implements

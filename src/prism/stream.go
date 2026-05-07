@@ -60,7 +60,7 @@ func (r *streamRenderer) Begin(overture Overture) {
 // Errors, skips, actions, pipelines, directories and files each receive
 // distinct visual treatment.
 func (r *streamRenderer) Show(motif Motif) {
-	indent := r.indentFor(motif.Depth)
+	indent := r.indentFor(motif.VisualDepth)
 	depth := r.theme.DepthStyle.Render(indent)
 
 	var name string
@@ -89,9 +89,15 @@ func (r *streamRenderer) Show(motif Motif) {
 		// lo.Ternary(motif.IsLast, "└── ", "├── ")
 		switch {
 		case motif.ActionName != "":
-			name = dirName + r.theme.ActionStyle.Render("  via "+motif.ActionName+r.branch(motif.IsLast))
+			name = dirName + r.theme.ActionStyle.Render(
+				r.meta(motif.ActionName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				// "  via "+motif.ActionName+r.branch(motif.IsLast),
+			)
 		case motif.PipelineName != "":
-			name = dirName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName+r.branch(motif.IsLast))
+			name = dirName + r.theme.PipelineStyle.Render(
+				r.meta(motif.PipelineName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
+			)
 		default:
 			name = dirName + r.branch(motif.IsLast)
 		}
@@ -100,15 +106,27 @@ func (r *streamRenderer) Show(motif Motif) {
 		fileName := r.theme.FileStyle.Render(motif.Name)
 		switch {
 		case motif.ActionName != "":
-			name = fileName + r.theme.ActionStyle.Render("  via "+motif.ActionName+r.branch(motif.IsLast))
+			name = fileName + r.theme.ActionStyle.Render(
+				r.meta(motif.ActionName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				// "  via "+motif.ActionName+r.branch(motif.IsLast),
+			)
 		case motif.PipelineName != "":
-			name = fileName + r.theme.PipelineStyle.Render("  via "+motif.PipelineName+r.branch(motif.IsLast))
+			name = fileName + r.theme.PipelineStyle.Render(
+				r.meta(motif.PipelineName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
+			)
 		default:
 			name = fileName + r.branch(motif.IsLast)
 		}
 	}
 
 	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)
+}
+
+func (r *streamRenderer) meta(activator string, last bool, depth, vDepth uint) string {
+	return fmt.Sprintf("       via %s [meta: %s (depth: %d, vDepth: %d)]",
+		activator, r.branch(last), depth, vDepth,
+	)
 }
 
 func (r *streamRenderer) branch(last bool) string {
