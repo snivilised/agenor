@@ -27,14 +27,14 @@ type previewEntry struct {
 // on the guardian chain or mediator.
 type previewBuffer struct {
 	pending    *previewEntry
-	dirPending map[int]*previewEntry
+	dirPending map[core.TraversalDepth]*previewEntry
 	liveStack  []bool
 	result     PeerInfoMap
 }
 
 func newPreviewBuffer() *previewBuffer {
 	return &previewBuffer{
-		dirPending: make(map[int]*previewEntry),
+		dirPending: make(map[core.TraversalDepth]*previewEntry),
 		result:     make(PeerInfoMap),
 	}
 }
@@ -42,7 +42,7 @@ func newPreviewBuffer() *previewBuffer {
 func (b *previewBuffer) visit(node *core.Node) {
 	visualDepth := node.VisualDepth()
 
-	for len(b.liveStack) <= visualDepth {
+	for len(b.liveStack) <= int(visualDepth) { //nolint:gosec // ok
 		b.liveStack = append(b.liveStack, false)
 	}
 
@@ -50,7 +50,7 @@ func (b *previewBuffer) visit(node *core.Node) {
 		path: node.Path,
 		info: &core.PeerInfo{
 			IsLast:      false,
-			IndentStack: append([]bool{}, b.liveStack[:visualDepth+1]...),
+			IndentStack: append([]bool{}, b.liveStack[:int(visualDepth)+1]...), //nolint:gosec // ok
 		},
 	}
 
@@ -83,8 +83,8 @@ func (b *previewBuffer) visit(node *core.Node) {
 func (b *previewBuffer) ascend(node *core.Node) {
 	depth := node.Extension.Depth
 
-	if depth+1 < len(b.liveStack) {
-		b.liveStack = b.liveStack[:depth+1]
+	if int(depth)+1 < len(b.liveStack) { //nolint:gosec // ok
+		b.liveStack = b.liveStack[:int(depth)+1] //nolint:gosec // ok
 	}
 
 	// The directory being ascended from lives at depth+1. Only the

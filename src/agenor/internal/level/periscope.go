@@ -10,7 +10,7 @@ import (
 
 // Periscope depth and scope manager
 type Periscope struct {
-	depth int
+	depth core.TraversalDepth
 }
 
 // New creates a new periscope instance for a fresh session
@@ -21,7 +21,7 @@ func New() *Periscope {
 // Offset should be invoked with the Depth loaded into the ActiveState
 // during bridging from the previous resume session and the current
 // resume session.
-func (p *Periscope) Offset(by int) {
+func (p *Periscope) Offset(by core.TraversalDepth) {
 	p.depth += by
 }
 
@@ -65,7 +65,7 @@ func (p *Periscope) Scope(isLeaf bool) enums.FilterScope {
 // file lives inside a directory that is 1 level deep from the root". That is
 // semantically correct and consistent - node.Extension.Depth answers the
 // question "how deep is the directory containing this node".
-func (p *Periscope) Depth() int {
+func (p *Periscope) Depth() core.TraversalDepth {
 	return p.depth - 1
 }
 
@@ -87,8 +87,8 @@ func (p *Periscope) Delta(tree, current string) (err error) {
 // it returns true, allowing the traversal to proceed to the next level. The use
 // of a maximum depth helps to prevent infinite recursion and allows for
 // controlled traversal of directory structures.
-func (p *Periscope) Descend(maximum uint) bool {
-	if maximum > 0 && p.depth > int(maximum) { //nolint:gosec // ok
+func (p *Periscope) Descend(maximum core.TraversalDepth) bool {
+	if maximum > 0 && p.depth > maximum {
 		return false
 	}
 

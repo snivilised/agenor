@@ -185,7 +185,7 @@ func equalBehaviours(o *pref.NavigationBehaviours, jo *json.NavigationBehaviours
 	}
 
 	if o.Cascade.Depth != jo.Cascade.Depth {
-		return fmt.Errorf("cascade %w", UnequalValueError[uint]{
+		return fmt.Errorf("cascade %w", UnequalValueError[core.TraversalDepth]{
 			Field: "Depth",
 			Value: o.Cascade.Depth,
 			Other: jo.Cascade.Depth,

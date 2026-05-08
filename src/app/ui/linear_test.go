@@ -61,7 +61,7 @@ func stubNode(path, name string, _ bool, depth uint) *core.Node {
 		Path: path,
 		Extension: core.Extension{
 			Name:  name,
-			Depth: int(depth), //nolint: gosec // overflow
+			Depth: core.TraversalDepth(depth),
 		},
 		// IsDirectory is derived from the node type in real agenor - here
 		// we set it directly via the test helper on the node struct.

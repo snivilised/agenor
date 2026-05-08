@@ -44,7 +44,7 @@ func (v *navigationVapour) clear() {
 
 func (v *navigationVapour) active(tree string,
 	forest *core.Forest,
-	depth int,
+	depth core.TraversalDepth,
 	metrics core.Metrics,
 ) *core.ActiveState {
 	return &core.ActiveState{

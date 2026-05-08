@@ -59,8 +59,8 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 		Path:        e.Node.Path,
 		Name:        e.Node.Extension.Name,
 		IsDir:       e.Node.IsDirectory(),
-		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
-		VisualDepth: uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
+		Depth:       uint(e.Node.Extension.Depth),
+		VisualDepth: uint(e.Node.VisualDepth()),
 		IsLast:      e.IsLast,
 		IndentStack: e.IndentStack,
 	})
@@ -75,8 +75,8 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 		Path:        e.Node.Path,
 		Name:        e.Node.Extension.Name,
 		IsDir:       e.Node.IsDirectory(),
-		Depth:       uint(e.Node.Extension.Depth), //nolint: gosec // overflow
-		VisualDepth: uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
+		Depth:       uint(e.Node.Extension.Depth),
+		VisualDepth: uint(e.Node.VisualDepth()),
 		ActionName:  e.Name,
 		Err:         e.Err,
 		IsLast:      e.IsLast,
@@ -93,8 +93,8 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 		Path:         e.Node.Path,
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
-		VisualDepth:  uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
+		Depth:        uint(e.Node.Extension.Depth),
+		VisualDepth:  uint(e.Node.VisualDepth()),
 		PipelineName: e.Name,
 		Err:          e.Err,
 		IsLast:       e.IsLast,
@@ -112,8 +112,8 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 		Path:         e.Node.Path,
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth), //nolint: gosec // overflow
-		VisualDepth:  uint(e.Node.VisualDepth()),   //nolint: gosec // overflow
+		Depth:        uint(e.Node.Extension.Depth),
+		VisualDepth:  uint(e.Node.VisualDepth()),
 		ActionName:   e.Name,
 		Skipped:      true,
 		Placeholder:  e.Placeholder,

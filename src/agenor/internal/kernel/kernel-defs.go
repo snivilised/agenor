@@ -107,7 +107,7 @@ type (
 		static() *navigationStatic
 		active(tree string,
 			forest *core.Forest,
-			depth int,
+			depth core.TraversalDepth,
 			metrics core.Metrics) *core.ActiveState
 		clear()
 	}
