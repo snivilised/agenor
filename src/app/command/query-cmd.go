@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
-	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -31,13 +30,15 @@ func (b *Bootstrap) buildQueryCommand(container *assist.CobraContainer) {
 // would be invoked per node without executing it. When neither is supplied,
 // query displays the nodes that would be visited.
 func (b *Bootstrap) runQuery(cmd *cobra.Command, args []string) error {
-	subscription, err := ResolveSubscription(b.navPs.Native.Subscribe)
+	subscription, err := controller.ResolveSubscription(b.navPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
-	settings := createSettings(b.navFamilies())
-	settings = append(settings, pref.WithTraversalConfigurer(b.UI))
+	settings := controller.BuildTraversalSettings(
+		createTraversalSettingsIntent(b.navFamilies()),
+		b.UI,
+	)
 
 	base := controller.Request{
 		Subscription: subscription,

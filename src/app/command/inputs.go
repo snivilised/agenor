@@ -3,32 +3,11 @@ package command
 import (
 	"strings"
 
-	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 )
-
-// ---------------------------------------------------------------------------
-// Subscription resolution
-// ---------------------------------------------------------------------------
-
-// ResolveSubscription maps the user-supplied --subscribe string to the
-// corresponding agenor enums.Subscription value. Returns an error if the
-// value is not one of the three legal strings.
-func ResolveSubscription(flag string) (enums.Subscription, error) {
-	switch flag {
-	case SubscribeFlagFiles, "":
-		return enums.SubscribeFiles, nil
-	case SubscribeFlagDirs:
-		return enums.SubscribeDirectories, nil
-	case SubscribeFlagAll:
-		return enums.SubscribeUniversal, nil
-	default:
-		return 0, locale.ErrInvalidSubscription
-	}
-}
 
 // ---------------------------------------------------------------------------
 // Activator validation
