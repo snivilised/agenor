@@ -25,9 +25,9 @@ type Request struct {
 	PipelineName string
 
 	// Scenario is the agenor scenario provided by the command adapter.
-	// It encapsulates the walk/run distinction so the coordinator is
+	// It encapsulates the walk/sprint distinction so the coordinator is
 	// unaware of it. Set to agenor.Tortoise(isPrime) for walk or
-	// agenor.Hare(isPrime, wg) for run.
+	// agenor.Hare(isPrime, wg) for sprint.
 	Scenario agenor.Scenario
 
 	// Root is the traversal root directory. For prime traversals this is

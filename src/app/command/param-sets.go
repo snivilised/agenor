@@ -51,7 +51,7 @@ type RootParameterSet struct {
 // ---------------------------------------------------------------------------
 
 // NavParameterSet holds the jay-specific flags inherited by all navigation
-// commands (walk, run, query) via the ghost nav command.
+// commands (walk, sprint, query) via the ghost nav command.
 type NavParameterSet struct {
 	store.ParameterSetWithOverrides
 
@@ -73,7 +73,7 @@ type NavParameterSet struct {
 // ---------------------------------------------------------------------------
 
 // ExecParameterSet holds the jay-specific flags inherited by execution
-// commands (walk, run) via the ghost exec command. Query does not inherit
+// commands (walk, sprint) via the ghost exec command. Query does not inherit
 // these flags since it performs no execution and cannot be resumed.
 type ExecParameterSet struct {
 	store.ParameterSetWithOverrides

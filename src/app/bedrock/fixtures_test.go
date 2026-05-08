@@ -33,7 +33,7 @@ flags:
       cmds:
         walk:
           foo: F
-        run:
+        sprint:
           bar: Z
   invoke:
     cmds:

@@ -97,12 +97,12 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 			})
 		})
 
-		Context("Run", func() {
+		Context("Sprint", func() {
 			XIt("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
 				lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 					var wg sync.WaitGroup
 
-					_, err := agenor.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
+					_, err := agenor.Sprint(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
 						active.Tree = tree
 						active.Depth = 2
 						active.TraverseDescription.IsRelative = true
@@ -135,13 +135,13 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 	})
 
 	Context("features", func() {
-		Context("Run", func() {
+		Context("Sprint", func() {
 			When("filter", func() {
 				It("🧪 should: register ok", func(specCtx SpecContext) {
 					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
-						_, err := agenor.Run(&wg).Configure().Extent(agenor.Resume(
+						_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Resume(
 							&pref.Relic{
 								Head: pref.Head{
 									Handler: noOpHandler,
@@ -165,7 +165,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
-						_, err := agenor.Run(&wg).Configure().Extent(agenor.Resume(
+						_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Resume(
 							&pref.Relic{
 								Head: pref.Head{
 									Handler: noOpHandler,
@@ -193,7 +193,7 @@ var _ = Describe("Director(Resume)", Ordered, func() {
 					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
-						_, err := agenor.Run(&wg).Configure().Extent(agenor.Resume(
+						_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Resume(
 							&pref.Relic{
 								Head: pref.Head{
 									Handler: noOpHandler,

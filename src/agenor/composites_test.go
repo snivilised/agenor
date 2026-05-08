@@ -100,7 +100,7 @@ var _ = Describe("Composites", Ordered, func() {
 		}),
 		Entry(nil, &lab.CompositeTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "is run/prime",
+				Given:  "is sprint/prime",
 				Should: "return prime extent with concurrent sync",
 			},
 			IsWalk:  false,
@@ -109,7 +109,7 @@ var _ = Describe("Composites", Ordered, func() {
 		}),
 		Entry(nil, &lab.CompositeTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "is run/resume",
+				Given:  "is sprint/resume",
 				Should: "return resume extent with concurrent sync",
 			},
 			IsWalk:  false,
@@ -189,7 +189,7 @@ var _ = Describe("Composites", Ordered, func() {
 		}),
 		Entry(nil, &lab.CompositeTE{
 			AsyncTE: lab.AsyncTE{
-				Given:  "is run",
+				Given:  "is sprint",
 				Should: "return prime extent with concurrent sync",
 			},
 			IsWalk: false,

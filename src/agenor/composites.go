@@ -10,19 +10,19 @@ import (
 // that would otherwise require code duplication.
 //
 // 🐍 `Hydra` (multi faceted/many headed) : supports all four scenarios
-// 🐰 `Hare` (speedy): only supports run
+// 🐰 `Hare` (speedy): only supports sprint
 // 🐢 `Tortoise` (slow): only supports walk
 // 🐡 `Goldfish` (no memory/no resume) : only supports prime
 
 type (
-	// Scenario is a function that encodes within it the semantics of walk vs run
+	// Scenario is a function that encodes within it the semantics of walk vs sprint
 	// and prime vs resume. When invoked, it returns the underlying navigator
 	// upon which a traversal session can be executed. The defined scenarios are
 	// as follows:
 	// * walk/prime
 	// * walk/resume
-	// * run/prime
-	// * run/resume
+	// * sprint/prime
+	// * sprint/resume
 	Scenario func(facade pref.Facade, settings ...pref.Option) Navigator
 )
 
@@ -43,19 +43,19 @@ type (
 //
 // agenor.Walk().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
-// The run scenarios would ordinarily look something like this...
+// The sprint scenarios would ordinarily look something like this...
 //
-// # Run/Prime
-//
-// Example:
-//
-// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
-//
-// # Run/Resume
+// # Sprint/Prime
 //
 // Example:
 //
-// agenor.Run().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
+// agenor.Sprint().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
+//
+// # Sprint/Resume
+//
+// Example:
+//
+// agenor.Sprint().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Hydra composite
@@ -67,7 +67,7 @@ type (
 // Example:
 //
 //	var wg sync.WaitGroup
-//	isWalk := \<set depending on wether user requested walk or run\>
+//	isWalk := \<set depending on wether user requested walk or sprint\>
 //	isPrime := \<set depending on wether user requested prime or resume\>
 //	agenor.Hydra(isWalk, isPrime, &wg)(facade, options...).Navigate(ctx)
 func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
@@ -91,25 +91,25 @@ func Hydra(isWalk, isPrime bool, wg pants.WaitGroup) Scenario {
 }
 
 // Hare is a composite that a client can use to build a cli that only implements
-// the run scenarios.
+// the sprint scenarios.
 //
-// The run scenarios would ordinarily look something like this...
+// The sprint scenarios would ordinarily look something like this...
 //
-// # Run/Prime
-//
-// Example:
-//
-// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
-//
-// # Run/Resume
+// # Sprint/Prime
 //
 // Example:
 //
-// agenor.Run().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
+// agenor.Sprint().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
+//
+// # Sprint/Resume
+//
+// Example:
+//
+// agenor.Sprint().Configure().Extent(agenor.Resume(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Hare composite
-// which can only invoke Run sessions, so the query function is being asked to
+// which can only invoke Sprint sessions, so the query function is being asked to
 // determine if it should prime or resume:
 //
 // # Hare
@@ -179,23 +179,23 @@ func Tortoise(isPrime bool) Scenario {
 //
 // agenor.Walk().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
-// # Run/Prime
+// # Sprint/Prime
 //
 // Example:
 //
-// agenor.Run().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
+// agenor.Sprint().Configure().Extent(agenor.Prime(facade, options...)).Navigate(ctx)
 //
 // and these would need to be invoked conditionally depending on flags on the CLI.
 // Notice the duplication; this can be resolved using the Goldfish composite
 // which can only run Prime sessions, so the query function is being asked to
-// determine if it should walk or run:
+// determine if it should walk or sprint:
 //
 // # Goldfish
 //
 // Example:
 //
 //	var wg sync.WaitGroup
-//	isWalk := \<set depending on wether user requested walk or run\>
+//	isWalk := \<set depending on wether user requested walk or sprint\>
 //	agenor.Goldfish(isWalk, &wg)(facade, options...).Navigate(ctx)
 func Goldfish(isWalk bool, wg pants.WaitGroup) Scenario {
 	if isWalk {
@@ -222,14 +222,14 @@ func SlowResume(facade pref.Facade, settings ...pref.Option) Navigator {
 }
 
 func FastPrime(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
-	return Run(wg).Configure().Extent(Prime(
+	return Sprint(wg).Configure().Extent(Prime(
 		facade,
 		settings...,
 	))
 }
 
 func FastResume(facade pref.Facade, wg pants.WaitGroup, settings ...pref.Option) Navigator {
-	return Run(wg).Configure().Extent(Resume(
+	return Sprint(wg).Configure().Extent(Resume(
 		facade,
 		settings...,
 	))

@@ -89,7 +89,7 @@ var _ = Describe("FlagResolver", Ordered, func() {
 
 			Context("and no invoke default exists but a component default does", func() {
 				It("uses the component default", func() {
-					// No invoke entry for "run"
+					// No invoke entry for "sprint"
 					flags2 := bedrock.FlagsConfig{
 						Invoke: bedrock.FlagInvokeDefaults{},
 						Component: bedrock.FlagComponentDefaults{
@@ -97,7 +97,7 @@ var _ = Describe("FlagResolver", Ordered, func() {
 						},
 					}
 					r2 := bedrock.NewFlagResolver(flags2)
-					cmd := newCmd("run", map[string]int{"files": 1})
+					cmd := newCmd("sprint", map[string]int{"files": 1})
 
 					val, ok := r2.ResolveInt(cmd, "files", "sampler")
 					Expect(ok).To(BeTrue())
@@ -108,7 +108,7 @@ var _ = Describe("FlagResolver", Ordered, func() {
 			Context("and no config defaults exist at all", func() {
 				It("falls back to the cobra default", func() {
 					r2 := bedrock.NewFlagResolver(bedrock.FlagsConfig{})
-					cmd := newCmd("run", map[string]int{"files": 42})
+					cmd := newCmd("sprint", map[string]int{"files": 42})
 
 					val, ok := r2.ResolveInt(cmd, "files", "")
 					Expect(ok).To(BeTrue())
@@ -145,7 +145,7 @@ var _ = Describe("FlagResolver", Ordered, func() {
 			}
 			resolver := bedrock.NewFlagResolver(flags)
 
-			cmd := &cobra.Command{Use: "run"}
+			cmd := &cobra.Command{Use: "sprint"}
 			cmd.Flags().StringP("foo", "f", "", "a flag")
 
 			resolver.ApplyShortOverrides(cmd)

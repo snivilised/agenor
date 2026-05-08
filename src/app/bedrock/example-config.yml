@@ -45,7 +45,7 @@ flags:
       cmds:
         walk:
           foo: F
-        run:
+        sprint:
           bar: Z
   # invoke defines defaults for flags not specified on the command line. Flags
   # defined here, override any that may be defined at the component level.

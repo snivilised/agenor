@@ -123,8 +123,8 @@ var _ = Describe("Load", Ordered, func() {
 			It("contains short override for walk.foo", func() {
 				Expect(config.Raw.Flags.Short["walk"]["foo"]).To(Equal("F"))
 			})
-			It("contains short override for run.bar", func() {
-				Expect(config.Raw.Flags.Short["run"]["bar"]).To(Equal("Z"))
+			It("contains short override for sprint.bar", func() {
+				Expect(config.Raw.Flags.Short["sprint"]["bar"]).To(Equal("Z"))
 			})
 			It("contains invoke.any.files default", func() {
 				val, ok := config.Raw.Flags.Invoke["any"]["files"]

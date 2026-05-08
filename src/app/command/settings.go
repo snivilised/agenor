@@ -12,7 +12,7 @@ import (
 )
 
 // createSettings translates shared flag values into agenor option functions.
-// Shared between walk and run commands.
+// Shared between walk and sprint commands.
 func createSettings(families NavFamilies) []pref.Option {
 	var opts []pref.Option
 

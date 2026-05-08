@@ -18,7 +18,7 @@ type buildArtefacts struct {
 
 // Builders performs build orchestration via its buildAll method. Builders
 // is instructed by the factories (via Configure) of which there are 2; one
-// for Walk and one for Run. The Prime/Resume extents create the Builders
+// for Walk and one for Sprint. The Prime/Resume extents create the Builders
 // instance.
 type Builders struct {
 	facade    pref.Facade

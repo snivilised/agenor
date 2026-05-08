@@ -14,7 +14,7 @@ import (
 // and output to the prism.Renderer. It contains no formatting logic.
 //
 // Safe for concurrent use - all renderer calls are serialised through
-// a mutex so interleaved output from the run command's worker pool is
+// a mutex so interleaved output from the sprint command's worker pool is
 // avoided.
 type linear struct {
 	mu       sync.Mutex

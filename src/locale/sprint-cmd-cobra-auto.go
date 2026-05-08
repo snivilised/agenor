@@ -8,52 +8,52 @@ import (
 )
 
 // =============================================================================
-// 🧊 RunCmdLongDesc
+// 🧊 SprintCmdLongDesc
 //
-// RunCmdLongDesc is the long description shown in cobra help output for the run
-// command.
+// SprintCmdLongDesc is the long description shown in cobra help output for the
+// sprint command.
 // =============================================================================
 
-// RunCmdLongDescTemplData Navigates a directory tree on multiple single cpu
+// SprintCmdLongDescTemplData Navigates a directory tree on multiple single cpu
 // cores and executes actions and pipelines for matching nodes.
-type RunCmdLongDescTemplData struct {
+type SprintCmdLongDescTemplData struct {
 	agenorTemplData
 }
 
-// Message returns the i18n message for RunCmdLongDescTemplData.
-func (td RunCmdLongDescTemplData) Message() *i18n.Message {
+// Message returns the i18n message for SprintCmdLongDescTemplData.
+func (td SprintCmdLongDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "run-command-long-description",
+		ID:          "sprint-command-long-description",
 		Description: "Navigates a directory tree on multiple single cpu cores and executes actions and pipelines for matching nodes",
 		Other: `Navigates a directory tree and executes actions and pipelines for 
 matching nodes. All actions are executed concurrently on multiple
 cpu cores. All available cpu cores can be utilised by specifying
 the --cpu flag, or a specific set of cores can be targeted using
-the --now flag. The run command is designed to be run when bulk
+the --now flag. The sprint command is designed to be run when bulk
 processing of a directory tree is required where the configured
 action is heavily IO bound. Actions and pipelines defined for walk
-run in the same way as they do for run.
+run in the same way as they do for sprint.
 Use --action or --pipeline to name a config-defined operation.
 `,
 	}
 }
 
 // =============================================================================
-// 🧊 RunCmdShortDesc
+// 🧊 SprintCmdShortDesc
 //
 // RootCmdShortDesc is the short description shown in cobra help output for the
 // root command.
 // =============================================================================
 
-// RunCmdShortDescTemplData Navigates a directory tree on a single cpu core.
-type RunCmdShortDescTemplData struct {
+// SprintCmdShortDescTemplData Navigates a directory tree on a single cpu core.
+type SprintCmdShortDescTemplData struct {
 	agenorTemplData
 }
 
-// Message returns the i18n message for RunCmdShortDescTemplData.
-func (td RunCmdShortDescTemplData) Message() *i18n.Message {
+// Message returns the i18n message for SprintCmdShortDescTemplData.
+func (td SprintCmdShortDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
-		ID:          "run-command-short-description",
+		ID:          "sprint-command-short-description",
 		Description: "Navigates a directory tree on a single cpu core",
 		Other:       "Executes actions and pipelines for matching nodes on a single cpu core",
 	}

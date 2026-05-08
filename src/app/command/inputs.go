@@ -52,7 +52,7 @@ func requireActivator(action, pipeline string) error {
 // ---------------------------------------------------------------------------
 
 // NavFamilies groups the mamba param-set pointers registered on the ghost
-// nav command as persistent flags. All navigation commands (walk, run, query)
+// nav command as persistent flags. All navigation commands (walk, sprint, query)
 // inherit these automatically through the cobra parent/child relationship.
 type NavFamilies struct {
 	Preview  *assist.ParamSet[store.PreviewParameterSet]
@@ -86,14 +86,14 @@ type WalkInputs struct {
 }
 
 // ---------------------------------------------------------------------------
-// RunInputs - consumed by the run RunE handler
+// SprintInputs - consumed by the sprint RunE handler
 // ---------------------------------------------------------------------------
 
-// RunInputs collects all flag values needed to build a run invocation.
-type RunInputs struct {
+// SprintInputs collects all flag values needed to build a sprint invocation.
+type SprintInputs struct {
 	NavFamilies
 
-	// WorkerPool holds the run-exclusive concurrency flags (--cpu, --now).
+	// WorkerPool holds the sprint-exclusive concurrency flags (--cpu, --now).
 	WorkerPool *assist.ParamSet[store.WorkerPoolParameterSet]
 }
 

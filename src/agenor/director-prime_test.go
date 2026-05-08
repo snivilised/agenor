@@ -90,9 +90,9 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 			})
 		})
 
-		Context("Run", func() {
+		Context("Sprint", func() {
 			When("Options", func() {
-				It("🧪 should: perform run navigation successfully", func(specCtx SpecContext) {
+				It("🧪 should: perform sprint navigation successfully", func(specCtx SpecContext) {
 					lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 						var wg sync.WaitGroup
 
@@ -107,7 +107,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 						// can we tap into cancellation?
 						//
 
-						_, err := agenor.Run(&wg).Configure().Extent(agenor.Prime(
+						_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Prime(
 							&pref.Using{
 								Subscription: agenor.SubscribeFiles,
 								Head: pref.Head{
@@ -133,7 +133,7 @@ var _ = Describe("Director(Prime)", Ordered, func() {
 
 						o, _, _ := opts.Get()
 						o.Defects.Fault = agenor.Accepter(lab.IgnoreFault)
-						_, err := agenor.Run(&wg).Configure().Extent(agenor.Prime(
+						_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Prime(
 							&pref.Using{
 								Subscription: agenor.SubscribeFiles,
 								Head: pref.Head{

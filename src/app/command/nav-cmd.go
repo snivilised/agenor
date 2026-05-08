@@ -19,12 +19,12 @@ const (
 
 // buildNavCommand constructs the ghost nav command. It is never intended
 // to be invoked directly by the user - its sole purpose is to own the
-// persistent flag families shared by all navigation commands (walk, run,
+// persistent flag families shared by all navigation commands (walk, sprint,
 // query). By placing these families here rather than on root, utility
 // commands (verify, theme) are kept clean of navigation flags.
 //
 // nav is registered as a rooted command (child of root) so that cobra's
-// persistent flag propagation flows: root -> nav -> exec -> walk/run
+// persistent flag propagation flows: root -> nav -> exec -> walk/sprint
 //
 //	-> query
 func (b *Bootstrap) buildNavCommand(container *assist.CobraContainer) {
