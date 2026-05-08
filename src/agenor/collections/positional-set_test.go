@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/jaywalk/src/agenor/collections"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 )
 
 var (

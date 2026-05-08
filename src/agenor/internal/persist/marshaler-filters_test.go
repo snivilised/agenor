@@ -11,10 +11,10 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
 	json "github.com/snivilised/jaywalk/src/agenor/internal/opts/jason"
 	"github.com/snivilised/jaywalk/src/agenor/internal/persist"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
 )

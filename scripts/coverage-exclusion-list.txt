@@ -1,8 +1,8 @@
 github.com/snivilised/jaywalk/enums
 github.com/snivilised/jaywalk/internal/filtering/constant.go
-github.com/snivilised/jaywalk/internal/third
-github.com/snivilised/jaywalk/internal/laboratory
+github.com/snivilised/jaywalk/src/third/
+github.com/snivilised/jaywalk/test/cmd
 github.com/snivilised/jaywalk/test/hanno
 github.com/snivilised/jaywalk/test/hydra
-github.com/snivilised/jaywalk/test/cmd
+github.com/snivilised/jaywalk/test/laboratory
 github.com/snivilised/jaywalk/tools

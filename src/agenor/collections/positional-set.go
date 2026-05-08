@@ -1,7 +1,7 @@
 package collections
 
 import (
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/third/lo"
 	"golang.org/x/exp/constraints"
 )
 

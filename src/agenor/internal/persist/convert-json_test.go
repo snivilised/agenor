@@ -8,10 +8,10 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/jaywalk/src/agenor"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
 	"github.com/snivilised/jaywalk/src/agenor/internal/opts"
 	"github.com/snivilised/jaywalk/src/agenor/internal/persist"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 	"github.com/snivilised/li18ngo"
 	"github.com/snivilised/nefilim/test/luna"
 )

@@ -19,7 +19,7 @@ import (
 	"testing/fstest"
 
 	"github.com/snivilised/jaywalk/src/agenor/collections"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/third/lo"
 	"github.com/snivilised/nefilim/test/luna"
 )
 

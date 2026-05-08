@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
-	"github.com/snivilised/jaywalk/src/internal/third/bus"
+	"github.com/snivilised/jaywalk/src/third/bus"
 )
 
 const (

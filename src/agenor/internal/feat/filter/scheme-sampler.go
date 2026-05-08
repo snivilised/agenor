@@ -7,7 +7,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/internal/filtering"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/third/lo"
 	nef "github.com/snivilised/nefilim"
 )
 

@@ -11,11 +11,11 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
 	"github.com/snivilised/jaywalk/src/agenor/internal/opts"
 	"github.com/snivilised/jaywalk/src/agenor/internal/persist"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 	"github.com/snivilised/li18ngo"
 	nef "github.com/snivilised/nefilim"
 )

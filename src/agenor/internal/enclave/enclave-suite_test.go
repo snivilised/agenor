@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 )
 
 func TestEnclave(t *testing.T) {
