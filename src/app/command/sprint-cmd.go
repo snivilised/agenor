@@ -14,29 +14,29 @@ import (
 	"github.com/snivilised/jaywalk/src/locale"
 )
 
-func (b *Bootstrap) buildRunCommand(container *assist.CobraContainer) {
-	runCmd := &cobra.Command{
-		Use:   "run <directory>",
-		Short: li18ngo.Text(locale.RunCmdShortDescTemplData{}),
-		Long:  li18ngo.Text(locale.RunCmdLongDescTemplData{}),
+func (b *Bootstrap) buildSprintCommand(container *assist.CobraContainer) {
+	sprintCmd := &cobra.Command{
+		Use:   "sprint <directory>",
+		Short: li18ngo.Text(locale.SprintCmdShortDescTemplData{}),
+		Long:  li18ngo.Text(locale.SprintCmdLongDescTemplData{}),
 		Args:  cobra.ExactArgs(1),
-		RunE:  b.runRun,
+		RunE:  b.runSprint,
 	}
 
 	// family: worker-pool [--cpu, --now]
-	b.workerPoolFam = assist.NewParamSet[store.WorkerPoolParameterSet](runCmd)
-	b.workerPoolFam.Native.BindAll(b.workerPoolFam, runCmd.Flags())
+	b.workerPoolFam = assist.NewParamSet[store.WorkerPoolParameterSet](sprintCmd)
+	b.workerPoolFam.Native.BindAll(b.workerPoolFam, sprintCmd.Flags())
 	container.MustRegisterParamSet(WorkerPoolFamName, b.workerPoolFam)
 
-	container.MustRegisterCommand("exec", runCmd)
+	container.MustRegisterCommand("exec", sprintCmd)
 }
 
-// runRun is the RunE handler for the run command. It reads flags from
-// the nav and exec param-sets (all inherited) plus the run-exclusive
+// runSprint is the RunE handler for the sprint command. It reads flags from
+// the nav and exec param-sets (all inherited) plus the sprint-exclusive
 // worker-pool family, constructs the agenor.Hare scenario, and delegates
 // to the coordinator. The WaitGroup is owned here - the adapter created
 // it and waits on it after the coordinator returns.
-func (b *Bootstrap) runRun(cmd *cobra.Command, args []string) error {
+func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
 	if err := requireActivator(b.navPs.Native.Action, b.navPs.Native.Pipeline); err != nil {
 		return err
 	}

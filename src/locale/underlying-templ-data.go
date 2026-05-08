@@ -261,39 +261,39 @@ Use --action or --pipeline to name a config-defined operation.
 	},
 
 	// -------------------------------------------------------------------------
-	// run-cmd: Cobra messages
+	// sprint-cmd: Cobra messages
 	// -------------------------------------------------------------------------
 
-	"run-command-short-description": {
-		MessageID:   "run-command-short-description",
-		Seed:        "RunCmdShortDesc",
+	"sprint-command-short-description": {
+		MessageID:   "sprint-command-short-description",
+		Seed:        "SprintCmdShortDesc",
 		TypeName:    enums.UnderlyingTypeStaticCobra,
 		Description: "Navigates a directory tree on a single cpu core",
 		Story: "RootCmdShortDesc is the short description shown in" +
 			" cobra help output for the root command.",
 		Other: "Executes actions and pipelines for matching nodes on a single cpu core",
-		File:  "run-cmd",
+		File:  "sprint-cmd",
 	},
 
-	"run-command-long-description": {
-		MessageID: "run-command-long-description",
-		Seed:      "RunCmdLongDesc",
+	"sprint-command-long-description": {
+		MessageID: "sprint-command-long-description",
+		Seed:      "SprintCmdLongDesc",
 		TypeName:  enums.UnderlyingTypeStaticCobra,
 		Description: "Navigates a directory tree on multiple single cpu cores and executes " +
 			"actions and pipelines for matching nodes",
-		Story: "RunCmdLongDesc is the long description shown in" +
-			" cobra help output for the run command.",
+		Story: "SprintCmdLongDesc is the long description shown in" +
+			" cobra help output for the sprint command.",
 		Other: `Navigates a directory tree and executes actions and pipelines for 
 matching nodes. All actions are executed concurrently on multiple
 cpu cores. All available cpu cores can be utilised by specifying
 the --cpu flag, or a specific set of cores can be targeted using
-the --now flag. The run command is designed to be run when bulk
+the --now flag. The sprint command is designed to be run when bulk
 processing of a directory tree is required where the configured
 action is heavily IO bound. Actions and pipelines defined for walk
-run in the same way as they do for run.
+run in the same way as they do for sprint.
 Use --action or --pipeline to name a config-defined operation.
 `,
-		File: "run-cmd",
+		File: "sprint-cmd",
 	},
 
 	// -------------------------------------------------------------------------
@@ -321,7 +321,7 @@ Use --action or --pipeline to name a config-defined operation.
 		Other: "query command walks the directory tree showing nodes that " +
 			" satisfy filtering criteria when present. Can be used as a kind of dry " +
 			"run traversal, except no actions or pipelines are invoked as in the case " +
-			"for walk and run commands.",
+			"for walk and sprint commands.",
 		File: "query-cmd",
 	},
 

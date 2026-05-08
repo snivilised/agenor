@@ -144,7 +144,7 @@ var _ = Describe("Navigator", Ordered, func() {
 		services.Reset()
 	})
 
-	DescribeTable("run",
+	DescribeTable("sprint",
 		func(specCtx SpecContext, entry *lab.AsyncOkTE) {
 			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				var (
@@ -160,7 +160,7 @@ var _ = Describe("Navigator", Ordered, func() {
 					}
 				}
 
-				result, err := agenor.Run(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
+				result, err := agenor.Sprint(&wg).Configure(enclave.Loader(func(active *core.ActiveState) {
 					GinkgoWriter.Printf("===> 🐚 restoring state: resume at=%v, subscription=%v\n",
 						entry.Resume.At, entry.Subscription,
 					)
@@ -195,7 +195,7 @@ var _ = Describe("Navigator", Ordered, func() {
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
 				Given:        "Primary Session WithCPUPool",
-				Should:       "run with context",
+				Should:       "sprint with context",
 				Callback:     AsyncNoWCallback("PRIME", 0),
 				Builder:      PrimeBuilder,
 				Path:         func() string { return lab.Static.RetroWave },
@@ -207,7 +207,7 @@ var _ = Describe("Navigator", Ordered, func() {
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
 				Given:        "Primary Session NoW=3",
-				Should:       "run with context",
+				Should:       "sprint with context",
 				Callback:     AsyncNoWCallback("PRIME", 3),
 				Builder:      PrimeBuilder,
 				Path:         func() string { return lab.Static.RetroWave },
@@ -219,7 +219,7 @@ var _ = Describe("Navigator", Ordered, func() {
 		Entry(nil, &lab.AsyncOkTE{
 			AsyncTE: lab.AsyncTE{
 				Given:        "Resume Session NoW=3",
-				Should:       "run with context",
+				Should:       "sprint with context",
 				Callback:     AsyncNoWCallback("RESUME", 3),
 				Builder:      ResumeBuilder,
 				Path:         func() string { return from },

@@ -85,7 +85,7 @@ type ConfigureOptionFn func(*ConfigureOptions)
 //	  │  exec (ghost)        (exec persistent flags: --resume
 //	  │  │                    + MarkFlagsOneRequired("action", "pipeline"))
 //	  │  │  walk
-//	  │  │  run
+//	  │  │  sprint
 //	  │  query
 //	  verify
 //	  theme
@@ -116,17 +116,17 @@ type Bootstrap struct {
 	// root param-set
 	rootPs *assist.ParamSet[RootParameterSet]
 
-	// nav ghost param-set and persistent families, inherited by walk, run, and query.
+	// nav ghost param-set and persistent families, inherited by walk, sprint, and query.
 	navPs       *assist.ParamSet[NavParameterSet]
 	previewFam  *assist.ParamSet[store.PreviewParameterSet]
 	cascadeFam  *assist.ParamSet[store.CascadeParameterSet]
 	samplingFam *assist.ParamSet[store.SamplingParameterSet]
 	polyFam     *assist.ParamSet[store.PolyFilterParameterSet]
 
-	// exec ghost param-set, inherited by walk and run only.
+	// exec ghost param-set, inherited by walk and sprint only.
 	execPs *assist.ParamSet[ExecParameterSet]
 
-	// run-exclusive family
+	// sprint-exclusive family
 	workerPoolFam *assist.ParamSet[store.WorkerPoolParameterSet]
 }
 
@@ -207,7 +207,7 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	b.buildNavCommand(b.container)
 	b.buildExecCommand(b.container)
 	b.buildWalkCommand(b.container)
-	b.buildRunCommand(b.container)
+	b.buildSprintCommand(b.container)
 	b.buildQueryCommand(b.container)
 
 	return b.container.Root()
@@ -317,7 +317,7 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 // navFamilies
 // ---------------------------------------------------------------------------
 
-// navFamilies is a convenience accessor used by runWalk, runRun, and
+// navFamilies is a convenience accessor used by runWalk, runSprint, and
 // runQuery to obtain the nav-level flag families in a single bundle.
 func (b *Bootstrap) navFamilies() NavFamilies {
 	return NavFamilies{

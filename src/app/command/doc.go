@@ -40,7 +40,7 @@ package command
 // │   │   ├── walk
 // │   │   │     LocalFlags: (none)
 // │   │   │
-// │   │   └── run
+// │   │   └── sprint
 // │   │         LocalFlags:
 // │   │           [worker-pool family]
 // │   │             --cpu

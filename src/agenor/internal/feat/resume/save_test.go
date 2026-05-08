@@ -184,5 +184,5 @@ var _ = Describe("Save", Ordered, func() {
 			})
 		})
 	})
-	// TODO: repeat for concurrent sync (agenor.Run).
+	// TODO: repeat for concurrent sync (agenor.Sprint).
 })

@@ -9,8 +9,8 @@ func Walk() NavigatorFactory {
 	return &walkerFac{}
 }
 
-// Run requests a concurrent traversal of a directory tree.
-func Run(wg pants.WaitGroup) NavigatorFactory {
+// Sprint requests a concurrent traversal of a directory tree.
+func Sprint(wg pants.WaitGroup) NavigatorFactory {
 	return &runnerFac{
 		wg: wg,
 	}

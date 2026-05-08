@@ -16,19 +16,19 @@ const (
 
 // buildExecCommand constructs the ghost exec command. It is never intended
 // to be invoked directly by the user - its sole purpose is to own the
-// persistent flags that apply only to execution commands (walk, run) and
+// persistent flags that apply only to execution commands (walk, sprint) and
 // not to query.
 //
 // Specifically exec owns:
 //   - --resume: resume strategy, meaningless for a read-only query
 //
 // The constraint that at least one of --action or --pipeline must be
-// supplied is enforced in runWalk and runRun rather than here, because
+// supplied is enforced in runWalk and runSprint rather than here, because
 // cobra's MarkFlagsOneRequired cannot resolve flags inherited from parent
 // commands. See https://github.com/spf13/cobra/issues/921.
 //
 // exec is registered as a child of nav so that cobra's persistent flag
-// propagation flows: root -> nav -> exec -> walk/run
+// propagation flows: root -> nav -> exec -> walk/sprint
 func (b *Bootstrap) buildExecCommand(container *assist.CobraContainer) {
 	root := container.Root()
 

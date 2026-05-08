@@ -186,7 +186,7 @@ var _ = Describe("director error", Ordered, func() {
 			lab.WithTestContext(specCtx, func(ctx context.Context, _ context.CancelFunc) {
 				var wg sync.WaitGroup
 
-				_, err := agenor.Run(&wg).Configure().Extent(agenor.Prime(
+				_, err := agenor.Sprint(&wg).Configure().Extent(agenor.Prime(
 					&pref.Using{
 						Head: pref.Head{
 							Handler: noOpHandler,

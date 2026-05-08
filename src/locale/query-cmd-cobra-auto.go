@@ -25,7 +25,7 @@ func (td QueryCmdLongDescTemplData) Message() *i18n.Message {
 	return &i18n.Message{
 		ID:          "query-command-long-description",
 		Description: "query acts as a non destructive directory tree inquiry",
-		Other:       "query command walks the directory tree showing nodes that  satisfy filtering criteria when present. Can be used as a kind of dry run traversal, except no actions or pipelines are invoked as in the case for walk and run commands.",
+		Other:       "query command walks the directory tree showing nodes that  satisfy filtering criteria when present. Can be used as a kind of dry run traversal, except no actions or pipelines are invoked as in the case for walk and sprint commands.",
 	}
 }
 

@@ -93,11 +93,11 @@ var _ = Describe("Bootstrap", Ordered, func() {
 				Expect(walkCmd.Flags().Lookup("subscribe")).NotTo(BeNil())
 			})
 
-			It("🧪 should: expose --subscribe on run", func() {
-				runCmd, _, err := buildRoot().Find([]string{"nav", "exec", "run"})
+			It("🧪 should: expose --subscribe on sprint", func() {
+				sprintCmd, _, err := buildRoot().Find([]string{"nav", "exec", "sprint"})
 				Expect(err).To(BeNil())
-				runCmd.InheritedFlags()
-				Expect(runCmd.Flags().Lookup("subscribe")).NotTo(BeNil())
+				sprintCmd.InheritedFlags()
+				Expect(sprintCmd.Flags().Lookup("subscribe")).NotTo(BeNil())
 			})
 
 			It("🧪 should: expose --subscribe on query", func() {
@@ -137,11 +137,11 @@ var _ = Describe("Bootstrap", Ordered, func() {
 				Expect(walkCmd.Flags().Lookup("resume")).NotTo(BeNil())
 			})
 
-			It("🧪 should: expose --resume on run", func() {
-				runCmd, _, err := buildRoot().Find([]string{"nav", "exec", "run"})
+			It("🧪 should: expose --resume on sprint", func() {
+				sprintCmd, _, err := buildRoot().Find([]string{"nav", "exec", "sprint"})
 				Expect(err).To(BeNil())
-				runCmd.InheritedFlags()
-				Expect(runCmd.Flags().Lookup("resume")).NotTo(BeNil())
+				sprintCmd.InheritedFlags()
+				Expect(sprintCmd.Flags().Lookup("resume")).NotTo(BeNil())
 			})
 
 			It("🧪 should: not expose --resume on query", func() {
@@ -176,11 +176,11 @@ var _ = Describe("Bootstrap", Ordered, func() {
 			})
 		})
 
-		Context("worker-pool flags - run exclusive", func() {
-			It("🧪 should: expose --cpu as a local flag on run", func() {
-				runCmd, _, err := buildRoot().Find([]string{"nav", "exec", "run"})
+		Context("worker-pool flags - sprint exclusive", func() {
+			It("🧪 should: expose --cpu as a local flag on sprint", func() {
+				sprintCmd, _, err := buildRoot().Find([]string{"nav", "exec", "sprint"})
 				Expect(err).To(BeNil())
-				Expect(runCmd.Flags().Lookup("cpu")).NotTo(BeNil())
+				Expect(sprintCmd.Flags().Lookup("cpu")).NotTo(BeNil())
 			})
 
 			It("🧪 should: not expose --cpu on walk", func() {
