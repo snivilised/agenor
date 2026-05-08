@@ -9,8 +9,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/internal/filtering"
 	"github.com/snivilised/jaywalk/src/agenor/internal/opts"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 // FastwardFilter is a filter that is used to fastward through the tree.

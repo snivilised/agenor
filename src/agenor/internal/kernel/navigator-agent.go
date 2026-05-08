@@ -10,8 +10,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/tapable"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/locale"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 type readHooks struct {

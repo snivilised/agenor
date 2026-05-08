@@ -10,7 +10,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/internal/feat/sampling"
 	"github.com/snivilised/jaywalk/src/agenor/internal/kernel"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 type (

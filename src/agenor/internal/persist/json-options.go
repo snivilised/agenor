@@ -3,8 +3,8 @@ package persist
 import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	json "github.com/snivilised/jaywalk/src/agenor/internal/opts/jason"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 const (

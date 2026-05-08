@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 )
 
 var _ = Describe("KernelResult", func() {

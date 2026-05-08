@@ -10,11 +10,11 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
 	"github.com/snivilised/jaywalk/src/agenor/tfs"
 	"github.com/snivilised/jaywalk/src/internal/services"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 )
 
 var _ = Describe("feature", Ordered, func() {

@@ -8,10 +8,10 @@ import (
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
-	lab "github.com/snivilised/jaywalk/src/agenor/internal/laboratory"
 	"github.com/snivilised/jaywalk/src/agenor/internal/opts"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/agenor/test/hanno"
+	lab "github.com/snivilised/jaywalk/test/laboratory"
 	"github.com/snivilised/nefilim/test/luna"
 )
 

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
-	"github.com/snivilised/jaywalk/src/internal/third/lo"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 func createGlobFilter(def *core.FilterDef,
