@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/snivilised/jaywalk/src/agenor"
-	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -41,13 +40,15 @@ func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	subscription, err := ResolveSubscription(b.navPs.Native.Subscribe)
+	subscription, err := controller.ResolveSubscription(b.navPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
-	settings := createSettings(b.navFamilies())
-	settings = append(settings, pref.WithTraversalConfigurer(b.UI))
+	settings := controller.BuildTraversalSettings(
+		createTraversalSettingsIntent(b.navFamilies()),
+		b.UI,
+	)
 
 	if b.workerPoolFam.Native.CPU {
 		settings = append(settings, agenor.WithCPU())
