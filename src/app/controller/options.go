@@ -18,7 +18,7 @@ type FilterIntent struct {
 
 type TraversalSettingsIntent struct {
 	NoRecurse     bool
-	Depth         uint
+	Depth         core.TraversalDepth
 	IsSampling    bool
 	NoFiles       uint
 	NoDirectories uint

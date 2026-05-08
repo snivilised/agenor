@@ -258,7 +258,7 @@ var _ = Describe("Marshaler", Ordered, func() {
 				},
 				checkerTE: &checkerTE{
 					field:   "Depth",
-					checker: check[uint],
+					checker: check[core.TraversalDepth],
 				},
 				option: func() pref.Option {
 					return pref.WithDepth(4)

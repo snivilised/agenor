@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/snivilised/jaywalk/src/agenor"
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/controller"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -12,7 +13,7 @@ import (
 func createTraversalSettingsIntent(families NavFamilies) controller.TraversalSettingsIntent {
 	return controller.TraversalSettingsIntent{
 		NoRecurse:     families.Cascade.Native.NoRecurse,
-		Depth:         families.Cascade.Native.Depth,
+		Depth:         core.TraversalDepth(families.Cascade.Native.Depth),
 		IsSampling:    families.Sampling.Native.IsSampling,
 		NoFiles:       families.Sampling.Native.NoFiles,
 		NoDirectories: families.Sampling.Native.NoDirectories,

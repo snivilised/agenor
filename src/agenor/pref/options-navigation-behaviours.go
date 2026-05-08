@@ -1,5 +1,9 @@
 package pref
 
+import (
+	"github.com/snivilised/jaywalk/src/agenor/core"
+)
+
 type (
 	// SubPathBehaviour behaviours relating to handling of sub-path calculation
 	SubPathBehaviour struct {
@@ -45,7 +49,7 @@ type (
 	// CascadeBehaviour behaviours relating to how deep to navigate
 	CascadeBehaviour struct {
 		// Depth sets a maximum traversal depth
-		Depth uint
+		Depth core.TraversalDepth
 
 		// NoRecurse is an alternative to using Depth, but limits the traversal
 		// to just the path specified by the user. Since the raison d'etre
@@ -102,7 +106,7 @@ func WithSortBehaviour(sb *SortBehaviour) Option {
 
 // WithDepth sets the maximum number of directories deep the navigator
 // will traverse to.
-func WithDepth(depth uint) Option {
+func WithDepth(depth core.TraversalDepth) Option {
 	return func(o *Options) error {
 		o.Behaviours.Cascade.Depth = depth
 

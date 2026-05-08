@@ -6,6 +6,10 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 )
 
+// TraversalDepth is the depth type used for tree traversal and visual
+// rendering. It is distinct from int to make depth semantics explicit.
+type TraversalDepth uint
+
 // Node represents a file system node event and represents each file system
 // entity encountered during traversal. The event representing the tree node
 // does not have a DirEntry because it is not created as a result of a readDir
@@ -25,7 +29,7 @@ type Node struct {
 // Extension provides extended information if the client requests
 // it by setting the DoExtend boolean in the traverse options.
 type Extension struct {
-	Depth   int               // traversal depth relative to the tree
+	Depth   TraversalDepth    // traversal depth relative to the tree
 	IsLeaf  bool              // defines whether this node a leaf node
 	Name    string            // derived as the leaf segment from filepath.Split
 	Parent  string            // derived as the directory from filepath.Split
@@ -72,7 +76,7 @@ func (n *Node) IsDirectory() bool {
 // VisualDepth returns the visual indent level for a node. Directories
 // use their own depth, files use depth+1 since they are visually one
 // level deeper than their parent directory's depth value.
-func (n *Node) VisualDepth() int {
+func (n *Node) VisualDepth() TraversalDepth {
 	if n.IsDirectory() {
 		return n.Extension.Depth
 	}

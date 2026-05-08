@@ -144,7 +144,7 @@ type (
 		// Depth represents the current depth of the traversal in the file system hierarchy. This can be used
 		// to track how deep the traversal has gone and can be useful for implementing depth-based
 		// logic or optimizations during the traversal process.
-		Depth int
+		Depth TraversalDepth
 
 		// Metrics represents the metrics collected during the traversal. This allows the client to access
 		// performance data and other relevant information about the traversal, which can be useful for

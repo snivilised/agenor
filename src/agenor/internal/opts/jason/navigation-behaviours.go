@@ -1,5 +1,7 @@
 package jason
 
+import "github.com/snivilised/jaywalk/src/agenor/core"
+
 type (
 	// SubPathBehaviour SubPath behaviours relating to handling of sub-path calculation
 	SubPathBehaviour struct {
@@ -22,7 +24,7 @@ type (
 	CascadeBehaviour struct {
 		// Depth sets a maximum traversal depth
 		//
-		Depth uint
+		Depth core.TraversalDepth
 
 		// NoRecurse is an alternative to using Depth, but limits the traversal
 		// to just the path specified by the user. Since the raison d'etre

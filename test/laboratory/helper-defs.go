@@ -17,9 +17,9 @@ import (
 type (
 	// ActiveTE is used to capture the state of an active traversal at the point of resumption.
 	ActiveTE struct {
-		Depth          int               // must correspond to the correct depth of resumeAt
-		ResumeAt       string            // the path at which to resume traversal
-		HibernateState enums.Hibernation // the expected hibernation state at the point of resumption
+		Depth          core.TraversalDepth // must correspond to the correct depth of resumeAt
+		ResumeAt       string              // the path at which to resume traversal
+		HibernateState enums.Hibernation   // the expected hibernation state at the point of resumption
 	}
 
 	// GeneralTE is a base struct for test entries that include a description of the test scenario.
@@ -254,7 +254,7 @@ type (
 		// Depth captures the expected depth of the traversal at which certain behaviors
 		// should occur, which may be relevant for tests that evaluate how cascading
 		// filters affect the traversal at different levels of the directory hierarchy.
-		Depth uint
+		Depth core.TraversalDepth
 	}
 
 	// AsyncResumeTE captures parameters for tests that involve asynchronous
