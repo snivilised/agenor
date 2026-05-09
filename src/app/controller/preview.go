@@ -28,7 +28,6 @@ type previewEntry struct {
 type previewBuffer struct {
 	pending    *previewEntry
 	dirPending map[core.TraversalDepth]*previewEntry
-	liveStack  []bool
 	result     PeerInfoMap
 }
 
@@ -40,17 +39,10 @@ func newPreviewBuffer() *previewBuffer {
 }
 
 func (b *previewBuffer) visit(node *core.Node) {
-	visualDepth := node.VisualDepth()
-
-	for len(b.liveStack) <= int(visualDepth) { //nolint:gosec // ok
-		b.liveStack = append(b.liveStack, false)
-	}
-
 	entry := &previewEntry{
 		path: node.Path,
 		info: &core.PeerInfo{
-			IsLast:      false,
-			IndentStack: append([]bool{}, b.liveStack[:int(visualDepth)+1]...), //nolint:gosec // ok
+			IsLast: false,
 		},
 	}
 
@@ -82,10 +74,6 @@ func (b *previewBuffer) visit(node *core.Node) {
 
 func (b *previewBuffer) ascend(node *core.Node) {
 	depth := node.Extension.Depth
-
-	if int(depth)+1 < len(b.liveStack) { //nolint:gosec // ok
-		b.liveStack = b.liveStack[:int(depth)+1] //nolint:gosec // ok
-	}
 
 	// The directory being ascended from lives at depth+1. Only the
 	// last sibling directory remains in dirPending at that depth -

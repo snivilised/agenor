@@ -1,0 +1,129 @@
+# Default theme configuration for jaywalk prism renderer
+# This file demonstrates all available theme options with their default values.
+# Copy this file and modify the values to customize your theme.
+
+# --- Navigation identity ---
+palette:
+  # Banner is the colour of the opening traversal identity block.
+  banner:
+    ansi16: magenta
+    ansi256: ""
+    true-color: ""
+
+  # BannerText is the colour of text within the banner.
+  banner-text:
+    ansi16: white
+    ansi256: ""
+    true-color: ""
+
+  # --- Traversal nodes ---
+
+  # Directory is the colour of directory names during traversal.
+  directory:
+    ansi16: cyan
+    ansi256: ""
+    true-color: ""
+
+  # File is the colour of file names during traversal.
+  file:
+    ansi16: white
+    ansi256: ""
+    true-color: ""
+
+  # Root is the colour used to highlight the traversal root path.
+  root:
+    ansi16: bright-white
+    ansi256: ""
+    true-color: ""
+
+  # --- Execution ---
+
+  # Action is the colour of action names shown alongside nodes.
+  action:
+    ansi16: blue
+    ansi256: ""
+    true-color: ""
+
+  # Pipeline is the colour of pipeline names shown alongside nodes.
+  pipeline:
+    ansi16: blue
+    ansi256: ""
+    true-color: ""
+
+  # Skipped is the colour of nodes whose action was skipped due to
+  # a placeholder breach.
+  skipped:
+    ansi16: bright-black
+    ansi256: ""
+    true-color: ""
+
+  # --- Status ---
+
+  # Error is the colour of nodes or actions that produced an error.
+  error:
+    ansi16: red
+    ansi256: ""
+    true-color: ""
+
+  # Muted is the colour of secondary or de-emphasised information.
+  muted:
+    ansi16: bright-black
+    ansi256: ""
+    true-color: ""
+
+  # Progress is the colour of progress indicators.
+  progress:
+    ansi16: green
+    ansi256: ""
+    true-color: ""
+
+  # --- Summary ---
+
+  # SummaryBorder is the colour of the closing summary container border.
+  summary-border:
+    ansi16: magenta
+    ansi256: ""
+    true-color: ""
+
+  # SummaryLabel is the colour of labels in the closing summary.
+  summary-label:
+    ansi16: blue
+    ansi256: ""
+    true-color: ""
+
+  # SummaryValue is the colour of values in the closing summary.
+  summary-value:
+    ansi16: white
+    ansi256: ""
+    true-color: ""
+
+  # --- Concurrent views (porthole, lanes) ---
+
+  # Worker is the colour representing an active concurrent worker.
+  worker:
+    ansi16: cyan
+    ansi256: ""
+    true-color: ""
+
+  # WorkerIdle is the colour representing an idle concurrent worker.
+  worker-idle:
+    ansi16: bright-black
+    ansi256: ""
+    true-color: ""
+
+  # LaneHeader is the colour of the per-worker lane identity header.
+  lane-header:
+    ansi16: magenta
+    ansi256: ""
+    true-color: ""
+
+# TreeIcons holds optional glyph configuration used by tree-style
+# stream renderers such as the linear view.
+tree-icons:
+  root-icon: "✻"
+  directory-icon: "📁"
+  file-icon: "🔖"
+  branch-vertical: "│"
+  branch-joint: "├── "
+  branch-last: "└── "
+  branch-indent: "  "

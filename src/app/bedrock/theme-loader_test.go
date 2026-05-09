@@ -28,6 +28,14 @@ palette:
     ansi16: "red"
     ansi256: "211"
     true-color: "#F38BA8"
+  tree-icons:
+    root-icon: "✻"
+    directory-icon: "📁"
+    file-icon: "🔖"
+    branch-vertical: "│"
+    branch-joint: "├── "
+    branch-last: "└── "
+    branch-indent: "  "
 `
 
 // invalidANSI16YAML contains a palette entry with an unrecognised
@@ -144,6 +152,9 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 				Expect(palette.Banner.TrueColor).To(Equal("#5C4AE4"))
 				Expect(palette.Directory.ANSI16).To(Equal("cyan"))
 				Expect(palette.Error.ANSI16).To(Equal("red"))
+				Expect(palette.TreeIcons["root-icon"]).To(Equal("✻"))
+				Expect(palette.TreeIcons["directory-icon"]).To(Equal("📁"))
+				Expect(palette.TreeIcons["file-icon"]).To(Equal("🔖"))
 			})
 		})
 

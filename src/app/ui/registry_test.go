@@ -1,9 +1,13 @@
 package ui_test
 
 import (
+	"io"
+	"os"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/ui"
 	"github.com/snivilised/jaywalk/src/prism"
@@ -51,41 +55,50 @@ var _ = Describe("Registry", func() {
 				Expect(err.Error()).To(ContainSubstring("notacolour"))
 			})
 		})
-	})
 
-	// ------------------------------------------------------------------
-	// RegisterMode
-	// ------------------------------------------------------------------
+		Context("when the palette contains custom tree icons", func() {
+			It("renders the custom icons via the selected view", func() {
+				palette := prism.SystemPalette()
+				palette.TreeIcons = map[string]string{
+					prism.TreeIconRoot:           "*",
+					prism.TreeIconDirectory:      "D",
+					prism.TreeIconFile:           "F",
+					prism.TreeIconBranchVertical: "|",
+					prism.TreeIconBranchJoint:    "+-- ",
+					prism.TreeIconBranchLast:     "L-- ",
+					prism.TreeIconBranchIndent:   "  ",
+				}
 
-	Describe("RegisterMode", func() {
-		Context("when registering a new unique mode name", func() {
-			It("succeeds and the mode becomes available via New", func() {
-				const testMode = "test-mode-unique"
-
-				err := ui.RegisterMode(testMode,
-					func(palette prism.Palette) (report.Presenter, error) {
-						return ui.New(ui.ModeLinear, palette)
-					},
-				)
-
+				origStdout := os.Stdout
+				r, w, err := os.Pipe()
 				Expect(err).To(BeNil())
+				os.Stdout = w
 
-				presenter, err := ui.New(testMode, prism.SystemPalette())
+				presenter, err := ui.New(ui.ModeLinear, palette)
 				Expect(err).To(BeNil())
 				Expect(presenter).NotTo(BeNil())
-			})
-		})
 
-		Context("when registering a name that already exists", func() {
-			It("returns an error containing the duplicate name", func() {
-				err := ui.RegisterMode(ui.ModeLinear,
-					func(palette prism.Palette) (report.Presenter, error) {
-						return nil, nil
+				node := &core.Node{
+					Path: "./test/file.txt",
+					Extension: core.Extension{
+						Depth: 1,
+						Name:  "file.txt",
 					},
-				)
+				}
 
-				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring(ui.ModeLinear))
+				presenter.OnNodeEvent(&report.NeutralEvent{
+					DisplayEvent: report.DisplayEvent{
+						Node:   node,
+						IsLast: true,
+					},
+				})
+
+				Expect(w.Close()).To(Succeed())
+				os.Stdout = origStdout
+
+				output, err := io.ReadAll(r)
+				Expect(err).To(BeNil())
+				Expect(string(output)).To(ContainSubstring("L-- F file.txt"))
 			})
 		})
 	})

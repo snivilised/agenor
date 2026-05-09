@@ -176,6 +176,25 @@ type Renderer interface {
 	End(summary Summary)
 }
 
+// RendererOption configures renderer behavior at construction time.
+type RendererOption func(*streamRenderer)
+
+// WithIcons configures tree glyphs and item icons for stream renderers.
+// The map keys are the standard token names used by prism tree rendering.
+func WithIcons(icons map[string]string) RendererOption {
+	return func(r *streamRenderer) {
+		if r.treeIcons == nil {
+			r.treeIcons = make(map[string]string)
+		}
+
+		for key, value := range icons {
+			if value != "" {
+				r.treeIcons[key] = value
+			}
+		}
+	}
+}
+
 // New constructs a Renderer for the requested view kind using the given
 // Palette. The writer w is the output destination; pass os.Stdout for
 // production use or a bytes.Buffer in tests.
@@ -183,7 +202,7 @@ type Renderer interface {
 // Returns an error if the Palette contains unrecognised colour names,
 // which would indicate a malformed user theme file. Bootstrap should
 // treat this as a startup failure.
-func New(kind ViewKind, palette Palette, w io.Writer) (Renderer, error) {
+func New(kind ViewKind, palette Palette, w io.Writer, opts ...RendererOption) (Renderer, error) {
 	theme, err := NewTheme(palette, w)
 	if err != nil {
 		return nil, fmt.Errorf("prism.New: %w", err)
@@ -192,8 +211,8 @@ func New(kind ViewKind, palette Palette, w io.Writer) (Renderer, error) {
 	//nolint:exhaustive // prism.PortholeView, prism.LanesView
 	switch kind {
 	case StreamView:
-		return newStreamRenderer(theme, w), nil
+		return newStreamRenderer(theme, w, opts...), nil
 	default:
-		return newStreamRenderer(theme, w), nil
+		return newStreamRenderer(theme, w, opts...), nil
 	}
 }
