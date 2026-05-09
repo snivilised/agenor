@@ -8,6 +8,18 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
+func defaultTreeIcons() TreeIcons {
+	return TreeIcons{
+		TreeIconRoot:           "✻",
+		TreeIconDirectory:      "📁",
+		TreeIconFile:           "🔖",
+		TreeIconBranchVertical: "│",
+		TreeIconBranchJoint:    "├── ",
+		TreeIconBranchLast:     "└── ",
+		TreeIconBranchIndent:   "  ",
+	}
+}
+
 // Theme holds all lipgloss styles used by a renderer. Constructed once
 // via NewTheme and injected into the renderer. No package-level style
 // variables exist anywhere in prism.
@@ -26,6 +38,9 @@ type Theme struct {
 
 	// FileStyle is applied to file name text in Show output.
 	FileStyle lipgloss.Style
+
+	// RootStyle is applied to the root node text in tree style output.
+	RootStyle lipgloss.Style
 
 	// DepthStyle is applied to the depth indent prefix in Show output.
 	DepthStyle lipgloss.Style
@@ -65,6 +80,10 @@ type Theme struct {
 
 	// LaneHeaderStyle is applied to per-worker lane identity headers.
 	LaneHeaderStyle lipgloss.Style
+
+	// TreeIcons are the glyphs used to render the branch tree in stream
+	// views such as the linear renderer.
+	TreeIcons TreeIcons
 }
 
 // NewTheme constructs a Theme from the given Palette. The colour profile
@@ -111,6 +130,11 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 	}
 
 	file, err := resolve(palette.File, "file")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	root, err := resolve(palette.Root, "root")
 	if err != nil {
 		return Theme{}, err
 	}
@@ -173,6 +197,16 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 	laneHeader, err := resolve(palette.LaneHeader, "lane-header")
 	if err != nil {
 		return Theme{}, err
+	}
+
+	treeIcons := make(TreeIcons)
+	for k, v := range defaultTreeIcons() {
+		treeIcons[k] = v
+	}
+	for k, v := range palette.TreeIcons {
+		if v != "" {
+			treeIcons[k] = v
+		}
 	}
 
 	return Theme{
@@ -248,5 +282,10 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 		LaneHeaderStyle: lipgloss.NewStyle().
 			Foreground(laneHeader).
 			Bold(true),
+
+		RootStyle: lipgloss.NewStyle().
+			Foreground(root),
+
+		TreeIcons: treeIcons,
 	}, nil
 }

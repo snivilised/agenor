@@ -16,15 +16,33 @@ import (
 type streamRenderer struct {
 	theme Theme
 	w     io.Writer
+
+	// treeIcons holds configured tree glyphs, either from the theme or
+	// from renderer options such as WithIcons.
+	treeIcons TreeIcons
+
+	// branchStack tracks ancestor continuation state for tree branch
+	// rendering.
+	branchStack []bool
+
+	previousDepth  uint
+	previousIsLast bool
 }
 
 // newStreamRenderer constructs a streamRenderer. Called by New() when
 // ViewKind is StreamView. Unexported - callers use New().
-func newStreamRenderer(theme Theme, w io.Writer) Renderer {
-	return &streamRenderer{
-		theme: theme,
-		w:     w,
+func newStreamRenderer(theme Theme, w io.Writer, opts ...RendererOption) Renderer {
+	r := &streamRenderer{
+		theme:     theme,
+		w:         w,
+		treeIcons: theme.TreeIcons,
 	}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+
+	return r
 }
 
 // Begin renders the opening banner using the Overture metadata. The
@@ -60,8 +78,8 @@ func (r *streamRenderer) Begin(overture Overture) {
 // Errors, skips, actions, pipelines, directories and files each receive
 // distinct visual treatment.
 func (r *streamRenderer) Show(motif Motif) {
-	indent := r.indentFor(motif.VisualDepth)
-	depth := r.theme.DepthStyle.Render(indent)
+	prefix := r.branchPrefix(motif)
+	depth := r.theme.DepthStyle.Render(prefix)
 
 	var name string
 
@@ -84,67 +102,104 @@ func (r *streamRenderer) Show(motif Motif) {
 				r.theme.SkippedStyle.Render(skippedInfo)
 		}
 
+	case motif.Depth == 0:
+		name = r.theme.RootStyle.Render(
+			r.treeIcons[TreeIconRoot] +
+				lo.Ternary(r.treeIcons[TreeIconRoot] != "", " ", "") +
+				motif.Name +
+				lo.Ternary(motif.IsDir, "/", ""),
+		)
+
 	case motif.IsDir:
-		dirName := r.theme.DirStyle.Render(motif.Name + "/")
-		// lo.Ternary(motif.IsLast, "└── ", "├── ")
-		switch {
-		case motif.ActionName != "":
-			name = dirName + r.theme.ActionStyle.Render(
-				r.meta(motif.ActionName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
-				// "  via "+motif.ActionName+r.branch(motif.IsLast),
-			)
-		case motif.PipelineName != "":
-			name = dirName + r.theme.PipelineStyle.Render(
-				r.meta(motif.PipelineName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
-				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
-			)
-		default:
-			name = dirName + r.branch(motif.IsLast)
+		name = r.theme.DirStyle.Render(r.itemLabel(motif))
+
+		if motif.ActionName != "" {
+			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
+		} else if motif.PipelineName != "" {
+			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
 		}
 
 	default:
-		fileName := r.theme.FileStyle.Render(motif.Name)
-		switch {
-		case motif.ActionName != "":
-			name = fileName + r.theme.ActionStyle.Render(
-				r.meta(motif.ActionName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
-				// "  via "+motif.ActionName+r.branch(motif.IsLast),
-			)
-		case motif.PipelineName != "":
-			name = fileName + r.theme.PipelineStyle.Render(
-				r.meta(motif.PipelineName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
-				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
-			)
-		default:
-			name = fileName + r.branch(motif.IsLast)
+		name = r.theme.FileStyle.Render(r.itemLabel(motif))
+
+		if motif.ActionName != "" {
+			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
+		} else if motif.PipelineName != "" {
+			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
 		}
 	}
 
 	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)
+
+	r.updateBranchStack(motif)
 }
 
-func (r *streamRenderer) meta(activator string, last bool, indents []bool, depth, vDepth uint) string {
-	return fmt.Sprintf("       via %s ✻ [meta: %s %s (depth: %d, vDepth: %d)]",
-		activator, r.branch(last), r.stack(indents, rune('+'), rune('•')), depth, vDepth,
-	)
+func (r *streamRenderer) itemLabel(motif Motif) string {
+	icon := r.treeIcons[TreeIconFile]
+	if motif.IsDir {
+		icon = r.treeIcons[TreeIconDirectory]
+	}
+
+	label := ""
+	if icon != "" {
+		label = icon + " "
+	}
+	label += motif.Name
+	if motif.IsDir {
+		label += "/"
+	}
+
+	return label
 }
 
-func (r *streamRenderer) branch(last bool) string {
-	return lo.Ternary(last, " ⛔️", "")
-}
+func (r *streamRenderer) branchPrefix(motif Motif) string {
+	if motif.VisualDepth == 0 {
+		return ""
+	}
 
-func (r *streamRenderer) stack(indents []bool, t, f rune) string {
 	var b strings.Builder
-	b.Grow(len(indents))
-
-	for _, v := range indents {
-		if v {
-			b.WriteRune(t)
+	//nolint:gosec // ok - branchStack is only modified by updateBranchStack based on motif.VisualDepth
+	for level := 1; level < int(motif.VisualDepth); level++ {
+		if level-1 < len(r.branchStack) && r.branchStack[level-1] {
+			b.WriteString(r.treeIcons[TreeIconBranchVertical])
+			b.WriteString(r.treeIcons[TreeIconBranchIndent])
 		} else {
-			b.WriteRune(f)
+			b.WriteString(
+				strings.Repeat(" ",
+					len(r.treeIcons[TreeIconBranchVertical])+len(r.treeIcons[TreeIconBranchIndent]),
+				),
+			)
 		}
 	}
+
+	branchIcon := lo.Ternary(motif.IsLast, TreeIconBranchLast, TreeIconBranchJoint)
+	b.WriteString(r.treeIcons[branchIcon])
+
 	return b.String()
+}
+
+func (r *streamRenderer) updateBranchStack(motif Motif) {
+	if motif.VisualDepth == 0 {
+		r.branchStack = nil
+		r.previousDepth = motif.VisualDepth
+		r.previousIsLast = motif.IsLast
+		return
+	}
+
+	if motif.VisualDepth > r.previousDepth {
+		for d := r.previousDepth; d < motif.VisualDepth; d++ {
+			r.branchStack = append(r.branchStack, !motif.IsLast)
+		}
+	} else if motif.VisualDepth < r.previousDepth {
+		r.branchStack = r.branchStack[:motif.VisualDepth]
+	}
+
+	if motif.VisualDepth > 0 {
+		r.branchStack[motif.VisualDepth-1] = !motif.IsLast
+	}
+
+	r.previousDepth = motif.VisualDepth
+	r.previousIsLast = motif.IsLast
 }
 
 // End renders the closing summary box with traversal counts, elapsed
@@ -188,17 +243,6 @@ func (r *streamRenderer) End(summary Summary) {
 func (r *streamRenderer) summaryRow(label, value string) string {
 	return r.theme.SummaryLabelStyle.Render(label) +
 		r.theme.SummaryValueStyle.Render(value)
-}
-
-// indentFor returns the indent prefix string for the given depth level.
-// Depth 0 produces no indent. Tree-branch glyphs (such as ├── and └──)
-// are deferred until sibling tracking is available from agenor.
-func (r *streamRenderer) indentFor(depth uint) string {
-	if depth == 0 {
-		return ""
-	}
-
-	return strings.Repeat("  ", int(depth)) //nolint: gosec // overflow
 }
 
 // formatElapsed produces a human-readable elapsed duration string.

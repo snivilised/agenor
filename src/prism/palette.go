@@ -99,6 +99,21 @@ func (sc SemanticColour) Resolve() (ansi, ansi256, trueColor color.Color, err er
 	return ansi, ansi256, trueColor, nil
 }
 
+// TreeIcons maps named tree rendering tokens to their icon or glyph
+// values. These are configured via the theme file and may be extended
+// in future without changing the prism public API.
+type TreeIcons map[string]string
+
+const (
+	TreeIconRoot           = "root-icon"
+	TreeIconDirectory      = "directory-icon"
+	TreeIconFile           = "file-icon"
+	TreeIconBranchVertical = "branch-vertical"
+	TreeIconBranchJoint    = "branch-joint"
+	TreeIconBranchLast     = "branch-last"
+	TreeIconBranchIndent   = "branch-indent"
+)
+
 // Palette is the full traversal visual vocabulary for prism. Each field
 // represents a distinct visual concept encountered during directory
 // traversal. Multiple concepts may map to the same ANSI-16 colour -
@@ -125,6 +140,10 @@ type Palette struct {
 
 	// Root is the colour used to highlight the traversal root path.
 	Root SemanticColour `mapstructure:"root"`
+
+	// TreeIcons holds optional glyph configuration used by tree-style
+	// stream renderers such as the linear view.
+	TreeIcons TreeIcons `mapstructure:"tree-icons"`
 
 	// --- Execution ---
 
@@ -195,5 +214,14 @@ func SystemPalette() Palette {
 		Worker:        SemanticColour{ANSI16: "cyan"},
 		WorkerIdle:    SemanticColour{ANSI16: "bright-black"},
 		LaneHeader:    SemanticColour{ANSI16: "magenta"},
+		TreeIcons: TreeIcons{
+			TreeIconRoot:           "✻",
+			TreeIconDirectory:      "📁",
+			TreeIconFile:           "🔖",
+			TreeIconBranchVertical: "│",
+			TreeIconBranchJoint:    "├── ",
+			TreeIconBranchLast:     "└── ",
+			TreeIconBranchIndent:   "  ",
+		},
 	}
 }

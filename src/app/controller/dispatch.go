@@ -16,20 +16,12 @@ func (c *Coordinator) handleServant(
 ) error {
 	node := servant.Node()
 
-	var (
-		isLast      bool
-		indentStack []bool
-	)
+	var isLast bool
 
 	if peerInfoMap != nil {
 		if info, ok := peerInfoMap[node.Path]; ok {
 			isLast = info.IsLast
-			indentStack = info.IndentStack
-		} else {
-			indentStack = []bool{}
 		}
-	} else {
-		indentStack = []bool{}
 	}
 
 	switch {
@@ -39,10 +31,9 @@ func (c *Coordinator) handleServant(
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
-					Node:        node,
-					IsLast:      isLast,
-					IndentStack: indentStack,
-					Name:        req.PipelineName,
+					Node:   node,
+					IsLast: isLast,
+					Name:   req.PipelineName,
 				},
 				Placeholder:  e.Placeholder,
 				ResolvedPath: e.ResolvedPath,
@@ -50,7 +41,6 @@ func (c *Coordinator) handleServant(
 			return nil
 		}
 		e.Event.IsLast = isLast
-		e.Event.IndentStack = indentStack
 		req.UI.OnPipelineEvent(e.Event)
 		return e.Event.Err
 
@@ -60,10 +50,9 @@ func (c *Coordinator) handleServant(
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
-					Node:        node,
-					IsLast:      isLast,
-					IndentStack: indentStack,
-					Name:        req.ActionName,
+					Node:   node,
+					IsLast: isLast,
+					Name:   req.ActionName,
 				},
 				Placeholder:  e.Placeholder,
 				ResolvedPath: e.ResolvedPath,
@@ -71,16 +60,14 @@ func (c *Coordinator) handleServant(
 			return nil
 		}
 		e.Event.IsLast = isLast
-		e.Event.IndentStack = indentStack
 		req.UI.OnActionEvent(e.Event)
 		return e.Event.Err
 
 	default:
 		req.UI.OnNodeEvent(&report.NeutralEvent{
 			DisplayEvent: report.DisplayEvent{
-				Node:        node,
-				IsLast:      isLast,
-				IndentStack: indentStack,
+				Node:   node,
+				IsLast: isLast,
 			},
 		})
 		return nil
