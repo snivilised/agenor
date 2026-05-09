@@ -154,4 +154,35 @@ var _ = Describe("StreamRenderer", func() {
 		// Its children should not have vertical continuation (no │ prefix)
 		Expect(output).To(ContainSubstring("   └── 🔖 doc.go"))
 	})
+
+	It("applies BranchStyle from theme to branch characters", func() {
+		w := &bytes.Buffer{}
+		// Create a palette with explicit branch color
+		palette := prism.SystemPalette()
+		palette.Branch = prism.SemanticColour{ANSI16: "green"}
+
+		renderer, err := prism.New(prism.StreamView, palette, w)
+		Expect(err).To(BeNil())
+		Expect(renderer).NotTo(BeNil())
+
+		renderer.Show(prism.Motif{
+			Name:        "root",
+			IsDir:       true,
+			Depth:       0,
+			VisualDepth: 0,
+			IsLast:      true,
+		})
+
+		renderer.Show(prism.Motif{
+			Name:        "child",
+			IsDir:       false,
+			Depth:       1,
+			VisualDepth: 1,
+			IsLast:      true,
+		})
+
+		output := w.String()
+		Expect(output).To(ContainSubstring("✻ root/\n"))
+		Expect(output).To(ContainSubstring("└── 🔖 child\n"))
+	})
 })

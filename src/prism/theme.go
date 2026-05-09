@@ -42,8 +42,8 @@ type Theme struct {
 	// RootStyle is applied to the root node text in tree style output.
 	RootStyle lipgloss.Style
 
-	// DepthStyle is applied to the depth indent prefix in Show output.
-	DepthStyle lipgloss.Style
+	// BranchStyle is applied to tree branch characters in tree style output.
+	BranchStyle lipgloss.Style
 
 	// ActionStyle is applied to action names shown alongside nodes.
 	ActionStyle lipgloss.Style
@@ -135,6 +135,11 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 	}
 
 	root, err := resolve(palette.Root, "root")
+	if err != nil {
+		return Theme{}, err
+	}
+
+	branch, err := resolve(palette.Branch, "branch")
 	if err != nil {
 		return Theme{}, err
 	}
@@ -232,10 +237,6 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 		FileStyle: lipgloss.NewStyle().
 			Foreground(file),
 
-		DepthStyle: lipgloss.NewStyle().
-			Foreground(muted).
-			Faint(true),
-
 		ActionStyle: lipgloss.NewStyle().
 			Foreground(action),
 
@@ -285,6 +286,9 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 
 		RootStyle: lipgloss.NewStyle().
 			Foreground(root),
+
+		BranchStyle: lipgloss.NewStyle().
+			Foreground(branch),
 
 		TreeIcons: treeIcons,
 	}, nil

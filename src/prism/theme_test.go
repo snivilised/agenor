@@ -26,6 +26,18 @@ var _ = Describe("Theme", func() {
 				// the theme value is not its zero value.
 				Expect(theme).NotTo(Equal(prism.Theme{}))
 			})
+
+			It("includes BranchStyle in the constructed Theme", func() {
+				w := &bytes.Buffer{}
+				palette := prism.SystemPalette()
+				palette.Branch = prism.SemanticColour{ANSI16: "green"}
+
+				theme, err := prism.NewTheme(palette, w)
+
+				Expect(err).To(BeNil())
+				// Verify that Theme is properly constructed with BranchStyle
+				Expect(theme).NotTo(Equal(prism.Theme{}))
+			})
 		})
 
 		Context("when a palette entry contains an unrecognised ansi16 name", func() {
@@ -69,6 +81,12 @@ var _ = Describe("Theme", func() {
 						p.LaneHeader = prism.SemanticColour{ANSI16: "notacolour"}
 					},
 					"palette.lane-header",
+				),
+				Entry("branch",
+					func(p *prism.Palette) {
+						p.Branch = prism.SemanticColour{ANSI16: "notacolour"}
+					},
+					"palette.branch",
 				),
 			)
 		})

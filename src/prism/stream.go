@@ -79,7 +79,7 @@ func (r *streamRenderer) Begin(overture Overture) {
 // distinct visual treatment.
 func (r *streamRenderer) Show(motif Motif) {
 	prefix := r.branchPrefix(motif)
-	depth := r.theme.DepthStyle.Render(prefix)
+	depth := r.theme.BranchStyle.Render(prefix)
 
 	var name string
 
