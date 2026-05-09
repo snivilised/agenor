@@ -69,6 +69,43 @@ type ConfigureOptions struct {
 type ConfigureOptionFn func(*ConfigureOptions)
 
 // ---------------------------------------------------------------------------
+// Per-leaf param-set state
+// ---------------------------------------------------------------------------
+
+// navState holds the nav-level param-sets that every navigation leaf command
+// (walk, sprint, query) registers independently on its own flag set.
+// Each leaf owns its own navState so that flags appear only on the command
+// that declares them and nowhere else.
+type navState struct {
+	navPs       *assist.ParamSet[NavParameterSet]
+	previewFam  *assist.ParamSet[store.PreviewParameterSet]
+	cascadeFam  *assist.ParamSet[store.CascadeParameterSet]
+	samplingFam *assist.ParamSet[store.SamplingParameterSet]
+	polyFam     *assist.ParamSet[store.PolyFilterParameterSet]
+}
+
+// walkState holds all param-sets owned exclusively by the walk command.
+type walkState struct {
+	navState
+	execPs *assist.ParamSet[ExecParameterSet]
+}
+
+// sprintState holds all param-sets owned exclusively by the sprint command.
+// sprint is the only command that owns the worker-pool family.
+type sprintState struct {
+	navState
+	execPs        *assist.ParamSet[ExecParameterSet]
+	workerPoolFam *assist.ParamSet[store.WorkerPoolParameterSet]
+}
+
+// queryState holds all param-sets owned exclusively by the query command.
+// query intentionally omits execPs: it is a read-only traversal that
+// cannot be resumed.
+type queryState struct {
+	navState
+}
+
+// ---------------------------------------------------------------------------
 // Bootstrap
 // ---------------------------------------------------------------------------
 
@@ -79,16 +116,17 @@ type ConfigureOptionFn func(*ConfigureOptions)
 //
 // Command hierarchy:
 //
-//	root                     (global persistent flags: --tui, --theme, --language)
-//	  nav (ghost)            (nav persistent flags: --subscribe, --action, --pipeline
-//	  │                       + cascade, sampling, preview, poly-filter families)
-//	  │  exec (ghost)        (exec persistent flags: --resume
-//	  │  │                    + MarkFlagsOneRequired("action", "pipeline"))
-//	  │  │  walk
-//	  │  │  sprint
-//	  │  query
-//	  verify
-//	  theme
+//	root               (persistent flags: --tui, --theme)
+//	  ├── walk         (flags: nav + families + --resume)
+//	  ├── sprint       (flags: nav + families + --resume + worker-pool)
+//	  ├── query        (flags: nav + families)
+//	  ├── verify       (flags: tbd)
+//	  └── theme        (flags: tbd)
+//
+// walk, sprint, and query are direct children of root. Each registers its
+// own copy of the nav flags and families on its local flag set so that
+// flags appear only on the commands that own them. There are no ghost
+// intermediary commands. See doc.go for the full flag inventory.
 //
 // Code smell checklist (should remain clean):
 //   - No direct calls to agenor from Bootstrap
@@ -116,18 +154,10 @@ type Bootstrap struct {
 	// root param-set
 	rootPs *assist.ParamSet[RootParameterSet]
 
-	// nav ghost param-set and persistent families, inherited by walk, sprint, and query.
-	navPs       *assist.ParamSet[NavParameterSet]
-	previewFam  *assist.ParamSet[store.PreviewParameterSet]
-	cascadeFam  *assist.ParamSet[store.CascadeParameterSet]
-	samplingFam *assist.ParamSet[store.SamplingParameterSet]
-	polyFam     *assist.ParamSet[store.PolyFilterParameterSet]
-
-	// exec ghost param-set, inherited by walk and sprint only.
-	execPs *assist.ParamSet[ExecParameterSet]
-
-	// sprint-exclusive family
-	workerPoolFam *assist.ParamSet[store.WorkerPoolParameterSet]
+	// per-leaf param-set state; each leaf owns its flags independently.
+	walk   walkState
+	sprint sprintState
+	query  queryState
 }
 
 // ---------------------------------------------------------------------------
@@ -202,25 +232,13 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 		},
 	)
 
-	// Registration order matters: parent must be registered before children.
+	// Registration order: root first, then its direct children.
 	b.buildRootCommand(b.container)
-	b.buildNavCommand(b.container)
-	b.buildExecCommand(b.container)
 	b.buildWalkCommand(b.container)
 	b.buildSprintCommand(b.container)
 	b.buildQueryCommand(b.container)
 
-	root := b.container.Root()
-
-	// Inject ghost ancestors into os.Args so that the user can type
-	// 'jay walk' instead of 'jay nav exec walk'. SetArgs is used rather
-	// than mutating os.Args directly so that cobra's test harness (which
-	// calls SetArgs itself) works correctly: the harness sets args after
-	// Root() returns, so tests must pipe their args through
-	// InjectGhostAncestors themselves (see walk-cmd_test.go).
-	root.SetArgs(InjectGhostAncestors(os.Args[1:]))
-
-	return root
+	return b.container.Root()
 }
 
 // ---------------------------------------------------------------------------
@@ -293,8 +311,8 @@ func handleLangSetting() {
 // ---------------------------------------------------------------------------
 
 // buildRootCommand registers the truly global persistent flags on root:
-// --tui, --theme, and --language. Navigation families live on the ghost
-// nav command so that utility commands (verify, theme) do not inherit them.
+// --tui and --theme. These are the only flags that propagate to all
+// sub-commands including utility commands (verify, theme).
 func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 	root := container.Root()
 
@@ -324,81 +342,98 @@ func (b *Bootstrap) buildRootCommand(container *assist.CobraContainer) {
 }
 
 // ---------------------------------------------------------------------------
+// bindNavFlags
+// ---------------------------------------------------------------------------
+
+// bindNavFlags registers the nav param-set and all four nav flag families
+// onto the supplied cobra command using its local flag set. It is called
+// once per navigation leaf (walk, sprint, query) so that each command owns
+// its flags independently with no cross-contamination.
+func (b *Bootstrap) bindNavFlags(cmd *cobra.Command, ns *navState) {
+	fs := cmd.Flags()
+
+	ns.navPs = assist.NewParamSet[NavParameterSet](cmd)
+
+	ns.navPs.BindString(
+		assist.NewFlagInfoOnFlagSet(
+			li18ngo.Text(locale.SubscribeFlagDescTemplData{}),
+			"s",
+			SubscribeFlagDefault,
+			fs,
+		),
+		&ns.navPs.Native.Subscribe,
+	)
+
+	ns.navPs.BindString(
+		assist.NewFlagInfoOnFlagSet(
+			li18ngo.Text(locale.ActionFlagDescTemplData{}),
+			"a",
+			"",
+			fs,
+		),
+		&ns.navPs.Native.Action,
+	)
+
+	ns.navPs.BindString(
+		assist.NewFlagInfoOnFlagSet(
+			li18ngo.Text(locale.PipelineFlagDescTemplData{}),
+			"p",
+			"",
+			fs,
+		),
+		&ns.navPs.Native.Pipeline,
+	)
+
+	// family: preview [--dry-run]
+	ns.previewFam = assist.NewParamSet[store.PreviewParameterSet](cmd)
+	ns.previewFam.Native.BindAll(ns.previewFam, fs)
+
+	// family: cascade [--depth, --no-recurse]
+	ns.cascadeFam = assist.NewParamSet[store.CascadeParameterSet](cmd)
+	ns.cascadeFam.Native.BindAll(ns.cascadeFam, fs)
+
+	// family: sampling [--sample, --num-files, --num-folders, --last]
+	ns.samplingFam = assist.NewParamSet[store.SamplingParameterSet](cmd)
+	ns.samplingFam.Native.BindAll(ns.samplingFam, fs)
+
+	// family: poly-filter [--files-glob, --file-regex, --folders-glob, --folders-regex]
+	ns.polyFam = assist.NewParamSet[store.PolyFilterParameterSet](cmd)
+	ns.polyFam.Native.BindAll(ns.polyFam, fs)
+}
+
+// ---------------------------------------------------------------------------
+// bindExecFlags
+// ---------------------------------------------------------------------------
+
+// bindExecFlags registers --resume onto the supplied command's local flag
+// set and populates the provided ParamSet pointer. Called only by walk and
+// sprint; query intentionally omits this since it cannot be resumed.
+func (b *Bootstrap) bindExecFlags(cmd *cobra.Command, ep **assist.ParamSet[ExecParameterSet]) {
+	*ep = assist.NewParamSet[ExecParameterSet](cmd)
+
+	(*ep).BindString(
+		assist.NewFlagInfoOnFlagSet(
+			li18ngo.Text(locale.ResumeFlagDescTemplData{}),
+			"r",
+			"",
+			cmd.Flags(),
+		),
+		&(*ep).Native.Resume,
+	)
+}
+
+// ---------------------------------------------------------------------------
 // navFamilies
 // ---------------------------------------------------------------------------
 
-// navFamilies is a convenience accessor used by runWalk, runSprint, and
-// runQuery to obtain the nav-level flag families in a single bundle.
-func (b *Bootstrap) navFamilies() NavFamilies {
+// navFamilies builds a NavFamilies bundle from a navState pointer.
+// Each runner passes its own leaf's navState so the correct param-sets
+// are used regardless of which command is executing.
+func navFamilies(ns *navState) NavFamilies {
 	return NavFamilies{
-		Preview:  b.previewFam,
-		Cascade:  b.cascadeFam,
-		Sampling: b.samplingFam,
-		PolyFam:  b.polyFam,
+		Preview:  ns.previewFam,
+		Cascade:  ns.cascadeFam,
+		Sampling: ns.samplingFam,
+		PolyFam:  ns.polyFam,
 	}
-}
-
-// ---------------------------------------------------------------------------
-// InjectGhostAncestors
-// ---------------------------------------------------------------------------
-
-// ghostPrefixes maps each user-visible leaf command to the ghost ancestors
-// that cobra requires for correct flag inheritance. The slice is ordered
-// from outermost to innermost ghost, matching the command tree:
-//
-//	root → nav → exec → walk/sprint
-//	root → nav → query
-//
-// Adding a new leaf under ghost parents requires only a new entry here.
-var ghostPrefixes = map[string][]string{
-	"walk":   {"nav", "exec"},
-	"sprint": {"nav", "exec"},
-	"query":  {"nav"},
-}
-
-// InjectGhostAncestors takes a cobra args slice (i.e. os.Args[1:] or the
-// slice passed to cmd.SetArgs) and, when the first non-flag token is a
-// known leaf command, splices in the ghost ancestor tokens that cobra needs
-// for correct flag inheritance. All other invocations are returned unchanged.
-//
-// It is exported so that tests can pipe their args through it before passing
-// them to CommandTester, mirroring exactly what Root() does for production.
-//
-// Example:
-//
-//	in:  ["walk", "RETRO-WAVE", "--action", "echo"]
-//	out: ["nav", "exec", "walk", "RETRO-WAVE", "--action", "echo"]
-func InjectGhostAncestors(args []string) []string {
-	// Scan for the first non-flag token (the sub-command).
-	// Flags before the sub-command (e.g. --tui porthole walk) are preserved.
-	insertAt := -1
-	leaf := ""
-
-	for i, arg := range args {
-		if len(arg) > 0 && arg[0] != '-' {
-			insertAt = i
-			leaf = arg
-			break
-		}
-	}
-
-	if insertAt == -1 {
-		return args // no sub-command token; nothing to rewrite
-	}
-
-	prefixes, ok := ghostPrefixes[leaf]
-	if !ok {
-		return args // not a leaf that needs ghost injection
-	}
-
-	// Build the rewritten slice:
-	//   args[:insertAt]  — any flags preceding the sub-command
-	//   prefixes         — injected ghost tokens
-	//   args[insertAt:]  — leaf command + everything that follows
-	rewritten := make([]string, 0, len(args)+len(prefixes))
-	rewritten = append(rewritten, args[:insertAt]...)
-	rewritten = append(rewritten, prefixes...)
-	rewritten = append(rewritten, args[insertAt:]...)
-
-	return rewritten
 }

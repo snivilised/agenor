@@ -15,9 +15,6 @@ const (
 // ---------------------------------------------------------------------------
 
 const (
-	// root
-	RootPsName = "root-ps"
-
 	// nav ghost command param-set
 	NavPsName = "nav-ps"
 

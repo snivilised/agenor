@@ -19,33 +19,41 @@ func (b *Bootstrap) buildWalkCommand(container *assist.CobraContainer) {
 		RunE:  b.runWalk,
 	}
 
-	container.MustRegisterCommand("exec", walkCmd)
+	b.bindNavFlags(walkCmd, &b.walk.navState)
+	b.bindExecFlags(walkCmd, &b.walk.execPs)
+
+	container.MustRegisterParamSet(WalkNavPsName, b.walk.navPs)
+	container.MustRegisterParamSet(WalkExecPsName, b.walk.execPs)
+	container.MustRegisterParamSet(WalkPreviewFamName, b.walk.previewFam)
+	container.MustRegisterParamSet(WalkCascadeFamName, b.walk.cascadeFam)
+	container.MustRegisterParamSet(WalkSamplingFamName, b.walk.samplingFam)
+	container.MustRegisterParamSet(WalkPolyFamName, b.walk.polyFam)
+
+	container.MustRegisterRootedCommand(walkCmd)
 }
 
-// runWalk is the RunE handler for the walk command. It reads flags from
-// the nav and exec param-sets (all inherited), constructs the
-// agenor.Tortoise scenario, and delegates to the coordinator.
+// runWalk is the RunE handler for the walk command.
 func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
-	if err := requireActivator(b.navPs.Native.Action, b.navPs.Native.Pipeline); err != nil {
+	if err := requireActivator(b.walk.navPs.Native.Action, b.walk.navPs.Native.Pipeline); err != nil {
 		return err
 	}
 
-	subscription, err := controller.ResolveSubscription(b.navPs.Native.Subscribe)
+	subscription, err := controller.ResolveSubscription(b.walk.navPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
 	settings := controller.BuildTraversalSettings(
-		createTraversalSettingsIntent(b.navFamilies()),
+		createTraversalSettingsIntent(navFamilies(&b.walk.navState)),
 		b.UI,
 	)
-	isPrime := b.execPs.Native.Resume == ""
+	isPrime := b.walk.execPs.Native.Resume == ""
 
 	base := controller.Request{
 		Subscription: subscription,
 		Settings:     settings,
-		ActionName:   b.navPs.Native.Action,
-		PipelineName: b.navPs.Native.Pipeline,
+		ActionName:   b.walk.navPs.Native.Action,
+		PipelineName: b.walk.navPs.Native.Pipeline,
 		Scenario:     agenor.Tortoise(isPrime),
 		UI:           b.UI,
 		GetForest:    b.options.GetForest,
@@ -58,7 +66,7 @@ func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
 		})
 	}
 
-	strategy, err := resolveResumeStrategy(b.execPs.Native.Resume)
+	strategy, err := resolveResumeStrategy(b.walk.execPs.Native.Resume)
 	if err != nil {
 		return err
 	}

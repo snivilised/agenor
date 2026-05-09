@@ -49,9 +49,9 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			// root help without returning an error.
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
-				Args: command.InjectGhostAncestors([]string{
+				Args: []string{
 					"walk", "RETRO-WAVE", "--action", "echo", "--theme", "system",
-				}),
+				},
 				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
 					co.Detector = &DetectorStub{}
 					co.Config.Name = configName

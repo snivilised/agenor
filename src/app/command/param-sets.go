@@ -47,11 +47,48 @@ type RootParameterSet struct {
 }
 
 // ---------------------------------------------------------------------------
+// Param-set and family registration name constants
+// ---------------------------------------------------------------------------
+
+// Each navigation leaf command (walk, sprint, query) registers its own
+// independent copy of the nav param-set and families. The constants are
+// prefixed by command name to avoid collisions in the CobraContainer registry.
+
+const (
+	RootPsName = "root"
+
+	// walk
+	WalkNavPsName       = "walk-nav"
+	WalkExecPsName      = "walk-exec"
+	WalkPreviewFamName  = "walk-preview"
+	WalkCascadeFamName  = "walk-cascade"
+	WalkSamplingFamName = "walk-sampling"
+	WalkPolyFamName     = "walk-poly"
+
+	// sprint
+	SprintNavPsName         = "sprint-nav"
+	SprintExecPsName        = "sprint-exec"
+	SprintPreviewFamName    = "sprint-preview"
+	SprintCascadeFamName    = "sprint-cascade"
+	SprintSamplingFamName   = "sprint-sampling"
+	SprintPolyFamName       = "sprint-poly"
+	SprintWorkerPoolFamName = "sprint-worker-pool"
+
+	// query
+	QueryNavPsName       = "query-nav"
+	QueryPreviewFamName  = "query-preview"
+	QueryCascadeFamName  = "query-cascade"
+	QuerySamplingFamName = "query-sampling"
+	QueryPolyFamName     = "query-poly"
+)
+
+// ---------------------------------------------------------------------------
 // Nav parameter set
 // ---------------------------------------------------------------------------
 
-// NavParameterSet holds the jay-specific flags inherited by all navigation
-// commands (walk, sprint, query) via the ghost nav command.
+// NavParameterSet holds the nav-level flags registered directly on each
+// navigation leaf command (walk, sprint, query). Each leaf owns its own
+// independent instance; there is no shared ghost parent.
 type NavParameterSet struct {
 	store.ParameterSetWithOverrides
 
@@ -72,9 +109,9 @@ type NavParameterSet struct {
 // Exec parameter set
 // ---------------------------------------------------------------------------
 
-// ExecParameterSet holds the jay-specific flags inherited by execution
-// commands (walk, sprint) via the ghost exec command. Query does not inherit
-// these flags since it performs no execution and cannot be resumed.
+// ExecParameterSet holds the exec-level flags registered directly on
+// execution commands (walk, sprint). Query intentionally omits this
+// param-set since it is a read-only traversal that cannot be resumed.
 type ExecParameterSet struct {
 	store.ParameterSetWithOverrides
 
