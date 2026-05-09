@@ -22,48 +22,54 @@ func (b *Bootstrap) buildSprintCommand(container *assist.CobraContainer) {
 		RunE:  b.runSprint,
 	}
 
-	// family: worker-pool [--cpu, --now]
-	b.workerPoolFam = assist.NewParamSet[store.WorkerPoolParameterSet](sprintCmd)
-	b.workerPoolFam.Native.BindAll(b.workerPoolFam, sprintCmd.Flags())
-	container.MustRegisterParamSet(WorkerPoolFamName, b.workerPoolFam)
+	b.bindNavFlags(sprintCmd, &b.sprint.navState)
+	b.bindExecFlags(sprintCmd, &b.sprint.execPs)
 
-	container.MustRegisterCommand("exec", sprintCmd)
+	// family: worker-pool [--cpu, --now] — sprint-exclusive, local flags only.
+	b.sprint.workerPoolFam = assist.NewParamSet[store.WorkerPoolParameterSet](sprintCmd)
+	b.sprint.workerPoolFam.Native.BindAll(b.sprint.workerPoolFam, sprintCmd.Flags())
+
+	container.MustRegisterParamSet(SprintNavPsName, b.sprint.navPs)
+	container.MustRegisterParamSet(SprintExecPsName, b.sprint.execPs)
+	container.MustRegisterParamSet(SprintPreviewFamName, b.sprint.previewFam)
+	container.MustRegisterParamSet(SprintCascadeFamName, b.sprint.cascadeFam)
+	container.MustRegisterParamSet(SprintSamplingFamName, b.sprint.samplingFam)
+	container.MustRegisterParamSet(SprintPolyFamName, b.sprint.polyFam)
+	container.MustRegisterParamSet(SprintWorkerPoolFamName, b.sprint.workerPoolFam)
+
+	container.MustRegisterRootedCommand(sprintCmd)
 }
 
-// runSprint is the RunE handler for the sprint command. It reads flags from
-// the nav and exec param-sets (all inherited) plus the sprint-exclusive
-// worker-pool family, constructs the agenor.Hare scenario, and delegates
-// to the coordinator. The WaitGroup is owned here - the adapter created
-// it and waits on it after the coordinator returns.
+// runSprint is the RunE handler for the sprint command.
 func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
-	if err := requireActivator(b.navPs.Native.Action, b.navPs.Native.Pipeline); err != nil {
+	if err := requireActivator(b.sprint.navPs.Native.Action, b.sprint.navPs.Native.Pipeline); err != nil {
 		return err
 	}
 
-	subscription, err := controller.ResolveSubscription(b.navPs.Native.Subscribe)
+	subscription, err := controller.ResolveSubscription(b.sprint.navPs.Native.Subscribe)
 	if err != nil {
 		return err
 	}
 
 	settings := controller.BuildTraversalSettings(
-		createTraversalSettingsIntent(b.navFamilies()),
+		createTraversalSettingsIntent(navFamilies(&b.sprint.navState)),
 		b.UI,
 	)
 
-	if b.workerPoolFam.Native.CPU {
+	if b.sprint.workerPoolFam.Native.CPU {
 		settings = append(settings, agenor.WithCPU())
-	} else if n := b.workerPoolFam.Native.NoWorkers; n > 0 {
+	} else if n := b.sprint.workerPoolFam.Native.NoWorkers; n > 0 {
 		settings = append(settings, agenor.WithNoW(uint(n)))
 	}
 
-	isPrime := b.execPs.Native.Resume == ""
+	isPrime := b.sprint.execPs.Native.Resume == ""
 	wg := &sync.WaitGroup{}
 
 	base := controller.Request{
 		Subscription: subscription,
 		Settings:     settings,
-		ActionName:   b.navPs.Native.Action,
-		PipelineName: b.navPs.Native.Pipeline,
+		ActionName:   b.sprint.navPs.Native.Action,
+		PipelineName: b.sprint.navPs.Native.Pipeline,
 		Scenario:     agenor.Hare(isPrime, wg),
 		UI:           b.UI,
 	}
@@ -76,7 +82,7 @@ func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
 			Tree:    args[0],
 		})
 	} else {
-		strategy, e := resolveResumeStrategy(b.execPs.Native.Resume)
+		strategy, e := resolveResumeStrategy(b.sprint.execPs.Native.Resume)
 		if e != nil {
 			return e
 		}

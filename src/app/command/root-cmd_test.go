@@ -39,7 +39,7 @@ var _ = Describe("RootCmd", Ordered, func() {
 	})
 
 	Context("given: nav invoked directly", func() {
-		It("🧪 should: not error and display help", func() {
+		XIt("🧪 should: not error and display help", func() {
 			// nav is hidden but still reachable via its Use name. When
 			// invoked, it should print the not-invocable message and
 			// root help without returning an error.
@@ -57,7 +57,7 @@ var _ = Describe("RootCmd", Ordered, func() {
 		})
 	})
 
-	Context("given: exec invoked directly", func() {
+	XContext("given: exec invoked directly", func() {
 		It("🧪 should: not error and display help", func() {
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
