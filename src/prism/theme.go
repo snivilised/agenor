@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"io"
 
-	"github.com/charmbracelet/lipgloss/v2"
+	"charm.land/lipgloss/v2"
 )
 
 // Theme holds all lipgloss styles used by a renderer. Constructed once
