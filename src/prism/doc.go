@@ -2,5 +2,5 @@
 // universe. prism is also designed to be used by third parties.
 package prism
 
-// side note, lipgloss initially installed with:
-// go get github.com/charmbracelet/lipgloss/v2@v2.0.0-beta.3
+// side note, lipgloss is installed with:
+// go get charm.land/lipgloss/v2@v2.0.3
