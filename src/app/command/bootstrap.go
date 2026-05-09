@@ -210,7 +210,17 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	b.buildSprintCommand(b.container)
 	b.buildQueryCommand(b.container)
 
-	return b.container.Root()
+	root := b.container.Root()
+
+	// Inject ghost ancestors into os.Args so that the user can type
+	// 'jay walk' instead of 'jay nav exec walk'. SetArgs is used rather
+	// than mutating os.Args directly so that cobra's test harness (which
+	// calls SetArgs itself) works correctly: the harness sets args after
+	// Root() returns, so tests must pipe their args through
+	// InjectGhostAncestors themselves (see walk-cmd_test.go).
+	root.SetArgs(InjectGhostAncestors(os.Args[1:]))
+
+	return root
 }
 
 // ---------------------------------------------------------------------------
@@ -326,4 +336,69 @@ func (b *Bootstrap) navFamilies() NavFamilies {
 		Sampling: b.samplingFam,
 		PolyFam:  b.polyFam,
 	}
+}
+
+// ---------------------------------------------------------------------------
+// InjectGhostAncestors
+// ---------------------------------------------------------------------------
+
+// ghostPrefixes maps each user-visible leaf command to the ghost ancestors
+// that cobra requires for correct flag inheritance. The slice is ordered
+// from outermost to innermost ghost, matching the command tree:
+//
+//	root → nav → exec → walk/sprint
+//	root → nav → query
+//
+// Adding a new leaf under ghost parents requires only a new entry here.
+var ghostPrefixes = map[string][]string{
+	"walk":   {"nav", "exec"},
+	"sprint": {"nav", "exec"},
+	"query":  {"nav"},
+}
+
+// InjectGhostAncestors takes a cobra args slice (i.e. os.Args[1:] or the
+// slice passed to cmd.SetArgs) and, when the first non-flag token is a
+// known leaf command, splices in the ghost ancestor tokens that cobra needs
+// for correct flag inheritance. All other invocations are returned unchanged.
+//
+// It is exported so that tests can pipe their args through it before passing
+// them to CommandTester, mirroring exactly what Root() does for production.
+//
+// Example:
+//
+//	in:  ["walk", "RETRO-WAVE", "--action", "echo"]
+//	out: ["nav", "exec", "walk", "RETRO-WAVE", "--action", "echo"]
+func InjectGhostAncestors(args []string) []string {
+	// Scan for the first non-flag token (the sub-command).
+	// Flags before the sub-command (e.g. --tui porthole walk) are preserved.
+	insertAt := -1
+	leaf := ""
+
+	for i, arg := range args {
+		if len(arg) > 0 && arg[0] != '-' {
+			insertAt = i
+			leaf = arg
+			break
+		}
+	}
+
+	if insertAt == -1 {
+		return args // no sub-command token; nothing to rewrite
+	}
+
+	prefixes, ok := ghostPrefixes[leaf]
+	if !ok {
+		return args // not a leaf that needs ghost injection
+	}
+
+	// Build the rewritten slice:
+	//   args[:insertAt]  — any flags preceding the sub-command
+	//   prefixes         — injected ghost tokens
+	//   args[insertAt:]  — leaf command + everything that follows
+	rewritten := make([]string, 0, len(args)+len(prefixes))
+	rewritten = append(rewritten, args[:insertAt]...)
+	rewritten = append(rewritten, prefixes...)
+	rewritten = append(rewritten, args[insertAt:]...)
+
+	return rewritten
 }
