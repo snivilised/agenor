@@ -141,6 +141,9 @@ type Palette struct {
 	// Root is the colour used to highlight the traversal root path.
 	Root SemanticColour `mapstructure:"root"`
 
+	// Branch is the colour of tree branch characters in tree-style output.
+	Branch SemanticColour `mapstructure:"branch"`
+
 	// TreeIcons holds optional glyph configuration used by tree-style
 	// stream renderers such as the linear view.
 	TreeIcons TreeIcons `mapstructure:"tree-icons"`
@@ -202,6 +205,7 @@ func SystemPalette() Palette {
 		Directory:     SemanticColour{ANSI16: "cyan"},
 		File:          SemanticColour{ANSI16: "white"},
 		Root:          SemanticColour{ANSI16: "bright-white"},
+		Branch:        SemanticColour{ANSI16: "bright-black"},
 		Action:        SemanticColour{ANSI16: "blue"},
 		Pipeline:      SemanticColour{ANSI16: "blue"},
 		Skipped:       SemanticColour{ANSI16: "bright-black"},

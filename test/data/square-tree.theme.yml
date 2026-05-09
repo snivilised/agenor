@@ -36,6 +36,12 @@ palette:
     ansi256: ""
     true-color: ""
 
+  # Branch is the colour of tree branch characters in tree-style output.
+  branch:
+    ansi16: bright-black
+    ansi256: ""
+    true-color: ""
+
   # --- Execution ---
 
   # Action is the colour of action names shown alongside nodes.
