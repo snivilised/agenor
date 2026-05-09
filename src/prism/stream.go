@@ -90,12 +90,12 @@ func (r *streamRenderer) Show(motif Motif) {
 		switch {
 		case motif.ActionName != "":
 			name = dirName + r.theme.ActionStyle.Render(
-				r.meta(motif.ActionName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				r.meta(motif.ActionName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
 				// "  via "+motif.ActionName+r.branch(motif.IsLast),
 			)
 		case motif.PipelineName != "":
 			name = dirName + r.theme.PipelineStyle.Render(
-				r.meta(motif.PipelineName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				r.meta(motif.PipelineName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
 				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
 			)
 		default:
@@ -107,12 +107,12 @@ func (r *streamRenderer) Show(motif Motif) {
 		switch {
 		case motif.ActionName != "":
 			name = fileName + r.theme.ActionStyle.Render(
-				r.meta(motif.ActionName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				r.meta(motif.ActionName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
 				// "  via "+motif.ActionName+r.branch(motif.IsLast),
 			)
 		case motif.PipelineName != "":
 			name = fileName + r.theme.PipelineStyle.Render(
-				r.meta(motif.PipelineName, motif.IsLast, motif.Depth, motif.VisualDepth),
+				r.meta(motif.PipelineName, motif.IsLast, motif.IndentStack, motif.Depth, motif.VisualDepth),
 				// "  via "+motif.PipelineName+r.branch(motif.IsLast),
 			)
 		default:
@@ -123,14 +123,28 @@ func (r *streamRenderer) Show(motif Motif) {
 	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)
 }
 
-func (r *streamRenderer) meta(activator string, last bool, depth, vDepth uint) string {
-	return fmt.Sprintf("       via %s [meta: %s (depth: %d, vDepth: %d)]",
-		activator, r.branch(last), depth, vDepth,
+func (r *streamRenderer) meta(activator string, last bool, indents []bool, depth, vDepth uint) string {
+	return fmt.Sprintf("       via %s ✻ [meta: %s %s (depth: %d, vDepth: %d)]",
+		activator, r.branch(last), r.stack(indents, rune('+'), rune('•')), depth, vDepth,
 	)
 }
 
 func (r *streamRenderer) branch(last bool) string {
 	return lo.Ternary(last, " ⛔️", "")
+}
+
+func (r *streamRenderer) stack(indents []bool, t, f rune) string {
+	var b strings.Builder
+	b.Grow(len(indents))
+
+	for _, v := range indents {
+		if v {
+			b.WriteRune(t)
+		} else {
+			b.WriteRune(f)
+		}
+	}
+	return b.String()
 }
 
 // End renders the closing summary box with traversal counts, elapsed
