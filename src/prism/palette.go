@@ -108,6 +108,7 @@ const (
 	TreeIconRoot           = "root-icon"
 	TreeIconDirectory      = "directory-icon"
 	TreeIconFile           = "file-icon"
+	TreeIconElapsed        = "elapsed-icon"
 	TreeIconBranchVertical = "branch-vertical"
 	TreeIconBranchJoint    = "branch-joint"
 	TreeIconBranchLast     = "branch-last"
@@ -122,14 +123,6 @@ const (
 //
 // Fields use mapstructure tags for YAML theme file decoding.
 type Palette struct {
-	// --- Navigation identity ---
-
-	// Banner is the colour of the opening traversal identity block.
-	Banner SemanticColour `mapstructure:"banner"`
-
-	// BannerText is the colour of text within the banner.
-	BannerText SemanticColour `mapstructure:"banner-text"`
-
 	// --- Traversal nodes ---
 
 	// Directory is the colour of directory names during traversal.
@@ -173,8 +166,8 @@ type Palette struct {
 
 	// --- Summary ---
 
-	// SummaryBorder is the colour of the closing summary container border.
-	SummaryBorder SemanticColour `mapstructure:"summary-border"`
+	// BoxBorder is the colour of the closing summary container border.
+	BoxBorder SemanticColour `mapstructure:"box-border"`
 
 	// SummaryLabel is the colour of labels in the closing summary.
 	SummaryLabel SemanticColour `mapstructure:"summary-label"`
@@ -200,28 +193,27 @@ type Palette struct {
 // the user has configured and requires no configuration from the caller.
 func SystemPalette() Palette {
 	return Palette{
-		Banner:        SemanticColour{ANSI16: "magenta"},
-		BannerText:    SemanticColour{ANSI16: "white"},
-		Directory:     SemanticColour{ANSI16: "cyan"},
-		File:          SemanticColour{ANSI16: "white"},
-		Root:          SemanticColour{ANSI16: "bright-white"},
-		Branch:        SemanticColour{ANSI16: "bright-black"},
-		Action:        SemanticColour{ANSI16: "blue"},
-		Pipeline:      SemanticColour{ANSI16: "blue"},
-		Skipped:       SemanticColour{ANSI16: "bright-black"},
-		Error:         SemanticColour{ANSI16: "red"},
-		Muted:         SemanticColour{ANSI16: "bright-black"},
-		Progress:      SemanticColour{ANSI16: "green"},
-		SummaryBorder: SemanticColour{ANSI16: "magenta"},
-		SummaryLabel:  SemanticColour{ANSI16: "blue"},
-		SummaryValue:  SemanticColour{ANSI16: "white"},
-		Worker:        SemanticColour{ANSI16: "cyan"},
-		WorkerIdle:    SemanticColour{ANSI16: "bright-black"},
-		LaneHeader:    SemanticColour{ANSI16: "magenta"},
+		Directory:    SemanticColour{ANSI16: "cyan"},
+		File:         SemanticColour{ANSI16: "white"},
+		Root:         SemanticColour{ANSI16: "bright-white"},
+		Branch:       SemanticColour{ANSI16: "bright-black"},
+		Action:       SemanticColour{ANSI16: "blue"},
+		Pipeline:     SemanticColour{ANSI16: "blue"},
+		Skipped:      SemanticColour{ANSI16: "bright-black"},
+		Error:        SemanticColour{ANSI16: "red"},
+		Muted:        SemanticColour{ANSI16: "bright-black"},
+		Progress:     SemanticColour{ANSI16: "green"},
+		BoxBorder:    SemanticColour{ANSI16: "magenta"},
+		SummaryLabel: SemanticColour{ANSI16: "blue"},
+		SummaryValue: SemanticColour{ANSI16: "white"},
+		Worker:       SemanticColour{ANSI16: "cyan"},
+		WorkerIdle:   SemanticColour{ANSI16: "bright-black"},
+		LaneHeader:   SemanticColour{ANSI16: "magenta"},
 		TreeIcons: TreeIcons{
 			TreeIconRoot:           "✻",
 			TreeIconDirectory:      "📁",
 			TreeIconFile:           "🔖",
+			TreeIconElapsed:        "⏰",
 			TreeIconBranchVertical: "│",
 			TreeIconBranchJoint:    "├── ",
 			TreeIconBranchLast:     "└── ",

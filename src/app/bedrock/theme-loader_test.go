@@ -32,6 +32,7 @@ palette:
     root-icon: "✻"
     directory-icon: "📁"
     file-icon: "🔖"
+    elapsed-icon: "⏰"
     branch-vertical: "│"
     branch-joint: "├── "
     branch-last: "└── "
@@ -147,14 +148,12 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 				palette, err := loader.Load("my-theme")
 
 				Expect(err).To(BeNil())
-				Expect(palette.Banner.ANSI16).To(Equal("magenta"))
-				Expect(palette.Banner.ANSI256).To(Equal("99"))
-				Expect(palette.Banner.TrueColor).To(Equal("#5C4AE4"))
 				Expect(palette.Directory.ANSI16).To(Equal("cyan"))
 				Expect(palette.Error.ANSI16).To(Equal("red"))
 				Expect(palette.TreeIcons["root-icon"]).To(Equal("✻"))
 				Expect(palette.TreeIcons["directory-icon"]).To(Equal("📁"))
 				Expect(palette.TreeIcons["file-icon"]).To(Equal("🔖"))
+				Expect(palette.TreeIcons["elapsed-icon"]).To(Equal("⏰"))
 			})
 		})
 

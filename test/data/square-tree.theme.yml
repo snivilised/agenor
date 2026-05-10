@@ -1,21 +1,9 @@
 # Default theme configuration for jaywalk prism renderer
 # This file demonstrates all available theme options with their default values.
 # Copy this file and modify the values to customize your theme.
+# NB: true-color values must contain a lead #.
 
-# --- Navigation identity ---
 palette:
-  # Banner is the colour of the opening traversal identity block.
-  banner:
-    ansi16: magenta
-    ansi256: ""
-    true-color: ""
-
-  # BannerText is the colour of text within the banner.
-  banner-text:
-    ansi16: white
-    ansi256: ""
-    true-color: ""
-
   # --- Traversal nodes ---
 
   # Directory is the colour of directory names during traversal.
@@ -85,8 +73,8 @@ palette:
 
   # --- Summary ---
 
-  # SummaryBorder is the colour of the closing summary container border.
-  summary-border:
+  # BoxBorder is the colour of the closing summary container border.
+  box-border:
     ansi16: magenta
     ansi256: ""
     true-color: ""
@@ -129,6 +117,7 @@ tree-icons:
   root-icon: "✻"
   directory-icon: "📁"
   file-icon: "🔖"
+  elapsed-icon: "⏰"
   branch-vertical: "│"
   branch-joint: "├── "
   branch-last: "└── "

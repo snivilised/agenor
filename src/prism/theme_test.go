@@ -52,12 +52,6 @@ var _ = Describe("Theme", func() {
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring(expectedField))
 				},
-				Entry("banner",
-					func(p *prism.Palette) {
-						p.Banner = prism.SemanticColour{ANSI16: "notacolour"}
-					},
-					"palette.banner",
-				),
 				Entry("directory",
 					func(p *prism.Palette) {
 						p.Directory = prism.SemanticColour{ANSI16: "notacolour"}
