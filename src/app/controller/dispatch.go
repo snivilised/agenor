@@ -2,6 +2,8 @@ package controller
 
 import (
 	"os/exec"
+	"regexp"
+	"strings"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/report"
@@ -129,10 +131,8 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun b
 		output, err := cmd.CombinedOutput()
 		if err != nil {
 			event.Err = err
-			// TODO: store output somewhere when we have a mechanism
 		}
-		// TODO: store output
-		_ = output
+		event.CommandOutput = c.processOutput(output, c.actionRegexes[name])
 	}
 
 	return actionResult{
@@ -167,6 +167,7 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun
 				Event: &report.PipelineEvent{
 					DisplayEvent:    report.DisplayEvent{Node: node, Name: name},
 					ExecutionString: ar.Event.ExecutionString,
+					CommandOutput:   ar.Event.CommandOutput,
 					DryRun:          dryRun,
 					Err:             ar.Event.Err,
 				},
@@ -180,4 +181,48 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun
 			DryRun:       dryRun,
 		},
 	}
+}
+
+// processOutput extracts a single line from the raw command output and applies truncation.
+// It removes leading/trailing empty lines. If captureRe is provided, it uses it
+// to select the matching line.
+func (c *Coordinator) processOutput(output []byte, captureRe *regexp.Regexp) string {
+	lines := strings.Split(string(output), "\n")
+	var contentLines []string
+	for _, l := range lines {
+		trimmed := strings.TrimSpace(l)
+		if trimmed != "" {
+			contentLines = append(contentLines, trimmed)
+		}
+	}
+
+	if len(contentLines) == 0 {
+		return ""
+	}
+
+	selectedLine := contentLines[0]
+
+	if captureRe != nil {
+		for _, l := range contentLines {
+			if captureRe.MatchString(l) {
+				selectedLine = l
+				break
+			}
+		}
+	}
+
+	limit := c.cfg.Mapped.Advanced.Output.Exec.Truncate
+	if limit < 20 || limit > 120 {
+		limit = 75
+	}
+
+	if len(selectedLine) > limit {
+		if limit > 4 {
+			selectedLine = selectedLine[:limit-4] + " ..."
+		} else {
+			selectedLine = selectedLine[:limit]
+		}
+	}
+
+	return selectedLine
 }

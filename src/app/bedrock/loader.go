@@ -131,6 +131,8 @@ func Load(opts LoadOptions) (*Config, error) {
 		return nil, locale.NewBedrockLoadDecodingError(err)
 	}
 
+	applyDefaultsToParsed(cfg)
+
 	if err := cfg.Validate(); err != nil {
 		return nil, locale.NewBedrockLoadValidationError(err)
 	}
@@ -141,6 +143,13 @@ func Load(opts LoadOptions) (*Config, error) {
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
+
+func applyDefaultsToParsed(cfg *Config) {
+	t := cfg.Mapped.Advanced.Output.Exec.Truncate
+	if t < 20 || t > 120 {
+		cfg.Mapped.Advanced.Output.Exec.Truncate = 75
+	}
+}
 
 // applyEnvBindings wires environment-variable support onto an existing Viper
 // instance.  It is called for both file-based and pre-loaded instances so
