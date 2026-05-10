@@ -44,9 +44,6 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 
 	Context("given: walk invoked with action", func() {
 		It("🧪 should: not error", func() {
-			// nav is hidden but still reachable via its Use name. When
-			// invoked, it should print the not-invocable message and
-			// root help without returning an error.
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
 				Args: []string{
@@ -66,6 +63,31 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			}
 			_, err := tester.Execute()
 			Expect(err).Error().To(BeNil())
+		})
+	})
+
+	Context("given: walk invoked missing action and pipeline", func() {
+		It("🧪 should: result in one of flags constraint error", func() {
+			bootstrap := command.Bootstrap{}
+			tester := hanno.CommandTester{
+				Args: []string{
+					"walk", "RETRO-WAVE", "--theme", "system",
+				},
+				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+					co.Detector = &DetectorStub{}
+					co.Config.Name = configName
+					co.Config.ConfigPath = configurationPath
+					co.GetForest = func(_ string) *core.Forest {
+						return &core.Forest{
+							T: fS,
+							R: tfs.New(),
+						}
+					}
+				}),
+			}
+			_, err := tester.Execute()
+			Expect(err).Error().NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("at least one of the flags in the group"))
 		})
 	})
 })

@@ -1,30 +1,10 @@
 package command
 
 import (
-	"strings"
-
 	"github.com/snivilised/jaywalk/src/app/report"
-	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/mamba/assist"
 	"github.com/snivilised/mamba/store"
 )
-
-// ---------------------------------------------------------------------------
-// Activator validation
-// ---------------------------------------------------------------------------
-
-// requireActivator returns an error if neither --action nor --pipeline has
-// been supplied. This enforces the one-required constraint that cobra cannot
-// express across inherited persistent flags.
-// See https://github.com/spf13/cobra/issues/921.
-func requireActivator(action, pipeline string) error {
-	flags := strings.Join([]string{action, pipeline}, ", ")
-	if action == "" && pipeline == "" {
-		return locale.NewMarkInheritedFlagsOneRequiredError("cmd", flags)
-	}
-
-	return nil
-}
 
 // ---------------------------------------------------------------------------
 // NavFamilies - shared by all navigation commands
