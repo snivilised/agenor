@@ -2,6 +2,7 @@ package prism_test
 
 import (
 	"bytes"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -56,6 +57,7 @@ var _ = Describe("StreamRenderer", func() {
 			prism.TreeIconRoot:           "R",
 			prism.TreeIconDirectory:      "D",
 			prism.TreeIconFile:           "F",
+			prism.TreeIconElapsed:        "E",
 			prism.TreeIconBranchJoint:    "+-- ",
 			prism.TreeIconBranchLast:     "L-- ",
 			prism.TreeIconBranchVertical: "|",
@@ -83,6 +85,26 @@ var _ = Describe("StreamRenderer", func() {
 		Expect(w.String()).To(ContainSubstring("L-- F child\n"))
 	})
 
+	It("renders summary entries with tree icon prefixes", func() {
+		w := &bytes.Buffer{}
+		palette := prism.Palette{}
+
+		renderer, err := prism.New(prism.StreamView, palette, w)
+		Expect(err).To(BeNil())
+
+		renderer.End(prism.Summary{
+			Kind:         prism.PrimeNavigation,
+			FilesVisited: 12,
+			DirsVisited:  3,
+			Elapsed:      2 * time.Second,
+		})
+
+		output := w.String()
+		Expect(output).To(ContainSubstring("🔖 Files"))
+		Expect(output).To(ContainSubstring("📁 Directories"))
+		Expect(output).To(ContainSubstring("⏰ Elapsed"))
+	})
+
 	It("returns a renderer when options are provided", func() {
 		w := &bytes.Buffer{}
 		palette := prism.Palette{}
@@ -94,6 +116,27 @@ var _ = Describe("StreamRenderer", func() {
 		// exercise a simple event to ensure the renderer is operational.
 		renderer.Show(prism.Motif{Name: "test", Depth: 0, VisualDepth: 0, IsDir: true, IsLast: true})
 		Expect(w.String()).To(ContainSubstring("✻ test/"))
+	})
+
+	It("renders the banner inside the summary border style", func() {
+		w := &bytes.Buffer{}
+		palette := prism.Palette{}
+
+		renderer, err := prism.New(prism.StreamView, palette, w)
+		Expect(err).To(BeNil())
+
+		renderer.Begin(prism.Overture{
+			Kind:      prism.PrimeNavigation,
+			Root:      "./src/app",
+			Caption:   "files and folders",
+			StartedAt: time.Date(2026, time.May, 10, 11, 31, 7, 0, time.UTC),
+		})
+
+		output := w.String()
+		Expect(output).To(ContainSubstring("╭"))
+		Expect(output).To(ContainSubstring("jay  ./src/app"))
+		Expect(output).To(ContainSubstring("files and folders  -"))
+		Expect(output).To(ContainSubstring("╰"))
 	})
 
 	It("renders final directory children without vertical continuation", func() {

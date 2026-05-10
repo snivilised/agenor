@@ -13,6 +13,7 @@ func defaultTreeIcons() TreeIcons {
 		TreeIconRoot:           "✻",
 		TreeIconDirectory:      "📁",
 		TreeIconFile:           "🔖",
+		TreeIconElapsed:        "⏰",
 		TreeIconBranchVertical: "│",
 		TreeIconBranchJoint:    "├── ",
 		TreeIconBranchLast:     "└── ",
@@ -24,15 +25,6 @@ func defaultTreeIcons() TreeIcons {
 // via NewTheme and injected into the renderer. No package-level style
 // variables exist anywhere in prism.
 type Theme struct {
-	// BannerStyle is applied to the overture banner block.
-	BannerStyle lipgloss.Style
-
-	// BannerTitleStyle is applied to the title text inside the banner.
-	BannerTitleStyle lipgloss.Style
-
-	// BannerCaptionStyle is applied to the caption line inside the banner.
-	BannerCaptionStyle lipgloss.Style
-
 	// DirStyle is applied to directory name text in Show output.
 	DirStyle lipgloss.Style
 
@@ -54,8 +46,8 @@ type Theme struct {
 	// SkippedStyle is applied to nodes whose action was skipped.
 	SkippedStyle lipgloss.Style
 
-	// SummaryBoxStyle is the outer container style for the closing summary.
-	SummaryBoxStyle lipgloss.Style
+	// BoxStyle is the outer container style for the closing summary.
+	BoxStyle lipgloss.Style
 
 	// SummaryLabelStyle is applied to label text inside the summary.
 	SummaryLabelStyle lipgloss.Style
@@ -114,15 +106,6 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 			return ansi, nil
 		}
 	}
-	banner, err := resolve(palette.Banner, "banner")
-	if err != nil {
-		return Theme{}, err
-	}
-
-	bannerText, err := resolve(palette.BannerText, "banner-text")
-	if err != nil {
-		return Theme{}, err
-	}
 
 	dir, err := resolve(palette.Directory, "directory")
 	if err != nil {
@@ -174,7 +157,7 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 		return Theme{}, err
 	}
 
-	summaryBorder, err := resolve(palette.SummaryBorder, "summary-border")
+	BoxBorder, err := resolve(palette.BoxBorder, "box-border")
 	if err != nil {
 		return Theme{}, err
 	}
@@ -215,21 +198,6 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 	}
 
 	return Theme{
-		BannerStyle: lipgloss.NewStyle().
-			Background(banner).
-			Padding(0, 2).
-			MarginBottom(1),
-
-		BannerTitleStyle: lipgloss.NewStyle().
-			Foreground(bannerText).
-			Background(banner).
-			Bold(true),
-
-		BannerCaptionStyle: lipgloss.NewStyle().
-			Foreground(bannerText).
-			Background(banner).
-			Faint(true),
-
 		DirStyle: lipgloss.NewStyle().
 			Foreground(dir).
 			Bold(true),
@@ -247,9 +215,9 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 			Foreground(skipped).
 			Faint(true),
 
-		SummaryBoxStyle: lipgloss.NewStyle().
+		BoxStyle: lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(summaryBorder).
+			BorderForeground(BoxBorder).
 			Padding(0, 2).
 			MarginTop(1),
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
@@ -65,13 +66,15 @@ func (r *streamRenderer) Begin(overture Overture) {
 		caption += fmt.Sprintf("  -  from: %s", overture.ResumeFrom)
 	}
 
-	banner := r.theme.BannerStyle.Render(
-		r.theme.BannerTitleStyle.Render(title) +
-			"\n" +
-			r.theme.BannerCaptionStyle.Render(caption),
-	)
+	box := r.theme.BoxStyle.
+		MarginTop(0).
+		Render(
+			r.theme.SummaryLabelStyle.Width(0).Render(title) +
+				"\n" +
+				r.theme.SummaryValueStyle.Width(0).Render(caption),
+		)
 
-	_, _ = lipgloss.Fprintln(r.w, banner)
+	_, _ = lipgloss.Fprintln(r.w, box)
 }
 
 // Show renders a single Motif immediately to the output writer.
@@ -214,9 +217,9 @@ func (r *streamRenderer) End(summary Summary) {
 	}
 
 	lines := []string{
-		r.summaryRow(fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
-		r.summaryRow(dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
-		r.summaryRow("Elapsed", formatElapsed(summary.Elapsed)),
+		r.summaryRowWithIcon(TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
+		r.summaryRowWithIcon(TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
+		r.summaryRowWithIcon(TreeIconElapsed, "Elapsed", core.FormatDuration(summary.Elapsed)),
 	}
 
 	if len(summary.Errors) > 0 {
@@ -235,29 +238,22 @@ func (r *streamRenderer) End(summary Summary) {
 		}
 	}
 
-	box := r.theme.SummaryBoxStyle.Render(strings.Join(lines, "\n"))
+	box := r.theme.BoxStyle.Render(strings.Join(lines, "\n"))
 	_, _ = lipgloss.Fprintln(r.w, box)
 }
 
-// summaryRow renders a label/value pair aligned inside the summary box.
-func (r *streamRenderer) summaryRow(label, value string) string {
+// summaryRowWithIcon renders a label/value pair aligned inside the summary box,
+// prefixing the label with the requested tree icon when configured.
+func (r *streamRenderer) summaryRowWithIcon(iconKey, label, value string) string {
+	icon := r.treeIcons[iconKey]
+	if icon != "" {
+		label = icon + " " + label
+	}
+
 	return r.theme.SummaryLabelStyle.Render(label) +
 		r.theme.SummaryValueStyle.Render(value)
 }
 
-// formatElapsed produces a human-readable elapsed duration string.
-// Free function - no dependency on renderer state.
-func formatElapsed(d time.Duration) string {
-	if d < time.Second {
-		return fmt.Sprintf("%dms", d.Milliseconds())
-	}
-
-	if d < time.Minute {
-		return fmt.Sprintf("%.2fs", d.Seconds())
-	}
-
-	m := int(d.Minutes())
-	s := int(d.Seconds()) % 60
-
-	return fmt.Sprintf("%dm%ds", m, s)
+func (r *streamRenderer) summaryRow(label, value string) string {
+	return r.summaryRowWithIcon("", label, value)
 }

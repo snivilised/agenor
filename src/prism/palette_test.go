@@ -160,8 +160,6 @@ var _ = Describe("Palette", func() {
 			palette := prism.SystemPalette()
 
 			fields := []prism.SemanticColour{
-				palette.Banner,
-				palette.BannerText,
 				palette.Directory,
 				palette.File,
 				palette.Root,
@@ -171,7 +169,7 @@ var _ = Describe("Palette", func() {
 				palette.Error,
 				palette.Muted,
 				palette.Progress,
-				palette.SummaryBorder,
+				palette.BoxBorder,
 				palette.SummaryLabel,
 				palette.SummaryValue,
 				palette.Worker,
@@ -191,8 +189,6 @@ var _ = Describe("Palette", func() {
 			palette := prism.SystemPalette()
 
 			fields := []prism.SemanticColour{
-				palette.Banner,
-				palette.BannerText,
 				palette.Directory,
 				palette.File,
 				palette.Root,
@@ -202,7 +198,7 @@ var _ = Describe("Palette", func() {
 				palette.Error,
 				palette.Muted,
 				palette.Progress,
-				palette.SummaryBorder,
+				palette.BoxBorder,
 				palette.SummaryLabel,
 				palette.SummaryValue,
 				palette.Worker,
@@ -226,23 +222,21 @@ var _ = Describe("Palette", func() {
 			// Verify every entry has an ANSI16 value - the system palette
 			// must always be fully populated so it works without config.
 			fields := map[string]string{
-				"Banner":        palette.Banner.ANSI16,
-				"BannerText":    palette.BannerText.ANSI16,
-				"Directory":     palette.Directory.ANSI16,
-				"File":          palette.File.ANSI16,
-				"Root":          palette.Root.ANSI16,
-				"Action":        palette.Action.ANSI16,
-				"Pipeline":      palette.Pipeline.ANSI16,
-				"Skipped":       palette.Skipped.ANSI16,
-				"Error":         palette.Error.ANSI16,
-				"Muted":         palette.Muted.ANSI16,
-				"Progress":      palette.Progress.ANSI16,
-				"SummaryBorder": palette.SummaryBorder.ANSI16,
-				"SummaryLabel":  palette.SummaryLabel.ANSI16,
-				"SummaryValue":  palette.SummaryValue.ANSI16,
-				"Worker":        palette.Worker.ANSI16,
-				"WorkerIdle":    palette.WorkerIdle.ANSI16,
-				"LaneHeader":    palette.LaneHeader.ANSI16,
+				"Directory":    palette.Directory.ANSI16,
+				"File":         palette.File.ANSI16,
+				"Root":         palette.Root.ANSI16,
+				"Action":       palette.Action.ANSI16,
+				"Pipeline":     palette.Pipeline.ANSI16,
+				"Skipped":      palette.Skipped.ANSI16,
+				"Error":        palette.Error.ANSI16,
+				"Muted":        palette.Muted.ANSI16,
+				"Progress":     palette.Progress.ANSI16,
+				"BoxBorder":    palette.BoxBorder.ANSI16,
+				"SummaryLabel": palette.SummaryLabel.ANSI16,
+				"SummaryValue": palette.SummaryValue.ANSI16,
+				"Worker":       palette.Worker.ANSI16,
+				"WorkerIdle":   palette.WorkerIdle.ANSI16,
+				"LaneHeader":   palette.LaneHeader.ANSI16,
 			}
 
 			for name, ansi16 := range fields {
