@@ -29,15 +29,12 @@ func (b *Bootstrap) buildWalkCommand(container *assist.CobraContainer) {
 	container.MustRegisterParamSet(WalkSamplingFamName, b.walk.samplingFam)
 	container.MustRegisterParamSet(WalkPolyFamName, b.walk.polyFam)
 
+	walkCmd.MarkFlagsOneRequired("action", "pipeline")
 	container.MustRegisterRootedCommand(walkCmd)
 }
 
 // runWalk is the RunE handler for the walk command.
 func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
-	if err := requireActivator(b.walk.navPs.Native.Action, b.walk.navPs.Native.Pipeline); err != nil {
-		return err
-	}
-
 	subscription, err := controller.ResolveSubscription(b.walk.navPs.Native.Subscribe)
 	if err != nil {
 		return err

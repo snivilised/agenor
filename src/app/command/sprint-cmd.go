@@ -37,15 +37,12 @@ func (b *Bootstrap) buildSprintCommand(container *assist.CobraContainer) {
 	container.MustRegisterParamSet(SprintPolyFamName, b.sprint.polyFam)
 	container.MustRegisterParamSet(SprintWorkerPoolFamName, b.sprint.workerPoolFam)
 
+	sprintCmd.MarkFlagsOneRequired("action", "pipeline")
 	container.MustRegisterRootedCommand(sprintCmd)
 }
 
 // runSprint is the RunE handler for the sprint command.
 func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
-	if err := requireActivator(b.sprint.navPs.Native.Action, b.sprint.navPs.Native.Pipeline); err != nil {
-		return err
-	}
-
 	subscription, err := controller.ResolveSubscription(b.sprint.navPs.Native.Subscribe)
 	if err != nil {
 		return err
