@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"regexp"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
@@ -24,6 +25,7 @@ type Coordinator struct {
 	cfg           *bedrock.Config
 	locate        shell.LocateFunc
 	forestBuilder pref.BuildForest
+	actionRegexes map[string]*regexp.Regexp
 }
 
 // CoordinatorOption is a functional option for Coordinator.
@@ -52,9 +54,21 @@ func WithForest(forestBuilder pref.BuildForest) CoordinatorOption {
 
 // New returns a ready-to-use Coordinator. cfg must not be nil.
 func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
+	actionRegexes := make(map[string]*regexp.Regexp)
+	if cfg != nil && cfg.Raw.Actions != nil {
+		for name, action := range cfg.Raw.Actions {
+			if action.Capture != "" {
+				if re, err := regexp.Compile(action.Capture); err == nil {
+					actionRegexes[name] = re
+				}
+			}
+		}
+	}
+
 	c := &Coordinator{
-		cfg:    cfg,
-		locate: func(name string) (string, error) { return exec.LookPath(name) },
+		cfg:           cfg,
+		locate:        func(name string) (string, error) { return exec.LookPath(name) },
+		actionRegexes: actionRegexes,
 	}
 
 	for _, o := range opts {

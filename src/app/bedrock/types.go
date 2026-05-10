@@ -25,11 +25,22 @@ type ExtensionsConfig struct {
 	Map           map[string]string `mapstructure:"map"`
 }
 
+// ExecConfig controls command execution settings.
+type ExecConfig struct {
+	Truncate int `mapstructure:"truncate"`
+}
+
+// OutputConfig controls output processing settings.
+type OutputConfig struct {
+	Exec ExecConfig `mapstructure:"exec"`
+}
+
 // AdvancedConfig holds low-level behavioural switches.
 type AdvancedConfig struct {
 	AbortOnError         bool             `mapstructure:"abort-on-error"`
 	OverwriteOnCollision bool             `mapstructure:"overwrite-on-collision"`
 	Extensions           ExtensionsConfig `mapstructure:"extensions"`
+	Output               OutputConfig     `mapstructure:"output"`
 }
 
 // LoggingConfig controls the jay log file.
@@ -56,8 +67,9 @@ type MappedConfig struct {
 // RawAction is one entry from the actions block.  The cmd and when strings
 // are kept verbatim; jay's action-runner is responsible for interpreting them.
 type RawAction struct {
-	Cmd  string `mapstructure:"cmd"`
-	When string `mapstructure:"when"`
+	Cmd     string `mapstructure:"cmd"`
+	When    string `mapstructure:"when"`
+	Capture string `mapstructure:"capture"`
 }
 
 // RawPipeline is one entry from the pipelines block.

@@ -109,6 +109,9 @@ type Motif struct {
 	// ExecutionString is the expanded command string for dry-run display.
 	ExecutionString string
 
+	// CommandOutput is the captured output of the command execution.
+	CommandOutput string
+
 	// DryRun indicates if this is a dry-run execution.
 	DryRun bool
 

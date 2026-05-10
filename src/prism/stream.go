@@ -120,11 +120,15 @@ func (r *streamRenderer) Show(motif Motif) {
 			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
 			if motif.DryRun {
 				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			} else if motif.CommandOutput != "" {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
 			}
 		} else if motif.PipelineName != "" {
 			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
 			if motif.DryRun {
 				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			} else if motif.CommandOutput != "" {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
 			}
 		}
 
@@ -135,11 +139,15 @@ func (r *streamRenderer) Show(motif Motif) {
 			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
 			if motif.DryRun {
 				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			} else if motif.CommandOutput != "" {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
 			}
 		} else if motif.PipelineName != "" {
 			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
 			if motif.DryRun {
 				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			} else if motif.CommandOutput != "" {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
 			}
 		}
 	}
