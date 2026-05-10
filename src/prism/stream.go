@@ -118,8 +118,14 @@ func (r *streamRenderer) Show(motif Motif) {
 
 		if motif.ActionName != "" {
 			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
+			if motif.DryRun {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			}
 		} else if motif.PipelineName != "" {
 			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
+			if motif.DryRun {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			}
 		}
 
 	default:
@@ -127,8 +133,14 @@ func (r *streamRenderer) Show(motif Motif) {
 
 		if motif.ActionName != "" {
 			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
+			if motif.DryRun {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			}
 		} else if motif.PipelineName != "" {
 			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
+			if motif.DryRun {
+				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+			}
 		}
 	}
 

@@ -54,6 +54,7 @@ func (b *Bootstrap) runWalk(cmd *cobra.Command, args []string) error {
 		Scenario:     agenor.Tortoise(isPrime),
 		UI:           b.UI,
 		GetForest:    b.options.GetForest,
+		DryRun:       b.walk.previewFam.Native.DryRun,
 	}
 
 	if isPrime {

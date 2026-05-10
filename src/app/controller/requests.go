@@ -43,6 +43,10 @@ type Request struct {
 
 	// GetForest is the pref.BuildForest used to construct the file system
 	GetForest pref.BuildForest
+
+	// DryRun indicates whether to show what would be executed without
+	// actually running the commands.
+	DryRun bool
 }
 
 // PrimeRequest carries everything the coordinator needs to execute a

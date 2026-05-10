@@ -164,7 +164,7 @@ func (c *Coordinator) execute(
 
 	req.UI.OnBegin(&report.BeginEvent{
 		Root:       req.Root,
-		Caption:    captionFor(req),
+		Caption:    c.captionFor(req),
 		StartedAt:  core.Now(),
 		IsPrime:    isPrime,
 		ResumeFrom: resumeFrom,
@@ -185,13 +185,27 @@ func (c *Coordinator) execute(
 }
 
 //nolint:exhaustive // enums.SubscribeDirectoriesWithFiles, enums.SubscribeUniversal
-func captionFor(req *Request) string {
+func (c *Coordinator) captionFor(req *Request) string {
+	subscription := ""
 	switch req.Subscription {
 	case enums.SubscribeFiles:
-		return "files only"
+		subscription = "files only"
 	case enums.SubscribeDirectories:
-		return "folders only"
+		subscription = "folders only"
 	default:
-		return "files and folders"
+		subscription = "files and folders"
 	}
+
+	if req.ActionName != "" {
+		action, ok := c.cfg.Raw.Actions[req.ActionName]
+		if ok {
+			return fmt.Sprintf("%s via '%s'", subscription, action.Cmd)
+		}
+	}
+
+	if req.PipelineName != "" {
+		return fmt.Sprintf("%s via pipeline '%s'", subscription, req.PipelineName)
+	}
+
+	return subscription
 }

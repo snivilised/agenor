@@ -106,6 +106,12 @@ type Motif struct {
 	// Empty when no pipeline was configured.
 	PipelineName string
 
+	// ExecutionString is the expanded command string for dry-run display.
+	ExecutionString string
+
+	// DryRun indicates if this is a dry-run execution.
+	DryRun bool
+
 	// Skipped is true when an action or pipeline was skipped because a
 	// placeholder resolved to a path at or above the traversal root.
 	Skipped bool

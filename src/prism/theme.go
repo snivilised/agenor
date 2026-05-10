@@ -43,6 +43,9 @@ type Theme struct {
 	// PipelineStyle is applied to pipeline names shown alongside nodes.
 	PipelineStyle lipgloss.Style
 
+	// LandingStripStyle is applied to the landing strip content (execution string or output).
+	LandingStripStyle lipgloss.Style
+
 	// SkippedStyle is applied to nodes whose action was skipped.
 	SkippedStyle lipgloss.Style
 
@@ -137,6 +140,11 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 		return Theme{}, err
 	}
 
+	landingStrip, err := resolve(palette.LandingStrip, "landing-strip")
+	if err != nil {
+		return Theme{}, err
+	}
+
 	skipped, err := resolve(palette.Skipped, "skipped")
 	if err != nil {
 		return Theme{}, err
@@ -210,6 +218,9 @@ func NewTheme(palette Palette, w io.Writer) (Theme, error) {
 
 		PipelineStyle: lipgloss.NewStyle().
 			Foreground(pipeline),
+
+		LandingStripStyle: lipgloss.NewStyle().
+			Foreground(landingStrip),
 
 		SkippedStyle: lipgloss.NewStyle().
 			Foreground(skipped).

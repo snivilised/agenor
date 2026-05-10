@@ -149,6 +149,9 @@ type Palette struct {
 	// Pipeline is the colour of pipeline names shown alongside nodes.
 	Pipeline SemanticColour `mapstructure:"pipeline"`
 
+	// LandingStrip is the colour of the landing strip content (execution string or output).
+	LandingStrip SemanticColour `mapstructure:"landing-strip"`
+
 	// Skipped is the colour of nodes whose action was skipped due to
 	// a placeholder breach.
 	Skipped SemanticColour `mapstructure:"skipped"`
@@ -199,6 +202,7 @@ func SystemPalette() Palette {
 		Branch:       SemanticColour{ANSI16: "bright-black"},
 		Action:       SemanticColour{ANSI16: "blue"},
 		Pipeline:     SemanticColour{ANSI16: "blue"},
+		LandingStrip: SemanticColour{ANSI16: "yellow"},
 		Skipped:      SemanticColour{ANSI16: "bright-black"},
 		Error:        SemanticColour{ANSI16: "red"},
 		Muted:        SemanticColour{ANSI16: "bright-black"},
