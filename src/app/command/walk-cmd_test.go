@@ -19,6 +19,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 	var (
 		fS                *luna.MemFS
 		configurationPath string
+		bootstrap         command.Bootstrap
 	)
 
 	BeforeAll(func() {
@@ -39,55 +40,80 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 	})
 
 	BeforeEach(func() {
+		bootstrap = command.Bootstrap{}
 		services.Reset()
 	})
 
-	Context("given: walk invoked with action", func() {
-		It("🧪 should: not error", func() {
-			bootstrap := command.Bootstrap{}
+	DescribeTable("Walk command",
+		func(ctx SpecContext, entry *lab.GeneralTE) {
 			tester := hanno.CommandTester{
+				Args: entry.Args,
+				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+					co.Detector = &DetectorStub{}
+					co.Config.Name = configName
+					co.Config.ConfigPath = configurationPath
+					co.GetForest = func(_ string) *core.Forest {
+						return &core.Forest{
+							T: fS,
+							R: tfs.New(),
+						}
+					}
+				}),
+			}
+
+			_, err := tester.Execute()
+			entry.Asserter(err)
+		},
+		lab.FormatGeneralTestDescription,
+
+		// === regular =============================================================
+
+		Entry(nil, &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "walk invoked with action",
+				Should: "result in no error",
+			},
+			NaviTE: lab.NaviTE{
 				Args: []string{
 					"walk", "RETRO-WAVE", "--action", "echo", "--theme", "system",
 				},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
-					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configurationPath
-					co.GetForest = func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: tfs.New(),
-						}
-					}
-				}),
-			}
-			_, err := tester.Execute()
-			Expect(err).Error().To(BeNil())
-		})
-	})
+				Asserter: func(err error) {
+					Expect(err).Error().To(BeNil())
+				},
+			},
+		}),
 
-	Context("given: walk invoked missing action and pipeline", func() {
-		It("🧪 should: result in one of flags constraint error", func() {
-			bootstrap := command.Bootstrap{}
-			tester := hanno.CommandTester{
+		// === errors ==============================================================
+
+		Entry(nil, &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "walk invoked missing action and pipeline",
+				Should: "🧪 result in one of flags constraint error",
+			},
+			NaviTE: lab.NaviTE{
 				Args: []string{
 					"walk", "RETRO-WAVE", "--theme", "system",
 				},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
-					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configurationPath
-					co.GetForest = func(_ string) *core.Forest {
-						return &core.Forest{
-							T: fS,
-							R: tfs.New(),
-						}
-					}
-				}),
-			}
-			_, err := tester.Execute()
-			Expect(err).Error().NotTo(BeNil())
-			Expect(err.Error()).To(ContainSubstring("at least one of the flags in the group"))
-		})
-	})
+				Asserter: func(err error) {
+					Expect(err).Error().NotTo(BeNil())
+					Expect(err.Error()).To(ContainSubstring("at least one of the flags in the group"))
+				},
+			},
+		}),
+
+		Entry(nil, &lab.GeneralTE{
+			DescribedTE: lab.DescribedTE{
+				Given:  "walk invoked with filter",
+				Should: "result in no error",
+			},
+			NaviTE: lab.NaviTE{
+				Args: []string{
+					"walk", "RETRO-WAVE", "--action", "echo", "--theme", "system", "--files", "*|.flac",
+				},
+				Asserter: func(err error) {
+					Expect(err).Error().To(BeNil())
+				},
+			},
+		}),
+	)
 })
