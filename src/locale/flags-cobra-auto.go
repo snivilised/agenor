@@ -28,6 +28,26 @@ func (td ActionFlagDescTemplData) Message() *i18n.Message {
 }
 
 // =============================================================================
+// 🧊 DryRunFlagDesc
+//
+// Cobra flag description for dry-run flag
+// =============================================================================
+
+// DryRunFlagDescTemplData Cobra flag description for dry-run flag.
+type DryRunFlagDescTemplData struct {
+	agenorTemplData
+}
+
+// Message returns the i18n message for DryRunFlagDescTemplData.
+func (td DryRunFlagDescTemplData) Message() *i18n.Message {
+	return &i18n.Message{
+		ID:          "dry-run-flag-description",
+		Description: "Cobra flag description for dry-run flag",
+		Other:       "dry-run shows what would be executed without actually running the commands",
+	}
+}
+
+// =============================================================================
 // 🧊 PipelineFlagDesc
 //
 // Cobra flag description for pipeline flag

@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"os/exec"
+
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/locale"
@@ -26,7 +28,7 @@ func (c *Coordinator) handleServant(
 
 	switch {
 	case req.PipelineName != "":
-		e := c.executePipeline(node, req.PipelineName, req.Root)
+		e := c.executePipeline(node, req.PipelineName, req.Root, req.DryRun)
 		if e.Skipped {
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
@@ -45,7 +47,7 @@ func (c *Coordinator) handleServant(
 		return e.Event.Err
 
 	case req.ActionName != "":
-		e := c.executeAction(node, req.ActionName, req.Root)
+		e := c.executeAction(node, req.ActionName, req.Root, req.DryRun)
 		if e.Skipped {
 			t.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
@@ -95,7 +97,7 @@ type pipelineResult struct {
 // executeAction expands the cmd string for the named action and returns
 // the result. If a placeholder breaches root the result is marked as
 // skipped and no shell execution is attempted.
-func (c *Coordinator) executeAction(node *core.Node, name, root string) actionResult {
+func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun bool) actionResult {
 	action, ok := c.cfg.Raw.Actions[name]
 	if !ok {
 		// PreFlight should have caught this - treat as an action error.
@@ -116,17 +118,31 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string) actionRe
 		}
 	}
 
+	event := &report.ActionEvent{
+		DisplayEvent:    report.DisplayEvent{Node: node, Name: name},
+		ExecutionString: result.Cmd,
+		DryRun:          dryRun,
+	}
+
+	if !dryRun {
+		cmd := exec.Command("sh", "-c", result.Cmd) //nolint:gosec // this is expected to be a shell command string
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			event.Err = err
+			// TODO: store output somewhere when we have a mechanism
+		}
+		// TODO: store output
+		_ = output
+	}
+
 	return actionResult{
-		Event: &report.ActionEvent{
-			DisplayEvent:    report.DisplayEvent{Node: node, Name: name},
-			ExecutionString: result.Cmd,
-		},
+		Event: event,
 	}
 }
 
 // executePipeline expands and executes each step in the named pipeline
 // in order. The first skip or error stops the pipeline for this node.
-func (c *Coordinator) executePipeline(node *core.Node, name, root string) pipelineResult {
+func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun bool) pipelineResult {
 	pipeline, ok := c.cfg.Raw.Pipelines[name]
 	if !ok {
 		return pipelineResult{
@@ -138,7 +154,7 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string) pipeli
 	}
 
 	for _, step := range pipeline.Steps {
-		ar := c.executeAction(node, step, root)
+		ar := c.executeAction(node, step, root, dryRun)
 		if ar.Skipped {
 			return pipelineResult{
 				Skipped:      true,
@@ -151,6 +167,7 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string) pipeli
 				Event: &report.PipelineEvent{
 					DisplayEvent:    report.DisplayEvent{Node: node, Name: name},
 					ExecutionString: ar.Event.ExecutionString,
+					DryRun:          dryRun,
 					Err:             ar.Event.Err,
 				},
 			}
@@ -160,6 +177,7 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string) pipeli
 	return pipelineResult{
 		Event: &report.PipelineEvent{
 			DisplayEvent: report.DisplayEvent{Node: node, Name: name},
+			DryRun:       dryRun,
 		},
 	}
 }

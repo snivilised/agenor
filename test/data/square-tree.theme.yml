@@ -44,6 +44,13 @@ palette:
     ansi256: ""
     true-color: ""
 
+  # LandingStrip is the colour of dry-run execution strings shown after the
+  # via statement in the linear renderer.
+  landing-strip:
+    ansi16: yellow
+    ansi256: ""
+    true-color: ""
+
   # Skipped is the colour of nodes whose action was skipped due to
   # a placeholder breach.
   skipped:

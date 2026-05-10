@@ -49,6 +49,7 @@ type NeutralEvent struct {
 type ActionEvent struct {
 	DisplayEvent
 	ExecutionString string
+	DryRun          bool
 	Err             error
 }
 
@@ -59,6 +60,7 @@ type ActionEvent struct {
 type PipelineEvent struct {
 	DisplayEvent
 	ExecutionString string
+	DryRun          bool
 	Err             error
 }
 

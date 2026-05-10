@@ -72,15 +72,17 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 	defer l.mu.Unlock()
 
 	l.renderer.Show(prism.Motif{
-		Path:        e.Node.Path,
-		Name:        e.Node.Extension.Name,
-		IsDir:       e.Node.IsDirectory(),
-		Depth:       uint(e.Node.Extension.Depth),
-		VisualDepth: uint(e.Node.VisualDepth()),
-		ActionName:  e.Name,
-		Err:         e.Err,
-		IsLast:      e.IsLast,
-		IndentStack: e.IndentStack,
+		Path:            e.Node.Path,
+		Name:            e.Node.Extension.Name,
+		IsDir:           e.Node.IsDirectory(),
+		Depth:           uint(e.Node.Extension.Depth),
+		VisualDepth:     uint(e.Node.VisualDepth()),
+		ActionName:      e.Name,
+		ExecutionString: e.ExecutionString,
+		DryRun:          e.DryRun,
+		Err:             e.Err,
+		IsLast:          e.IsLast,
+		IndentStack:     e.IndentStack,
 	})
 }
 
@@ -90,15 +92,17 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 	defer l.mu.Unlock()
 
 	l.renderer.Show(prism.Motif{
-		Path:         e.Node.Path,
-		Name:         e.Node.Extension.Name,
-		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth),
-		VisualDepth:  uint(e.Node.VisualDepth()),
-		PipelineName: e.Name,
-		Err:          e.Err,
-		IsLast:       e.IsLast,
-		IndentStack:  e.IndentStack,
+		Path:            e.Node.Path,
+		Name:            e.Node.Extension.Name,
+		IsDir:           e.Node.IsDirectory(),
+		Depth:           uint(e.Node.Extension.Depth),
+		VisualDepth:     uint(e.Node.VisualDepth()),
+		PipelineName:    e.Name,
+		ExecutionString: e.ExecutionString,
+		DryRun:          e.DryRun,
+		Err:             e.Err,
+		IsLast:          e.IsLast,
+		IndentStack:     e.IndentStack,
 	})
 }
 

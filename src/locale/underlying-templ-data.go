@@ -86,6 +86,16 @@ var _ = lingo.Underliers{
 		File: "flags",
 	},
 
+	"dry-run-flag-description": {
+		MessageID:   "dry-run-flag-description",
+		Seed:        "DryRunFlagDesc",
+		TypeName:    enums.UnderlyingTypeStaticCobra,
+		Description: "Cobra flag description for dry-run flag",
+		Story:       "Cobra flag description for dry-run flag",
+		Other:       "dry-run shows what would be executed without actually running the commands",
+		File:        "flags",
+	},
+
 	// -------------------------------------------------------------------------
 	// root-cmd: Cobra messages
 	// -------------------------------------------------------------------------

@@ -69,6 +69,8 @@ func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
 		PipelineName: b.sprint.navPs.Native.Pipeline,
 		Scenario:     agenor.Hare(isPrime, wg),
 		UI:           b.UI,
+		GetForest:    b.options.GetForest,
+		DryRun:       b.sprint.previewFam.Native.DryRun,
 	}
 
 	var execErr error
