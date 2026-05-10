@@ -64,16 +64,16 @@ func TranslateFilterIntent(intent FilterIntent) (pref.Option, bool) {
 		return nil, false
 	}
 
-	fileDef := core.FilterDef{}
+	fileDef := core.BenignNodeFilterDef
 	if hasFileGlob {
-		fileDef.Type = enums.FilterTypeGlob
+		fileDef.Type = enums.FilterTypeGlobEx
 		fileDef.Pattern = intent.FilesExGlob
 	} else if hasFileRegex {
 		fileDef.Type = enums.FilterTypeRegex
 		fileDef.Pattern = intent.FilesRegEx
 	}
 
-	dirDef := core.FilterDef{}
+	dirDef := core.BenignNodeFilterDef
 	if hasFolderGlob {
 		dirDef.Type = enums.FilterTypeGlob
 		dirDef.Pattern = intent.DirectoriesGlob
@@ -84,6 +84,7 @@ func TranslateFilterIntent(intent FilterIntent) (pref.Option, bool) {
 
 	return pref.WithFilter(&pref.FilterOptions{
 		Node: &core.FilterDef{
+			Type: enums.FilterTypePoly,
 			Poly: &core.PolyFilterDef{
 				File:      fileDef,
 				Directory: dirDef,

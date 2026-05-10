@@ -67,6 +67,13 @@ type (
 
 		// ExpectedErr captures any expected error that should occur during the traversal.
 		ExpectedErr error
+
+		// Args used to invoke the command under test
+		Args []string
+
+		// AssertFunc is a custom assertion function used when lab.AssertNavigation
+		// is overkill
+		Asserter AssertFunc
 	}
 
 	// FilterTE captures parameters for tests related to traversal filters.
@@ -385,6 +392,10 @@ type (
 	RecallScope map[string]enums.FilterScope
 	// RecallOrder captures the order of the recall in the traversal.
 	RecallOrder map[string]int
+
+	// AssertFunc is a custom assertion function used when lab.AssertNavigation
+	// is overkill
+	AssertFunc func(error)
 )
 
 // IsEqual returns true if the expected and actual values are equal.
