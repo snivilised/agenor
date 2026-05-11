@@ -373,11 +373,11 @@ type (
 	// Quantities captures the quantities of entries in the traversal.
 	Quantities struct {
 		// Files captures the number of files in the traversal.
-		Files uint
+		Files core.MetricValue
 		// Directories captures the number of directories in the traversal.
-		Directories uint
+		Directories core.MetricValue
 		// Children captures the number of children in the traversal.
-		Children map[string]int
+		Children map[string]core.MetricValue
 	}
 
 	// MatcherExpectation captures the expected and actual values for a matcher.
@@ -387,7 +387,7 @@ type (
 	}
 
 	// Recall captures the recall of entries in the traversal.
-	Recall map[string]int
+	Recall map[string]core.MetricValue
 	// RecallScope captures the scope of the recall in the traversal.
 	RecallScope map[string]enums.FilterScope
 	// RecallOrder captures the order of the recall in the traversal.
@@ -409,7 +409,7 @@ type Trigger struct {
 }
 
 // Times sets the number of times a metric should be triggered.
-func (t *Trigger) Times(m enums.Metric, n uint) *Trigger {
+func (t *Trigger) Times(m enums.Metric, n core.MetricValue) *Trigger {
 	t.Metrics[m].Times(n)
 
 	return t

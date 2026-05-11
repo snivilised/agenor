@@ -1,14 +1,16 @@
 package core
 
 import (
+	"encoding/json"
 	"maps"
+	"sync/atomic"
 
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 )
 
 type (
 	// MetricValue represents the value of a metric
-	MetricValue = uint
+	MetricValue = uint32
 
 	// Metric represents query access to the metric. The client
 	// registering the metric should maintain it's mutate access
@@ -53,7 +55,7 @@ type (
 		// the performance data or other relevant information that the metric represents during
 		// the traversal process. This field is mutable and can be updated using the Tick and
 		// Times methods of the MutableMetric interface.
-		Counter MetricValue
+		Counter atomic.Uint32
 	}
 
 	// Metrics represents a collection of metrics being tracked during the traversal process,
@@ -82,26 +84,50 @@ func (m *NavigationMetric) Type() enums.Metric {
 // data or other relevant information that the metric represents. This can be used for monitoring,
 // reporting, or making decisions based on the metric's value during the traversal process.
 func (m *NavigationMetric) Value() MetricValue {
-	return m.Counter
+	return m.Counter.Load()
 }
 
 // Tick increments the metric by one and returns the new value. This can be used to track occurrences
 // of specific events or conditions during the traversal process, allowing the client to easily
 // update the metric as needed.
 func (m *NavigationMetric) Tick() MetricValue {
-	m.Counter++
-
-	return m.Counter
+	return m.Counter.Add(1)
 }
 
 // Times increments the metric by a specified amount and returns the new value. This
 // can be used to track occurrences of specific events or conditions during the traversal
 // process in a more flexible way, allowing the client to update the metric by any desired
 // amount as needed.
-func (m *NavigationMetric) Times(increment uint) MetricValue {
-	m.Counter += increment
+func (m *NavigationMetric) Times(increment MetricValue) MetricValue {
+	return m.Counter.Add(increment)
+}
 
-	return m.Counter
+// MarshalJSON encodes the metric so that the counter can be persisted and restored
+// across resume sessions. The atomic counter is represented as a plain uint32.
+func (m *NavigationMetric) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		T       enums.Metric `json:"T"`
+		Counter uint32       `json:"Counter"`
+	}{
+		T:       m.T,
+		Counter: m.Counter.Load(),
+	})
+}
+
+// UnmarshalJSON decodes the persisted metric state and restores the atomic counter.
+func (m *NavigationMetric) UnmarshalJSON(data []byte) error {
+	var decoded struct {
+		T       enums.Metric `json:"T"`
+		Counter uint32       `json:"Counter"`
+	}
+
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+
+	m.T = decoded.T
+	m.Counter.Store(decoded.Counter)
+	return nil
 }
 
 // Merge merges another Metrics collection into the current one, combining the values of
@@ -114,12 +140,11 @@ func (m Metrics) Merge(other Metrics) {
 	for mt := range maps.Keys(m) {
 		if om, foundOther := other[mt]; foundOther {
 			if metric, found := m[mt]; found {
-				metric.Times(om.Counter)
+				metric.Times(om.Counter.Load())
 			} else {
-				m[mt] = &NavigationMetric{
-					T:       mt,
-					Counter: om.Counter,
-				}
+				metric := &NavigationMetric{T: mt}
+				metric.Counter.Store(om.Counter.Load())
+				m[mt] = metric
 			}
 		}
 	}

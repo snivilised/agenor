@@ -56,7 +56,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 				_, found := recall[node.Path] // TODO: should this be name not path?
 				Expect(found).To(BeFalse())
 
-				recall[node.Path] = len(node.Children)
+				recall[node.Path] = core.MetricValue(len((node.Children)))
 
 				return entry.Callback(servant)
 			}

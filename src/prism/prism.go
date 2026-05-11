@@ -153,10 +153,10 @@ type Motif struct {
 // Renderer.End to render the closing display.
 type Summary struct {
 	// FilesVisited is the count of files encountered.
-	FilesVisited uint
+	FilesVisited core.MetricValue
 
 	// DirsVisited is the count of directories encountered.
-	DirsVisited uint
+	DirsVisited core.MetricValue
 
 	// Elapsed is the total duration of the traversal.
 	Elapsed time.Duration

@@ -186,7 +186,7 @@ type (
 		Name string
 
 		// Count is the expected number of child nodes for the specified node.
-		Count int
+		Count core.MetricValue
 	}
 
 	// ChildCountMatcher is a custom Gomega matcher that checks if the actual
@@ -197,7 +197,7 @@ type (
 	// expected count.
 	ChildCountMatcher struct {
 		expected    interface{}
-		expectation MatcherExpectation[uint]
+		expectation MatcherExpectation[core.MetricValue]
 		name        string
 	}
 )
@@ -228,9 +228,9 @@ func (m *ChildCountMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("🔥 not found: '%v'", expected.Name)
 	}
 
-	m.expectation = MatcherExpectation[uint]{
-		Expected: uint(expected.Count), //nolint:gosec // ok
-		Actual:   uint(count),          //nolint:gosec // ok
+	m.expectation = MatcherExpectation[core.MetricValue]{
+		Expected: expected.Count,
+		Actual:   count,
 	}
 	m.name = expected.Name
 
@@ -265,7 +265,7 @@ type (
 		Type enums.Metric
 
 		// Count is the expected count for the specified metric type.
-		Count uint
+		Count core.MetricValue
 	}
 
 	// MetricMatcher is a custom Gomega matcher that checks if the actual count of a
@@ -275,7 +275,7 @@ type (
 	// failure messages if the actual count does not match the expected count.
 	MetricMatcher struct {
 		expected    interface{}
-		expectation MatcherExpectation[uint]
+		expectation MatcherExpectation[core.MetricValue]
 		typ         enums.Metric
 	}
 )
@@ -304,9 +304,10 @@ func (m *MetricMatcher) Match(actual interface{}) (bool, error) {
 		return false, fmt.Errorf("🔥 MetricMatcher expected ExpectedMetric (%T)", actual)
 	}
 
-	m.expectation = MatcherExpectation[uint]{
+	actualCount := result.Metrics().Count(expected.Type)
+	m.expectation = MatcherExpectation[core.MetricValue]{
 		Expected: expected.Count,
-		Actual:   result.Metrics().Count(expected.Type),
+		Actual:   actualCount,
 	}
 	m.typ = expected.Type
 

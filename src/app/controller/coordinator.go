@@ -100,9 +100,12 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 			return err
 		}
 
+		filesCount := result.Metrics().Count(enums.MetricNoFilesInvoked)
+		dirsCount := result.Metrics().Count(enums.MetricNoDirectoriesInvoked)
+
 		view.OnPeerInfoBegin(
-			result.Metrics().Count(enums.MetricNoFilesInvoked),
-			result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
+			uint(filesCount),
+			uint(dirsCount),
 		)
 
 		facade := &pref.Using{

@@ -69,7 +69,7 @@ var _ = Describe("Resume", Ordered, func() {
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
 
-					recall[node.Extension.Name] = len(node.Children)
+					recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 					return nil
 				}
@@ -145,8 +145,8 @@ var _ = Describe("Resume", Ordered, func() {
 				}
 
 				invocations[strategy] = strategyInvokeInfo{
-					result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
-					result.Metrics().Count(enums.MetricNoFilesInvoked),
+					directories: result.Metrics().Count(enums.MetricNoDirectoriesInvoked),
+					files:       result.Metrics().Count(enums.MetricNoFilesInvoked),
 				}
 
 				lab.AssertNavigation(&entry.NaviTE, &lab.TestOptions{

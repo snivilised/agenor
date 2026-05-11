@@ -32,7 +32,7 @@ func (c *Coordinator) handleServant(
 	case req.PipelineName != "":
 		e := c.executePipeline(node, req.PipelineName, req.Root, req.DryRun)
 		if e.Skipped {
-			traversal.ActionsSkipped++
+			traversal.ActionsSkipped.Add(1)
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
 					Node:   node,
@@ -51,7 +51,7 @@ func (c *Coordinator) handleServant(
 	case req.ActionName != "":
 		e := c.executeAction(node, req.ActionName, req.Root, req.DryRun)
 		if e.Skipped {
-			traversal.ActionsSkipped++
+			traversal.ActionsSkipped.Add(1)
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
 					Node:   node,

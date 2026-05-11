@@ -89,7 +89,7 @@ func DirectoriesCaseSensitiveCallback(first, second string) core.Client {
 
 	return func(servant agenor.Servant) error {
 		node := servant.Node()
-		recall[node.Path] = len(node.Children)
+		recall[node.Path] = core.MetricValue(len((node.Children))) //nolint:gosec // ok
 
 		GinkgoWriter.Printf("---> 🔆 CASE-SENSITIVE-CALLBACK: '%v'\n", node.Path)
 		Expect(node.IsDirectory()).To(BeTrue())

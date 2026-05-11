@@ -94,7 +94,7 @@ func (x *resumeExtent) options(addons []Addon,
 
 	x.loaded = loaded
 
-	if handler := x.seek(addons); handler != nil {
+	if handler := x.seek(addons); handler != nil && loaded != nil && loaded.State != nil {
 		handler.OnLoad(loaded.State)
 	}
 

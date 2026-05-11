@@ -64,7 +64,7 @@ var _ = Describe("NavigatorFilterCustom", Ordered, func() {
 					Expect(node).Should(MatchCurrentCustomFilter(customFilter))
 				}
 
-				recall[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = core.MetricValue(len(node.Children))
 
 				return nil
 			}

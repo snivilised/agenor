@@ -122,7 +122,7 @@ var _ = Describe("feature", Ordered, func() {
 				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
 
-				recall[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 				return nil
 			}
