@@ -7,6 +7,7 @@ import (
 
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/prism"
+	"github.com/snivilised/jaywalk/src/prism/flow"
 )
 
 // ---------------------------------------------------------------------------
@@ -14,8 +15,8 @@ import (
 // ---------------------------------------------------------------------------
 
 const (
-	// ModeLinear is the default stream view. One styled line per node
-	// via prism's stream renderer with lipgloss formatting.
+	// ModeLinear is the default linear view. One styled line per node
+	// via prism's linear renderer with lipgloss formatting.
 	ModeLinear = "linear"
 
 	// ModeDefault is the display used when --tui is not specified.
@@ -26,17 +27,16 @@ const (
 // View factory functions - on-demand creation
 // ---------------------------------------------------------------------------
 
-// newLinearPresenter creates a linear stream view presenter with the
-// given palette. The presenter wraps a prism stream renderer and
+// newLinearPresenter creates a linear view presenter with the
+// given palette. The presenter wraps a prism linear renderer and
 // applies the palette's theme settings (colors, icons, styles). Custom
 // tree icons from the palette are explicitly applied via WithIcons to
 // ensure they override the defaults.
 func newLinearPresenter(palette prism.Palette) (report.Presenter, error) {
-	renderer, err := prism.New(
-		prism.StreamView,
+	renderer, err := flow.New(
 		palette,
 		os.Stdout,
-		prism.WithIcons(palette.TreeIcons),
+		flow.WithIcons(palette.TreeIcons),
 	)
 	if err != nil {
 		return nil, err

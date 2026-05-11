@@ -10,7 +10,7 @@ import (
 	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
-// linear is the stream-view display implementation. It translates
+// linear is the linear-view display implementation. It translates
 // report events into prism.Motif calls and delegates all formatting
 // and output to the prism.Renderer. It contains no formatting logic.
 //

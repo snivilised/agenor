@@ -1,12 +1,17 @@
 package prism
 
 import (
-	"fmt"
-	"io"
 	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
 )
+
+// Dependency rule for prism view packages:
+// - root prism contains only shared, view-neutral contracts and factory APIs;
+// - view-specific implementation/options live in dedicated sub-packages
+//   (for example prism/flow);
+// - root prism must not import view-specific sub-packages. Views register
+//   factories into prism, which prevents prism -> view -> prism import cycles.
 
 // ViewKind identifies the rendering view to use. Defined as a typed
 // string rather than an iota so that the set remains open - new views
@@ -14,8 +19,8 @@ import (
 type ViewKind string
 
 const (
-	// StreamView is a linear scrolling output view rendered with lipgloss.
-	StreamView ViewKind = "stream"
+	// LinearView is a linear scrolling output view rendered with lipgloss.
+	LinearView ViewKind = "linear"
 
 	// PortholeView is a bubbletea view with a static header and footer
 	// and vertically scrolling content between them.
@@ -73,7 +78,7 @@ type Overture struct {
 	ResumeFrom string
 
 	// Survey holds the results of a prior survey phase. Nil for
-	// single-phase navigations such as the stream view.
+	// single-phase navigations such as the linear view.
 	Survey *SurveyResult
 }
 
@@ -176,45 +181,4 @@ type Renderer interface {
 
 	// End is called once when traversal completes.
 	End(summary Summary)
-}
-
-// RendererOption configures renderer behavior at construction time.
-type RendererOption func(*streamRenderer)
-
-// WithIcons configures tree glyphs and item icons for stream renderers.
-// The map keys are the standard token names used by prism tree rendering.
-func WithIcons(icons map[string]string) RendererOption {
-	return func(r *streamRenderer) {
-		if r.treeIcons == nil {
-			r.treeIcons = make(map[string]string)
-		}
-
-		for key, value := range icons {
-			if value != "" {
-				r.treeIcons[key] = value
-			}
-		}
-	}
-}
-
-// New constructs a Renderer for the requested view kind using the given
-// Palette. The Writer writer is the output destination; pass os.Stdout for
-// production use or a bytes.Buffer in tests.
-//
-// Returns an error if the Palette contains unrecognised colour names,
-// which would indicate a malformed user theme file. Bootstrap should
-// treat this as a startup failure.
-func New(kind ViewKind, palette Palette, writer io.Writer, opts ...RendererOption) (Renderer, error) {
-	theme, err := NewTheme(palette, writer)
-	if err != nil {
-		return nil, fmt.Errorf("prism.New: %w", err)
-	}
-
-	//nolint:exhaustive // prism.PortholeView, prism.LanesView
-	switch kind {
-	case StreamView:
-		return newStreamRenderer(theme, writer, opts...), nil
-	default:
-		return newStreamRenderer(theme, writer, opts...), nil
-	}
 }
