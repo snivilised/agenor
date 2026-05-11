@@ -93,63 +93,16 @@ func (r *streamRenderer) Show(motif Motif) {
 		)
 
 	case motif.Skipped:
-		skippedInfo := fmt.Sprintf("  [skipped: %s -> %s]",
-			motif.Placeholder,
-			motif.ResolvedPath,
-		)
-		if motif.IsDir {
-			name = r.theme.DirStyle.Render("~ "+motif.Name+"/") +
-				r.theme.SkippedStyle.Render(skippedInfo)
-		} else {
-			name = r.theme.FileStyle.Render("~ "+motif.Name) +
-				r.theme.SkippedStyle.Render(skippedInfo)
-		}
+		name = r.renderSkipped(motif)
 
 	case motif.Depth == 0:
-		name = r.theme.RootStyle.Render(
-			r.treeIcons[TreeIconRoot] +
-				lo.Ternary(r.treeIcons[TreeIconRoot] != "", " ", "") +
-				motif.Name +
-				lo.Ternary(motif.IsDir, "/", ""),
-		)
+		name = r.renderRoot(motif)
 
 	case motif.IsDir:
-		name = r.theme.DirStyle.Render(r.itemLabel(motif))
-
-		if motif.ActionName != "" {
-			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
-			if motif.DryRun {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
-			} else if motif.CommandOutput != "" {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
-			}
-		} else if motif.PipelineName != "" {
-			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
-			if motif.DryRun {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
-			} else if motif.CommandOutput != "" {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
-			}
-		}
+		name = r.renderDir(motif)
 
 	default:
-		name = r.theme.FileStyle.Render(r.itemLabel(motif))
-
-		if motif.ActionName != "" {
-			name += r.theme.ActionStyle.Render("  • via " + motif.ActionName)
-			if motif.DryRun {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
-			} else if motif.CommandOutput != "" {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
-			}
-		} else if motif.PipelineName != "" {
-			name += r.theme.PipelineStyle.Render("  • via " + motif.PipelineName)
-			if motif.DryRun {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
-			} else if motif.CommandOutput != "" {
-				name += r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
-			}
-		}
+		name = r.renderFile(motif)
 	}
 
 	_, _ = lipgloss.Fprintf(r.writer, "%s%s\n", depth, name)
@@ -173,6 +126,94 @@ func (r *streamRenderer) itemLabel(motif Motif) string {
 	}
 
 	return label
+}
+
+// renderSkipped renders a skipped item with the reason shown in brackets.
+func (r *streamRenderer) renderSkipped(motif Motif) string {
+	var b strings.Builder
+
+	// Render the item name with skip indicator
+	itemName := "~ " + motif.Name
+	if motif.IsDir {
+		itemName += "/"
+		b.WriteString(r.theme.DirStyle.Render(itemName))
+	} else {
+		b.WriteString(r.theme.FileStyle.Render(itemName))
+	}
+
+	// Render the skip reason
+	skipReason := fmt.Sprintf("  [skipped: %s -> %s]",
+		motif.Placeholder,
+		motif.ResolvedPath,
+	)
+	b.WriteString(r.theme.SkippedStyle.Render(skipReason))
+
+	return b.String()
+}
+
+// renderRoot renders the root item with configured icon.
+func (r *streamRenderer) renderRoot(motif Motif) string {
+	var b strings.Builder
+
+	icon := r.treeIcons[TreeIconRoot]
+	if icon != "" {
+		b.WriteString(icon)
+		b.WriteString(" ")
+	}
+
+	b.WriteString(motif.Name)
+	if motif.IsDir {
+		b.WriteString("/")
+	}
+
+	return r.theme.RootStyle.Render(b.String())
+}
+
+// renderDir renders a directory item with optional action or pipeline metadata.
+func (r *streamRenderer) renderDir(motif Motif) string {
+	var b strings.Builder
+
+	b.WriteString(r.theme.DirStyle.Render(r.itemLabel(motif)))
+	b.WriteString(r.renderActionOrPipeline(motif))
+
+	return b.String()
+}
+
+// renderFile renders a file item with optional action or pipeline metadata.
+func (r *streamRenderer) renderFile(motif Motif) string {
+	var b strings.Builder
+
+	b.WriteString(r.theme.FileStyle.Render(r.itemLabel(motif)))
+	b.WriteString(r.renderActionOrPipeline(motif))
+
+	return b.String()
+}
+
+// renderActionOrPipeline renders action or pipeline metadata if present.
+// Returns empty string if neither action nor pipeline is configured.
+func (r *streamRenderer) renderActionOrPipeline(motif Motif) string {
+	var b strings.Builder
+
+	if motif.ActionName != "" {
+		b.WriteString(r.theme.ActionStyle.Render("  • via " + motif.ActionName))
+		b.WriteString(r.renderExecutionInfo(motif))
+	} else if motif.PipelineName != "" {
+		b.WriteString(r.theme.PipelineStyle.Render("  • via " + motif.PipelineName))
+		b.WriteString(r.renderExecutionInfo(motif))
+	}
+
+	return b.String()
+}
+
+// renderExecutionInfo renders the execution result (dry-run indicator or command output).
+func (r *streamRenderer) renderExecutionInfo(motif Motif) string {
+	if motif.DryRun {
+		return r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+	} else if motif.CommandOutput != "" {
+		return r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
+	}
+
+	return ""
 }
 
 func (r *streamRenderer) branchPrefix(motif Motif) string {
