@@ -78,6 +78,11 @@ import "github.com/snivilised/li18ngo/locale/enums"
 - For non-errors: use `kebab-case` slug, e.g. `"using-config-file"`.
 - For errors: append `.dynamic-error` or `.static-error` (or the wrapper
   variant), e.g. `"path-not-found.dynamic-error"`.
+- `Seed` must also be unique across the entire `Underliers` map. Because
+  lingo derives every generated identifier from `Seed`, a duplicate value
+  produces duplicate Go declarations and the build will fail. Verify
+  uniqueness by scanning the existing map before inserting, exactly as you
+  would for `MessageID`.
 - `Seed` is `PascalCase` derived from the human name, e.g. `"PathNotFound"`.
   lingo uses `Seed` to derive all generated identifiers:
   `PathNotFoundTemplData`, `PathNotFoundError`, `ErrPathNotFound`,
@@ -113,75 +118,144 @@ Set `File` only when output must go to a custom file, e.g.
 
 ---
 
-## 6. Placeholder Pattern for Ungenerated Messages
+## 6. Adding New Messages and Errors - Agent Workflow
 
 Whenever a coding agent needs to display user-facing text or return a
 translatable error, it must **never** use `fmt.Printf`, `fmt.Println`,
-`errors.New`, or `fmt.Errorf` for that content. Instead it must emit a
-placeholder call site with a structured comment that tells the developer
-exactly what lingo entry to create.
+`errors.New`, or `fmt.Errorf` for that content. Instead the agent must
+complete the full lingo cycle itself before writing any call site.
 
 This applies to:
+
 - Any text shown to the user (output, progress, status, warnings)
 - Any error that could be triggered by end-user behaviour
 
-### Placeholder format - error
+### Step 1 - Add entries to `Underliers`
+
+Open `underlying-templ-data.go` and add one `UnderlyingTemplData` entry per
+new message or error to the `Underliers` map. Use sections 1-5 of this skill
+to determine the correct field values. Do not guess - verify both `MessageID`
+and `Seed` uniqueness by scanning the existing map before inserting. Both
+fields must be unique across the entire map; a duplicate in either will cause
+lingo to refuse to generate or the build to fail.
+
+Example entry (dynamic error):
 
 ```go
-// i18n-TODO: add Underliers entry for this error
-// Seed: "<PascalCaseName>"
-// TypeName: enums.<UnderlyingTypeXxx>
-// Other: "<the error message, with {{.Token}} for any variables>"
-// Fields: <list field names and Go types, or "none" if static>
-return locale.NewPlaceholderError() // replace once lingo-generated
+"path-not-found.dynamic-error": {
+    MessageID:   "path-not-found.dynamic-error",
+    Seed:        "PathNotFound",
+    TypeName:    enums.UnderlyingTypeDynamicError,
+    Description: "Directory or file path does not exist",
+    Story:       "PathNotFoundError is used when a path does not exist.",
+    Other:       "{{.Name}} path not found ({{.Path}})",
+    Fields: []UnderlyingField{
+        {
+            Note:   "Name",
+            GoType: "string",
+            Tale:   "is the label for the path that was not found (e.g. 'Config')",
+        },
+        {
+            Note:   "Path",
+            GoType: "string",
+            Tale:   "is the actual path value that was not found",
+        },
+    },
+},
 ```
 
-### Placeholder format - user-facing text
+### Step 2 - Delete stale auto files
+
+Before running lingo, delete every `*-auto.go` file that lingo owns. This
+prevents stale generated identifiers from surviving into the new output and
+avoids duplicate-declaration compile errors.
+
+**Deletion scope - non-negotiable:** only files inside the `locale/`
+directory are ever candidates for deletion. No file outside `locale/` may
+be deleted under any circumstances, regardless of its name or extension.
+This constraint is absolute and must never be relaxed.
+
+The files lingo owns are determined by the `TypeName` values present in
+`Underliers` (and the optional `File` field - see section 5). Always list
+the directory first to confirm which auto files are actually present before
+deleting anything:
+
+```bash
+ls locale/*-auto.go
+```
+
+Then delete only the files that appear in that listing:
+
+```bash
+# Default auto files
+rm -f locale/messages-cobra-auto.go
+rm -f locale/messages-general-auto.go
+rm -f locale/messages-errors-auto.go
+
+# Custom-file auto files - only if an Underliers entry uses File: "..."
+# e.g. rm -f locale/system-automation-errors-auto.go
+```
+
+### Step 3 - Run lingo
+
+```bash
+go run ./cmd/lingo/...
+```
+
+Lingo regenerates all `*-auto.go` files from the current `Underliers` map.
+If lingo exits with an error (duplicate `MessageID`, mismatched `{{.Token}}`
+vs `Fields`, empty `Tale`, etc.), fix the entry in
+`underlying-templ-data.go` and re-run. Do not proceed to step 4 until lingo
+completes without error.
+
+### Step 4 - Write call sites using generated types
+
+Only after lingo has succeeded may call sites be written. The generated
+identifiers follow directly from `Seed`:
+
+| What you need | Generated identifier |
+| --- | --- |
+| Template data struct | `locale.<Seed>TemplData{}` |
+| Error constructor | `locale.New<Seed>Error(...)` |
+| Sentinel error value | `locale.Err<Seed>` |
+
+**User-facing text** - call `li18ngo.Text`:
 
 ```go
-// i18n-TODO: add Underliers entry for this message
-// Seed: "<PascalCaseName>"
-// TypeName: enums.<UnderlyingTypeXxx>
-// Other: "<the message text, with {{.Token}} for any variables>"
-// Fields: <list field names and Go types, or "none" if static>
-fmt.Println("<placeholder: replace with li18ngo.Text(locale.XxxTemplData{...})>")
+li18ngo.Text(locale.TraversalCompleteTemplData{})
+```
+
+**Dynamic message** - populate fields on the struct:
+
+```go
+li18ngo.Text(locale.UsingConfigFileTemplData{
+    ConfigFileName: cfgPath,
+})
+```
+
+**Returning an error** - call the generated constructor:
+
+```go
+return locale.NewPathNotFoundError(err, "Config", path)
+```
+
+**Checking or wrapping a sentinel**:
+
+```go
+if errors.Is(err, locale.ErrSomeSentinel) { ... }
 ```
 
 ### Rules
 
-- The `i18n-TODO:` prefix is mandatory - it makes placeholders greppable
-  across the codebase: `grep -r "i18n-TODO" ./src`
-- Always specify `TypeName` using the full enum name from section 2 so the
-  developer knows exactly which scenario applies.
-- Always write out the intended `Other` string, including any `{{.Token}}`
-  placeholders, so the developer can copy it directly into the `Underliers`
-  entry.
-- Always list `Fields` even when there are none - write `"none"` explicitly
-  so the developer does not have to infer it.
-- Never leave a bare `fmt.Println` or `fmt.Errorf` for user-facing content
-  without an `i18n-TODO:` comment above it.
-
-### Example - dynamic error placeholder
-
-```go
-// i18n-TODO: add Underliers entry for this error
-// Seed: "UnknownDisplayMode"
-// TypeName: enums.UnderlyingTypeDynamicError
-// Other: "unknown display mode {{.Mode}} (valid modes: {{.ValidModes}})"
-// Fields: Mode string, ValidModes string (pre-formatted CSV via strings.Join)
-return nil, locale.NewPlaceholderError() // replace once lingo-generated
-```
-
-### Example - static user-facing text placeholder
-
-```go
-// i18n-TODO: add Underliers entry for this message
-// Seed: "TraversalComplete"
-// TypeName: enums.UnderlyingTypeStaticGeneral
-// Other: "Traversal complete"
-// Fields: none
-fmt.Println("<placeholder: replace with li18ngo.Text(locale.TraversalCompleteTemplData{})>")
-```
+- Complete all four steps before writing any call site. Never write a call
+  site that references a generated type that does not yet exist on disk.
+- Never leave a bare `fmt.Println` or `fmt.Errorf` for user-facing content.
+- Never leave placeholder comments in source files - the agent performs the
+  full lingo cycle, so there is nothing left for the developer to do.
+- If lingo fails, fix `underlying-templ-data.go` and re-run; do not work
+  around the failure by hand-editing an auto file.
+- Always verify `MessageID` uniqueness before inserting - lingo will reject
+  duplicates, but catching it before running saves a round-trip.
 
 ---
 
@@ -317,7 +391,7 @@ When this limitation is addressed, the generator will produce the
 ## 10. Common Mistakes to Avoid
 
 | Mistake | Correct behaviour |
-|---|---|
+| --- | --- |
 | Hand-writing generated structs or error types | Only edit `underlying-templ-data.go`; run lingo to generate |
 | `Fields` non-empty on a static `TypeName` | Static types must have empty `Fields` |
 | `Fields` empty on a dynamic `TypeName` | Dynamic types must have non-empty `Fields` |
@@ -326,9 +400,12 @@ When this limitation is addressed, the generator will produce the
 | `GoType: "error"` field named anything other than `"Wrapped"` | The wrapped error field must always be named `"Wrapped"` |
 | Omitting `Tale` | Always provide `Tale`; empty emits a 🔥 TODO in generated code |
 | Duplicate `MessageID` across the map | lingo refuses to generate on duplicate IDs |
-| Using `fmt.Println` for user-facing text without an `i18n-TODO:` comment | All user-facing text must go through lingo; use the placeholder pattern |
-| Using `fmt.Errorf` / `errors.New` for a user-facing error | User-facing errors must go through lingo; use the placeholder pattern |
+| Duplicate `Seed` across the map | lingo produces duplicate Go declarations; the build fails - scan the map before inserting |
+| Using `fmt.Println` or `fmt.Errorf` for user-facing content | Complete the full lingo cycle (steps 1-4) instead |
+| Writing a call site before lingo has run successfully | Always run lingo and confirm it exits cleanly before writing call sites |
+| Skipping the auto-file deletion before re-running lingo | Always `rm -f locale/*-auto.go` before re-running to avoid stale declarations |
+| Deleting any file outside the `locale/` directory | Deletion scope is `locale/` only - this constraint is absolute and non-negotiable |
+| Hand-editing an auto file to work around a lingo error | Fix `underlying-templ-data.go` and re-run; never touch auto files directly |
 | Using lingo for a programming error | Programming errors are exempt; use `fmt.Errorf` / `errors.New` with a `programmingError:` comment |
 | Omitting the `programmingError:` comment on an exempt error | Always document why the error is exempt |
-| Omitting the `TypeName` from an `i18n-TODO:` comment | Always specify the full enum value so the developer knows which scenario applies |
 | Passing a `[]string` directly to a generated constructor | Pre-format with `strings.Join` before passing; lingo generates a `string` field |
