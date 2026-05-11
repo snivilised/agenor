@@ -15,7 +15,7 @@ var _ = Describe("Dispatch Output Processing", func() {
 	BeforeEach(func() {
 		cfg := &bedrock.Config{}
 		cfg.Mapped.Advanced.Output.Exec.Truncate = 75
-		c = &Coordinator{cfg: cfg}
+		c = &Coordinator{config: cfg}
 	})
 
 	Describe("processOutput", func() {
@@ -50,7 +50,7 @@ var _ = Describe("Dispatch Output Processing", func() {
 		})
 
 		It("should truncate output if it exceeds limits and append ellipsis", func() {
-			c.cfg.Mapped.Advanced.Output.Exec.Truncate = 20
+			c.config.Mapped.Advanced.Output.Exec.Truncate = 20
 			output := []byte("this is a very long line that should be truncated")
 			result := c.processOutput(output, nil)
 			Expect(result).To(Equal("this is a very l ..."))
@@ -58,7 +58,7 @@ var _ = Describe("Dispatch Output Processing", func() {
 		})
 
 		It("should use default truncation limit if configured value is out of bounds", func() {
-			c.cfg.Mapped.Advanced.Output.Exec.Truncate = 10 // Invalid, min is 20
+			c.config.Mapped.Advanced.Output.Exec.Truncate = 10 // Invalid, min is 20
 			output := []byte("this is a very long line that should be truncated normally, but let us test bounds. this string is exactly 84 characters.")
 			result := c.processOutput(output, nil)
 			Expect(result).To(Equal("this is a very long line that should be truncated normally, but let us  ..."))

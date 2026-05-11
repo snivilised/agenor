@@ -27,10 +27,10 @@ var _ = Describe("RootCmd", Ordered, func() {
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
 				Args: []string{},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+				Root: bootstrap.Root(func(co *command.ConfigureAppOptions) {
 					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configPath
+					co.ConfigInfo.Name = configName
+					co.ConfigInfo.ConfigPath = configPath
 				}),
 			}
 			_, err := tester.Execute()
@@ -46,10 +46,10 @@ var _ = Describe("RootCmd", Ordered, func() {
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
 				Args: []string{"nav"},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+				Root: bootstrap.Root(func(co *command.ConfigureAppOptions) {
 					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configPath
+					co.ConfigInfo.Name = configName
+					co.ConfigInfo.ConfigPath = configPath
 				}),
 			}
 			_, err := tester.Execute()
@@ -62,10 +62,10 @@ var _ = Describe("RootCmd", Ordered, func() {
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
 				Args: []string{"nav", "exec"},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+				Root: bootstrap.Root(func(co *command.ConfigureAppOptions) {
 					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configPath
+					co.ConfigInfo.Name = configName
+					co.ConfigInfo.ConfigPath = configPath
 				}),
 			}
 			_, err := tester.Execute()
@@ -78,10 +78,10 @@ var _ = Describe("RootCmd", Ordered, func() {
 			bootstrap := command.Bootstrap{}
 			tester := hanno.CommandTester{
 				Args: []string{"--theme", "system"},
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+				Root: bootstrap.Root(func(co *command.ConfigureAppOptions) {
 					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configPath
+					co.ConfigInfo.Name = configName
+					co.ConfigInfo.ConfigPath = configPath
 				}),
 			}
 			_, err := tester.Execute()

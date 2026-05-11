@@ -7,8 +7,8 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/core"
 )
 
-// ExpandResult is the outcome of a placeholder expansion attempt.
-type ExpandResult struct {
+// ExpansionResult is the outcome of a placeholder expansion attempt.
+type ExpansionResult struct {
 	// Cmd is the fully expanded command string, valid only when skipped is false.
 	Cmd string
 
@@ -24,9 +24,9 @@ type ExpandResult struct {
 	ResolvedPath string
 }
 
-// expandData holds the resolved values for every placeholder.
+// expansion holds the resolved values for every placeholder.
 // It is built once per node and reused across multiple expand calls.
-type expandData struct {
+type expansion struct {
 	path   string
 	name   string
 	stem   string
@@ -37,10 +37,10 @@ type expandData struct {
 	root   string
 }
 
-// buildExpandData resolves all placeholder values for the given node and
+// buildExpansion resolves all placeholder values for the given node and
 // root. Ancestor paths that would breach root are clamped internally for
 // the purpose of breach detection only - they are never used in a cmd string.
-func buildExpandData(root string, node *core.Node) expandData {
+func buildExpansion(root string, node *core.Node) expansion {
 	cleanRoot := filepath.Clean(root)
 	cleanPath := filepath.Clean(node.Path)
 
@@ -51,7 +51,7 @@ func buildExpandData(root string, node *core.Node) expandData {
 	grand := filepath.Dir(parent)
 	great := filepath.Dir(grand)
 
-	return expandData{
+	return expansion{
 		path:   cleanPath,
 		name:   name,
 		stem:   stem,
@@ -85,8 +85,8 @@ func breaches(root, candidate string) bool {
 // resolved values for the given node and root. If any placeholder used
 // in cmd would resolve to a path at or above root, Expand returns a
 // skip result identifying the offending placeholder.
-func Expand(cmd, root string, node *core.Node) ExpandResult {
-	d := buildExpandData(root, node)
+func Expand(cmd, root string, node *core.Node) ExpansionResult {
+	d := buildExpansion(root, node)
 
 	// Check each ancestor placeholder that could breach root.
 	// {{.path}}, {{.name}}, {{.stem}}, {{.ext}} cannot breach root by
@@ -103,7 +103,7 @@ func Expand(cmd, root string, node *core.Node) ExpandResult {
 	for _, check := range ancestorChecks {
 		if strings.Contains(cmd, check.placeholder) {
 			if breaches(d.root, check.resolved) {
-				return ExpandResult{
+				return ExpansionResult{
 					Skipped:      true,
 					Placeholder:  check.placeholder,
 					ResolvedPath: check.resolved,
@@ -123,7 +123,7 @@ func Expand(cmd, root string, node *core.Node) ExpandResult {
 		"{{.root}}", d.root,
 	)
 
-	return ExpandResult{
+	return ExpansionResult{
 		Cmd: replacer.Replace(cmd),
 	}
 }

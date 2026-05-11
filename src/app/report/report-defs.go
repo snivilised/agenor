@@ -10,10 +10,9 @@ import (
 // the node that triggered the event and an optional name identifying the
 // action or pipeline that was invoked. Name is empty for NodeEvent.
 type DisplayEvent struct {
-	Node        *core.Node
-	IsLast      bool
-	IndentStack []bool
-	Name        string
+	Node   *core.Node
+	IsLast bool
+	Name   string
 }
 
 // BeginEvent carries the metadata known at the start of a traversal.

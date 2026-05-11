@@ -28,7 +28,8 @@ command -> controller -> dispatch -> prism -> (terminal)
 ```
 
 `agenor` and `prism` are reusable libraries. They must never import
-`command`, `controller`, `dispatch`, or any other jaywalk-specific package.
+`command`, `controller`, `dispatch`, or any other jaywalk-specific package,
+other than agenor.core, agenor.enums, locale, which are available universally.
 
 ---
 

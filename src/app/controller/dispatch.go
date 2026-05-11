@@ -15,7 +15,7 @@ import (
 func (c *Coordinator) handleServant(
 	servant core.Servant,
 	req *Request,
-	t *report.Traversal,
+	traversal *report.Traversal,
 	peerInfoMap PeerInfoMap,
 ) error {
 	node := servant.Node()
@@ -32,7 +32,7 @@ func (c *Coordinator) handleServant(
 	case req.PipelineName != "":
 		e := c.executePipeline(node, req.PipelineName, req.Root, req.DryRun)
 		if e.Skipped {
-			t.ActionsSkipped++
+			traversal.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
 					Node:   node,
@@ -51,7 +51,7 @@ func (c *Coordinator) handleServant(
 	case req.ActionName != "":
 		e := c.executeAction(node, req.ActionName, req.Root, req.DryRun)
 		if e.Skipped {
-			t.ActionsSkipped++
+			traversal.ActionsSkipped++
 			req.UI.OnSkipEvent(&report.SkipEvent{
 				DisplayEvent: report.DisplayEvent{
 					Node:   node,
@@ -100,7 +100,7 @@ type pipelineResult struct {
 // the result. If a placeholder breaches root the result is marked as
 // skipped and no shell execution is attempted.
 func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun bool) actionResult {
-	action, ok := c.cfg.Raw.Actions[name]
+	action, ok := c.config.Raw.Actions[name]
 	if !ok {
 		// PreFlight should have caught this - treat as an action error.
 		return actionResult{
@@ -143,7 +143,7 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun b
 // executePipeline expands and executes each step in the named pipeline
 // in order. The first skip or error stops the pipeline for this node.
 func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun bool) pipelineResult {
-	pipeline, ok := c.cfg.Raw.Pipelines[name]
+	pipeline, ok := c.config.Raw.Pipelines[name]
 	if !ok {
 		return pipelineResult{
 			Event: &report.PipelineEvent{
@@ -183,14 +183,21 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun
 	}
 }
 
+const (
+	minLimit     = 20
+	maxLimit     = 120
+	defaultLimit = 75
+	ellipsis     = " ..."
+)
+
 // processOutput extracts a single line from the raw command output and applies truncation.
 // It removes leading/trailing empty lines. If captureRe is provided, it uses it
 // to select the matching line.
 func (c *Coordinator) processOutput(output []byte, captureRe *regexp.Regexp) string {
 	lines := strings.Split(string(output), "\n")
 	var contentLines []string
-	for _, l := range lines {
-		trimmed := strings.TrimSpace(l)
+	for _, ln := range lines {
+		trimmed := strings.TrimSpace(ln)
 		if trimmed != "" {
 			contentLines = append(contentLines, trimmed)
 		}
@@ -203,22 +210,22 @@ func (c *Coordinator) processOutput(output []byte, captureRe *regexp.Regexp) str
 	selectedLine := contentLines[0]
 
 	if captureRe != nil {
-		for _, l := range contentLines {
-			if captureRe.MatchString(l) {
-				selectedLine = l
+		for _, ln := range contentLines {
+			if captureRe.MatchString(ln) {
+				selectedLine = ln
 				break
 			}
 		}
 	}
 
-	limit := c.cfg.Mapped.Advanced.Output.Exec.Truncate
-	if limit < 20 || limit > 120 {
-		limit = 75
+	limit := c.config.Mapped.Advanced.Output.Exec.Truncate
+	if limit < minLimit || limit > maxLimit {
+		limit = defaultLimit
 	}
 
 	if len(selectedLine) > limit {
 		if limit > 4 {
-			selectedLine = selectedLine[:limit-4] + " ..."
+			selectedLine = selectedLine[:limit-len(ellipsis)] + ellipsis
 		} else {
 			selectedLine = selectedLine[:limit]
 		}

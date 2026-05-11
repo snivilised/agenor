@@ -11,7 +11,7 @@ import (
 
 // PeerInfoMap maps a node path to its resolved peer info. It is built
 // during the preview traversal and consumed during the live traversal
-// so that IsLast and IndentStack are correct for every node regardless
+// so that IsLast is correct for every node regardless
 // of filtering or sampling.
 type PeerInfoMap map[string]*core.PeerInfo
 
@@ -123,7 +123,7 @@ func buildPeerInfoMap(
 	fmt.Println("🦋 DEBUG: buildPeerInfoMap: building peer info map with preview traversal ... 🦋")
 	buf := newPreviewBuffer()
 
-	var builtOptions *pref.Options
+	var options *pref.Options
 
 	facade := &pref.Using{
 		Subscription: req.Subscription,
@@ -140,7 +140,7 @@ func buildPeerInfoMap(
 	previewSettings := append([]pref.Option{}, settings...)
 	previewSettings = append(previewSettings,
 		func(o *pref.Options) error {
-			builtOptions = o
+			options = o
 			o.Events.Ascend.On(buf.ascend)
 			return nil
 		},
@@ -154,5 +154,5 @@ func buildPeerInfoMap(
 		return nil, nil, nil, err
 	}
 
-	return buf.finalise(), builtOptions, result, nil
+	return buf.finalise(), options, result, nil
 }

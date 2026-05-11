@@ -49,7 +49,7 @@ type Presenter interface {
 // PeerAware is an optional interface that a Presenter can implement to
 // opt into the peer info facility. When a view implements PeerAware,
 // the coordinator runs a preview traversal before the live pass to build
-// the PeerInfoMap, which provides correct IsLast and IndentStack values
+// the PeerInfoMap, which provides correct IsLast
 // for every node regardless of filtering or sampling.
 // Views that do not need peer info simply do not implement this interface
 // and are entirely unaffected by the peer info machinery.
