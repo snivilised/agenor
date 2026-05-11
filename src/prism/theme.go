@@ -76,7 +76,7 @@ type Theme struct {
 	// LaneHeaderStyle is applied to per-worker lane identity headers.
 	LaneHeaderStyle lipgloss.Style
 
-	// TreeIcons are the glyphs used to render the branch tree in stream
+	// TreeIcons are the glyphs used to render the branch tree in linear
 	// views such as the linear renderer.
 	TreeIcons TreeIcons
 }

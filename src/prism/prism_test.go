@@ -7,9 +7,13 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/jaywalk/src/prism"
+	"github.com/snivilised/jaywalk/src/prism/flow"
 )
 
 var _ = Describe("New", func() {
+	BeforeEach(func() {
+		flow.Register()
+	})
 
 	Context("when given a valid palette", func() {
 		DescribeTable("returns a non-nil Renderer for known view kinds",
@@ -22,11 +26,11 @@ var _ = Describe("New", func() {
 				Expect(err).To(BeNil())
 				Expect(renderer).NotTo(BeNil())
 			},
-			Entry("stream view", prism.StreamView),
+			Entry("linear view", prism.LinearView),
 		)
 
 		Context("when given an unknown view kind", func() {
-			It("falls back to the stream renderer without error", func() {
+			It("falls back to the linear renderer without error", func() {
 				w := &bytes.Buffer{}
 				palette := prism.SystemPalette()
 
@@ -44,7 +48,7 @@ var _ = Describe("New", func() {
 			palette := prism.SystemPalette()
 			palette.Directory = prism.SemanticColour{ANSI16: "notacolour"}
 
-			renderer, err := prism.New(prism.StreamView, palette, w)
+			renderer, err := prism.New(prism.LinearView, palette, w)
 
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("prism.New"))

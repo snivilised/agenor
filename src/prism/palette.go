@@ -138,7 +138,7 @@ type Palette struct {
 	Branch SemanticColour `mapstructure:"branch"`
 
 	// TreeIcons holds optional glyph configuration used by tree-style
-	// stream renderers such as the linear view.
+	// linear renderers such as the linear view.
 	TreeIcons TreeIcons `mapstructure:"tree-icons"`
 
 	// --- Execution ---

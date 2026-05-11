@@ -23,6 +23,7 @@ import (
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/shell"
 	"github.com/snivilised/jaywalk/src/app/ui"
+	"github.com/snivilised/jaywalk/src/prism/flow"
 )
 
 // ---------------------------------------------------------------------------
@@ -211,12 +212,24 @@ func (b *Bootstrap) Root(options ...ConfigureAppOptionFn) *cobra.Command {
 			Version: fmt.Sprintf("'%v'", Version),
 
 			PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
+				mode := b.rootPs.Native.TUI
+				if mode == "" {
+					mode = ui.ModeDefault
+				}
+
+				// Register only the selected view factory; avoid registering
+				// all known views when only one will be used.
+				switch mode {
+				case ui.ModeLinear:
+					flow.Register()
+				}
+
 				palette, err := b.themeLoader.Load(b.rootPs.Native.Theme)
 				if err != nil {
 					return err
 				}
 
-				mgr, err := ui.New(b.rootPs.Native.TUI, palette)
+				mgr, err := ui.New(mode, palette)
 				if err != nil {
 					return err
 				}

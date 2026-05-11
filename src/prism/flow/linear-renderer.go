@@ -1,4 +1,9 @@
-package prism
+// Package flow contains the linear renderer implementation and its
+// view-specific options.
+//
+// Dependency rule: this package imports root prism contracts, but root prism
+// must not import this package to avoid import cycles.
+package flow
 
 import (
 	"fmt"
@@ -8,50 +13,32 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/prism"
 	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
-// streamRenderer is the linear scrolling view. Output is written
-// immediately as events arrive - no internal buffering. Implements
-// Renderer.
-type streamRenderer struct {
-	theme  Theme
+// renderer is the linear scrolling view. Output is written immediately as
+// events arrive - no internal buffering.
+type renderer struct {
+	theme  prism.Theme
 	writer io.Writer
 
-	// treeIcons holds configured tree glyphs, either from the theme or
-	// from renderer options such as WithIcons.
-	treeIcons TreeIcons
+	// treeIcons holds configured tree glyphs from the resolved theme/options.
+	treeIcons prism.TreeIcons
 
-	// branchStack tracks ancestor continuation state for tree branch
-	// rendering.
+	// branchStack tracks ancestor continuation state for tree branch rendering.
 	branchStack []bool
 
 	previousDepth  core.TraversalDepth
 	previousIsLast bool
 }
 
-// newStreamRenderer constructs a streamRenderer. Called by New() when
-// ViewKind is StreamView. Unexported - callers use New().
-func newStreamRenderer(theme Theme, writer io.Writer, opts ...RendererOption) Renderer {
-	r := &streamRenderer{
-		theme:     theme,
-		writer:    writer,
-		treeIcons: theme.TreeIcons,
-	}
-
-	for _, opt := range opts {
-		opt(r)
-	}
-
-	return r
-}
-
-// Begin renders the opening banner using the Overture metadata. The
-// banner adapts to indicate prime or resume traversal.
-func (r *streamRenderer) Begin(overture Overture) {
+// Begin renders the opening banner using the Overture metadata. The banner
+// adapts to indicate prime or resume traversal.
+func (r *renderer) Begin(overture prism.Overture) {
 	var title string
 
-	if overture.Kind == ResumeNavigation {
+	if overture.Kind == prism.ResumeNavigation {
 		title = fmt.Sprintf("  jay  resuming %s", overture.Root)
 	} else {
 		title = fmt.Sprintf("  jay  %s", overture.Root)
@@ -62,7 +49,7 @@ func (r *streamRenderer) Begin(overture Overture) {
 		overture.StartedAt.Format(time.RFC1123),
 	)
 
-	if overture.Kind == ResumeNavigation && overture.ResumeFrom != "" {
+	if overture.Kind == prism.ResumeNavigation && overture.ResumeFrom != "" {
 		caption += fmt.Sprintf("  -  from: %s", overture.ResumeFrom)
 	}
 
@@ -78,9 +65,7 @@ func (r *streamRenderer) Begin(overture Overture) {
 }
 
 // Show renders a single Motif immediately to the output writer.
-// Errors, skips, actions, pipelines, directories and files each receive
-// distinct visual treatment.
-func (r *streamRenderer) Show(motif Motif) {
+func (r *renderer) Show(motif prism.Motif) {
 	prefix := r.branchPrefix(motif)
 	depth := r.theme.BranchStyle.Render(prefix)
 
@@ -110,10 +95,10 @@ func (r *streamRenderer) Show(motif Motif) {
 	r.updateBranchStack(motif)
 }
 
-func (r *streamRenderer) itemLabel(motif Motif) string {
-	icon := r.treeIcons[TreeIconFile]
+func (r *renderer) itemLabel(motif prism.Motif) string {
+	icon := r.treeIcons[prism.TreeIconFile]
 	if motif.IsDir {
-		icon = r.treeIcons[TreeIconDirectory]
+		icon = r.treeIcons[prism.TreeIconDirectory]
 	}
 
 	label := ""
@@ -128,11 +113,9 @@ func (r *streamRenderer) itemLabel(motif Motif) string {
 	return label
 }
 
-// renderSkipped renders a skipped item with the reason shown in brackets.
-func (r *streamRenderer) renderSkipped(motif Motif) string {
+func (r *renderer) renderSkipped(motif prism.Motif) string {
 	var b strings.Builder
 
-	// Render the item name with skip indicator
 	itemName := "~ " + motif.Name
 	if motif.IsDir {
 		itemName += "/"
@@ -141,7 +124,6 @@ func (r *streamRenderer) renderSkipped(motif Motif) string {
 		b.WriteString(r.theme.FileStyle.Render(itemName))
 	}
 
-	// Render the skip reason
 	skipReason := fmt.Sprintf("  [skipped: %s -> %s]",
 		motif.Placeholder,
 		motif.ResolvedPath,
@@ -151,11 +133,10 @@ func (r *streamRenderer) renderSkipped(motif Motif) string {
 	return b.String()
 }
 
-// renderRoot renders the root item with configured icon.
-func (r *streamRenderer) renderRoot(motif Motif) string {
+func (r *renderer) renderRoot(motif prism.Motif) string {
 	var b strings.Builder
 
-	icon := r.treeIcons[TreeIconRoot]
+	icon := r.treeIcons[prism.TreeIconRoot]
 	if icon != "" {
 		b.WriteString(icon)
 		b.WriteString(" ")
@@ -169,8 +150,7 @@ func (r *streamRenderer) renderRoot(motif Motif) string {
 	return r.theme.RootStyle.Render(b.String())
 }
 
-// renderDir renders a directory item with optional action or pipeline metadata.
-func (r *streamRenderer) renderDir(motif Motif) string {
+func (r *renderer) renderDir(motif prism.Motif) string {
 	var b strings.Builder
 
 	b.WriteString(r.theme.DirStyle.Render(r.itemLabel(motif)))
@@ -179,8 +159,7 @@ func (r *streamRenderer) renderDir(motif Motif) string {
 	return b.String()
 }
 
-// renderFile renders a file item with optional action or pipeline metadata.
-func (r *streamRenderer) renderFile(motif Motif) string {
+func (r *renderer) renderFile(motif prism.Motif) string {
 	var b strings.Builder
 
 	b.WriteString(r.theme.FileStyle.Render(r.itemLabel(motif)))
@@ -189,9 +168,7 @@ func (r *streamRenderer) renderFile(motif Motif) string {
 	return b.String()
 }
 
-// renderActionOrPipeline renders action or pipeline metadata if present.
-// Returns empty string if neither action nor pipeline is configured.
-func (r *streamRenderer) renderActionOrPipeline(motif Motif) string {
+func (r *renderer) renderActionOrPipeline(motif prism.Motif) string {
 	var b strings.Builder
 
 	if motif.ActionName != "" {
@@ -205,8 +182,7 @@ func (r *streamRenderer) renderActionOrPipeline(motif Motif) string {
 	return b.String()
 }
 
-// renderExecutionInfo renders the execution result (dry-run indicator or command output).
-func (r *streamRenderer) renderExecutionInfo(motif Motif) string {
+func (r *renderer) renderExecutionInfo(motif prism.Motif) string {
 	if motif.DryRun {
 		return r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
 	} else if motif.CommandOutput != "" {
@@ -216,33 +192,33 @@ func (r *streamRenderer) renderExecutionInfo(motif Motif) string {
 	return ""
 }
 
-func (r *streamRenderer) branchPrefix(motif Motif) string {
+func (r *renderer) branchPrefix(motif prism.Motif) string {
 	if motif.VisualDepth == 0 {
 		return ""
 	}
 
 	var b strings.Builder
-	//nolint:gosec // ok - branchStack is only modified by updateBranchStack based on motif.VisualDepth
+	//nolint:gosec // branchStack is only modified by updateBranchStack based on motif.VisualDepth.
 	for level := 1; level < int(motif.VisualDepth); level++ {
 		if level-1 < len(r.branchStack) && r.branchStack[level-1] {
-			b.WriteString(r.treeIcons[TreeIconBranchVertical])
-			b.WriteString(r.treeIcons[TreeIconBranchIndent])
+			b.WriteString(r.treeIcons[prism.TreeIconBranchVertical])
+			b.WriteString(r.treeIcons[prism.TreeIconBranchIndent])
 		} else {
 			b.WriteString(
 				strings.Repeat(" ",
-					len(r.treeIcons[TreeIconBranchVertical])+len(r.treeIcons[TreeIconBranchIndent]),
+					len(r.treeIcons[prism.TreeIconBranchVertical])+len(r.treeIcons[prism.TreeIconBranchIndent]),
 				),
 			)
 		}
 	}
 
-	branchIcon := lo.Ternary(motif.IsLast, TreeIconBranchLast, TreeIconBranchJoint)
+	branchIcon := lo.Ternary(motif.IsLast, prism.TreeIconBranchLast, prism.TreeIconBranchJoint)
 	b.WriteString(r.treeIcons[branchIcon])
 
 	return b.String()
 }
 
-func (r *streamRenderer) updateBranchStack(motif Motif) {
+func (r *renderer) updateBranchStack(motif prism.Motif) {
 	if motif.VisualDepth == 0 {
 		r.branchStack = nil
 		r.previousDepth = motif.VisualDepth
@@ -266,21 +242,20 @@ func (r *streamRenderer) updateBranchStack(motif Motif) {
 	r.previousIsLast = motif.IsLast
 }
 
-// End renders the closing summary box with traversal counts, elapsed
-// time, and any errors. Labels adapt for resume traversals.
-func (r *streamRenderer) End(summary Summary) {
+// End renders the closing summary box with traversal counts and elapsed time.
+func (r *renderer) End(summary prism.Summary) {
 	fileLabel := "Files"
 	dirLabel := "Directories"
 
-	if summary.Kind == ResumeNavigation {
+	if summary.Kind == prism.ResumeNavigation {
 		fileLabel = "Files (resumed)"
 		dirLabel = "Dirs (resumed)"
 	}
 
 	lines := []string{
-		r.summaryRowWithIcon(TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
-		r.summaryRowWithIcon(TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
-		r.summaryRowWithIcon(TreeIconElapsed, "Elapsed", core.FormatDuration(summary.Elapsed)),
+		r.summaryRowWithIcon(prism.TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
+		r.summaryRowWithIcon(prism.TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
+		r.summaryRowWithIcon(prism.TreeIconElapsed, "Elapsed", core.FormatDuration(summary.Elapsed)),
 	}
 
 	if len(summary.Errors) > 0 {
@@ -303,9 +278,7 @@ func (r *streamRenderer) End(summary Summary) {
 	_, _ = lipgloss.Fprintln(r.writer, box)
 }
 
-// summaryRowWithIcon renders a label/value pair aligned inside the summary box,
-// prefixing the label with the requested tree icon when configured.
-func (r *streamRenderer) summaryRowWithIcon(iconKey, label, value string) string {
+func (r *renderer) summaryRowWithIcon(iconKey, label, value string) string {
 	icon := r.treeIcons[iconKey]
 	if icon != "" {
 		label = icon + " " + label
@@ -315,6 +288,6 @@ func (r *streamRenderer) summaryRowWithIcon(iconKey, label, value string) string
 		r.theme.SummaryValueStyle.Render(value)
 }
 
-func (r *streamRenderer) summaryRow(label, value string) string {
+func (r *renderer) summaryRow(label, value string) string {
 	return r.summaryRowWithIcon("", label, value)
 }
