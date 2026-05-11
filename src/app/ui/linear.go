@@ -7,6 +7,7 @@ import (
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/prism"
+	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
 // linear is the stream-view display implementation. It translates
@@ -33,10 +34,10 @@ func (l *linear) OnBegin(e *report.BeginEvent) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	kind := prism.PrimeNavigation
-	if !e.IsPrime {
-		kind = prism.ResumeNavigation
-	}
+	kind := lo.Ternary(e.IsPrime,
+		prism.PrimeNavigation,
+		prism.ResumeNavigation,
+	)
 
 	l.kind = kind
 
@@ -59,10 +60,9 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 		Path:        e.Node.Path,
 		Name:        e.Node.Extension.Name,
 		IsDir:       e.Node.IsDirectory(),
-		Depth:       uint(e.Node.Extension.Depth),
-		VisualDepth: uint(e.Node.VisualDepth()),
+		Depth:       e.Node.Extension.Depth,
+		VisualDepth: e.Node.VisualDepth(),
 		IsLast:      e.IsLast,
-		IndentStack: e.IndentStack,
 	})
 }
 
@@ -75,15 +75,14 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 		Path:            e.Node.Path,
 		Name:            e.Node.Extension.Name,
 		IsDir:           e.Node.IsDirectory(),
-		Depth:           uint(e.Node.Extension.Depth),
-		VisualDepth:     uint(e.Node.VisualDepth()),
+		Depth:           e.Node.Extension.Depth,
+		VisualDepth:     e.Node.VisualDepth(),
 		ActionName:      e.Name,
 		ExecutionString: e.ExecutionString,
 		CommandOutput:   e.CommandOutput,
 		DryRun:          e.DryRun,
 		Err:             e.Err,
 		IsLast:          e.IsLast,
-		IndentStack:     e.IndentStack,
 	})
 }
 
@@ -96,15 +95,14 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 		Path:            e.Node.Path,
 		Name:            e.Node.Extension.Name,
 		IsDir:           e.Node.IsDirectory(),
-		Depth:           uint(e.Node.Extension.Depth),
-		VisualDepth:     uint(e.Node.VisualDepth()),
+		Depth:           e.Node.Extension.Depth,
+		VisualDepth:     e.Node.VisualDepth(),
 		PipelineName:    e.Name,
 		ExecutionString: e.ExecutionString,
 		CommandOutput:   e.CommandOutput,
 		DryRun:          e.DryRun,
 		Err:             e.Err,
 		IsLast:          e.IsLast,
-		IndentStack:     e.IndentStack,
 	})
 }
 
@@ -118,14 +116,13 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 		Path:         e.Node.Path,
 		Name:         e.Node.Extension.Name,
 		IsDir:        e.Node.IsDirectory(),
-		Depth:        uint(e.Node.Extension.Depth),
-		VisualDepth:  uint(e.Node.VisualDepth()),
+		Depth:        e.Node.Extension.Depth,
+		VisualDepth:  e.Node.VisualDepth(),
 		ActionName:   e.Name,
 		Skipped:      true,
 		Placeholder:  e.Placeholder,
 		ResolvedPath: e.ResolvedPath,
 		IsLast:       e.IsLast,
-		IndentStack:  e.IndentStack,
 	})
 }
 

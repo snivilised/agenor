@@ -48,25 +48,25 @@ func (j *Jabber) Scan() language.Tag {
 // ConfigureOptions
 // ---------------------------------------------------------------------------
 
-// ConfigInfo describes the configuration file that should be loaded.
-type ConfigInfo struct {
+// AppConfigInfo describes the configuration file that should be loaded.
+type AppConfigInfo struct {
 	Name       string
 	ConfigType string
 	ConfigPath string
 	Viper      macfg.ViperConfig
 }
 
-// ConfigureOptions groups options that influence how Bootstrap
+// ConfigureAppOptions groups options that influence how Bootstrap
 // initialises localisation and configuration.
-type ConfigureOptions struct {
-	Detector  LocaleDetector
-	Config    ConfigInfo
-	GetForest pref.BuildForest
+type ConfigureAppOptions struct {
+	Detector   LocaleDetector
+	ConfigInfo AppConfigInfo
+	GetForest  pref.BuildForest
 }
 
-// ConfigureOptionFn is a functional option used to modify
+// ConfigureAppOptionFn is a functional option used to modify
 // ConfigureOptions before Bootstrap performs its setup.
-type ConfigureOptionFn func(*ConfigureOptions)
+type ConfigureAppOptionFn func(*ConfigureAppOptions)
 
 // ---------------------------------------------------------------------------
 // Per-leaf param-set state
@@ -134,10 +134,10 @@ type queryState struct {
 //   - No flag interpretation beyond resolving --tui and --theme
 type Bootstrap struct {
 	container *assist.CobraContainer
-	options   ConfigureOptions
+	options   ConfigureAppOptions
 
-	// Cfg is populated after configure() reads viper.
-	Cfg *bedrock.Config
+	// AppConfig is populated after configure() reads viper.
+	AppConfig *bedrock.Config
 
 	// UI is resolved from --tui and --theme in PersistentPreRunE and
 	// passed into requests. Bootstrap does not use it directly.
@@ -168,9 +168,9 @@ func (b *Bootstrap) prepare() {
 	home, err := core.Home()
 	cobra.CheckErr(err)
 
-	b.options = ConfigureOptions{
+	b.options = ConfigureAppOptions{
 		Detector: &Jabber{},
-		Config: ConfigInfo{
+		ConfigInfo: AppConfigInfo{
 			Name:       ApplicationName,
 			ConfigType: "yaml",
 			ConfigPath: home,
@@ -182,7 +182,7 @@ func (b *Bootstrap) prepare() {
 // Root builds the command tree and returns the root command, ready to
 // be executed. This is the composition root: all wiring happens here
 // and only here.
-func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
+func (b *Bootstrap) Root(options ...ConfigureAppOptionFn) *cobra.Command {
 	b.prepare()
 
 	for _, fo := range options {
@@ -198,7 +198,7 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 	}
 
 	b.themeLoader = bedrock.NewThemeLoader()
-	b.coord = jac.New(b.Cfg,
+	b.coord = jac.New(b.AppConfig,
 		jac.WithLocate(env.Locate),
 		jac.WithForest(b.options.GetForest),
 	)
@@ -246,8 +246,8 @@ func (b *Bootstrap) Root(options ...ConfigureOptionFn) *cobra.Command {
 // ---------------------------------------------------------------------------
 
 func (b *Bootstrap) configure() {
-	vc := b.options.Config.Viper
-	ci := b.options.Config
+	vc := b.options.ConfigInfo.Viper
+	ci := b.options.ConfigInfo
 
 	vc.SetConfigName(ci.Name)
 	vc.SetConfigType(ci.ConfigType)
@@ -260,12 +260,12 @@ func (b *Bootstrap) configure() {
 
 	if err != nil {
 		msg := li18ngo.Text(locale.UsingConfigFileTemplData{
-			ConfigFileName: b.options.Config.Name,
+			ConfigFileName: b.options.ConfigInfo.Name,
 		})
 		fmt.Fprintln(os.Stderr, msg)
 	}
 
-	b.Cfg, err = bedrock.Load(bedrock.LoadOptions{
+	b.AppConfig, err = bedrock.Load(bedrock.LoadOptions{
 		ViperInstance: viper.GetViper(),
 	})
 	if err != nil {

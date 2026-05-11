@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"time"
+
+	"github.com/snivilised/jaywalk/src/agenor/core"
 )
 
 // ViewKind identifies the rendering view to use. Defined as a typed
@@ -91,12 +93,12 @@ type Motif struct {
 
 	// Depth is the number of levels below the traversal root, sourced
 	// from node.Extension.Level in agenor.
-	Depth uint
+	Depth core.TraversalDepth
 
 	// VisualDepth is the visual indent level for this item. For directories
 	// this is the same as Depth, but for files it is Depth+1 since they are
 	// visually one level deeper than their parent directory.
-	VisualDepth uint
+	VisualDepth core.TraversalDepth
 
 	// ActionName is the name of the action executed against this node.
 	// Empty when no action was configured.
@@ -140,15 +142,6 @@ type Motif struct {
 	// node count from a prior survey phase or by detecting completion of
 	// the traversal process.
 	IsLast bool
-
-	// IndentStack is a stack of booleans representing whether each level of
-	// indentation should include a vertical line (true) or just spaces (false).
-	// The length of the stack corresponds to the depth of the motif, and each
-	// element indicates whether to render a line for that level of depth. This
-	// allows the renderer to create a visual representation of the file system
-	// hierarchy, with lines connecting sibling nodes and indicating parent-child
-	// relationships.
-	IndentStack []bool
 }
 
 // Summary carries the result of a completed traversal. Passed to
@@ -205,14 +198,14 @@ func WithIcons(icons map[string]string) RendererOption {
 }
 
 // New constructs a Renderer for the requested view kind using the given
-// Palette. The writer w is the output destination; pass os.Stdout for
+// Palette. The Writer writer is the output destination; pass os.Stdout for
 // production use or a bytes.Buffer in tests.
 //
 // Returns an error if the Palette contains unrecognised colour names,
 // which would indicate a malformed user theme file. Bootstrap should
 // treat this as a startup failure.
-func New(kind ViewKind, palette Palette, w io.Writer, opts ...RendererOption) (Renderer, error) {
-	theme, err := NewTheme(palette, w)
+func New(kind ViewKind, palette Palette, writer io.Writer, opts ...RendererOption) (Renderer, error) {
+	theme, err := NewTheme(palette, writer)
 	if err != nil {
 		return nil, fmt.Errorf("prism.New: %w", err)
 	}
@@ -220,8 +213,8 @@ func New(kind ViewKind, palette Palette, w io.Writer, opts ...RendererOption) (R
 	//nolint:exhaustive // prism.PortholeView, prism.LanesView
 	switch kind {
 	case StreamView:
-		return newStreamRenderer(theme, w, opts...), nil
+		return newStreamRenderer(theme, writer, opts...), nil
 	default:
-		return newStreamRenderer(theme, w, opts...), nil
+		return newStreamRenderer(theme, writer, opts...), nil
 	}
 }

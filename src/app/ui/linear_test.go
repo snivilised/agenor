@@ -56,12 +56,12 @@ func newLinearWithSpy(spy prism.Renderer) report.Presenter {
 }
 
 // stubNode builds a minimal *core.Node for use in event structs.
-func stubNode(path, name string, _ bool, depth uint) *core.Node {
+func stubNode(path, name string, _ bool, depth core.TraversalDepth) *core.Node {
 	return &core.Node{
 		Path: path,
 		Extension: core.Extension{
 			Name:  name,
-			Depth: core.TraversalDepth(depth),
+			Depth: depth,
 		},
 		// IsDirectory is derived from the node type in real agenor - here
 		// we set it directly via the test helper on the node struct.
@@ -130,7 +130,7 @@ var _ = Describe("linear", Ordered, func() {
 
 	Describe("OnNodeEvent", func() {
 		DescribeTable("translates node fields into Motif correctly",
-			func(path, name string, isDir bool, depth uint) {
+			func(path, name string, isDir bool, depth core.TraversalDepth) {
 				presenter.OnBegin(&report.BeginEvent{
 					Root:    path,
 					IsPrime: true,
@@ -152,13 +152,13 @@ var _ = Describe("linear", Ordered, func() {
 				Expect(m.Err).To(BeNil())
 			},
 			Entry("root directory at depth 0",
-				"/home/user/docs", "docs", true, uint(0),
+				"/home/user/docs", "docs", true, core.TraversalDepth(0),
 			),
 			Entry("file at depth 1",
-				"/home/user/docs/report.pdf", "report.pdf", false, uint(1),
+				"/home/user/docs/report.pdf", "report.pdf", false, core.TraversalDepth(1),
 			),
 			Entry("nested directory at depth 3",
-				"/a/b/c/d", "d", true, uint(3),
+				"/a/b/c/d", "d", true, core.TraversalDepth(3),
 			),
 		)
 	})

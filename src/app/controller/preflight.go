@@ -33,7 +33,7 @@ func (c *Coordinator) PreFlight(req *Request) error {
 
 // preFlightAction verifies a single named action.
 func (c *Coordinator) preFlightAction(name string) error {
-	action, ok := c.cfg.Raw.Actions[name]
+	action, ok := c.config.Raw.Actions[name]
 	if !ok {
 		return locale.NewActionNotFoundError(name)
 	}
@@ -43,7 +43,7 @@ func (c *Coordinator) preFlightAction(name string) error {
 
 // preFlightPipeline verifies every step in a named pipeline.
 func (c *Coordinator) preFlightPipeline(name string) error {
-	pipeline, ok := c.cfg.Raw.Pipelines[name]
+	pipeline, ok := c.config.Raw.Pipelines[name]
 	if !ok {
 		return locale.NewPipelineNotFoundError(name)
 	}

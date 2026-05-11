@@ -24,10 +24,10 @@ func (j *DetectorStub) Scan() language.Tag {
 	return language.BritishEnglish
 }
 
-func applyTestConfig(co *command.ConfigureOptions) {
+func applyTestConfig(co *command.ConfigureAppOptions) {
 	co.Detector = &DetectorStub{}
-	co.Config.Name = configName
-	co.Config.ConfigPath = configPath
+	co.ConfigInfo.Name = configName
+	co.ConfigInfo.ConfigPath = configPath
 }
 
 func buildRoot() *cobra.Command {

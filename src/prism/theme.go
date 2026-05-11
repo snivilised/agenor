@@ -88,7 +88,7 @@ type Theme struct {
 //
 // Returns an error if any palette entry contains an unrecognised ANSI-16
 // colour name. Bootstrap should treat this as a startup failure.
-func NewTheme(palette Palette, w io.Writer) (Theme, error) {
+func NewTheme(palette Palette, writer io.Writer) (Theme, error) {
 	// Detect the terminal colour profile from the writer's environment.
 	// This determines whether TrueColor, ANSI-256, ANSI-16, or plain
 	// text output is used. colorprofile.Detect handles NO_COLOR, isatty,

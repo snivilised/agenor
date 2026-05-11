@@ -22,7 +22,7 @@ import (
 //
 // Dependency direction: command -> controller -> agenor
 type Coordinator struct {
-	cfg           *bedrock.Config
+	config        *bedrock.Config
 	locate        shell.LocateFunc
 	forestBuilder pref.BuildForest
 	actionRegexes map[string]*regexp.Regexp
@@ -52,11 +52,11 @@ func WithForest(forestBuilder pref.BuildForest) CoordinatorOption {
 	}
 }
 
-// New returns a ready-to-use Coordinator. cfg must not be nil.
-func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
+// New returns a ready-to-use Coordinator. config must not be nil.
+func New(config *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 	actionRegexes := make(map[string]*regexp.Regexp)
-	if cfg != nil && cfg.Raw.Actions != nil {
-		for name, action := range cfg.Raw.Actions {
+	if config != nil && config.Raw.Actions != nil {
+		for name, action := range config.Raw.Actions {
 			if action.Capture != "" {
 				if re, err := regexp.Compile(action.Capture); err == nil {
 					actionRegexes[name] = re
@@ -65,17 +65,17 @@ func New(cfg *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 		}
 	}
 
-	c := &Coordinator{
-		cfg:           cfg,
+	coord := &Coordinator{
+		config:        config,
 		locate:        func(name string) (string, error) { return exec.LookPath(name) },
 		actionRegexes: actionRegexes,
 	}
 
 	for _, o := range opts {
-		o(c)
+		o(coord)
 	}
 
-	return c
+	return coord
 }
 
 // ExecutePrime runs a fresh directory traversal using the scenario
@@ -211,7 +211,7 @@ func (c *Coordinator) captionFor(req *Request) string {
 	}
 
 	if req.ActionName != "" {
-		action, ok := c.cfg.Raw.Actions[req.ActionName]
+		action, ok := c.config.Raw.Actions[req.ActionName]
 		if ok {
 			return fmt.Sprintf("%s via '%s'", subscription, action.Cmd)
 		}

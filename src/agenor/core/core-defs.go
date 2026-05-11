@@ -71,11 +71,6 @@ type (
 	PeerInfo struct {
 		// IsLast is true if no filtered siblings follow this node.
 		IsLast bool
-		// IndentStack records, per ancestor depth, whether that
-		// ancestor was the last child at its level. Used by renderers
-		// to determine whether to draw a continuation line or blank
-		// indent for each depth column.
-		IndentStack []bool
 	}
 
 	// Forest contains the logical file systems required

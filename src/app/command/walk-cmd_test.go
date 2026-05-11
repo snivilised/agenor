@@ -48,10 +48,10 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 		func(ctx SpecContext, entry *lab.GeneralTE) {
 			tester := hanno.CommandTester{
 				Args: entry.Args,
-				Root: bootstrap.Root(func(co *command.ConfigureOptions) {
+				Root: bootstrap.Root(func(co *command.ConfigureAppOptions) {
 					co.Detector = &DetectorStub{}
-					co.Config.Name = configName
-					co.Config.ConfigPath = configurationPath
+					co.ConfigInfo.Name = configName
+					co.ConfigInfo.ConfigPath = configurationPath
 					co.GetForest = func(_ string) *core.Forest {
 						return &core.Forest{
 							T: fS,

@@ -15,8 +15,8 @@ import (
 // immediately as events arrive - no internal buffering. Implements
 // Renderer.
 type streamRenderer struct {
-	theme Theme
-	w     io.Writer
+	theme  Theme
+	writer io.Writer
 
 	// treeIcons holds configured tree glyphs, either from the theme or
 	// from renderer options such as WithIcons.
@@ -26,16 +26,16 @@ type streamRenderer struct {
 	// rendering.
 	branchStack []bool
 
-	previousDepth  uint
+	previousDepth  core.TraversalDepth
 	previousIsLast bool
 }
 
 // newStreamRenderer constructs a streamRenderer. Called by New() when
 // ViewKind is StreamView. Unexported - callers use New().
-func newStreamRenderer(theme Theme, w io.Writer, opts ...RendererOption) Renderer {
+func newStreamRenderer(theme Theme, writer io.Writer, opts ...RendererOption) Renderer {
 	r := &streamRenderer{
 		theme:     theme,
-		w:         w,
+		writer:    writer,
 		treeIcons: theme.TreeIcons,
 	}
 
@@ -74,7 +74,7 @@ func (r *streamRenderer) Begin(overture Overture) {
 				r.theme.SummaryValueStyle.Width(0).Render(caption),
 		)
 
-	_, _ = lipgloss.Fprintln(r.w, box)
+	_, _ = lipgloss.Fprintln(r.writer, box)
 }
 
 // Show renders a single Motif immediately to the output writer.
@@ -152,7 +152,7 @@ func (r *streamRenderer) Show(motif Motif) {
 		}
 	}
 
-	_, _ = lipgloss.Fprintf(r.w, "%s%s\n", depth, name)
+	_, _ = lipgloss.Fprintf(r.writer, "%s%s\n", depth, name)
 
 	r.updateBranchStack(motif)
 }
@@ -259,7 +259,7 @@ func (r *streamRenderer) End(summary Summary) {
 	}
 
 	box := r.theme.BoxStyle.Render(strings.Join(lines, "\n"))
-	_, _ = lipgloss.Fprintln(r.w, box)
+	_, _ = lipgloss.Fprintln(r.writer, box)
 }
 
 // summaryRowWithIcon renders a label/value pair aligned inside the summary box,
