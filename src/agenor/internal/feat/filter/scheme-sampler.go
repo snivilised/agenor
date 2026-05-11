@@ -51,7 +51,7 @@ func (s *samplerScheme) next(servant core.Servant,
 		lo.Ternary(result,
 			s.crate.Metrics[enums.MetricNoChildFilesFound],
 			s.crate.Metrics[enums.MetricNoChildFilesFilteredOut],
-		).Times(uint(len(inspection.Contents().Files())))
+		).Times(core.MetricValue(len(inspection.Contents().Files()))) //nolint:gosec // ok
 
 		return result, nil
 	}

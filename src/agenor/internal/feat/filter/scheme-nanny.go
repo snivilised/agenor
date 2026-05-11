@@ -41,10 +41,10 @@ func (s *nannyScheme) next(_ core.Servant,
 	matching := s.filter.Matching(files)
 
 	inspection.AssignChildren(matching)
-	s.crate.Metrics[enums.MetricNoChildFilesFound].Times(uint(len(matching)))
+	s.crate.Metrics[enums.MetricNoChildFilesFound].Times(core.MetricValue(len(matching))) //nolint:gosec // ok
 
 	filteredOut := len(files) - len(matching)
-	s.crate.Metrics[enums.MetricNoChildFilesFilteredOut].Times(uint(filteredOut)) //nolint:gosec // ok
+	s.crate.Metrics[enums.MetricNoChildFilesFilteredOut].Times(core.MetricValue(filteredOut)) //nolint:gosec // ok
 
 	return true, nil
 }

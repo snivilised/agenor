@@ -128,7 +128,7 @@ var _ = Describe("feature", Ordered, func() {
 					Expect(node).Should(MatchCurrentRegexFilter(traverseFilter))
 				}
 
-				recall[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 				return nil
 			}

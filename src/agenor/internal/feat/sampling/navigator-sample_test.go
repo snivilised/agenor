@@ -91,7 +91,7 @@ var _ = Describe("feature", Ordered, func() {
 				_, found := recall[node.Extension.Name]
 				Expect(found).To(BeFalse())
 
-				recall[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 				return nil
 			}
@@ -501,7 +501,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited:   []string{"Electric Youth"},
 				ExpectedNoOf: lab.Quantities{
 					Directories: 6,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Night Drive":      4,
 						"Northern Council": 4,
 						"Teenage Color":    3,
@@ -524,7 +524,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited:   []string{"Chromatics"},
 				ExpectedNoOf: lab.Quantities{
 					Directories: 3,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Innerworld": 3,
 					},
 				},
@@ -547,7 +547,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
 					Directories: 2,
-					Children:    map[string]int{},
+					Children:    map[string]core.MetricValue{},
 				},
 			},
 			Filter: &lab.FilterTE{ // 🧄 this is directory filter, not child filter
@@ -574,7 +574,7 @@ var _ = Describe("feature", Ordered, func() {
 				Prohibited:   []string{"Amorphous Androgynous"},
 				ExpectedNoOf: lab.Quantities{
 					Directories: 2,
-					Children:    map[string]int{},
+					Children:    map[string]core.MetricValue{},
 				},
 			},
 			Filter: &lab.FilterTE{ // 🚀

@@ -51,7 +51,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 					_, found := recall[node.Extension.Name]
 					Expect(found).To(BeFalse())
 
-					recall[node.Extension.Name] = len(node.Children)
+					recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 					return entry.Callback(servant)
 				}
@@ -98,7 +98,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 					ExpectedNoOf: lab.Quantities{
 						Files:       0,
 						Directories: 1,
-						Children: map[string]int{
+						Children: map[string]core.MetricValue{
 							"Night Drive": 4,
 						},
 					},
@@ -116,7 +116,7 @@ var _ = Describe("NavigatorDirectoriesWithFiles", Ordered, func() {
 					ExpectedNoOf: lab.Quantities{
 						Files:       0,
 						Directories: 8,
-						Children: map[string]int{
+						Children: map[string]core.MetricValue{
 							"Night Drive":      4,
 							"Northern Council": 4,
 							"Teenage Color":    3,

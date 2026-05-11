@@ -72,7 +72,7 @@ var _ = Describe("feature", Ordered, func() {
 					node.Extension.Depth,
 				)
 
-				recall[node.Extension.Name] = len(node.Children)
+				recall[node.Extension.Name] = core.MetricValue(len((node.Children)))
 
 				return nil
 			}
@@ -117,7 +117,7 @@ var _ = Describe("feature", Ordered, func() {
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
 					Directories: 6,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Northern Council": 2,
 						"Teenage Color":    2,
 						"Innerworld":       2,
@@ -146,7 +146,7 @@ var _ = Describe("feature", Ordered, func() {
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
 					Directories: 2,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Night Drive": 3,
 					},
 				},
@@ -175,7 +175,7 @@ var _ = Describe("feature", Ordered, func() {
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
 					Directories: 6,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Northern Council": 2,
 						"Teenage Color":    2,
 						"Innerworld":       2,
@@ -204,7 +204,7 @@ var _ = Describe("feature", Ordered, func() {
 				Subscription: enums.SubscribeDirectoriesWithFiles,
 				ExpectedNoOf: lab.Quantities{
 					Directories: 2,
-					Children: map[string]int{
+					Children: map[string]core.MetricValue{
 						"Night Drive": 3,
 					},
 				},

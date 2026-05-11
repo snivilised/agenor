@@ -117,7 +117,7 @@ func assertMetrics(entry *NaviTE, to *TestOptions) {
 			}),
 			HaveMetricCountOf(ExpectedMetric{
 				Type:  enums.MetricNoChildFilesFound,
-				Count: uint(lo.Sum(lo.Values(entry.ExpectedNoOf.Children))), //nolint:gosec // ok
+				Count: lo.Sum(lo.Values(entry.ExpectedNoOf.Children)),
 			}),
 		),
 	)

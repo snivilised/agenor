@@ -46,7 +46,7 @@ func (p *plugin) Next(servant core.Servant,
 	node := servant.Node()
 	files := inspection.Sort(enums.EntryTypeFile)
 	node.Children = files
-	p.crate.Metrics[enums.MetricNoChildFilesFound].Times(uint(len(files)))
+	p.crate.Metrics[enums.MetricNoChildFilesFound].Times(core.MetricValue(len(files))) //nolint:gosec // ok
 
 	return true, nil
 }

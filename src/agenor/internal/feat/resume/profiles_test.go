@@ -1,6 +1,7 @@
 package resume_test
 
 import (
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 )
 
@@ -15,8 +16,8 @@ const (
 
 type (
 	strategyInvokeInfo struct {
-		files   uint
-		folders uint
+		files       core.MetricValue
+		directories core.MetricValue
 	}
 
 	strategyInvocations map[enums.ResumeStrategy]strategyInvokeInfo

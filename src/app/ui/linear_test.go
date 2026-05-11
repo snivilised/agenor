@@ -269,16 +269,18 @@ var _ = Describe("linear", Ordered, func() {
 					IsPrime: true,
 				})
 
-				presenter.OnComplete(&report.Traversal{
+				traversal := &report.Traversal{
 					FilesVisited: 42,
 					DirsVisited:  7,
 					Elapsed:      3 * time.Second,
-				})
+				}
+
+				presenter.OnComplete(traversal)
 
 				Expect(spy.endCalled).To(BeTrue())
 				s := spy.summary
-				Expect(s.FilesVisited).To(Equal(uint(42)))
-				Expect(s.DirsVisited).To(Equal(uint(7)))
+				Expect(s.FilesVisited).To(Equal(core.MetricValue(42)))
+				Expect(s.DirsVisited).To(Equal(core.MetricValue(7)))
 				Expect(s.Elapsed).To(Equal(3 * time.Second))
 				Expect(s.Errors).To(BeEmpty())
 				Expect(s.Kind).To(Equal(prism.PrimeNavigation))
@@ -294,10 +296,12 @@ var _ = Describe("linear", Ordered, func() {
 					IsPrime: true,
 				})
 
-				presenter.OnComplete(&report.Traversal{
+				traversal := &report.Traversal{
 					FilesVisited: 5,
 					Err:          traversalErr,
-				})
+				}
+
+				presenter.OnComplete(traversal)
 
 				s := spy.summary
 				Expect(s.Errors).To(HaveLen(1))
