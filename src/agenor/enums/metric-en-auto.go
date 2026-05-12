@@ -14,11 +14,12 @@ func _() {
 	_ = x[MetricNoDirectoriesFilteredOut-4]
 	_ = x[MetricNoChildFilesFound-5]
 	_ = x[MetricNoChildFilesFilteredOut-6]
+	_ = x[MetricNoNodesSkipped-7]
 }
 
-const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no-of-directoriesmetric-no-of-directories-filtered-outmetric-no-of-child-files-foundmetric-no-of-child-files-found"
+const _Metric_name = "metric-no-of-filesmetric-no-of-files-filtered-outmetric-no-of-directoriesmetric-no-of-directories-filtered-outmetric-no-of-child-files-foundmetric-no-of-child-files-foundmetric-no-of-nodes-skipped"
 
-var _Metric_index = [...]uint8{0, 18, 49, 73, 110, 140, 170}
+var _Metric_index = [...]uint8{0, 18, 49, 73, 110, 140, 170, 196}
 
 func (i Metric) String() string {
 	idx := int(i) - 1

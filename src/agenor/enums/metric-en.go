@@ -37,4 +37,9 @@ const (
 	// the directories with files subscription
 	//
 	MetricNoChildFilesFilteredOut // metric-no-of-child-files-found
+
+	// MetricNoNodesSkipped represents the number of nodes that were skipped during traversal
+	// for reasons other than being filtered out.
+	//
+	MetricNoNodesSkipped // metric-no-of-nodes-skipped
 )
