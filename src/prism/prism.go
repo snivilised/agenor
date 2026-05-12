@@ -158,6 +158,9 @@ type Summary struct {
 	// DirsVisited is the count of directories encountered.
 	DirsVisited core.MetricValue
 
+	// Skipped is the count of nodes for which actions were skipped.
+	Skipped core.MetricValue
+
 	// Elapsed is the total duration of the traversal.
 	Elapsed time.Duration
 

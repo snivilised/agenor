@@ -63,6 +63,8 @@ var _ = Describe("Registry", func() {
 					prism.TreeIconRoot:           "*",
 					prism.TreeIconDirectory:      "D",
 					prism.TreeIconFile:           "F",
+					prism.TreeIconElapsed:        "E",
+					prism.TreeIconSkipped:        "S",
 					prism.TreeIconBranchVertical: "|",
 					prism.TreeIconBranchJoint:    "+-- ",
 					prism.TreeIconBranchLast:     "L-- ",

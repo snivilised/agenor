@@ -14,6 +14,7 @@ func defaultTreeIcons() TreeIcons {
 		TreeIconDirectory:      "📁",
 		TreeIconFile:           "🔖",
 		TreeIconElapsed:        "⏰",
+		TreeIconSkipped:        "⛔️",
 		TreeIconBranchVertical: "│",
 		TreeIconBranchJoint:    "├── ",
 		TreeIconBranchLast:     "└── ",
