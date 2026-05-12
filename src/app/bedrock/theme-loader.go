@@ -9,6 +9,7 @@ import (
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/viper"
 
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/prism"
 )
 
@@ -34,7 +35,7 @@ type ThemeLoader struct {
 // resolved from JAY_THEMES_DIR if set, otherwise from the XDG config
 // base at ~/.config/jay/themes/.
 func NewThemeLoader() *ThemeLoader {
-	dir := os.Getenv(ThemesDirEnvVar)
+	dir := core.Getenv(ThemesDirEnvVar)
 
 	if dir == "" {
 		dir = filepath.Join(xdg.ConfigHome, "jay", "themes")

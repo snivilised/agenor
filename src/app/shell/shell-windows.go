@@ -4,10 +4,10 @@ package shell
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/locale"
 )
@@ -21,21 +21,21 @@ import (
 //  3. PSModulePath env var set -> PowerShell    -> Get-Command via pwsh/powershell
 //  4. fallback                 -> cmd.exe       -> where.exe + builtin set
 func detect() (Environment, error) {
-	if os.Getenv("CYGWIN") != "" {
+	if core.Getenv("CYGWIN") != "" {
 		return Environment{
 			Kind:   enums.ShellKindCygwin,
 			Locate: unixStyleLocate,
 		}, nil
 	}
 
-	if os.Getenv("MSYSTEM") != "" {
+	if core.Getenv("MSYSTEM") != "" {
 		return Environment{
 			Kind:   enums.ShellKindMSYS2,
 			Locate: unixStyleLocate,
 		}, nil
 	}
 
-	if os.Getenv("PSModulePath") != "" {
+	if core.Getenv("PSModulePath") != "" {
 		psExe, err := resolvePowerShellExe()
 		if err != nil {
 			return Environment{}, locale.NewPSMSetNoPowerShellExeFoundError(err)
@@ -61,7 +61,7 @@ func detect() (Environment, error) {
 // unixStyleLocate is used for Cygwin and MSYS2 environments, both of
 // which provide a fully functional /bin/sh with POSIX command -v.
 func unixStyleLocate(name string) (string, error) {
-	cmd := exec.Command("/bin/sh", "-c", "command -v "+shellQuote(name))
+	cmd := exec.Command("/bin/sh", "-c", "command -v "+quote(name))
 	out, err := cmd.Output()
 
 	if err != nil {
@@ -71,8 +71,8 @@ func unixStyleLocate(name string) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-// shellQuote wraps name in single quotes for safe embedding in a -c argument.
-func shellQuote(name string) string {
+// quote wraps name in single quotes for safe embedding in a -c argument.
+func quote(name string) string {
 	return "'" + strings.ReplaceAll(name, "'", `'\''`) + "'"
 }
 

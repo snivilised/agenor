@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -24,6 +25,7 @@ import (
 type Coordinator struct {
 	config        *bedrock.Config
 	locate        shell.LocateFunc
+	exec          shell.ExecuteFunc
 	forestBuilder pref.BuildForest
 	actionRegexes map[string]*regexp.Regexp
 }
@@ -38,6 +40,13 @@ type CoordinatorOption func(*Coordinator)
 func WithLocate(fn shell.LocateFunc) CoordinatorOption {
 	return func(c *Coordinator) {
 		c.locate = fn
+	}
+}
+
+// WithExec defines the platform-appropriate function for executing commands.
+func WithExec(fn shell.ExecuteFunc) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.exec = fn
 	}
 }
 
@@ -66,8 +75,14 @@ func New(config *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 	}
 
 	coord := &Coordinator{
-		config:        config,
-		locate:        func(name string) (string, error) { return exec.LookPath(name) },
+		config: config,
+		locate: func(name string) (string, error) {
+			return exec.LookPath(name)
+		},
+		exec: func(ctx context.Context, cmdStr string) ([]byte, error) {
+			// TODO: provide a sensible default
+			return nil, errors.New("exec func not defined")
+		},
 		actionRegexes: actionRegexes,
 	}
 
@@ -104,15 +119,15 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 		dirsCount := result.Metrics().Count(enums.MetricNoDirectoriesInvoked)
 
 		view.OnPeerInfoBegin(
-			uint(filesCount),
-			uint(dirsCount),
+			uint(filesCount), // NB: casting these to MetricValue causes a rendering
+			uint(dirsCount),  // problem with the last entry in the tree
 		)
 
 		facade := &pref.Using{
 			Subscription: req.Subscription,
 			Head: pref.Head{
 				Handler: func(servant agenor.Servant) error {
-					return c.handleServant(servant, &req.Request, traversal, peerInfoMap)
+					return c.handleServant(ctx, servant, &req.Request, traversal, peerInfoMap)
 				},
 				GetForest: c.forestBuilder,
 			},
@@ -133,7 +148,7 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 		Subscription: req.Subscription,
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleServant(servant, &req.Request, traversal, nil)
+				return c.handleServant(ctx, servant, &req.Request, traversal, nil)
 			},
 			GetForest: c.forestBuilder,
 		},
@@ -155,7 +170,7 @@ func (c *Coordinator) ExecuteResume(ctx context.Context, req *ResumeRequest) err
 	facade := &pref.Relic{
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
-				return c.handleServant(servant, &req.Request, traversal, nil)
+				return c.handleServant(ctx, servant, &req.Request, traversal, nil)
 			},
 		},
 		Strategy: req.Strategy,
