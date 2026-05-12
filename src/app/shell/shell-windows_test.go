@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/app/shell"
 	"github.com/snivilised/li18ngo"
@@ -88,7 +89,7 @@ var _ = Describe("shell.Detect on Windows", Ordered, func() {
 		It("returns KindPowerShell", func() {
 			// This test is only meaningful when running inside a PowerShell
 			// session on the CI Windows runner, where PSModulePath is set.
-			if os.Getenv("PSModulePath") == "" {
+			if core.Getenv("PSModulePath") == "" {
 				Skip("PSModulePath not set - not running inside PowerShell")
 			}
 
@@ -192,7 +193,7 @@ var _ = Describe("LocateFunc in PowerShell environment", Ordered, func() {
 	})
 
 	BeforeEach(func() {
-		if os.Getenv("PSModulePath") == "" {
+		if core.Getenv("PSModulePath") == "" {
 			Skip("PSModulePath not set - not running inside PowerShell")
 		}
 

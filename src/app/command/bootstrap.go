@@ -201,6 +201,7 @@ func (b *Bootstrap) Root(options ...ConfigureAppOptionFn) *cobra.Command {
 	b.themeLoader = bedrock.NewThemeLoader()
 	b.coord = jac.New(b.AppConfig,
 		jac.WithLocate(env.Locate),
+		jac.WithExec(env.Execute),
 		jac.WithForest(b.options.GetForest),
 	)
 
@@ -422,6 +423,7 @@ func (b *Bootstrap) bindNavFlags(cmd *cobra.Command, ns *navState) {
 // set and populates the provided ParamSet pointer. Called only by walk and
 // sprint; query intentionally omits this since it cannot be resumed.
 func (b *Bootstrap) bindExecFlags(cmd *cobra.Command, ep **assist.ParamSet[ExecParameterSet]) {
+	// TODO: WTF **??
 	*ep = assist.NewParamSet[ExecParameterSet](cmd)
 
 	(*ep).BindString(

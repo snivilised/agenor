@@ -153,6 +153,11 @@ type (
 	// HomeFunc returns the home directory path for the current user.
 	HomeFunc func() (string, error)
 
+	// GetenvFunc is a function type that takes a key as input and returns the
+	// corresponding environment variable value as a string. This allows for flexible
+	// retrieval of environment variables.
+	GetenvFunc func(key string) string
+
 	// SimpleHandler is a function that takes no parameters and can
 	// be used by any notification with this signature.
 	SimpleHandler func()
@@ -202,6 +207,9 @@ var (
 	// Home is the function used to compute the home directory path for the current user.
 	Home HomeFunc
 
+	// Getenv is the function used to retrieve environment variable values.
+	Getenv GetenvFunc
+
 	// Perms defines the default permissions used to create administrative
 	// files and directories.
 	Perms Permissions
@@ -214,6 +222,8 @@ var (
 func init() {
 	Now = time.Now
 	Home = os.UserHomeDir
+	Getenv = os.Getenv
+
 	Perms = Permissions{
 		File: filePerm,
 		Dir:  dirPerm,

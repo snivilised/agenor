@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"os/exec"
+	"context"
 	"regexp"
 	"strings"
 
@@ -13,12 +13,14 @@ import (
 // handleServant dispatches to the appropriate per-node handler based on
 // whether an action, pipeline, or neither is configured on the request.
 func (c *Coordinator) handleServant(
+	ctx context.Context,
 	servant core.Servant,
 	req *Request,
 	traversal *report.Traversal,
 	peerInfoMap PeerInfoMap,
 ) error {
 	node := servant.Node()
+	_ = ctx
 
 	var isLast bool
 
@@ -30,7 +32,7 @@ func (c *Coordinator) handleServant(
 
 	switch {
 	case req.PipelineName != "":
-		e := c.executePipeline(node, req.PipelineName, req.Root, req.DryRun)
+		e := c.executePipeline(ctx, node, req.PipelineName, req.Root, req.DryRun)
 		if e.Skipped {
 			traversal.ActionsSkipped.Tick()
 			req.UI.OnSkipEvent(&report.SkipEvent{
@@ -49,7 +51,7 @@ func (c *Coordinator) handleServant(
 		return e.Event.Err
 
 	case req.ActionName != "":
-		e := c.executeAction(node, req.ActionName, req.Root, req.DryRun)
+		e := c.executeAction(ctx, node, req.ActionName, req.Root, req.DryRun)
 		if e.Skipped {
 			traversal.ActionsSkipped.Tick()
 			req.UI.OnSkipEvent(&report.SkipEvent{
@@ -99,7 +101,12 @@ type pipelineResult struct {
 // executeAction expands the cmd string for the named action and returns
 // the result. If a placeholder breaches root the result is marked as
 // skipped and no shell execution is attempted.
-func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun bool) actionResult {
+func (c *Coordinator) executeAction(
+	ctx context.Context,
+	node *core.Node,
+	name, root string,
+	dryRun bool,
+) actionResult {
 	action, ok := c.config.Raw.Actions[name]
 	if !ok {
 		// PreFlight should have caught this - treat as an action error.
@@ -127,8 +134,9 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun b
 	}
 
 	if !dryRun {
-		cmd := exec.Command("sh", "-c", result.Cmd) //nolint:gosec // this is expected to be a shell command string
-		output, err := cmd.CombinedOutput()
+		// cmd := exec.Command("sh", "-c", result.Cmd) //nolint:gosec // this is expected to be a shell command string
+		// output, err := cmd.CombinedOutput()
+		output, err := c.exec(ctx, event.ExecutionString)
 		if err != nil {
 			event.Err = err
 		}
@@ -142,7 +150,11 @@ func (c *Coordinator) executeAction(node *core.Node, name, root string, dryRun b
 
 // executePipeline expands and executes each step in the named pipeline
 // in order. The first skip or error stops the pipeline for this node.
-func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun bool) pipelineResult {
+func (c *Coordinator) executePipeline(ctx context.Context,
+	node *core.Node,
+	name, root string,
+	dryRun bool,
+) pipelineResult {
 	pipeline, ok := c.config.Raw.Pipelines[name]
 	if !ok {
 		return pipelineResult{
@@ -154,7 +166,7 @@ func (c *Coordinator) executePipeline(node *core.Node, name, root string, dryRun
 	}
 
 	for _, step := range pipeline.Steps {
-		ar := c.executeAction(node, step, root, dryRun)
+		ar := c.executeAction(ctx, node, step, root, dryRun)
 		if ar.Skipped {
 			return pipelineResult{
 				Skipped:      true,

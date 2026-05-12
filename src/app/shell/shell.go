@@ -1,16 +1,27 @@
 package shell
 
 import (
+	"context"
+
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 )
 
-// LocateFunc reports whether a named executable, builtin, or shell
-// function is invokable in the current environment. It returns the
-// resolved path or description on success, or an error if the token
-// cannot be found. The implementation is platform and environment
-// specific - callers should always obtain a LocateFunc from
-// Environment.Locate rather than constructing one directly.
-type LocateFunc func(name string) (string, error)
+type (
+	// LocateFunc reports whether a named executable, builtin, or shell
+	// function is invokable in the current environment. It returns the
+	// resolved path or description on success, or an error if the token
+	// cannot be found. The implementation is platform and environment
+	// specific - callers should always obtain a LocateFunc from
+	// Environment.Locate rather than constructing one directly.
+	LocateFunc func(name string) (string, error)
+
+	// ExecuteFunc executes a command string in the current environment and
+	// returns the combined stdout and stderr output or an error if execution
+	// fails. The implementation is platform and environment specific -
+	// callers should always obtain an ExecuteFunc from Environment.Execute
+	// rather than constructing one directly.
+	ExecuteFunc func(ctx context.Context, cmdStr string) ([]byte, error)
+)
 
 // Environment is the result of Detect(). It identifies the shell hosting
 // jay and carries a LocateFunc appropriate for that environment.
@@ -22,6 +33,11 @@ type Environment struct {
 	// validating whether a named token is invokable. It is initialised
 	// by Detect() and is ready to use without further configuration.
 	Locate LocateFunc
+
+	// Execute is the platform and environment appropriate function for
+	// executing commands. It is initialised by Detect() and is ready to use
+	// without further configuration.
+	Execute ExecuteFunc
 }
 
 // Detect inspects the process environment to determine the shell context
