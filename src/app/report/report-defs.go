@@ -1,7 +1,6 @@
 package report
 
 import (
-	"sync/atomic"
 	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
@@ -92,9 +91,8 @@ type Traversal struct {
 	DirsVisited core.MetricValue
 
 	// ActionsSkipped is the number of nodes for which an action was skipped
-	// because a placeholder breached the traversal root. This field is
-	// populated by jay; it is not sourced from agenor metrics.
-	ActionsSkipped atomic.Uint32
+	// because a placeholder breached the traversal root.
+	ActionsSkipped core.NavigationMetric
 
 	// Elapsed is the total wall-clock time taken for the traversal.
 	Elapsed time.Duration
