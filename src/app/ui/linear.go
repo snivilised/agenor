@@ -129,19 +129,20 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 // OnComplete translates the Traversal outcome into a prism.Summary and
 // calls renderer.End to render the closing summary box. Kind is carried
 // from OnBegin so the summary labels correctly for resume traversals.
-func (l *linear) OnComplete(t *report.Traversal) {
+func (l *linear) OnComplete(traversal *report.Traversal) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
 	errs := []error{}
-	if t.Err != nil {
-		errs = append(errs, t.Err)
+	if traversal.Err != nil {
+		errs = append(errs, traversal.Err)
 	}
 
 	l.renderer.End(prism.Summary{
-		FilesVisited: t.FilesVisited,
-		DirsVisited:  t.DirsVisited,
-		Elapsed:      t.Elapsed,
+		FilesVisited: traversal.FilesVisited,
+		DirsVisited:  traversal.DirsVisited,
+		Skipped:      traversal.ActionsSkipped.Value(),
+		Elapsed:      traversal.Elapsed,
 		Errors:       errs,
 		Kind:         l.kind,
 	})

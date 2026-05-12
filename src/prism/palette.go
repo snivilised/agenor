@@ -109,6 +109,7 @@ const (
 	TreeIconDirectory      = "directory-icon"
 	TreeIconFile           = "file-icon"
 	TreeIconElapsed        = "elapsed-icon"
+	TreeIconSkipped        = "skipped-icon"
 	TreeIconBranchVertical = "branch-vertical"
 	TreeIconBranchJoint    = "branch-joint"
 	TreeIconBranchLast     = "branch-last"

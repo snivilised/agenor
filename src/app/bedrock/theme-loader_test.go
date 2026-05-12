@@ -32,6 +32,7 @@ palette:
     root-icon: "✻"
     directory-icon: "📁"
     file-icon: "🔖"
+    skipped-icon: "⛔️"
     elapsed-icon: "⏰"
     branch-vertical: "│"
     branch-joint: "├── "
@@ -153,6 +154,7 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 				Expect(palette.TreeIcons["root-icon"]).To(Equal("✻"))
 				Expect(palette.TreeIcons["directory-icon"]).To(Equal("📁"))
 				Expect(palette.TreeIcons["file-icon"]).To(Equal("🔖"))
+				Expect(palette.TreeIcons["skipped-icon"]).To(Equal("⛔️"))
 				Expect(palette.TreeIcons["elapsed-icon"]).To(Equal("⏰"))
 			})
 		})

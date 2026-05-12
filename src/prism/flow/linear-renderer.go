@@ -36,13 +36,10 @@ type renderer struct {
 // Begin renders the opening banner using the Overture metadata. The banner
 // adapts to indicate prime or resume traversal.
 func (r *renderer) Begin(overture prism.Overture) {
-	var title string
-
-	if overture.Kind == prism.ResumeNavigation {
-		title = fmt.Sprintf("  jay  resuming %s", overture.Root)
-	} else {
-		title = fmt.Sprintf("  jay  %s", overture.Root)
-	}
+	title := lo.Ternary(overture.Kind == prism.ResumeNavigation,
+		fmt.Sprintf("  jay  resuming %s", overture.Root),
+		fmt.Sprintf("  jay  %s", overture.Root),
+	)
 
 	caption := fmt.Sprintf("  %s  -  %s",
 		overture.Caption,
@@ -183,10 +180,11 @@ func (r *renderer) renderActionOrPipeline(motif prism.Motif) string {
 }
 
 func (r *renderer) renderExecutionInfo(motif prism.Motif) string {
+	skipped := lo.Ternary(motif.Skipped, fmt.Sprintf(" %s", r.treeIcons[prism.TreeIconSkipped]), "")
 	if motif.DryRun {
-		return r.theme.LandingStripStyle.Render(" [" + motif.ExecutionString + "]")
+		return r.theme.LandingStripStyle.Render(" ["+skipped, motif.ExecutionString, "]")
 	} else if motif.CommandOutput != "" {
-		return r.theme.LandingStripStyle.Render(" [" + motif.CommandOutput + "]")
+		return r.theme.LandingStripStyle.Render(" ["+skipped, motif.CommandOutput, "]")
 	}
 
 	return ""
@@ -212,7 +210,10 @@ func (r *renderer) branchPrefix(motif prism.Motif) string {
 		}
 	}
 
-	branchIcon := lo.Ternary(motif.IsLast, prism.TreeIconBranchLast, prism.TreeIconBranchJoint)
+	branchIcon := lo.Ternary(motif.IsLast,
+		prism.TreeIconBranchLast,
+		prism.TreeIconBranchJoint,
+	)
 	b.WriteString(r.treeIcons[branchIcon])
 
 	return b.String()
@@ -246,6 +247,8 @@ func (r *renderer) updateBranchStack(motif prism.Motif) {
 func (r *renderer) End(summary prism.Summary) {
 	fileLabel := "Files"
 	dirLabel := "Directories"
+	skippedLabel := "Skipped"
+	elapsedLabel := "Elapsed"
 
 	if summary.Kind == prism.ResumeNavigation {
 		fileLabel = "Files (resumed)"
@@ -255,7 +258,8 @@ func (r *renderer) End(summary prism.Summary) {
 	lines := []string{
 		r.summaryRowWithIcon(prism.TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
 		r.summaryRowWithIcon(prism.TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
-		r.summaryRowWithIcon(prism.TreeIconElapsed, "Elapsed", core.FormatDuration(summary.Elapsed)),
+		r.summaryRowWithIcon(prism.TreeIconSkipped, skippedLabel, fmt.Sprintf("%d", summary.Skipped)),
+		r.summaryRowWithIcon(prism.TreeIconElapsed, elapsedLabel, core.FormatDuration(summary.Elapsed)),
 	}
 
 	if len(summary.Errors) > 0 {
@@ -278,6 +282,10 @@ func (r *renderer) End(summary prism.Summary) {
 	_, _ = lipgloss.Fprintln(r.writer, box)
 }
 
+func (r *renderer) summaryRow(label, value string) string {
+	return r.summaryRowWithIcon("", label, value)
+}
+
 func (r *renderer) summaryRowWithIcon(iconKey, label, value string) string {
 	icon := r.treeIcons[iconKey]
 	if icon != "" {
@@ -286,8 +294,4 @@ func (r *renderer) summaryRowWithIcon(iconKey, label, value string) string {
 
 	return r.theme.SummaryLabelStyle.Render(label) +
 		r.theme.SummaryValueStyle.Render(value)
-}
-
-func (r *renderer) summaryRow(label, value string) string {
-	return r.summaryRowWithIcon("", label, value)
 }
