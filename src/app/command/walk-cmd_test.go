@@ -75,7 +75,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 			NaviTE: lab.NaviTE{
 				Args: []string{
-					"walk", "RETRO-WAVE", "--action", "echo", "--theme", "system",
+					"walk", "RETRO-WAVE/Chromatics/Night Drive", "--action", "echo", "--theme", "system",
 				},
 				Asserter: func(err error) {
 					Expect(err).Error().To(BeNil())
@@ -92,7 +92,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 			NaviTE: lab.NaviTE{
 				Args: []string{
-					"walk", "RETRO-WAVE", "--theme", "system",
+					"walk", "RETRO-WAVE/Chromatics/Night Drive", "--theme", "system",
 				},
 				Asserter: func(err error) {
 					Expect(err).Error().NotTo(BeNil())
@@ -108,7 +108,7 @@ var _ = Describe("NavigatorUniversal", Ordered, func() {
 			},
 			NaviTE: lab.NaviTE{
 				Args: []string{
-					"walk", "RETRO-WAVE", "--action", "echo", "--theme", "system", "--files", "*|.flac",
+					"walk", "RETRO-WAVE/Chromatics/Night Drive", "--action", "echo", "--theme", "system", "--files", "*|.flac",
 				},
 				Asserter: func(err error) {
 					Expect(err).Error().To(BeNil())
