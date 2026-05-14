@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/locale"
@@ -35,7 +34,7 @@ func unixLocate(name string) (string, error) {
 		shell = "sh"
 	}
 
-	cmd := exec.Command(shell, "-ic", "command -v -- "+quote(name)) //nolint:gosec // ok
+	cmd := exec.Command(shell, "+m", "-ic", "command -v -- "+quote(name)) //nolint:gosec // ok
 	out, err := cmd.Output()
 	if err != nil {
 		return "", locale.NewCmdNotFoundInEnvError(name)
@@ -76,6 +75,7 @@ func unixExec(ctx context.Context, cmdStr string) ([]byte, error) {
 	// This allows the command to be executed in the context of the shell, which is
 	// necessary for proper handling of shell features such as variable expansion,
 	// command substitution, and built-in commands.
-	cmd := exec.CommandContext(ctx, shell, "-ic", cmdStr) //nolint:gosec // ok
+	cmd := exec.CommandContext(ctx, shell, "+m", "-ic", cmdStr) //nolint:gosec // ok
+
 	return cmd.CombinedOutput()
 }
