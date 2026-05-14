@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"sync"
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
@@ -14,6 +15,7 @@ import (
 	"github.com/snivilised/jaywalk/src/app/bedrock"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/shell"
+	"github.com/snivilised/pants"
 )
 
 // Coordinator coordinates the layers between the command adapters and
@@ -26,6 +28,7 @@ type Coordinator struct {
 	config        *bedrock.Config
 	locate        shell.LocateFunc
 	exec          shell.ExecuteFunc
+	rush          string
 	forestBuilder pref.BuildForest
 	actionRegexes map[string]*regexp.Regexp
 }
@@ -47,6 +50,13 @@ func WithLocate(fn shell.LocateFunc) CoordinatorOption {
 func WithExec(fn shell.ExecuteFunc) CoordinatorOption {
 	return func(c *Coordinator) {
 		c.exec = fn
+	}
+}
+
+// WithShell defines the shell executable used by sprint shell pools.
+func WithShell(command string) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.rush = command
 	}
 }
 
@@ -79,10 +89,12 @@ func New(config *bedrock.Config, opts ...CoordinatorOption) *Coordinator {
 		locate: func(name string) (string, error) {
 			return exec.LookPath(name)
 		},
+		// Production wiring replaces this with shell.Detect().Execute via
+		// WithExec. Keeping a failing default makes missing wiring explicit.
 		exec: func(ctx context.Context, cmdStr string) ([]byte, error) {
-			// TODO: provide a sensible default
 			return nil, errors.New("exec func not defined")
 		},
+		rush:          "sh",
 		actionRegexes: actionRegexes,
 	}
 
@@ -195,6 +207,12 @@ func (c *Coordinator) execute(
 		return err
 	}
 
+	closeExec, err := c.useShellPoolExec(ctx, req)
+	if err != nil {
+		return err
+	}
+	defer closeExec()
+
 	req.UI.OnBegin(&report.BeginEvent{
 		Root:         req.Root,
 		Caption:      c.captionFor(req),
@@ -218,6 +236,56 @@ func (c *Coordinator) execute(
 	return err
 }
 
+func (c *Coordinator) useShellPoolExec(
+	ctx context.Context,
+	req *Request,
+) (func(), error) {
+	if !req.IsConcurrent || req.DryRun || (req.ActionName == "" && req.PipelineName == "") {
+		return func() {}, nil
+	}
+
+	options := pref.DefaultOptions()
+	for _, setting := range req.Settings {
+		if setting == nil {
+			continue
+		}
+		if err := setting(options); err != nil {
+			return nil, err
+		}
+	}
+
+	if options.Concurrency.Input.Size == 0 {
+		options.Concurrency.Input.Size = options.Concurrency.NoW
+	}
+	if options.Concurrency.Output.Size == 0 {
+		options.Concurrency.Output.Size = options.Concurrency.NoW
+	}
+
+	var wg sync.WaitGroup
+	pool, err := pants.NewShellPool(ctx, c.rush, &wg,
+		pants.WithSize(options.Concurrency.NoW),
+		pants.WithInput(options.Concurrency.Input.Size),
+		pants.WithOutput(
+			options.Concurrency.Output.Size,
+			options.Concurrency.Output.CheckCloseInterval,
+			options.Concurrency.Output.TimeoutOnSend,
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	previousExec := c.exec
+	c.exec = newShellPoolExecutor(pool).Execute
+
+	return func() {
+		c.exec = previousExec
+		pool.Conclude(ctx)
+		wg.Wait()
+		pool.Release(ctx)
+	}, nil
+}
+
 //nolint:exhaustive // enums.SubscribeDirectoriesWithFiles, enums.SubscribeUniversal
 func (c *Coordinator) captionFor(req *Request) string {
 	subscription := ""
@@ -233,12 +301,12 @@ func (c *Coordinator) captionFor(req *Request) string {
 	if req.ActionName != "" {
 		action, ok := c.config.Raw.Actions[req.ActionName]
 		if ok {
-			return fmt.Sprintf("%s via '%s'", subscription, action.Cmd)
+			return fmt.Sprintf("%s • via '%s'", subscription, action.Cmd)
 		}
 	}
 
 	if req.PipelineName != "" {
-		return fmt.Sprintf("%s via pipeline '%s'", subscription, req.PipelineName)
+		return fmt.Sprintf("%s • via pipeline '%s'", subscription, req.PipelineName)
 	}
 
 	return subscription

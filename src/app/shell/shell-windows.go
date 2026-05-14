@@ -23,15 +23,17 @@ import (
 func detect() (Environment, error) {
 	if core.Getenv("CYGWIN") != "" {
 		return Environment{
-			Kind:   enums.ShellKindCygwin,
-			Locate: unixStyleLocate,
+			Command: "/bin/sh",
+			Kind:    enums.ShellKindCygwin,
+			Locate:  unixStyleLocate,
 		}, nil
 	}
 
 	if core.Getenv("MSYSTEM") != "" {
 		return Environment{
-			Kind:   enums.ShellKindMSYS2,
-			Locate: unixStyleLocate,
+			Command: "/bin/sh",
+			Kind:    enums.ShellKindMSYS2,
+			Locate:  unixStyleLocate,
 		}, nil
 	}
 
@@ -42,15 +44,17 @@ func detect() (Environment, error) {
 		}
 
 		return Environment{
-			Kind:   enums.ShellKindPowerShell,
-			Locate: powerShellLocate(psExe),
+			Command: psExe,
+			Kind:    enums.ShellKindPowerShell,
+			Locate:  powerShellLocate(psExe),
 		}, nil
 	}
 
 	// Fallback: assume cmd.exe.
 	return Environment{
-		Kind:   enums.ShellKindCmdExe,
-		Locate: cmdExeLocate,
+		Command: "cmd.exe",
+		Kind:    enums.ShellKindCmdExe,
+		Locate:  cmdExeLocate,
 	}, nil
 }
 

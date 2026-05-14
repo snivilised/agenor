@@ -29,6 +29,9 @@ type Environment struct {
 	// Kind is the detected shell environment.
 	Kind enums.ShellKind
 
+	// Command is the executable used to create interactive shell sessions.
+	Command string
+
 	// Locate is the platform and environment appropriate function for
 	// validating whether a named token is invokable. It is initialised
 	// by Detect() and is ready to use without further configuration.

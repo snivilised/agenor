@@ -2,12 +2,8 @@ package agenor
 
 import (
 	"context"
-
-	"github.com/pkg/errors"
-	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/internal/enclave"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
-	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/pants"
 )
 
@@ -39,81 +35,15 @@ func (t *trunk) Bye(result *enclave.KernelResult) {
 
 type concurrent struct {
 	trunk
-	wg      pants.WaitGroup
-	pool    *core.TraversePool
-	inputCh pants.SourceStreamW[*core.TraverseInput]
-	swapper enclave.Swapper
+	wg pants.WaitGroup
 }
 
 func (c *concurrent) Navigate(ctx context.Context) (*enclave.KernelResult, error) {
-	defer func() {
-		c.close()
-
-		if c.pool != nil {
-			c.pool.Release(ctx)
-		}
-	}()
-
 	if c.err != nil {
 		return c.kc.Result(ctx), c.err
 	}
 
-	if c.swapper != nil {
-		c.swapper.Swap(func(servant Servant) error {
-			handler := c.ext.facade().Client()
-			input := &core.TraverseInput{
-				Servant: servant,
-				Handler: handler,
-			}
-
-			c.inputCh <- input // TODO: support for timeout (TimeoutOnSendInput) ??? issue #333
-
-			return nil
-		})
-	}
-
-	c.pool, c.err = pants.NewManifoldFuncPool(
-		ctx, func(input *core.TraverseInput) (*core.TraverseOutput, error) {
-			err := input.Handler(input.Servant)
-
-			return &core.TraverseOutput{
-				Servant: input.Servant,
-				Error:   err,
-			}, err
-		}, c.wg,
-		pants.WithSize(c.o.Concurrency.NoW),
-		pants.WithInput(c.o.Concurrency.Input.Size),
-		pants.IfOptionF(c.o.Concurrency.Output.On != nil, func() pants.Option {
-			return pants.WithOutput(
-				c.o.Concurrency.Output.Size,
-				c.o.Concurrency.Output.CheckCloseInterval,
-				c.o.Concurrency.Output.TimeoutOnSend,
-			)
-		}),
-	)
-
-	if c.err != nil {
-		err := errors.Wrap(c.err, locale.ErrWorkerPoolCreationFailed.Error())
-		return c.kc.Result(ctx), err
-	}
-
-	c.open(ctx)
-
-	if c.o.Concurrency.Output.On != nil {
-		c.o.Concurrency.Output.On(c.pool.Observe())
-	}
-
 	return c.kc.Navigate(ctx)
-}
-
-func (c *concurrent) open(ctx context.Context) {
-	c.inputCh = c.pool.Source(ctx, c.wg)
-}
-
-func (c *concurrent) close() {
-	if c.inputCh != nil {
-		close(c.inputCh)
-	}
 }
 
 type sequential struct {

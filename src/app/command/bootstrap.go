@@ -202,6 +202,7 @@ func (b *Bootstrap) Root(options ...ConfigureAppOptionFn) *cobra.Command {
 	b.coord = jac.New(b.AppConfig,
 		jac.WithLocate(env.Locate),
 		jac.WithExec(env.Execute),
+		jac.WithShell(env.Command),
 		jac.WithForest(b.options.GetForest),
 	)
 
