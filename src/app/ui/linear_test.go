@@ -8,9 +8,13 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/app/report"
 	"github.com/snivilised/jaywalk/src/app/ui"
 	"github.com/snivilised/jaywalk/src/prism"
+
+	"reflect"
+	"unsafe"
 )
 
 // ---------------------------------------------------------------------------
@@ -56,16 +60,23 @@ func newLinearWithSpy(spy prism.Renderer) report.Presenter {
 }
 
 // stubNode builds a minimal *core.Node for use in event structs.
-func stubNode(path, name string, _ bool, depth core.TraversalDepth) *core.Node {
-	return &core.Node{
+func stubNode(path, name string, isDir bool, depth core.TraversalDepth) *core.Node {
+	n := &core.Node{
 		Path: path,
 		Extension: core.Extension{
 			Name:  name,
 			Depth: depth,
 		},
-		// IsDirectory is derived from the node type in real agenor - here
-		// we set it directly via the test helper on the node struct.
 	}
+
+	// Use reflection to set the unexported 'dir' field.
+	v := reflect.ValueOf(n).Elem()
+	f := v.FieldByName("dir")
+	//nolint:gosec // unsafe is used here to set a private field for testing purposes only
+	f = reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
+	f.SetBool(isDir)
+
+	return n
 }
 
 // ---------------------------------------------------------------------------
@@ -212,6 +223,26 @@ var _ = Describe("linear", Ordered, func() {
 	// ------------------------------------------------------------------
 
 	Describe("OnPipelineEvent", func() {
+		Context("when the pipeline starts (header)", func() {
+			It("sets PipelineName and IsPipelineHeader on the Motif", func() {
+				node := stubNode("/docs/file.mp4", "file.mp4", false, 1)
+
+				presenter.OnPipelineEvent(&report.PipelineEvent{
+					DisplayEvent: report.DisplayEvent{
+						Node:             node,
+						Name:             "encode-and-upload",
+						IsPipelineHeader: true,
+					},
+				})
+
+				Expect(spy.motifs).To(HaveLen(1))
+				m := spy.motifs[0]
+				Expect(m.PipelineName).To(Equal("encode-and-upload"))
+				Expect(m.IsPipelineHeader).To(BeTrue())
+				Expect(m.IsPipelineStep).To(BeFalse())
+			})
+		})
+
 		Context("when the pipeline succeeds", func() {
 			It("sets PipelineName and leaves Err nil", func() {
 				node := stubNode("/docs/file.mp4", "file.mp4", false, 1)
@@ -228,6 +259,45 @@ var _ = Describe("linear", Ordered, func() {
 				Expect(m.PipelineName).To(Equal("encode-and-upload"))
 				Expect(m.Err).To(BeNil())
 			})
+		})
+	})
+
+	Describe("OnActionEvent (Pipeline Step)", func() {
+		It("sets IsPipelineStep, IsLastStep and increments VisualDepth", func() {
+			node := stubNode("/docs/file.mp4", "file.mp4", false, 1) // node VisualDepth is 2
+
+			presenter.OnActionEvent(&report.ActionEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node:           node,
+					Name:           "step1",
+					IsPipelineStep: true,
+					IsLastStep:     false,
+				},
+			})
+
+			Expect(spy.motifs).To(HaveLen(1))
+			m := spy.motifs[0]
+			Expect(m.ActionName).To(Equal("step1"))
+			Expect(m.IsPipelineStep).To(BeTrue())
+			Expect(m.IsLastStep).To(BeFalse())
+			Expect(m.VisualDepth).To(Equal(node.VisualDepth() + 1))
+		})
+
+		It("handles the last step correctly", func() {
+			node := stubNode("/docs/file.mp4", "file.mp4", false, 1)
+
+			presenter.OnActionEvent(&report.ActionEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node:           node,
+					Name:           "step2",
+					IsPipelineStep: true,
+					IsLastStep:     true,
+				},
+			})
+
+			Expect(spy.motifs).To(HaveLen(1))
+			m := spy.motifs[0]
+			Expect(m.IsLastStep).To(BeTrue())
 		})
 	})
 
@@ -254,6 +324,27 @@ var _ = Describe("linear", Ordered, func() {
 			Expect(m.Placeholder).To(Equal("{{.path}}"))
 			Expect(m.ResolvedPath).To(Equal("/"))
 			Expect(m.ActionName).To(Equal("encode"))
+		})
+
+		It("handles pipeline step skips correctly", func() {
+			node := stubNode("/docs/file.mp4", "file.mp4", false, 1)
+
+			presenter.OnSkipEvent(&report.SkipEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node:           node,
+					Name:           "step1",
+					IsPipelineStep: true,
+					IsLastStep:     true,
+				},
+				Placeholder:  "{{.path}}",
+				ResolvedPath: "/",
+			})
+
+			Expect(spy.motifs).To(HaveLen(1))
+			m := spy.motifs[0]
+			Expect(m.IsPipelineStep).To(BeTrue())
+			Expect(m.IsLastStep).To(BeTrue())
+			Expect(m.VisualDepth).To(Equal(node.VisualDepth() + 1))
 		})
 	})
 
@@ -320,6 +411,89 @@ var _ = Describe("linear", Ordered, func() {
 
 				Expect(spy.summary.Kind).To(Equal(prism.ResumeNavigation))
 			})
+		})
+	})
+
+	// ------------------------------------------------------------------
+	// SubscribeFiles mode
+	// ------------------------------------------------------------------
+
+	Describe("SubscribeFiles mode", func() {
+		It("injects all missing ancestors top-down", func() {
+			// Hierarchy:
+			// /app (depth 0)
+			//   a/ (depth 1)
+			//     b/ (depth 2)
+			//       file.txt (depth 3)
+
+			root := stubNode("/app", "app", true, 0)
+			a := stubNode("/app/a", "a", true, 1)
+			a.Parent = root
+			b := stubNode("/app/a/b", "b", true, 2)
+			b.Parent = a
+			file := stubNode("/app/a/b/file.txt", "file.txt", false, 3)
+			file.Parent = b
+
+			presenter.OnBegin(&report.BeginEvent{
+				Root:         "/app",
+				Subscription: enums.SubscribeFiles,
+			})
+
+			presenter.OnActionEvent(&report.ActionEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node: file,
+					Name: "run",
+				},
+			})
+
+			// Expect:
+			// 1. Motif for app/ (injected)
+			// 2. Motif for a/ (injected)
+			// 3. Motif for b/ (injected)
+			// 4. Motif for file.txt (actual)
+			Expect(spy.motifs).To(HaveLen(4))
+			Expect(spy.motifs[0].Name).To(Equal("app"))
+			Expect(spy.motifs[1].Name).To(Equal("a"))
+			Expect(spy.motifs[2].Name).To(Equal("b"))
+			Expect(spy.motifs[3].Name).To(Equal("file.txt"))
+
+			// Verify visual depths
+			Expect(spy.motifs[0].VisualDepth).To(Equal(core.TraversalDepth(0)))
+			Expect(spy.motifs[1].VisualDepth).To(Equal(core.TraversalDepth(1)))
+			Expect(spy.motifs[2].VisualDepth).To(Equal(core.TraversalDepth(2)))
+			Expect(spy.motifs[3].VisualDepth).To(Equal(core.TraversalDepth(4))) // file is depth+1
+		})
+
+		It("uses peerInfo to set IsLast on injected parents", func() {
+			root := stubNode("/app", "app", true, 0)
+			a := stubNode("/app/a", "a", true, 1)
+			a.Parent = root
+			file := stubNode("/app/a/file.txt", "file.txt", false, 2)
+			file.Parent = a
+
+			peerInfoMap := map[string]*core.PeerInfo{
+				"/app":   {IsLast: true},
+				"/app/a": {IsLast: false},
+			}
+
+			presenter.OnBegin(&report.BeginEvent{
+				Root:         "/app",
+				Subscription: enums.SubscribeFiles,
+			})
+			pa, ok := presenter.(report.PeerAware)
+			Expect(ok).To(BeTrue())
+			pa.OnPeerInfoBegin(1, 2, peerInfoMap)
+
+			presenter.OnActionEvent(&report.ActionEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node: file,
+				},
+			})
+
+			Expect(spy.motifs[0].Name).To(Equal("app"))
+			Expect(spy.motifs[0].IsLast).To(BeTrue())
+			Expect(spy.motifs[1].Name).To(Equal("a"))
+			Expect(spy.motifs[1].IsLast).To(BeFalse())
 		})
 	})
 })

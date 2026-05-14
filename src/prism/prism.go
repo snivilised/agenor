@@ -147,6 +147,16 @@ type Motif struct {
 	// node count from a prior survey phase or by detecting completion of
 	// the traversal process.
 	IsLast bool
+
+	// IsPipelineHeader is true when this motif represents the start of a pipeline.
+	IsPipelineHeader bool
+
+	// IsPipelineStep is true when this motif represents an individual action
+	// within a pipeline.
+	IsPipelineStep bool
+
+	// IsLastStep is true when this is the last action in a pipeline.
+	IsLastStep bool
 }
 
 // Summary carries the result of a completed traversal. Passed to

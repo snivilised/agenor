@@ -4,15 +4,19 @@ import (
 	"time"
 
 	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/agenor/enums"
 )
 
 // DisplayEvent is the base event embedded into all UI events. It carries
 // the node that triggered the event and an optional name identifying the
 // action or pipeline that was invoked. Name is empty for NodeEvent.
 type DisplayEvent struct {
-	Node   *core.Node
-	IsLast bool
-	Name   string
+	Node             *core.Node
+	IsLast           bool
+	Name             string
+	IsPipelineHeader bool
+	IsPipelineStep   bool
+	IsLastStep       bool
 }
 
 // BeginEvent carries the metadata known at the start of a traversal.
@@ -34,6 +38,9 @@ type BeginEvent struct {
 	// ResumeFrom is the path from which a resume traversal continues.
 	// Populated only when IsPrime is false.
 	ResumeFrom string
+
+	// Subscription is the type of nodes being visited.
+	Subscription enums.Subscription
 }
 
 // NeutralEvent is emitted per node visit when no action or pipeline is

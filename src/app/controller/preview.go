@@ -6,6 +6,7 @@ import (
 
 	"github.com/snivilised/jaywalk/src/agenor"
 	"github.com/snivilised/jaywalk/src/agenor/core"
+	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 )
 
@@ -126,7 +127,7 @@ func buildPeerInfoMap(
 	var options *pref.Options
 
 	facade := &pref.Using{
-		Subscription: req.Subscription,
+		Subscription: enums.SubscribeUniversal,
 		Head: pref.Head{
 			Handler: func(servant agenor.Servant) error {
 				buf.visit(servant.Node())

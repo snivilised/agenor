@@ -1,6 +1,7 @@
 package report
 
 import (
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 )
 
@@ -62,7 +63,7 @@ type PeerAware interface {
 	// with the total file and directory counts collected during the
 	// preview. Views can use these counts to display a progress indicator
 	// during the live traversal.
-	OnPeerInfoBegin(files, dirs uint)
+	OnPeerInfoBegin(files, dirs uint, peerInfoMap map[string]*core.PeerInfo)
 
 	// OnPeerInfoEnd is called when the live traversal completes, allowing
 	// the view to tear down any progress indicator it displayed.
