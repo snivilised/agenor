@@ -68,6 +68,7 @@ func (b *Bootstrap) runSprint(cmd *cobra.Command, args []string) error {
 		ActionName:   b.sprint.navPs.Native.Action,
 		PipelineName: b.sprint.navPs.Native.Pipeline,
 		Scenario:     agenor.Hare(isPrime, wg),
+		IsConcurrent: true,
 		UI:           b.UI,
 		GetForest:    b.options.GetForest,
 		DryRun:       b.sprint.previewFam.Native.DryRun,

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/enums"
 	"github.com/snivilised/jaywalk/src/locale"
@@ -16,7 +17,9 @@ import (
 // always runs under a POSIX-compatible shell, so no environment variable
 // inspection is needed.
 func detect() (Environment, error) {
+	shell := detectedShell()
 	env := Environment{
+		Command: shell,
 		Kind:    enums.ShellKindNativeUnix,
 		Locate:  unixLocate,
 		Execute: unixExec,
@@ -29,10 +32,7 @@ func detect() (Environment, error) {
 // entirely to the POSIX command -v built into /bin/sh, which correctly
 // resolves binaries on PATH, shell builtins, and exported shell functions.
 func unixLocate(name string) (string, error) {
-	shell := filepath.Base(core.Getenv("SHELL"))
-	if shell == "" {
-		shell = "sh"
-	}
+	shell := detectedShell()
 
 	cmd := exec.Command(shell, "+m", "-ic", "command -v -- "+quote(name)) //nolint:gosec // ok
 	out, err := cmd.Output()
@@ -57,10 +57,7 @@ func quote(name string) string {
 }
 
 func unixExec(ctx context.Context, cmdStr string) ([]byte, error) {
-	shell := filepath.Base(core.Getenv("SHELL"))
-	if shell == "" {
-		shell = "sh"
-	}
+	shell := detectedShell()
 
 	// the -i flag to ensure that the shell's environment is fully initialised,
 	// which allows for correct resolution of tokens that are defined in the user's
@@ -78,4 +75,13 @@ func unixExec(ctx context.Context, cmdStr string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, shell, "+m", "-ic", cmdStr) //nolint:gosec // ok
 
 	return cmd.CombinedOutput()
+}
+
+func detectedShell() string {
+	shell := filepath.Base(core.Getenv("SHELL"))
+	if shell == "" {
+		shell = "sh"
+	}
+
+	return shell
 }
