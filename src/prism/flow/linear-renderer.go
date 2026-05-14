@@ -77,6 +77,9 @@ func (r *renderer) Show(motif prism.Motif) {
 	case motif.Skipped:
 		name = r.renderSkipped(motif)
 
+	case motif.IsPipelineStep:
+		name = r.renderStep(motif)
+
 	case motif.Depth == 0:
 		name = r.renderRoot(motif)
 
@@ -165,6 +168,28 @@ func (r *renderer) renderFile(motif prism.Motif) string {
 	return b.String()
 }
 
+func (r *renderer) renderStep(motif prism.Motif) string {
+	var b strings.Builder
+
+	if motif.Err != nil {
+		b.WriteString(r.theme.ErrorStyle.Render(
+			fmt.Sprintf("! %s  %s", motif.ActionName, motif.Err.Error()),
+		))
+	} else if motif.Skipped {
+		skipReason := fmt.Sprintf("  • via %s  [skipped: %s -> %s]",
+			motif.ActionName,
+			motif.Placeholder,
+			motif.ResolvedPath,
+		)
+		b.WriteString(r.theme.SkippedStyle.Render(skipReason))
+	} else {
+		b.WriteString(r.theme.ActionStyle.Render("  • via " + motif.ActionName))
+		b.WriteString(r.renderExecutionInfo(motif))
+	}
+
+	return b.String()
+}
+
 func (r *renderer) renderActionOrPipeline(motif prism.Motif) string {
 	var b strings.Builder
 
@@ -181,13 +206,19 @@ func (r *renderer) renderActionOrPipeline(motif prism.Motif) string {
 
 func (r *renderer) renderExecutionInfo(motif prism.Motif) string {
 	skipped := lo.Ternary(motif.Skipped, fmt.Sprintf(" %s", r.treeIcons[prism.TreeIconSkipped]), "")
+	content := motif.CommandOutput
 	if motif.DryRun {
-		return r.theme.LandingStripStyle.Render(" ["+skipped, motif.ExecutionString, "]")
-	} else if motif.CommandOutput != "" {
-		return r.theme.LandingStripStyle.Render(" ["+skipped, motif.CommandOutput, "]")
+		content = motif.ExecutionString
 	}
 
-	return ""
+	if content == "" && skipped == "" {
+		return ""
+	}
+
+	// brackets are part of the chrome, so use BranchStyle
+	return r.theme.BranchStyle.Render(" ["+skipped) +
+		r.theme.LandingStripStyle.Render(content) +
+		r.theme.BranchStyle.Render("]")
 }
 
 func (r *renderer) branchPrefix(motif prism.Motif) string {
@@ -210,7 +241,8 @@ func (r *renderer) branchPrefix(motif prism.Motif) string {
 		}
 	}
 
-	branchIcon := lo.Ternary(motif.IsLast,
+	isLast := lo.Ternary(motif.IsPipelineStep, motif.IsLastStep && !motif.IsDir, motif.IsLast)
+	branchIcon := lo.Ternary(isLast,
 		prism.TreeIconBranchLast,
 		prism.TreeIconBranchJoint,
 	)
@@ -227,16 +259,19 @@ func (r *renderer) updateBranchStack(motif prism.Motif) {
 		return
 	}
 
+	isLast := lo.Ternary(motif.IsPipelineStep, motif.IsLastStep && !motif.IsDir, motif.IsLast)
 	if motif.VisualDepth > r.previousDepth {
 		for d := r.previousDepth; d < motif.VisualDepth; d++ {
-			r.branchStack = append(r.branchStack, !motif.IsLast)
+			r.branchStack = append(r.branchStack, !isLast)
 		}
 	} else if motif.VisualDepth < r.previousDepth {
-		r.branchStack = r.branchStack[:motif.VisualDepth]
+		//nolint:gosec // VisualDepth is verified by navigator bounds
+		r.branchStack = r.branchStack[:int(motif.VisualDepth)]
 	}
 
 	if motif.VisualDepth > 0 {
-		r.branchStack[motif.VisualDepth-1] = !motif.IsLast
+		//nolint:gosec // VisualDepth is verified by navigator bounds
+		r.branchStack[int(motif.VisualDepth)-1] = !isLast
 	}
 
 	r.previousDepth = motif.VisualDepth

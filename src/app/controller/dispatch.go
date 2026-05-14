@@ -32,23 +32,7 @@ func (c *Coordinator) handleServant(
 
 	switch {
 	case req.PipelineName != "":
-		e := c.executePipeline(ctx, node, req.PipelineName, req.Root, req.DryRun)
-		if e.Skipped {
-			traversal.ActionsSkipped.Tick()
-			req.UI.OnSkipEvent(&report.SkipEvent{
-				DisplayEvent: report.DisplayEvent{
-					Node:   node,
-					IsLast: isLast,
-					Name:   req.PipelineName,
-				},
-				Placeholder:  e.Placeholder,
-				ResolvedPath: e.ResolvedPath,
-			})
-			return nil
-		}
-		e.Event.IsLast = isLast
-		req.UI.OnPipelineEvent(e.Event)
-		return e.Event.Err
+		return c.executePipeline(ctx, node, req, isLast, traversal)
 
 	case req.ActionName != "":
 		e := c.executeAction(ctx, node, req.ActionName, req.Root, req.DryRun)
@@ -90,13 +74,6 @@ type actionResult struct {
 	Event        *report.ActionEvent
 }
 
-// pipelineResult mirrors actionResult for pipeline execution.
-type pipelineResult struct {
-	Skipped      bool
-	Placeholder  string
-	ResolvedPath string
-	Event        *report.PipelineEvent
-}
 
 // executeAction expands the cmd string for the named action and returns
 // the result. If a placeholder breaches root the result is marked as
@@ -150,49 +127,69 @@ func (c *Coordinator) executeAction(
 
 // executePipeline expands and executes each step in the named pipeline
 // in order. The first skip or error stops the pipeline for this node.
+// Each step is emitted to the UI as it completes.
 func (c *Coordinator) executePipeline(ctx context.Context,
 	node *core.Node,
-	name, root string,
-	dryRun bool,
-) pipelineResult {
-	pipeline, ok := c.config.Raw.Pipelines[name]
+	req *Request,
+	isLast bool,
+	traversal *report.Traversal,
+) error {
+	pipeline, ok := c.config.Raw.Pipelines[req.PipelineName]
 	if !ok {
-		return pipelineResult{
-			Event: &report.PipelineEvent{
-				DisplayEvent: report.DisplayEvent{Node: node, Name: name},
-				Err:          locale.NewPipelineNotFoundError(name),
+		req.UI.OnPipelineEvent(&report.PipelineEvent{
+			DisplayEvent: report.DisplayEvent{
+				Node:   node,
+				IsLast: isLast,
+				Name:   req.PipelineName,
 			},
-		}
+			Err: locale.NewPipelineNotFoundError(req.PipelineName),
+		})
+		return nil
 	}
 
-	for _, step := range pipeline.Steps {
-		ar := c.executeAction(ctx, node, step, root, dryRun)
+	// Emit pipeline header
+	req.UI.OnPipelineEvent(&report.PipelineEvent{
+		DisplayEvent: report.DisplayEvent{
+			Node:             node,
+			IsLast:           isLast,
+			Name:             req.PipelineName,
+			IsPipelineHeader: true,
+		},
+		DryRun: req.DryRun,
+	})
+
+	for i, step := range pipeline.Steps {
+		isLastStep := i == len(pipeline.Steps)-1
+		ar := c.executeAction(ctx, node, step, req.Root, req.DryRun)
+
 		if ar.Skipped {
-			return pipelineResult{
-				Skipped:      true,
+			traversal.ActionsSkipped.Tick()
+			req.UI.OnSkipEvent(&report.SkipEvent{
+				DisplayEvent: report.DisplayEvent{
+					Node:           node,
+					IsLast:         isLast,
+					Name:           step,
+					IsPipelineStep: true,
+					IsLastStep:     true, // skip always terminates
+				},
 				Placeholder:  ar.Placeholder,
 				ResolvedPath: ar.ResolvedPath,
-			}
+			})
+			return nil
 		}
+
+		ar.Event.IsLast = isLast
+		ar.Event.IsPipelineStep = true
+		ar.Event.IsLastStep = isLastStep && ar.Event.Err == nil // error terminates but we show it as a step
+
+		req.UI.OnActionEvent(ar.Event)
+
 		if ar.Event.Err != nil {
-			return pipelineResult{
-				Event: &report.PipelineEvent{
-					DisplayEvent:    report.DisplayEvent{Node: node, Name: name},
-					ExecutionString: ar.Event.ExecutionString,
-					CommandOutput:   ar.Event.CommandOutput,
-					DryRun:          dryRun,
-					Err:             ar.Event.Err,
-				},
-			}
+			return ar.Event.Err
 		}
 	}
 
-	return pipelineResult{
-		Event: &report.PipelineEvent{
-			DisplayEvent: report.DisplayEvent{Node: node, Name: name},
-			DryRun:       dryRun,
-		},
-	}
+	return nil
 }
 
 const (

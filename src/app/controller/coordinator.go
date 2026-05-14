@@ -121,6 +121,7 @@ func (c *Coordinator) ExecutePrime(ctx context.Context, req *PrimeRequest) error
 		view.OnPeerInfoBegin(
 			uint(filesCount), // NB: casting these to MetricValue causes a rendering
 			uint(dirsCount),  // problem with the last entry in the tree
+			peerInfoMap,
 		)
 
 		facade := &pref.Using{
@@ -195,11 +196,12 @@ func (c *Coordinator) execute(
 	}
 
 	req.UI.OnBegin(&report.BeginEvent{
-		Root:       req.Root,
-		Caption:    c.captionFor(req),
-		StartedAt:  core.Now(),
-		IsPrime:    isPrime,
-		ResumeFrom: resumeFrom,
+		Root:         req.Root,
+		Caption:      c.captionFor(req),
+		StartedAt:    core.Now(),
+		IsPrime:      isPrime,
+		ResumeFrom:   resumeFrom,
+		Subscription: req.Subscription,
 	})
 
 	result, err := req.Scenario(facade, req.Settings...).Navigate(ctx)
