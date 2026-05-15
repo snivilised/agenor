@@ -2,8 +2,11 @@ package flow_test
 
 import (
 	"bytes"
+	"strings"
 	"time"
 
+	"github.com/charmbracelet/x/ansi"
+	"github.com/mattn/go-runewidth"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -17,7 +20,7 @@ var _ = Describe("LinearRenderer", func() {
 		palette := prism.Palette{}
 
 		renderer, err := flow.New(palette, w)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 		Expect(renderer).NotTo(BeNil())
 
 		renderer.Show(prism.Motif{
@@ -64,7 +67,7 @@ var _ = Describe("LinearRenderer", func() {
 			prism.TreeIconBranchVertical: "|",
 			prism.TreeIconBranchIndent:   "  ",
 		}))
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 
 		renderer.Show(prism.Motif{
 			Name:        "root",
@@ -91,7 +94,7 @@ var _ = Describe("LinearRenderer", func() {
 		palette := prism.Palette{}
 
 		renderer, err := flow.New(palette, w)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 
 		renderer.End(prism.Summary{
 			Kind:         prism.PrimeNavigation,
@@ -106,12 +109,39 @@ var _ = Describe("LinearRenderer", func() {
 		Expect(output).To(ContainSubstring("⏰ Elapsed"))
 	})
 
+	It("aligns summary values when the elapsed icon has a different display width", func() {
+		w := &bytes.Buffer{}
+		palette := prism.Palette{}
+
+		// ⏱️ this emoji is 2 columns wide and breaks width calculation
+		// probably because some lipgloss internal processing is not performing
+		// correct rune width calculations
+		renderer, err := flow.New(palette, w, flow.WithIcons(map[string]string{
+			prism.TreeIconElapsed: "🦋",
+		}))
+		Expect(err).To(Succeed())
+
+		renderer.End(prism.Summary{
+			Kind:         prism.PrimeNavigation,
+			FilesVisited: 55,
+			DirsVisited:  7,
+			Skipped:      0,
+			Elapsed:      2 * time.Millisecond,
+		})
+
+		output := ansi.Strip(w.String())
+		Expect(output).To(ContainSubstring("🦋 Elapsed"))
+		Expect(summaryValueEndColumn(output, "Files", "55")).To(Equal(summaryValueEndColumn(output, "Directories", "7")))
+		Expect(summaryValueEndColumn(output, "Files", "55")).To(Equal(summaryValueEndColumn(output, "Skipped", "0")))
+		Expect(summaryValueEndColumn(output, "Files", "55")).To(Equal(summaryValueEndColumn(output, "Elapsed", "2ms")))
+	})
+
 	It("returns a renderer when options are provided", func() {
 		w := &bytes.Buffer{}
 		palette := prism.Palette{}
 
 		renderer, err := flow.New(palette, w, flow.WithIcons(nil))
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 		Expect(renderer).NotTo(BeNil())
 		Expect(renderer).To(Not(BeNil()))
 		renderer.Show(prism.Motif{Name: "test", Depth: 0, VisualDepth: 0, IsDir: true, IsLast: true})
@@ -123,7 +153,7 @@ var _ = Describe("LinearRenderer", func() {
 		palette := prism.Palette{}
 
 		renderer, err := flow.New(palette, w)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 
 		renderer.Begin(prism.Overture{
 			Kind:      prism.PrimeNavigation,
@@ -144,7 +174,7 @@ var _ = Describe("LinearRenderer", func() {
 		palette := prism.Palette{}
 
 		renderer, err := flow.New(palette, w)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 
 		renderer.Show(prism.Motif{Name: "src", IsDir: true, Depth: 0, VisualDepth: 0, IsLast: true})
 		renderer.Show(prism.Motif{Name: "app", IsDir: true, Depth: 1, VisualDepth: 1, IsLast: false})
@@ -163,7 +193,7 @@ var _ = Describe("LinearRenderer", func() {
 		palette.Branch = prism.SemanticColour{ANSI16: "green"}
 
 		renderer, err := flow.New(palette, w)
-		Expect(err).To(BeNil())
+		Expect(err).To(Succeed())
 		Expect(renderer).NotTo(BeNil())
 
 		renderer.Show(prism.Motif{Name: "root", IsDir: true, Depth: 0, VisualDepth: 0, IsLast: true})
@@ -174,3 +204,19 @@ var _ = Describe("LinearRenderer", func() {
 		Expect(output).To(ContainSubstring("└── 🔖 child\n"))
 	})
 })
+
+func summaryValueEndColumn(output, label, value string) int {
+	for _, line := range strings.Split(output, "\n") {
+		if !strings.Contains(line, label) {
+			continue
+		}
+
+		valueIndex := strings.LastIndex(line, value)
+		Expect(valueIndex).NotTo(Equal(-1), "expected %q to contain summary value %q", line, value)
+
+		return runewidth.StringWidth(line[:valueIndex]) + runewidth.StringWidth(value)
+	}
+
+	Fail("summary label not found: " + label)
+	return 0
+}

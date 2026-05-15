@@ -14,6 +14,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/prism"
+	"github.com/snivilised/jaywalk/src/prism/widget"
 	"github.com/snivilised/jaywalk/src/third/lo"
 )
 
@@ -290,43 +291,49 @@ func (r *renderer) End(summary prism.Summary) {
 		dirLabel = "Dirs (resumed)"
 	}
 
-	lines := []string{
-		r.summaryRowWithIcon(prism.TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
-		r.summaryRowWithIcon(prism.TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
-		r.summaryRowWithIcon(prism.TreeIconSkipped, skippedLabel, fmt.Sprintf("%d", summary.Skipped)),
-		r.summaryRowWithIcon(prism.TreeIconElapsed, elapsedLabel, core.FormatDuration(summary.Elapsed)),
+	rows := []widget.SummaryRow{
+		r.summaryRow(prism.TreeIconFile, fileLabel, fmt.Sprintf("%d", summary.FilesVisited)),
+		r.summaryRow(prism.TreeIconDirectory, dirLabel, fmt.Sprintf("%d", summary.DirsVisited)),
+		r.summaryRow(prism.TreeIconSkipped, skippedLabel, fmt.Sprintf("%d", summary.Skipped)),
+		r.summaryRow(prism.TreeIconElapsed, elapsedLabel, core.FormatDuration(summary.Elapsed)),
 	}
 
 	if len(summary.Errors) > 0 {
-		lines = append(lines,
-			r.summaryRow("Errors",
-				r.theme.ErrorStyle.Render(
-					fmt.Sprintf("%d", len(summary.Errors)),
-				),
-			),
-		)
+		errorStyles := widget.SummaryCellStyles{
+			Icon:  r.theme.ErrorStyle,
+			Label: r.theme.ErrorStyle,
+			Value: r.theme.ErrorStyle,
+		}
+
+		rows = append(rows, widget.SummaryRow{
+			Label:  "Errors",
+			Value:  fmt.Sprintf("%d", len(summary.Errors)),
+			Styles: &errorStyles,
+		})
 
 		for _, err := range summary.Errors {
-			lines = append(lines,
-				r.theme.ErrorStyle.Render("  ! "+err.Error()),
-			)
+			rows = append(rows, widget.SummaryRow{
+				Label:  "  ! " + err.Error(),
+				Styles: &errorStyles,
+			})
 		}
 	}
 
-	box := r.theme.BoxStyle.Render(strings.Join(lines, "\n"))
+	box := widget.RenderSummary(rows, widget.SummaryStyles{
+		Box: r.theme.BoxStyle,
+		Default: widget.SummaryCellStyles{
+			Icon:  r.theme.SummaryLabelStyle,
+			Label: r.theme.SummaryLabelStyle,
+			Value: r.theme.SummaryValueStyle,
+		},
+	})
 	_, _ = lipgloss.Fprintln(r.writer, box)
 }
 
-func (r *renderer) summaryRow(label, value string) string {
-	return r.summaryRowWithIcon("", label, value)
-}
-
-func (r *renderer) summaryRowWithIcon(iconKey, label, value string) string {
-	icon := r.treeIcons[iconKey]
-	if icon != "" {
-		label = icon + " " + label
+func (r *renderer) summaryRow(iconKey, label, value string) widget.SummaryRow {
+	return widget.SummaryRow{
+		Icon:  r.treeIcons[iconKey],
+		Label: label,
+		Value: value,
 	}
-
-	return r.theme.SummaryLabelStyle.Render(label) +
-		r.theme.SummaryValueStyle.Render(value)
 }
