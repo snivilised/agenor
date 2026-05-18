@@ -1,0 +1,27 @@
+services:
+  opencode:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        USER_ID: "${HOST_UID:-502}"
+        GROUP_ID: "${HOST_GID:-20}"
+    image: jaywalk-opencode:latest
+    stdin_open: true
+    tty: true
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - ~/.config/opencode:/home/opencode/.config/opencode
+      - ~/.gitconfig:/home/opencode/.gitconfig:ro
+      - ~/.ssh:/home/opencode/.ssh:ro
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/home/opencode/.cache/go-build
+    environment:
+      - TERM
+      - HOME=/home/opencode
+      - GIT_TERMINAL_PROMPT=0
+
+volumes:
+  go-mod-cache:
+  go-build-cache:

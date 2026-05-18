@@ -1,0 +1,52 @@
+FROM golang:1.26-bookworm
+
+# These let you match the container user to your host user so file
+# permissions work correctly on mounted volumes.  Pass them via
+# docker-compose args or --build-arg (see .env.example).
+ARG USER_ID=502
+ARG GROUP_ID=20
+
+# System packages needed inside the container: curl to download
+# opencode, git for version control, openssh-client for cloning
+# private repos via SSH.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install opencode via the official install script.  This downloads
+# the correct binary for glibc-based Linux (as opposed to the musl-
+# linked binary in the official Docker image, which requires Alpine).
+RUN curl -fsSL https://opencode.ai/install | bash -s -- -y && \
+    cp /root/.opencode/bin/opencode /usr/local/bin/opencode
+
+# Install Go tools that opencode's LSP and task-running rely on,
+# plus project-specific tools like lingo for i18n code generation.
+# All get placed in /go/bin (the default GOPATH/bin).
+RUN go install github.com/onsi/ginkgo/v2/ginkgo@latest && \
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && \
+    go install golang.org/x/tools/gopls@latest && \
+    go install github.com/snivilised/li18ngo/cmd/lingo@latest
+
+# Create a non-root user matching your host UID/GID.  This avoids the
+# common pitfall where files written inside the container end up owned
+# by root and are unmodifiable from the host.
+#   /go           — GOPATH root (module cache, compiled binaries)
+#   /home/opencode — home dir for the opencode user (config, caches)
+RUN if ! getent group ${GROUP_ID} > /dev/null 2>&1; then \
+        groupadd -g ${GROUP_ID} opencode; \
+    fi && \
+    useradd -m -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash opencode && \
+    mkdir -p /go/pkg/mod /home/opencode/.cache/go-build && \
+    chown -R ${USER_ID}:${GROUP_ID} /go /home/opencode
+
+# Switch to the non-root user.  Everything from here on runs as opencode.
+USER opencode
+ENV HOME=/home/opencode
+
+# The project code from the host is mounted here at runtime.
+WORKDIR /workspace
+
+# Every time the container starts it launches opencode's TUI.
+ENTRYPOINT ["opencode"]
