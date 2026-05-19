@@ -14,6 +14,36 @@
 - **Test**: `go test ./...`
 - **Dependencies**: `go mod tidy`
 
+## Unit testing
+
+- implement all unit tests using ginkgo and gomega
+- when using environment variables in code, make sure this is mockable. Also ensure that unit tests do not interact with the real environment. The real environment should always be isolated from unit tests.
+
+## lint
+
+- run lint using:
+golangci-lint run
+
+Fix lint issues. However, do not go overboard in fixing lint issues as some lints issues are ok, such type conversions. If you disable a lint error using nolint, then add an appropriate comment to the nolint statement.
+If you are not sure, do not fix the lint issue. I will see the lint error and I will make a judgement call.
+
+## Programming
+
+- assume you are an expert Golang developer.
+- you are aware of the go best practices and employ good and well established software engineering techniques
+- use Go design patterns when appropriate
+- using single responsible philosophy
+- use liskov substitution principles
+- do not use Go's init() function
+- avoid complicated and excessive if statements when these can be replaced by better abstractions
+- when using charm's lipgloss and other charm packages, check to see if a component already exists, typically in bubbles, bubbletea or lipgloss. Don't replicate functionality locally, if it already implemented in one of the charm packages.
+
+### os.XXX calls
+
+All code using methods defined in os, eg os.UserHomeDir, should not do so directly. Instead follow the pattern already established in core (see core.core-defs). If there is no definition in core for the os.XXX function call you need to make, please add a new one.
+
+The purpose of this is to make production code testable without giving direct access to os.XXX and allows these to be mocked out.
+
 ## Architecture
 
 | Package | Responsibility |
@@ -49,12 +79,21 @@ All flags are defined in `src/app/bedrock/flags.go`.
 
 - Use `NewFlagInfo` for local flags; use `NewFlagInfoOnFlagSet` for persistent flags
 - The first word of the `usage` string becomes the flag name
-- Use `BindString`, not `BindValidatedString`, unless validation is explicitly required
+- Use the appropriate BindXXX depending on the type of variable the flag represents
 
 ## i18n
 
 - Translation structs are defined in `github.com/snivilised/jaywalk/src/locale`
 - Follow the i18n conventions in `GO-USER-CONFIG.md`; locale struct placement is per the package above
+
+### Defining user facing content
+
+When defining content. that is presented to the end user, usually via a print to the console or a log message, then do not use raw strings as that does not support i18n translation, instead make use of the 'lingo' tool and proceed as follows.
+
+- first note that go-i18n is the underlying external dependency that handle i18n. It defines generic structures that we can use to interact with it.
+- mamba is an helper for go-i18n that makes using go-i18n a bit easier, handling some of the concerns relating to build command structures and defining flags.
+- use of lingo requires adding entries into lingo.Underliers global variable defined in underlying-templ-data
+- please consult .claude/skills/go-i18n/SKILL.md
 
 ## File References
 

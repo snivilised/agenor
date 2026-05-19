@@ -2,10 +2,13 @@ package bedrock
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/li18ngo"
 	"github.com/spf13/viper"
@@ -77,7 +80,7 @@ func (o *LoadOptions) isPreloaded() bool {
 
 func (o *LoadOptions) applyDefaults() {
 	if o.EnvPrefix == "" {
-		o.EnvPrefix = "JAY"
+		o.EnvPrefix = EnvPrefix
 	}
 
 	// File-discovery defaults are only meaningful when the caller has NOT
@@ -86,10 +89,14 @@ func (o *LoadOptions) applyDefaults() {
 	// populate the instance from an in-memory reader.
 	if !o.isPreloaded() {
 		if o.ConfigName == "" {
-			o.ConfigName = "jay"
+			o.ConfigName = AppName
 		}
 		if len(o.ConfigPaths) == 0 {
-			o.ConfigPaths = []string{".", "$HOME/.config/jay", "/etc/jay"}
+			home, err := core.Home()
+			if err != nil {
+				home = os.Getenv("HOME")
+			}
+			o.ConfigPaths = []string{".", filepath.Join(home, ".config", AppName), "/etc/jay"}
 		}
 		// Only allocate a fresh Viper when no instance was provided at all.
 		o.ViperInstance = viper.New()

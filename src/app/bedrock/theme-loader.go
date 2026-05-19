@@ -32,13 +32,20 @@ type ThemeLoader struct {
 }
 
 // NewThemeLoader constructs a ThemeLoader. The themes directory is
-// resolved from JAY_THEMES_DIR if set, otherwise from the XDG config
-// base at ~/.config/jay/themes/.
+// resolved from JAY_THEMES_DIR if set (with ~ expansion),
+// otherwise from the XDG config base at ~/.config/jay/themes/.
 func NewThemeLoader() *ThemeLoader {
 	dir := core.Getenv(ThemesDirEnvVar)
 
 	if dir == "" {
-		dir = filepath.Join(xdg.ConfigHome, "jay", "themes")
+		dir = filepath.Join(xdg.ConfigHome, AppName, "themes")
+	} else {
+		// Expand ~ in env var value
+		if len(dir) > 0 && dir[0] == '~' {
+			if home, err := core.Home(); err == nil {
+				dir = filepath.Join(home, dir[1:])
+			}
+		}
 	}
 
 	return &ThemeLoader{
@@ -46,57 +53,93 @@ func NewThemeLoader() *ThemeLoader {
 	}
 }
 
+// NewThemeLoaderWithDir constructs a ThemeLoader with an explicitly
+// resolved themes directory path. This is the preferred constructor
+// when the FileManager has already resolved paths (e.g., from
+// bootstrap). The zero-arg NewThemeLoader is retained for backward
+// compatibility with tests.
+func NewThemeLoaderWithDir(dir string) *ThemeLoader {
+	return &ThemeLoader{
+		themesDir: dir,
+	}
+}
+
+// themeExtensions lists the file extensions tried when loading a
+// theme file, in priority order.
+var themeExtensions = []string{".yaml", ".yml"}
+
 // Load returns the prism.Palette for the named theme. The name
 // "system" returns SystemPalette() without reading any file.
-// Any other name is resolved to <themesDir>/<name>.yaml and decoded
-// via mapstructure. Returns an error if the file does not exist or
-// cannot be decoded.
+// Any other name is resolved to <themesDir>/<name>.<ext> for each
+// registered extension and decoded via mapstructure. Returns an
+// error if no file is found or the file cannot be decoded.
 func (tl *ThemeLoader) Load(name string) (prism.Palette, error) {
 	if name == "" || name == ThemeSystemName {
 		return prism.SystemPalette(), nil
 	}
 
-	path := filepath.Join(tl.themesDir, name+".yaml")
+	var lastErr error
+	for _, ext := range themeExtensions {
+		path := filepath.Join(tl.themesDir, name+ext)
 
-	v := viper.New()
-	v.SetConfigType("yaml")
-	v.SetConfigFile(path)
+		v := viper.New()
+		v.SetConfigType("yaml")
+		v.SetConfigFile(path)
 
-	if err := v.ReadInConfig(); err != nil {
-		if os.IsNotExist(err) {
+		if err := v.ReadInConfig(); err != nil {
+			if os.IsNotExist(err) {
+				lastErr = err
+				continue
+			}
+
 			return prism.Palette{}, fmt.Errorf(
-				"theme %q not found - expected file at %s",
+				"reading theme %q at %s: %w",
+				name,
+				path,
+				err,
+			)
+		}
+
+		raw := v.Sub("palette")
+		if raw == nil {
+			return prism.Palette{}, fmt.Errorf(
+				"theme %q: missing required 'palette' key in %s",
 				name,
 				path,
 			)
 		}
 
+		var palette prism.Palette
+
+		if err := raw.Unmarshal(&palette, mapstructureTagOption()); err != nil {
+			return prism.Palette{}, fmt.Errorf(
+				"theme %q: decoding palette from %s: %w",
+				name,
+				path,
+				err,
+			)
+		}
+
+		return palette, nil
+	}
+
+	// None of the extensions matched — report the first expected path
+	// for clarity.
+	first := filepath.Join(tl.themesDir, name+themeExtensions[0])
+	if os.IsNotExist(lastErr) {
 		return prism.Palette{}, fmt.Errorf(
-			"reading theme %q: %w",
+			"theme %q not found — tried %s/.%s{.yaml,.yml}",
 			name,
-			err,
+			tl.themesDir,
+			name,
 		)
 	}
 
-	raw := v.Sub("palette")
-	if raw == nil {
-		return prism.Palette{}, fmt.Errorf(
-			"theme %q: missing required 'palette' key",
-			name,
-		)
-	}
-
-	var palette prism.Palette
-
-	if err := raw.Unmarshal(&palette, mapstructureTagOption()); err != nil {
-		return prism.Palette{}, fmt.Errorf(
-			"theme %q: decoding palette: %w",
-			name,
-			err,
-		)
-	}
-
-	return palette, nil
+	return prism.Palette{}, fmt.Errorf(
+		"theme %q not found - expected file at %s",
+		name,
+		first,
+	)
 }
 
 // ThemesDir returns the resolved themes directory path. Useful for

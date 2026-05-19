@@ -2,10 +2,11 @@ package command
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
+	"path/filepath"
 
 	"github.com/cubiest/jibberjabber"
-	"github.com/snivilised/jaywalk/src/agenor/core"
 	"github.com/snivilised/jaywalk/src/agenor/pref"
 	"github.com/snivilised/jaywalk/src/locale"
 	"github.com/snivilised/jaywalk/src/third/lo"
@@ -144,6 +145,14 @@ type Bootstrap struct {
 	// passed into requests. Bootstrap does not use it directly.
 	UI report.Presenter
 
+	// fileManager provides XDG-compliant path resolution for all
+	// file system locations used by jay (config, state, cache, themes).
+	fileManager *bedrock.FileManager
+
+	// logger is the structured logger used by the application.
+	// Created once in Root() and passed to the Coordinator.
+	logger *slog.Logger
+
 	// themeLoader resolves named themes from the themes directory.
 	// Constructed once in Root() and reused in PersistentPreRunE.
 	themeLoader *bedrock.ThemeLoader
@@ -166,15 +175,14 @@ type Bootstrap struct {
 // ---------------------------------------------------------------------------
 
 func (b *Bootstrap) prepare() {
-	home, err := core.Home()
-	cobra.CheckErr(err)
+	b.fileManager = bedrock.NewFileManager()
 
 	b.options = ConfigureAppOptions{
 		Detector: &Jabber{},
 		ConfigInfo: AppConfigInfo{
-			Name:       ApplicationName,
-			ConfigType: "yaml",
-			ConfigPath: home,
+			Name:       bedrock.AppName,
+			ConfigType: "", // no forced type; viper discovers .yaml, .yml, etc.
+			ConfigPath: b.fileManager.ConfigHome(),
 			Viper:      &macfg.GlobalViperConfig{},
 		},
 	}
@@ -198,17 +206,20 @@ func (b *Bootstrap) Root(options ...ConfigureAppOptionFn) *cobra.Command {
 		os.Exit(1)
 	}
 
-	b.themeLoader = bedrock.NewThemeLoader()
+	b.themeLoader = bedrock.NewThemeLoaderWithDir(b.fileManager.ThemesDir())
+	b.logger = b.createLogger()
 	b.coord = jac.New(b.AppConfig,
 		jac.WithLocate(env.Locate),
 		jac.WithExec(env.Execute),
 		jac.WithShell(env.Command),
 		jac.WithForest(b.options.GetForest),
+		jac.WithAdminPath(b.fileManager.AdminPath()),
+		jac.WithLogger(b.logger),
 	)
 
 	b.container = assist.NewCobraContainer(
 		&cobra.Command{
-			Use:     ApplicationName,
+			Use:     bedrock.AppName,
 			Short:   li18ngo.Text(locale.RootCmdShortDescTemplData{}),
 			Long:    li18ngo.Text(locale.RootCmdLongDescTemplData{}),
 			Version: fmt.Sprintf("'%v'", Version),
@@ -265,8 +276,15 @@ func (b *Bootstrap) configure() {
 	ci := b.options.ConfigInfo
 
 	vc.SetConfigName(ci.Name)
-	vc.SetConfigType(ci.ConfigType)
-	vc.AddConfigPath(ci.ConfigPath)
+	if ci.ConfigType != "" {
+		vc.SetConfigType(ci.ConfigType)
+	}
+	vc.AddConfigPath(ci.ConfigPath) // XDG config home (primary)
+	vc.AddConfigPath(".")           // current dir
+	if def := b.fileManager.ResolvePath("$HOME/.config/jay"); def != ci.ConfigPath {
+		vc.AddConfigPath(def) // legacy location (fallback)
+	}
+	vc.AddConfigPath("/etc/jay") // system-wide
 	vc.AutomaticEnv()
 
 	err := vc.ReadInConfig()
@@ -309,7 +327,7 @@ func handleLangSetting() {
 		uo.Tag = tag
 		uo.From = li18ngo.LoadFrom{
 			Sources: li18ngo.TranslationFiles{
-				SourceID:            li18ngo.TranslationSource{Name: ApplicationName},
+				SourceID:            li18ngo.TranslationSource{Name: bedrock.AppName},
 				si18n.MambaSourceID: li18ngo.TranslationSource{Name: "mamba"},
 			},
 		}
@@ -318,6 +336,53 @@ func handleLangSetting() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// createLogger
+// ---------------------------------------------------------------------------
+
+func (b *Bootstrap) createLogger() *slog.Logger {
+	logPath := b.fileManager.LogPath()
+	if b.AppConfig != nil && b.AppConfig.Mapped.Logging.LogPath != "" {
+		logPath = b.fileManager.ResolvePath(b.AppConfig.Mapped.Logging.LogPath)
+	}
+
+	logDir := filepath.Dir(logPath)
+	if err := os.MkdirAll(logDir, 0o750); err != nil { // originally 0o755
+		fmt.Fprintln(os.Stderr, "warning: could not create log directory:", err)
+	}
+
+	//nolint:gosec // logPath comes from user's own config, not untrusted input
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600) // originally 0o644
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "warning: could not open log file:", err)
+		return slog.New(slog.NewTextHandler(os.Stderr, nil))
+	}
+
+	level := slog.LevelInfo
+	if b.AppConfig != nil {
+		level = parseLogLevel(b.AppConfig.Mapped.Logging.Level)
+	}
+
+	return slog.New(slog.NewTextHandler(logFile, &slog.HandlerOptions{
+		Level: level,
+	}))
+}
+
+func parseLogLevel(level string) slog.Level {
+	switch level {
+	case "debug":
+		return slog.LevelDebug
+	case "info":
+		return slog.LevelInfo
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
 	}
 }
 
