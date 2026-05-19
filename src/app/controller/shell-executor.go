@@ -21,7 +21,7 @@ type shellPoolExecutor struct {
 	counter uint64
 	once    sync.Once
 	done    chan struct{}
-	mu      sync.Mutex
+	mux     sync.Mutex
 	pending map[string]chan shellResult
 }
 
@@ -45,14 +45,14 @@ func (e *shellPoolExecutor) Execute(
 		go e.observe()
 	})
 
-	e.mu.Lock()
+	e.mux.Lock()
 	e.pending[marker] = resultCh
-	e.mu.Unlock()
+	e.mux.Unlock()
 
 	if err := e.pool.Post(ctx, wrapShellCommand(command, marker)); err != nil {
-		e.mu.Lock()
+		e.mux.Lock()
 		delete(e.pending, marker)
-		e.mu.Unlock()
+		e.mux.Unlock()
 
 		return nil, err
 	}
@@ -62,9 +62,9 @@ func (e *shellPoolExecutor) Execute(
 		return result.output, result.err
 
 	case <-ctx.Done():
-		e.mu.Lock()
+		e.mux.Lock()
 		delete(e.pending, marker)
-		e.mu.Unlock()
+		e.mux.Unlock()
 
 		return nil, ctx.Err()
 
@@ -79,7 +79,7 @@ func (e *shellPoolExecutor) observe() {
 	for output := range e.pool.Observe() {
 		payload := output.Payload
 
-		e.mu.Lock()
+		e.mux.Lock()
 		for marker, resultCh := range e.pending {
 			if result, ok := parseShellResult(payload, marker, output.Error); ok {
 				delete(e.pending, marker)
@@ -89,7 +89,7 @@ func (e *shellPoolExecutor) observe() {
 				break
 			}
 		}
-		e.mu.Unlock()
+		e.mux.Unlock()
 	}
 }
 

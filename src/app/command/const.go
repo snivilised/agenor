@@ -5,9 +5,8 @@ package command
 // ---------------------------------------------------------------------------
 
 const (
-	AppEmoji        = "🍒"
-	ApplicationName = "jay"
-	SourceID        = "github.com/snivilised/jaywalk/src/agenor"
+	AppEmoji = "🍒"
+	SourceID = "github.com/snivilised/jaywalk/src/agenor"
 )
 
 // ---------------------------------------------------------------------------

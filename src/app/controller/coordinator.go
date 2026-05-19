@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os/exec"
 	"regexp"
 	"sync"
@@ -31,6 +32,18 @@ type Coordinator struct {
 	rush          string
 	forestBuilder pref.BuildForest
 	actionRegexes map[string]*regexp.Regexp
+	adminPath     string
+	logger        *slog.Logger
+}
+
+// AdminPath returns the configured admin path for resume state files.
+func (c *Coordinator) AdminPath() string {
+	return c.adminPath
+}
+
+// Logger returns the configured structured logger.
+func (c *Coordinator) Logger() *slog.Logger {
+	return c.logger
 }
 
 // CoordinatorOption is a functional option for Coordinator.
@@ -57,6 +70,20 @@ func WithExec(fn shell.ExecuteFunc) CoordinatorOption {
 func WithShell(command string) CoordinatorOption {
 	return func(c *Coordinator) {
 		c.rush = command
+	}
+}
+
+// WithAdminPath sets the path for admin/resume state files.
+func WithAdminPath(path string) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.adminPath = path
+	}
+}
+
+// WithLogger sets the structured logger used by the application.
+func WithLogger(logger *slog.Logger) CoordinatorOption {
+	return func(c *Coordinator) {
+		c.logger = logger
 	}
 }
 
@@ -205,6 +232,15 @@ func (c *Coordinator) execute(
 ) error {
 	if err := c.PreFlight(req); err != nil {
 		return err
+	}
+
+	// Prepend default settings from Coordinator (admin path, logger)
+	// so that user-provided settings override them.
+	if c.adminPath != "" {
+		req.Settings = append([]pref.Option{pref.WithAdminPath(c.adminPath)}, req.Settings...)
+	}
+	if c.logger != nil {
+		req.Settings = append([]pref.Option{pref.WithLogger(c.logger)}, req.Settings...)
 	}
 
 	closeExec, err := c.useShellPoolExec(ctx, req)

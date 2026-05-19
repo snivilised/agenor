@@ -1,6 +1,7 @@
 package bedrock_test
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -62,7 +63,7 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 	BeforeAll(func() {
 		// Create a temporary themes directory for all tests in this suite.
 		var err error
-		themesDir, err = os.MkdirTemp("", "jay-themes-*")
+		themesDir, err = os.MkdirTemp("", fmt.Sprintf("%v-themes-*", bedrock.AppName))
 		Expect(err).To(BeNil())
 	})
 
@@ -98,7 +99,7 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 				loader := bedrock.NewThemeLoader()
 
 				Expect(loader.ThemesDir()).To(ContainSubstring(
-					filepath.Join("jay", "themes"),
+					filepath.Join(bedrock.AppName, "themes"),
 				))
 			})
 		})
@@ -160,7 +161,7 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 		})
 
 		Context("when the theme file does not exist", func() {
-			It("returns an error containing the theme name", func() {
+			It("returns an error mentioning the theme name and tried paths", func() {
 				DeferCleanup(func() {
 					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
 				})
@@ -172,6 +173,28 @@ var _ = Describe("ThemeLoader", Ordered, func() {
 
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(ContainSubstring("nonexistent-theme"))
+				Expect(err.Error()).To(ContainSubstring(".yaml,.yml"))
+			})
+		})
+
+		Context("when the theme file has a .yml extension", func() {
+			It("loads successfully", func() {
+				ymlPath := filepath.Join(themesDir, "dot-yml.yml")
+				err := os.WriteFile(ymlPath, []byte(validThemeYAML), 0600)
+				Expect(err).To(BeNil())
+
+				DeferCleanup(func() {
+					_ = os.Unsetenv(bedrock.ThemesDirEnvVar)
+					_ = os.Remove(ymlPath)
+				})
+
+				_ = os.Setenv(bedrock.ThemesDirEnvVar, themesDir)
+				loader := bedrock.NewThemeLoader()
+
+				palette, err := loader.Load("dot-yml")
+
+				Expect(err).To(BeNil())
+				Expect(palette.Directory.ANSI16).To(Equal("cyan"))
 			})
 		})
 

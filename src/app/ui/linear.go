@@ -20,7 +20,7 @@ import (
 // a mutex so interleaved output from the sprint command's worker pool is
 // avoided.
 type linear struct {
-	mu           sync.Mutex
+	mux          sync.Mutex
 	renderer     prism.Renderer
 	kind         prism.NavigationKind // remembered from OnBegin for use in OnComplete
 	subscription enums.Subscription
@@ -37,8 +37,8 @@ func (l *linear) OnTraversalOptions(o *pref.Options) {
 // OnBegin translates the BeginEvent into a prism.Overture and calls
 // renderer.Begin to render the opening banner.
 func (l *linear) OnBegin(e *report.BeginEvent) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	kind := lo.Ternary(e.IsPrime,
 		prism.PrimeNavigation,
@@ -62,8 +62,8 @@ func (l *linear) OnBegin(e *report.BeginEvent) {
 // OnNodeEvent translates a neutral node visit into a prism.Motif.
 // Depth is sourced from node.Extension.Depth as provided by agenor.
 func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	l.ensureParentRendered(e.Node)
 	l.renderer.Show(prism.Motif{
@@ -77,8 +77,8 @@ func (l *linear) OnNodeEvent(e *report.NeutralEvent) {
 }
 
 func (l *linear) OnActionEvent(e *report.ActionEvent) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	l.ensureParentRendered(e.Node)
 	l.renderer.Show(prism.Motif{
@@ -99,16 +99,16 @@ func (l *linear) OnActionEvent(e *report.ActionEvent) {
 }
 
 func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	l.ensureParentRendered(e.Node)
 	l.renderer.Show(prism.Motif{
-		Path:            e.Node.Path,
-		Name:            e.Node.Extension.Name,
-		IsDir:           e.Node.IsDirectory(),
-		Depth:           e.Node.Extension.Depth,
-		VisualDepth:     e.Node.VisualDepth(),
+		Path:             e.Node.Path,
+		Name:             e.Node.Extension.Name,
+		IsDir:            e.Node.IsDirectory(),
+		Depth:            e.Node.Extension.Depth,
+		VisualDepth:      e.Node.VisualDepth(),
 		PipelineName:     e.Name,
 		ExecutionString:  e.ExecutionString,
 		CommandOutput:    e.CommandOutput,
@@ -122,8 +122,8 @@ func (l *linear) OnPipelineEvent(e *report.PipelineEvent) {
 // OnSkipEvent translates a skip event into a prism.Motif flagged as
 // skipped so the renderer can apply warning styling.
 func (l *linear) OnSkipEvent(e *report.SkipEvent) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	l.ensureParentRendered(e.Node)
 	l.renderer.Show(prism.Motif{
@@ -146,8 +146,8 @@ func (l *linear) OnSkipEvent(e *report.SkipEvent) {
 // calls renderer.End to render the closing summary box. Kind is carried
 // from OnBegin so the summary labels correctly for resume traversals.
 func (l *linear) OnComplete(traversal *report.Traversal) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mux.Lock()
+	defer l.mux.Unlock()
 
 	errs := []error{}
 	if traversal.Err != nil {
