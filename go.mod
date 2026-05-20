@@ -9,7 +9,7 @@ require (
 	golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a
 )
 
-require github.com/snivilised/mamba v0.1.2
+require github.com/snivilised/mamba v0.1.3
 
 require (
 	charm.land/lipgloss/v2 v2.0.3
@@ -35,11 +35,11 @@ require (
 
 require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
-	github.com/fsnotify/fsnotify v1.9.0 // indirect
+	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.3.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
